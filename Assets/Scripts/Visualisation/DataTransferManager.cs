@@ -16,6 +16,7 @@ public class DataTransferManager : MonoBehaviour
     public List<string> datSetNames;
 
 
+
     private long[] allrow;
     private long[] allcol;
     private long[] alldepth;
@@ -35,7 +36,6 @@ public class DataTransferManager : MonoBehaviour
         //}
 
         //TBD delte following lines
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Heart\\V1_Human_Heart_scanpy.hdf5");
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1\\V1_Breast_Cancer_Block_A_Section_1_scanpy.hdf5");
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
 
@@ -86,5 +86,8 @@ public class DataTransferManager : MonoBehaviour
 
     }
 
-
+    public List<string> getDatasetpaths()
+    {
+        return hdf5datapaths;
+    }
 }

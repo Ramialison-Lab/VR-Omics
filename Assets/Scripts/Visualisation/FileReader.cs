@@ -14,16 +14,19 @@ using hid_t = System.Int32;
 public class FileReader : MonoBehaviour
 {
     static readonly ulong[] MaxDimensions = { 10000, 10000, 10000 };
-    
+
     string filePath = "Assets/Datasets/";
     string H5FileName = "testhdf.hdf5";
 
     List<string> geneNames = new List<string>();
+    List<string> ensembleIds = new List<string>();
     List<string> spotBarcodes = new List<string>();
     public string[] spotNames;
     public long[] row;
     public long[] col;
     public long[] coltest;
+    public int[] indiceVals;
+    public int[] indPtr;
 
     public float[] genexp;
 
@@ -42,12 +45,25 @@ public class FileReader : MonoBehaviour
 
     }
 
-    public void readGene()
+    public void readGeneNames(string path)
     {
-        string file = "C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Heart\\V1_Human_Heart_scanpy.hdf5";
-       // string file = "Assets/Datasets/testfile.hdf5";
+        StartCoroutine(readVarLengthString(path, "var/_index", geneNames));
+    }
+
+    public void readIndices(string path)
+    {
+        indiceVals = H5Loader.LoadDataset<int>(path, "X/indices");
+    }    
+    
+    public void readIndPtr(string path)
+    {
+        indPtr = H5Loader.LoadDataset<int>(path, "X/indptr");
+    }
+
+    public void readGeneExpressionValues(string path)
+    {
         string name = "X/data";
-        genexp = H5Loader.LoadDataset<float>(file, name);
+        genexp = H5Loader.LoadDataset<float>(path, name);
     }
 
     public void calcCoords(string dpath)
@@ -72,27 +88,32 @@ public class FileReader : MonoBehaviour
         long count = H5S.get_simple_extent_npoints(spaceId);
         long stringLength = (int)H5T.get_size(typeId);
         H5S.close(stringLength);
-        
+
         IntPtr[] rdata = new IntPtr[count];
 
         GCHandle gch = GCHandle.Alloc(rdata, GCHandleType.Pinned);
 
         H5D.read(attrId, typeId, H5S.ALL, H5S.ALL, H5P.DEFAULT, gch.AddrOfPinnedObject());
 
-            for (int i = 0; i < rdata.Length; ++i)
-            {
-                int len = 0;
-                while (Marshal.ReadByte(rdata[i], len) != 0) { ++len; }
-                byte[] buffer = new byte[len];
+        for (int i = 0; i < rdata.Length; ++i)
+        {
+            int len = 0;
+            while (Marshal.ReadByte(rdata[i], len) != 0) { ++len; }
+            byte[] buffer = new byte[len];
 
-                Marshal.Copy(rdata[i], buffer, 0, buffer.Length);
-                string s = Encoding.UTF8.GetString(buffer);
-                strs.Add(s);
+            Marshal.Copy(rdata[i], buffer, 0, buffer.Length);
+            string s = Encoding.UTF8.GetString(buffer);
+            strs.Add(s);
 
-                H5.free_memory(rdata[i]);
-            }
+            H5.free_memory(rdata[i]);
+        }
 
         yield return null;
+    }
+
+    public void readEnsembleIds(string datapath)
+    {
+        StartCoroutine(readVarLengthString(datapath, "var/gene_ids", ensembleIds));
     }
 
     //Reads float values from HDF5 dataset 
@@ -100,7 +121,6 @@ public class FileReader : MonoBehaviour
     {
         // TBD not working use direct call 
         target = H5Loader.LoadDataset<float>(path, dataset);
-        Debug.Log("working");
         yield return null;
     }
 
@@ -129,7 +149,7 @@ public class FileReader : MonoBehaviour
     {
 
         string[] lines = File.ReadAllLines(file);
-        if(skip) lines = lines.Skip(1).ToArray();
+        if (skip) lines = lines.Skip(1).ToArray();
         foreach (string line in lines)
         {
             var value = line.Split(',');
@@ -144,6 +164,41 @@ public class FileReader : MonoBehaviour
     {
         col = null;
         row = null;
+    }
+    public void clearGeneNames()
+    {
+        geneNames.Clear();
+    }    
+    public void clearGeneExpressionValues()
+    {
+        genexp = null; ;
+    }    
+    
+    public void clearIndices()
+    {
+        indiceVals = null; ;
+    }
+
+    public int[] getIndices()
+    {
+        return indiceVals;
+    }    
+    
+    public int[] getIndptr()
+    {
+        return indPtr;
+    }
+
+    public List<string> getGeneNameList(){
+        return geneNames;
+    }    
+    
+    public List<string> getEnsembleIds(){
+        return ensembleIds;
+    }    
+    
+    public float[] getExpressionValues(){
+        return genexp;
     }
 
     public int getRowSize()
