@@ -9701,6 +9701,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   downloadbtn: {fileID: 2146231378}
+  dropdown_list: {fileID: 1583915798}
   uploadbtn: {fileID: 583694916}
   pipelinebtn: {fileID: 281467691}
   vrbtn: {fileID: 0}
@@ -17252,13 +17253,7 @@ MonoBehaviour:
   m_ItemImage: {fileID: 0}
   m_Value: 0
   m_Options:
-    m_Options:
-    - m_Text: Placeholder for the visum db literalts
-      m_Image: {fileID: 0}
-    - m_Text: Option B
-      m_Image: {fileID: 0}
-    - m_Text: Option C
-      m_Image: {fileID: 0}
+    m_Options: []
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
