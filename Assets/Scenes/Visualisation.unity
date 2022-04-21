@@ -608,7 +608,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0482d508df7b4a243aa008025e84b4c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gene: 
+  gene: KLHL17
   datasetPaths: []
   geneNameList: []
   ensembleIds: []
