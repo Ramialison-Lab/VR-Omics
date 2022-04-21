@@ -9,11 +9,14 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using System.Diagnostics;
+using System.ComponentModel;
 
 public class UIManager : MonoBehaviour
 {
     //UI buttons
     public Button downloadbtn;
+    public TMP_Dropdown dropdown_list; //added by SJ 
     public Button uploadbtn;
     public Button pipelinebtn;
     public Button vrbtn;
@@ -60,6 +63,8 @@ public class UIManager : MonoBehaviour
 
     Texture2D myTexture;
 
+    private List<String> m_DropOptions; //added by SJ 
+
     private void Start()
     {
         DontDestroyOnLoad(transform.gameObject);
@@ -81,6 +86,8 @@ public class UIManager : MonoBehaviour
         {
             case "DownloadMenuBtn":
                 downloadpanel.SetActive(true);
+                // add download exe here
+                adjust_download_list(); //added by SJ 
                 break;
             case "UploadMenuBtn":
                 uploadpanel.SetActive(true);
@@ -93,6 +100,29 @@ public class UIManager : MonoBehaviour
                 alignment();
                 break;
         }
+    }
+
+    public void adjust_download_list() //added by SJ 
+    {
+        // Read file with names of data files
+        string wd = Application.dataPath;
+        wd = wd.Replace('\\', '/');
+        string fileName = wd + "/PythonFiles/list_of_file_names.txt";
+
+        var lines = File.ReadAllLines(fileName);
+        string line2 = lines[0];
+
+        string[] components = line2.Split(new string[] { "," }, StringSplitOptions.None);
+
+        // Identify game object with file names as panel
+        m_DropOptions = new List<string>();
+        foreach (string c in components)
+        {
+            m_DropOptions.Add(c);
+        }
+        // add different options to dropdown menu
+        dropdown_list.AddOptions(m_DropOptions);
+
     }
 
     public void alignment()
@@ -161,19 +191,60 @@ public class UIManager : MonoBehaviour
         StartCoroutine(loadImages());
     }
 
+    public void save_params_run_step1(string[] filterparam) //added by SJ
+    {
+        StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Filter_param.txt", false);
+        foreach (string param in filterparam)
+        {
+            writer.WriteLine(param);
+        }
+        writer.Close();
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe";
+        //startInfo.Arguments = "\"" + wd + "/rcode.r" + " \"";
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = true;
+        UnityEngine.Debug.Log("exe started");
+        Process p = new Process
+        {
+            StartInfo = startInfo
+        };
+
+        p.Start();
+        p.WaitForExit();
+        UnityEngine.Debug.Log("exe finished");
+
+    }
+
     public void startPipelineDownloadData()
     {
         //Stores db literal and the filter params
-        if (destinationPath != null)
+        if (destinationPath != "")
         {
-            //optional
             //TBD Sabrina: use destinationpath for python output instead of default
+            StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/outpath.txt", false);
+            writer.WriteLine(Application.dataPath);
+            writer.Close();
+        }
+        else
+        {
+            StreamWriter writer2 = new StreamWriter(Application.dataPath + "/PythonFiles/outpath.txt", false);
+            writer2.WriteLine(Application.dataPath);
+            writer2.Close();
         }
 
         if (skipFilter)
         {
             // TBD Sabrina: run Step1 Python notebook without filter params
+            // @Denis: Please doublecheck these values! Same order as below.
+            string[] filterparam = new string[7];
+            filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
+
+            save_params_run_step1(filterparam);
+
         }
+
         else
         {
             //TBD Sabrina: run Step1 Python notebook WITH following filter params
@@ -186,6 +257,9 @@ public class UIManager : MonoBehaviour
             filterparam[4] = GameObject.Find("PCT_MT_max").GetComponentInChildren<TMP_InputField>().text;
             filterparam[5] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
             filterparam[6] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
+
+            save_params_run_step1(filterparam);
+
         }
 
     }
@@ -275,6 +349,8 @@ public class UIManager : MonoBehaviour
         filterPipelineParam[5] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
 
         //TBD Sabrina start pipeline steps based on bools filterStep, coorelationStep, clusteringStep, SVGstep
+
+        save_params_run_step1(filterPipelineParam);
         // datapath to file = filepathUpload
 
     }
@@ -289,7 +365,7 @@ public class UIManager : MonoBehaviour
             for (int i = 0; i < FileBrowser.Result.Length; i++)
             {
                 destinationPath = FileBrowser.Result[i];
-                Debug.Log(destinationPath);
+                UnityEngine.Debug.Log(destinationPath);
             }
 
         }
@@ -305,7 +381,7 @@ public class UIManager : MonoBehaviour
             for (int i = 0; i < FileBrowser.Result.Length; i++)
             {
                 filepathUpload = FileBrowser.Result[i];
-                Debug.Log(destinationPath);
+                UnityEngine.Debug.Log(destinationPath);
             }
 
         }
