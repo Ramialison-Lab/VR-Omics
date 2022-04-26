@@ -25,7 +25,6 @@ public class SpotDrawer : MonoBehaviour
    // static readonly int BatchDimension = (int)Mathf.Pow(AreaPerBatch, 1f / 3f);
 
     private  List<Vector3> batchedVertices = new List<Vector3>(24 * CubesPerBatch);
-    public bool colorchagne =false;
     private  List<int> batchedTriangles = new List<int>(36 * CubesPerBatch);
     //static  List<Color32> batchedColors = new List<Color32>(24 * CubesPerBatch);
 
@@ -194,18 +193,12 @@ public class SpotDrawer : MonoBehaviour
     {
         if (start)
         {
-            if (!colorchagne)
-            {
                 for (int i = 0; i < batches.Count; i++)
                 {
                     MeshWrapper wrapper = batches[i];
                     Graphics.DrawMesh(wrapper.mesh, wrapper.location, Quaternion.identity, cubesMaterial, 0);
                 }
-            }
-
-        }
-
-        
+        }    
     }
 
     public void getLocations()

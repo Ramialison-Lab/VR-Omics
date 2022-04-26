@@ -58,7 +58,8 @@ public class SearchManager : MonoBehaviour
 
               //  StartCoroutine(calculateExpresssionValues(indicesTemps,indPtrs,resultExpressionTemp,posInGeneList));
 
-                Debug.Log(resultExpression.Count);
+
+              //  Debug.Log(resultExpression.Count);
 
 
 
