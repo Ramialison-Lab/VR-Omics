@@ -872,6 +872,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sphere: {fileID: 1796680520}
   material: {fileID: 2100000, guid: c9bc76c72c37a394da98510ae1328fbf, type: 2}
+  yellowMaterial: {fileID: 2100000, guid: 0661dc44d54c4d744bb51f288e4be5ea, type: 2}
+  matUsed: {fileID: 0}
   vecs: []
 --- !u!1 &1172228134
 GameObject:
