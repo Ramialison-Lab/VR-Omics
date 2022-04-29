@@ -49,6 +49,10 @@ public class UIManager : MonoBehaviour
     public GameObject alignBtn;
     public GameObject alignmentPanel;
     public GameObject pipelineParamPanel;
+    public GameObject alignmentTogglePanel;
+    public GameObject alignmentSelectionPanel;
+    public GameObject loadingPanel;
+    public Sprite checkmark;
 
     public List<String> storePathForWarning;
     private int[] storePos;
@@ -72,6 +76,7 @@ public class UIManager : MonoBehaviour
 
     public void switchPanel()
     {
+        // Manages which panel at UI is currently active
         try
         {
             downloadpanel.SetActive(false);
@@ -102,7 +107,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void adjust_download_list() //added by SJ 
+    public void adjust_download_list() 
     {
         // Read file with names of data files
         string wd = Application.dataPath;
@@ -125,33 +130,136 @@ public class UIManager : MonoBehaviour
 
     }
 
+    private GameObject currentSelection;
+
+    public void selectForRotation()
+    {
+        currentSelection = GameObject.Find(dropd.options[dropd.value].text.ToString());
+        setTransperencyLevel(currentSelection);
+    }
+
+    public void rotateImagePlus()
+    {
+        try
+        {
+            selectForRotation();
+
+            currentSelection.transform.Rotate(0f, 0f, -1);
+        }
+        catch (Exception) { }
+    }     
+    
+    public void rotateImageMinus()
+    {
+        try
+        {
+            selectForRotation();
+
+            currentSelection.transform.Rotate(0f, 0f, 1);
+        }
+        catch (Exception) { }
+    }
+
+    public Slider slider;
+
+    private void setTransperencyLevel(GameObject selObj)
+    {
+        var tempcolor = selObj.GetComponent<RawImage>().color;
+
+        slider.value = tempcolor.a;
+    }
+
+    public void changeTransperency()
+    {
+        try
+        {
+            var tempcolor = currentSelection.GetComponent<RawImage>().color;
+            tempcolor.a = slider.value;
+            UnityEngine.Debug.Log(tempcolor.a);
+            currentSelection.GetComponent<RawImage>().color = tempcolor;
+        } catch(Exception e){ }
+    }
+
+
+    public void toggleListener(GameObject toggle)
+    {
+        UnityEngine.Debug.Log(toggle.GetComponentInChildren<Text>().text);
+
+        foreach(RawImage imag in images)
+        {
+            if(imag.name == toggle.GetComponentInChildren<Text>().text)
+            {
+                if (imag.transform.gameObject.active)
+                {
+                    imag.transform.gameObject.SetActive(false);
+
+                } else if (!imag.transform.gameObject.active)
+                {
+                    imag.transform.gameObject.SetActive(true);
+
+                }
+            }
+        }
+
+    }
+
+    public List<RawImage> images;
+    public Dropdown dropd;
+
     public void alignment()
     {
+        List<Toggle> toggleList = new List<Toggle>();
+        // alignement process, taking all rawimages of the H&E stains and overlapping them to align their orientation
+        List<string> dpOptions = new List<string>();
        foreach(GameObject gobj in slicesList)
         {
             RawImage imageObj = gobj.GetComponentInChildren<RawImage>();
+            imageObj.name = gobj.GetComponentInChildren<Text>().text;
             imageObj.transform.localPosition = new Vector3(0, 0, 0);
             imageObj.transform.position = new Vector3(0, 0, 0);
             imageObj.transform.SetParent(alignmentPanel.transform);
-            imageObj.transform.localScale = new Vector3(imageObj.transform.localScale.x * 4, imageObj.transform.localScale.y * 4, imageObj.transform.localScale.z);
+            images.Add(imageObj);
+            //TBD set all same size
+            imageObj.transform.localScale = new Vector3(imageObj.transform.localScale.x * 3.5f, imageObj.transform.localScale.y * 3.5f, imageObj.transform.localScale.z);
 
             //transform the rawimages results in an offsett of 422.5f, needs to be properly aligned
             imageObj.GetComponent<RectTransform>().transform.localPosition = new Vector3(-422.5f, 0, 0);
             Destroy(imageObj.transform.GetChild(0).gameObject);
 
+            //add toggle button to alignement panel
+            DefaultControls.Resources uiResources = new DefaultControls.Resources();
+            uiResources.standard = checkmark;
+            GameObject toggle = DefaultControls.CreateToggle(uiResources);
+            toggle.transform.SetParent(alignmentTogglePanel.transform, false);
+            toggle.GetComponent<Toggle>().isOn = false;
+            toggle.GetComponentInChildren<Text>().text = gobj.GetComponentInChildren<Text>().text;
+
+            dpOptions.Add(toggle.GetComponentInChildren<Text>().text.ToString());
+
+
+            toggle.GetComponent<Toggle>().onValueChanged.AddListener(delegate
+            {
+                toggleListener(toggle);
+            });
+
             try
             {
                // imageObj.GetComponent<Renderer>().material.color.a = 0.5f;
-
                 var tempcolor = imageObj.color;
-                tempcolor.a = 0.4f;
+                tempcolor.a = 0.3f;
                 imageObj.color = tempcolor;
             } catch (Exception) { }
+
+            dropd.ClearOptions();
+            dropd.AddOptions(dpOptions);
+            selectForRotation();
         }
+
     }
 
     public void nextPipelineStep()
     {
+        // Manages the workflow of the pipeline part to guide through the 4 individual steps
         filterStep = GameObject.Find("Step1").GetComponentInChildren<Toggle>().isOn;
         correlationStep = GameObject.Find("Step2").GetComponentInChildren<Toggle>().isOn;
         clusteringStep = GameObject.Find("Step3").GetComponentInChildren<Toggle>().isOn;
@@ -191,8 +299,9 @@ public class UIManager : MonoBehaviour
         StartCoroutine(loadImages());
     }
 
-    public void save_params_run_step1(string[] filterparam) //added by SJ
+    public void save_params_run_step1(string[] filterparam) 
     {
+        // Python integration
         StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Filter_param.txt", false);
         foreach (string param in filterparam)
         {
@@ -206,6 +315,8 @@ public class UIManager : MonoBehaviour
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = true;
         UnityEngine.Debug.Log("exe started");
+  
+
         Process p = new Process
         {
             StartInfo = startInfo
@@ -214,7 +325,7 @@ public class UIManager : MonoBehaviour
         p.Start();
         p.WaitForExit();
         UnityEngine.Debug.Log("exe finished");
-
+        //loadingPanel.SetActive(false);
     }
 
     public void startPipelineDownloadData()
@@ -261,26 +372,11 @@ public class UIManager : MonoBehaviour
             save_params_run_step1(filterparam);
 
         }
-
     }
-
-
-    private void loadImage(string path)
-    {
-
-        //WWW www = new WWW("file:///C://Users/Denis.Bienroth/Desktop/Data_S1/ST_Sample_6.5PCW_1.tif");
-        ////WWW www = new WWW("file:///C://Users/Denis.Bienroth/Desktop/Data_S1/test.jpg");
-
-        //while (!www.isDone)
-        //    yield return null;
-        //Texture2D tex = new Texture2D(2, 2);
-        //tex = www.texture;
-        //imagetest.GetComponent<RawImage>().texture = tex;
-    }
-
 
     private void moveSlice(GameObject go)
     {
+        // Manages how the order of the slices is set by the user, swaping dataset order etc.
         GameObject swapGO = go.transform.parent.gameObject;
         int pos = slicesList.IndexOf(swapGO);
 
@@ -339,6 +435,7 @@ public class UIManager : MonoBehaviour
 
     public void getFilterParamPipeline()
     {
+        // Reading filter parameters for python pipeline
         string[] filterPipelineParam = new string[7];
 
         filterPipelineParam[0] = GameObject.Find("MinCount").GetComponentInChildren<TMP_InputField>().text;
@@ -357,6 +454,7 @@ public class UIManager : MonoBehaviour
 
     IEnumerator selectDirectory()
     {
+        // Starts filebrowser and lets user choose directory for output
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
 
         if (FileBrowser.Success)
@@ -373,6 +471,7 @@ public class UIManager : MonoBehaviour
 
     IEnumerator selectUploadfile()
     {
+        // Selecting dataset directories to load
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
 
         if (FileBrowser.Success)
@@ -387,10 +486,15 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void denyDuplicate()
+    {
+        warningPanel.SetActive(false);
+    }
+
     public void confirmDuplicate()
     {
+        // Exception handle if dataset is uploaded twice into environment
         GameObject[] slicesStore = new GameObject[storePathForWarning.Count()];
-
 
         for (int i = 0; i < storePathForWarning.Count(); i++)
         {
@@ -441,7 +545,7 @@ public class UIManager : MonoBehaviour
 
     private void toggleExpand(GameObject go)
     {
-       
+       // Expand H&E stain function while setting order of datasets
         expandPanel.SetActive(true);
         Texture temptext = go.transform.parent.gameObject.GetComponent<RawImage>().texture;
         expandImage.texture = temptext;
@@ -450,7 +554,7 @@ public class UIManager : MonoBehaviour
 
     IEnumerator loadImages()
     {
-
+        // Function to load Rawimages of H&E stains
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
         if (FileBrowser.Success)
         {
