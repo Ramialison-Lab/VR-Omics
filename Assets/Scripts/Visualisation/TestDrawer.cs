@@ -6,13 +6,13 @@ public class TestDrawer : MonoBehaviour
 {
     public GameObject sphere;
     public Material material;
-   
+
     public Material yellowMaterial;
     public Material matUsed;
 
     public List<Vector3> vecs;
     private List<MeshWrapperTest> batches = new List<MeshWrapperTest>();
-   
+
     private bool coltog = false;
 
     struct MeshWrapperTest
@@ -24,14 +24,14 @@ public class TestDrawer : MonoBehaviour
         //public string spotName;
 
 
-   
+
 
     }
 
     private void Start()
     {
-        for(int i=0; i<10000; i++)
-        {    
+        for (int i = 0; i < 10000; i++)
+        {
             // create random locations
             float x = Random.Range(-200, 200);
             float y = Random.Range(-200, 200);
@@ -45,33 +45,39 @@ public class TestDrawer : MonoBehaviour
     }
 
     private void Update()
-    {     
-            for (int i = 0; i < batches.Count; i++)
-            {
-                // draw all spots from the batches list
-                MeshWrapperTest wrap = batches[i];
-                Graphics.DrawMesh(wrap.mesh, wrap.location, Quaternion.identity, matUsed, 0);
-            }
-    }
-
-
-    public void colorMesh()
     {
-        // if clicked just change the material used to change the color
-        coltog = !coltog;
-        if (coltog) matUsed = yellowMaterial;
-        else if (!coltog) matUsed = material;
+        var main = Camera.main;
 
-        //////////////////////////////////////////////////////////////////////////////////
-        //The better way would be to get the Renderer for each spot in the mesh somhow like this:
+        if (newColours)
+            randcolours.Clear();
 
-        //foreach(MeshWrapperTest mwt in batches)
-        //{
-        //    mwt.rend.material.color = Color.yellow;
-        //}
-
-        // but this will of course not work woth the update function, we want to address each sphere individually and keep the color changed.
-
-
+        for (int i = 0; i < batches.Count; i++)
+        {
+            // draw all spots from the batches list
+            MeshWrapperTest wrap = batches[i];
+            var mpb = new MaterialPropertyBlock();
+            if (newColours)
+            {                
+                Color rc = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1f);             
+                mpb.SetColor("_Color", rc);
+                randcolours.Add(rc);
+            }
+            else
+            {
+                mpb.SetColor("_Color", randcolours[i]);
+            }
+            Graphics.DrawMesh(wrap.mesh, wrap.location, Quaternion.identity, matUsed, 0, main, 0, mpb, 
+                false, false);
+        }
+        newColours = false;
     }
+
+
+    public void ColorMesh()
+    {
+        newColours = true;
+    }
+
+    private List<Color> randcolours = new List<Color>();
+    bool newColours = true;
 }
