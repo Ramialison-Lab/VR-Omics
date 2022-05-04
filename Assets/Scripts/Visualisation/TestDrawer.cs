@@ -51,14 +51,18 @@ public class TestDrawer : MonoBehaviour
         if (newColours)
             randcolours.Clear();
 
+        // Map transform
+        var sphereTransform = sphere.transform;
+        Matrix4x4 matrix;
+
         for (int i = 0; i < batches.Count; i++)
         {
             // draw all spots from the batches list
             MeshWrapperTest wrap = batches[i];
             var mpb = new MaterialPropertyBlock();
             if (newColours)
-            {                
-                Color rc = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1f);             
+            {
+                Color rc = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1f);
                 mpb.SetColor("_Color", rc);
                 randcolours.Add(rc);
             }
@@ -66,8 +70,8 @@ public class TestDrawer : MonoBehaviour
             {
                 mpb.SetColor("_Color", randcolours[i]);
             }
-            Graphics.DrawMesh(wrap.mesh, wrap.location, Quaternion.identity, matUsed, 0, main, 0, mpb, 
-                false, false);
+            matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+            Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
         }
         newColours = false;
     }
