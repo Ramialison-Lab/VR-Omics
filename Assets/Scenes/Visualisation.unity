@@ -772,7 +772,7 @@ MonoBehaviour:
   cubeMaterial: {fileID: 0}
   cubesMaterial: {fileID: 2100000, guid: c9bc76c72c37a394da98510ae1328fbf, type: 2}
   hightlightmaterial: {fileID: 2100000, guid: 0661dc44d54c4d744bb51f288e4be5ea, type: 2}
-  matUsed: {fileID: 2100000, guid: f9d54a36ae864b94883c6e35c5ba7175, type: 2}
+  matUsed: {fileID: 2100000, guid: c9bc76c72c37a394da98510ae1328fbf, type: 2}
 --- !u!114 &1052670661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -899,6 +899,7 @@ MonoBehaviour:
   input: {fileID: 0}
   ev: []
   resultExpression: 
+  normalised: []
 --- !u!1 &1172228134
 GameObject:
   m_ObjectHideFlags: 0
