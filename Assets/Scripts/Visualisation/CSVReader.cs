@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using LumenWorks.Framework.IO.Csv;
+//using LumenWorks.Framework.IO.Csv;
 
 // Prototype using CSV file to read in col, row information of visium slide
 
@@ -50,46 +50,49 @@ public class CSVReader : MonoBehaviour
     public void searchGene()
     {
         string gn = "NOC2L";
-        datapath = "Assets/Datasets/testCsv2b.csv";
+        datapath = "Assets/Datasets/TransposedTest.csv";
 
 
-        StartCoroutine(searchLumen(gn, datapath));
+      //  StartCoroutine(searchLumen(gn, datapath));
+      StartCoroutine(search(gn, datapath));
 
 
     }
 
-    IEnumerator searchLumen(string gn, string dp)
-    {
-        var row = new List<string>();
-        using (CsvReader csv =
-          new CsvReader(new StreamReader(dp), false))
-        {
-            int fieldCount = csv.FieldCount;
+    //IEnumerator searchLumen(string gn, string dp)
+    //{
+    //    var row = new List<string>();
+    //    using (CsvReader csv =
+    //      new CsvReader(new StreamReader(dp), false))
+    //    {
+    //        int fieldCount = csv.FieldCount;
 
-            //for (int i = 0; i < fieldCount; i++)
-            //{
-            //    row.Add(csv[i]);
-            //}
-            Debug.Log(csv[0]);
+    //        //for (int i = 0; i < fieldCount; i++)
+    //        //{
+    //        //    row.Add(csv[i]);
+    //        //}
+    //        Debug.Log(csv[0]);
 
 
-        }
+    //    }
 
-        yield return null;
-    }
+    //    yield return null;
+    //}
 
     IEnumerator search(string gn, string dp)
     {
         
         string[] lines = File.ReadAllLines(dp);
-        foreach (string line in lines)
-        {
-            var values = line.Split(',').ToList();
+        //foreach (string line in lines)
+        //{
+        //    var values = line.Split(',').ToList();
 
-            {
-                ev.Add(float.Parse(values[8]));
-            }
-        }
+        //    {
+        //       // ev.Add(float.Parse(values[8]));
+        //    }
+        //}
+
+        Debug.Log(lines[135]);
 
         yield return null;
     }
