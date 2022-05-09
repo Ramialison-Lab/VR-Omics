@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using LumenWorks.Framework.IO.Csv;
 
 // Prototype using CSV file to read in col, row information of visium slide
 
@@ -19,6 +20,7 @@ public class CSVReader : MonoBehaviour
     private GameObject tempObj;
     public Material Material1;
     public InputField input;
+    public List<float> ev;
     //private void Start()
     //{
     //    setDatapath();
@@ -30,7 +32,7 @@ public class CSVReader : MonoBehaviour
 
     private async void Start()
     {
-        setDatapath();
+      //  setDatapath();
         
         //readDatapointPositions();
 
@@ -43,6 +45,53 @@ public class CSVReader : MonoBehaviour
         //Debug.Log($"{count} cells are != \"0\".");
         //searchGeneExpression();
 
+    }
+
+    public void searchGene()
+    {
+        string gn = "NOC2L";
+        datapath = "Assets/Datasets/testCsv2b.csv";
+
+
+        StartCoroutine(searchLumen(gn, datapath));
+
+
+    }
+
+    IEnumerator searchLumen(string gn, string dp)
+    {
+        var row = new List<string>();
+        using (CsvReader csv =
+          new CsvReader(new StreamReader(dp), false))
+        {
+            int fieldCount = csv.FieldCount;
+
+            //for (int i = 0; i < fieldCount; i++)
+            //{
+            //    row.Add(csv[i]);
+            //}
+            Debug.Log(csv[0]);
+
+
+        }
+
+        yield return null;
+    }
+
+    IEnumerator search(string gn, string dp)
+    {
+        
+        string[] lines = File.ReadAllLines(dp);
+        foreach (string line in lines)
+        {
+            var values = line.Split(',').ToList();
+
+            {
+                ev.Add(float.Parse(values[8]));
+            }
+        }
+
+        yield return null;
     }
 
     private string getName()

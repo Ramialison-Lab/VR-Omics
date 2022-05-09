@@ -30,19 +30,23 @@ public class SearchManager : MonoBehaviour
     }
 
 
+
     private void readExpressionList(string geneName)
     {
         int posInGeneList;
-        foreach (string p in datasetPaths)
+        //for each dataset selected
+        foreach (string p in datasetPaths) 
         {
+            // create list of all genes in dataset
             fr.readGeneNames(p);
             List<string> tempGeneNames = fr.getGeneNameList();
+            // iterate through whole list to find gene
             if (tempGeneNames.Contains(geneName))
             {
-
+                //get position of gene
                 posInGeneList = tempGeneNames.IndexOf(geneName);
 
-                // get exp values
+                // get exp values for whole dataset
                 fr.readGeneExpressionValues(p);
 
                 resultExpressionTemp = fr.getExpressionValues();
