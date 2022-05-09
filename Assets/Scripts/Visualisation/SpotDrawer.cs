@@ -1,8 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
+using Random = UnityEngine.Random;
 
 public class SpotDrawer : MonoBehaviour
 {
+
+    public GameObject sphere;
+
     private bool start = false;
     private CustomDataSetUpload customdata;
     public Material cubeMaterial;
@@ -11,58 +16,16 @@ public class SpotDrawer : MonoBehaviour
     public Material cubesMaterial;
     public Material hightlightmaterial;
     const int CubesPerBatch = 2000;
+    List<double> normalised;
 
-    private  List<Vector3> batchedVertices = new List<Vector3>(24 * CubesPerBatch);
+    public Material matUsed;
+
+
+    private List<Vector3> batchedVertices = new List<Vector3>(24 * CubesPerBatch);
     private  List<int> batchedTriangles = new List<int>(36 * CubesPerBatch);
 
     private  List<MeshWrapper> batches = new List<MeshWrapper>();
 
-
-    // vertices for one cube
-    private  Vector3[] verts = {
-        new Vector3 (-0.5f, 0.5f, 0.5f),
-        new Vector3 (-0.5f, -0.5f, 0.5f),
-        new Vector3 (-0.5f, -0.5f, -0.5f),
-        new Vector3 (-0.5f, 0.5f, -0.5f),
-
-        new Vector3 (0.5f, 0.5f, 0.5f),
-        new Vector3 (0.5f, -0.5f, 0.5f),
-        new Vector3 (0.5f, -0.5f, -0.5f),
-        new Vector3 (0.5f, 0.5f, -0.5f),
-
-        new Vector3 (0.5f, -0.5f, 0.5f),
-        new Vector3 (-0.5f, -0.5f, 0.5f),
-        new Vector3 (-0.5f, -0.5f, -0.5f),
-        new Vector3 (0.5f, -0.5f, -0.5f),
-
-        new Vector3 (0.5f, 0.5f, 0.5f),
-        new Vector3 (0.5f, 0.5f, -0.5f),
-        new Vector3 (-0.5f, 0.5f, -0.5f),
-        new Vector3 (-0.5f, 0.5f, 0.5f),
-
-        new Vector3 (0.5f, 0.5f, -0.5f),
-        new Vector3 (0.5f, -0.5f, -0.5f),
-        new Vector3 (-0.5f, -0.5f, -0.5f),
-        new Vector3 (-0.5f, 0.5f, -0.5f),
-
-        new Vector3 (0.5f, 0.5f, 0.5f),
-        new Vector3 (0.5f, -0.5f, 0.5f),
-        new Vector3 (-0.5f, -0.5f, 0.5f),
-        new Vector3 (-0.5f, 0.5f, 0.5f)
-    };
-
-    // triangles for one cube
-    // each cube is currently drawn by 12 triangles
-    private  int[] tris = {
-        2, 1, 0, 0, 3, 2,
-        4, 5, 6, 6, 7, 4,
-        8, 9, 10, 10, 11, 8,
-        12, 13, 14, 14, 15, 12,
-        16, 17, 18, 18, 19, 16,
-        22, 21, 20, 20, 23, 22
-    };
-
-    
     struct MeshWrapper
     {
         //structure for each cube → spot, storing its mesh, the location read from the hdf5, the unique spot name and which dataset it comes from for the depth information
@@ -84,18 +47,6 @@ public class SpotDrawer : MonoBehaviour
         // for each coordinate passed
         for (int i = 0; i < xcoords.Count; i++)
         {
-            // for each vertice in one cube
-            for (int vertIndex = 0; vertIndex < verts.Length; vertIndex++)
-            {
-                batchedVertices.Add(verts[vertIndex]);
-            }
-
-            // for each triangle in on cube
-            for (int triIndex = 0; triIndex < tris.Length; triIndex++)
-            {
-                batchedTriangles.Add(tris[triIndex]);
-            }
-
             // reading out the next 3D coordinate from the list
             float x = xcoords[i]; 
             float y = ycoords[i]; 
@@ -105,110 +56,115 @@ public class SpotDrawer : MonoBehaviour
             string sname = spotBarcodes[i];
             string datasetn = dataSet[i];
             
-            // create Mesh
-            Mesh batchedMesh = new Mesh();
-            batchedMesh.SetVertices(batchedVertices);
-            //batchedMesh.SetColors(batchedColors);
-            batchedMesh.SetTriangles(batchedTriangles, 0);
-            batchedMesh.Optimize();
-            batchedMesh.UploadMeshData(true);
-
-            // add Mesh, one cube to Meshwarpper structure to store its data
-            batches.Add(new MeshWrapper { mesh = batchedMesh, location = new Vector3(x, y, z), spotname = sname, datasetName = datasetn});
-
-            batchedVertices.Clear();
-            // batchedColors.Clear();
-            batchedTriangles.Clear();
-
-
+            batches.Add(new MeshWrapper { mesh = sphere.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), spotname = sname, datasetName = datasetn});
         }
-        Debug.Log(batches.Count);
 
-        // start is used to keep this function on hold until all hdf5 files are read
         start = true;
 
     }
 
-
-    //public void startSpotDrawer()
+    //void Update()
     //{
-
-    //    //TBD disable later
-        
-    //    filereader = GameObject.Find("ScriptHolder").GetComponent<FileReader>();
-
-        
-    //    int rowLength = filereader.getRowSize();
-    //    long[] row = new long[rowLength];
-    //    long[] col = new long[rowLength];
-    //    row = GameObject.Find("ScriptHolder").GetComponent<FileReader>().getRowArray();
-    //    col = GameObject.Find("ScriptHolder").GetComponent<FileReader>().getColArray();
-    //    spotnames = GameObject.Find("ScriptHolder").GetComponent<FileReader>().getSpotNames();
-
-    //    for (int i =0; i< rowLength; i++)
-    //    {        
-            
-    //    for (int vertIndex = 0; vertIndex < verts.Length; vertIndex++)
+    //    // if all datasets are read
+    //    if (start)
     //    {
-    //        batchedVertices.Add(verts[vertIndex]);
-    //    }
-    //    for (int triIndex = 0; triIndex < tris.Length; triIndex++)
-    //    {
-    //        batchedTriangles.Add(tris[triIndex]);
-    //    }
-    //        int y = (int)row[i];
-    //        int x = (int)col[i];
-    //        string sname = spotnames[i];
-    //        //currently 0 for one slide
-    //        int z = 0;
-
-    //        Mesh batchedMesh = new Mesh();
-    //    batchedMesh.SetVertices(batchedVertices);
-    //    //batchedMesh.SetColors(batchedColors);
-    //    batchedMesh.SetTriangles(batchedTriangles, 0);
-    //    batchedMesh.Optimize();
-    //    batchedMesh.UploadMeshData(true);
-
-    //    batches.Add(new MeshWrapper { mesh = batchedMesh, location = new Vector3(x, y, z), spotname = sname});
-    //    batchedVertices.Clear();
-    //   // batchedColors.Clear();
-    //    batchedTriangles.Clear();
-
-
-    //    }
-    //    Debug.Log(batches.Count);
-    //    start = true;
-
+    //            // Drawing the cubes 
+    //            for (int i = 0; i < batches.Count; i++)
+    //            {
+    //                MeshWrapper wrapper = batches[i];
+    //            // passing cubesMaterial as the material for the cube, that's why it is red
+    //                Graphics.DrawMesh(wrapper.mesh, wrapper.location, Quaternion.identity, cubesMaterial, 0);
+    //            }
+    //    }    
     //}
-    
 
-    // Update is called once per frame
-    void Update()
+
+    private void Update()
     {
-        // if all datasets are read
         if (start)
         {
-                // Drawing the cubes 
-                for (int i = 0; i < batches.Count; i++)
+            var main = Camera.main;
+
+            if (newColours)
+                randcolours.Clear();
+
+            // Map transform
+            var sphereTransform = sphere.transform;
+            Matrix4x4 matrix;
+
+            for (int i = 0; i < batches.Count; i++)
+            {
+                // draw all spots from the batches list
+                MeshWrapper wrap = batches[i];
+                var mpb = new MaterialPropertyBlock();
+                Color rc;
+                if (newColours)
                 {
-                    MeshWrapper wrapper = batches[i];
-                // passing cubesMaterial as the material for the cube, that's why it is red
-                    Graphics.DrawMesh(wrapper.mesh, wrapper.location, Quaternion.identity, cubesMaterial, 0);
+
+                   // rc = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1f);
+                    
+                    try
+                    {
+                        rc = colorGradient(i);
+                    }
+                    catch (Exception e) { rc = new Color(0, 0, 0, 1); }
+                    mpb.SetColor("_Color", rc);
+                    randcolours.Add(rc);
                 }
-        }    
-    }
-
-    public void coloringMesh()
-    {
-        // pressing this button should color each cube in the mesh (for now randomly)
-            
-        // for every meshwrapper, which is every spot/cube 
-        foreach(MeshWrapper meshTemp in batches)
-        {
-            // get the vertices
-            // meshTemp.mesh.vertices → adding the function here
-
+                else
+                {
+                    mpb.SetColor("_Color", randcolours[i]);
+                }
+                matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+                Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+            }
+            newColours = false;
         }
     }
+
+    private Color colorGradient(int i)
+    {
+        float rgb = 255f;
+        Gradient gradient = new Gradient();
+
+        // Populate the color keys at the relative time 0 and 1 (0 and 100%)
+        GradientColorKey[] gck = new GradientColorKey[5];
+        gck[0].color = new Color(0 / rgb, 0 / rgb, 244 / rgb); // Blue
+        gck[0].time = 0.0F;
+        gck[1].color = new Color(24 / rgb, 226 / rgb, 240 / rgb); // Cyan
+        gck[1].time = 0.25F;
+        gck[2].color = new Color(255 / rgb, 255 / rgb, 0 / rgb); // Yellow
+        gck[2].time = 0.50F;
+        gck[3].color = new Color(255 / rgb, 170 / rgb, 0 / rgb); // Orange
+        gck[3].time = 0.75F;
+        gck[4].color = new Color(254 / rgb, 0 / rgb, 0 / rgb); // Red
+        gck[4].time = 1.0F;
+
+        // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
+        GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
+        alphaKey[0].alpha = 1.0f;
+        alphaKey[0].time = 0.0f;
+        alphaKey[1].alpha = 0.0f;
+        alphaKey[1].time = 1.0f;
+
+        gradient.SetKeys(gck, alphaKey);
+
+        // What's the color at the relative time 0.25 (25 %) ?
+        return gradient.Evaluate((float)normalised[i]);
+    }
+
+    public void setColors(List<double> normalised)
+    {
+        this.normalised = normalised;
+        newColours = true;
+    }
+
+    public void ColorMesh()
+    {
+        newColours = true;
+    }
+
+    private List<Color> randcolours = new List<Color>();
+    bool newColours = true;
 
 }

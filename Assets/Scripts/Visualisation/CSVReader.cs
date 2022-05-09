@@ -7,9 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-//using LumenWorks.Framework.IO.Csv;
-
-// Prototype using CSV file to read in col, row information of visium slide
 
 public class CSVReader : MonoBehaviour
 {
@@ -22,29 +19,38 @@ public class CSVReader : MonoBehaviour
     public InputField input;
     public List<float> ev;
     public List<int> resultExpression;
+    public List<double> normalised;
 
     // search Function for gene
-    public void searchGene(string datapath, int pos, string gn)
+    public void searchGene(string datapath, int pos, string gn, SpotDrawer sp)
     {
-
+        //pos = UnityEngine.Random.Range(0,1000);
+        pos = 9;
         datapath = datapath.Replace(datapath.Split('\\').Last(),"")+"TransposedTest.csv";
 
         Debug.Log("Search for: " + gn);
         StartCoroutine(search(datapath, pos, gn));
-
-        Debug.Log(resultExpression.Count);
-
+        sp.setColors(normalised);
     }
 
     IEnumerator search(string dp, int pos, string gn)
     {
-       
         string[] lines = File.ReadAllLines(dp);
+        Debug.Log(lines[pos].Substring(0, 10));
         // Removing the string with the genename from the CSV list before parsing each entry into a int value for the list
         resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length + 1).Split(',').ToList().Select(int.Parse).ToList();
 
+        var max = resultExpression.Max();
+        var min = resultExpression.Min();
+        var range = (double)(max - min);
+        normalised
+            = resultExpression.Select(i => 1 * (i - min) / range)
+                .ToList();
+
         yield return null;
     }
+
+
 
     private string getName()
     {

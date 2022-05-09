@@ -43,13 +43,14 @@ public class SearchManager : MonoBehaviour
             // create list of all genes in dataset
             fr.readGeneNames(p);
             List<string> tempGeneNames = fr.getGeneNameList();
+
             // iterate through whole list to find gene
             if (tempGeneNames.Contains(geneName))
             {
                 //get position of gene
                 posInGeneList = tempGeneNames.IndexOf(geneName);
 
-                sh.GetComponent<CSVReader>().searchGene(p, posInGeneList, geneName);
+                sh.GetComponent<CSVReader>().searchGene(p, posInGeneList, geneName, sh.GetComponent<SpotDrawer>());
             }
 
         }

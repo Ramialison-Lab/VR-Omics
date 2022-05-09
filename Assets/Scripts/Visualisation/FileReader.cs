@@ -71,7 +71,6 @@ public class FileReader : MonoBehaviour
         StartCoroutine(readInt(dpath));
 
         StartCoroutine(readVarLengthString(dpath, "obs/_index", spotBarcodes));
-        int i = 0;
 
         spotNames = spotBarcodes.ToArray();
     }
