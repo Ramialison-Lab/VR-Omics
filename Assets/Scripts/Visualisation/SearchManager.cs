@@ -26,10 +26,13 @@ public class SearchManager : MonoBehaviour
         datasetPaths = sh.GetComponent<DataTransferManager>().getDatasetpaths();        
         searchEnsembleId(gene);
 
-        readExpressionList(gene);
     }
 
+    public void showGeneExpression()
+    {
+        readExpressionList(gene);
 
+    }
 
     private void readExpressionList(string geneName)
     {
@@ -46,43 +49,9 @@ public class SearchManager : MonoBehaviour
                 //get position of gene
                 posInGeneList = tempGeneNames.IndexOf(geneName);
 
-                // get exp values for whole dataset
-                fr.readGeneExpressionValues(p);
-
-                resultExpressionTemp = fr.getExpressionValues();
-
-                //get indices list
-
-                fr.readIndices(p);
-                List<int> indicesTemps = new List<int>(fr.getIndices());
-
-                fr.readIndPtr(p);
-                List<int> indPtrs = new List<int>(fr.getIndptr());
-
-
-              //  StartCoroutine(calculateExpresssionValues(indicesTemps,indPtrs,resultExpressionTemp,posInGeneList));
-
-
-              //  Debug.Log(resultExpression.Count);
-
-
-
-                //check if indices contains value for posInGeneList
-                // if yes → 1st value for spot[0]
-                //if not val =0
-                //posinlist plus 1st entry of indptr
-
-                //check if indices contains vlaue for posinGenelist+indprt
-                //yes → 2nd value; no → 2nd value 0
-                //posinGenelist + next indprt until indPtr end
-
-            }
-            else
-            {
-                // If gene not in list set all spots gene vlaues to 0
+                sh.GetComponent<CSVReader>().searchGene(p, posInGeneList, geneName);
             }
 
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Clear all lists and arrays at the end
         }
     }
 

@@ -21,78 +21,27 @@ public class CSVReader : MonoBehaviour
     public Material Material1;
     public InputField input;
     public List<float> ev;
-    //private void Start()
-    //{
-    //    setDatapath();
-    //    readHeader("Assets/Datasets/testCsv.csv");
-    //    //UpdateCSV("Assets/Datasets/tissue_positions_list.csv", "Assets/Datasets/UpdatedCSV.csv", "0","1");
-    //    readDatapointPositions();
-    //   // StartCoroutine(readGeneExpressionLevel());
-    //}
+    public List<int> resultExpression;
 
-    private async void Start()
+    // search Function for gene
+    public void searchGene(string datapath, int pos, string gn)
     {
-      //  setDatapath();
-        
-        //readDatapointPositions();
 
+        datapath = datapath.Replace(datapath.Split('\\').Last(),"")+"TransposedTest.csv";
 
-        //readHeader("Assets/Datasets/var.csv");
+        Debug.Log("Search for: " + gn);
+        StartCoroutine(search(datapath, pos, gn));
 
-        //var count = await CountNonZeroEntries();
-        //var count = await WriteSparse();
-
-        //Debug.Log($"{count} cells are != \"0\".");
-        //searchGeneExpression();
+        Debug.Log(resultExpression.Count);
 
     }
 
-    public void searchGene()
+    IEnumerator search(string dp, int pos, string gn)
     {
-        string gn = "NOC2L";
-        datapath = "Assets/Datasets/TransposedTest.csv";
-
-
-      //  StartCoroutine(searchLumen(gn, datapath));
-      StartCoroutine(search(gn, datapath));
-
-
-    }
-
-    //IEnumerator searchLumen(string gn, string dp)
-    //{
-    //    var row = new List<string>();
-    //    using (CsvReader csv =
-    //      new CsvReader(new StreamReader(dp), false))
-    //    {
-    //        int fieldCount = csv.FieldCount;
-
-    //        //for (int i = 0; i < fieldCount; i++)
-    //        //{
-    //        //    row.Add(csv[i]);
-    //        //}
-    //        Debug.Log(csv[0]);
-
-
-    //    }
-
-    //    yield return null;
-    //}
-
-    IEnumerator search(string gn, string dp)
-    {
-        
+       
         string[] lines = File.ReadAllLines(dp);
-        //foreach (string line in lines)
-        //{
-        //    var values = line.Split(',').ToList();
-
-        //    {
-        //       // ev.Add(float.Parse(values[8]));
-        //    }
-        //}
-
-        Debug.Log(lines[135]);
+        // Removing the string with the genename from the CSV list before parsing each entry into a int value for the list
+        resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length + 1).Split(',').ToList().Select(int.Parse).ToList();
 
         yield return null;
     }

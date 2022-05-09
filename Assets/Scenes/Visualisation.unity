@@ -836,8 +836,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1016830522}
-        m_MethodName: searchGene
+      - m_Target: {fileID: 1052670664}
+        m_MethodName: showGeneExpression
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -884,55 +884,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 831113504}
   m_CullTransparentMesh: 0
---- !u!1 &1016830521
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1016830523}
-  - component: {fileID: 1016830522}
-  m_Layer: 0
-  m_Name: CsvManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1016830522
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1016830521}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33f2b0ad8a1645c4796ea11d39f8ff64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  datapointPrefab: {fileID: 0}
-  parent: {fileID: 0}
-  header: []
-  Material1: {fileID: 0}
-  input: {fileID: 0}
-  ev: []
---- !u!4 &1016830523
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1016830521}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 408.75565, y: 196.57854, z: -788.58856}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1052670655
 GameObject:
   m_ObjectHideFlags: 0
@@ -952,6 +903,7 @@ GameObject:
   - component: {fileID: 1052670664}
   - component: {fileID: 1052670656}
   - component: {fileID: 1052670666}
+  - component: {fileID: 1052670667}
   m_Layer: 0
   m_Name: ScriptHolder
   m_TagString: Untagged
@@ -1087,7 +1039,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0482d508df7b4a243aa008025e84b4c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gene: KLHL17
+  gene: SAMD11
   datasetPaths: []
   geneNameList: []
   ensembleIds: []
@@ -1133,6 +1085,25 @@ MonoBehaviour:
   yellowMaterial: {fileID: 2100000, guid: 0661dc44d54c4d744bb51f288e4be5ea, type: 2}
   matUsed: {fileID: 0}
   vecs: []
+--- !u!114 &1052670667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052670655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f2b0ad8a1645c4796ea11d39f8ff64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  datapointPrefab: {fileID: 0}
+  parent: {fileID: 0}
+  header: []
+  Material1: {fileID: 0}
+  input: {fileID: 0}
+  ev: []
+  resultExpression: 
 --- !u!1 &1172228134
 GameObject:
   m_ObjectHideFlags: 0
