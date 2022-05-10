@@ -25,7 +25,6 @@ public class CSVReader : MonoBehaviour
     public void searchGene(string datapath, int pos, string gn, SpotDrawer sp)
     {
         //pos = UnityEngine.Random.Range(0,1000);
-        pos = 9;
         datapath = datapath.Replace(datapath.Split('\\').Last(),"")+"TransposedTest.csv";
 
         Debug.Log("Search for: " + gn);
