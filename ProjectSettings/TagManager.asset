@@ -9,6 +9,7 @@ TagManager:
   - buttonUp
   - Undefined
   - expandTag
+  - contentBtn
   layers:
   - Default
   - TransparentFX

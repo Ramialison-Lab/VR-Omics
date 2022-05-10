@@ -9,23 +9,22 @@ using UnityEngine.UI;
 public class AutoCompleteManager : MonoBehaviour
 {
     public GameObject InputGameObject;
-    public List<string> geneNames;
+    public HashSet<string> geneNames;
 
     public void setGeneNameList(List<string> geneNames)
     {
-        this.geneNames = geneNames;
+        this.geneNames = new HashSet<string>(geneNames);
     }
 
     public void textEnter()
     {
-
-        Debug.Log(geneNames.Count);
+        if(InputGameObject.GetComponent<TMP_InputField>().text == "") { return; }
         foreach(string x in geneNames)
         {
             if (x.StartsWith(InputGameObject.GetComponent<TMP_InputField>().text))
             {
                 //create Button for each entry
-
+                Debug.Log(x);
                 // addListener with function to it and transfer button as GO
 
             }
