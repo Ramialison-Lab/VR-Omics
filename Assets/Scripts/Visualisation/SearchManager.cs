@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SearchManager : MonoBehaviour
@@ -8,6 +9,7 @@ public class SearchManager : MonoBehaviour
     public string gene = "";
     public List<string> datasetPaths;
     public List<string> geneNameList;
+    public List<string> geneNames;
     public List<string> ensembleIds;
     private GameObject sh;
     public string ensembleId;
@@ -25,16 +27,18 @@ public class SearchManager : MonoBehaviour
         fr = sh.GetComponent<FileReader>();
         datasetPaths = sh.GetComponent<DataTransferManager>().getDatasetpaths();        
         searchEnsembleId(gene);
+        foreach(string p in datasetPaths)
+        {
+            fr.readGeneNames(p);
+            geneNames.AddRange(fr.getGeneNameList());
+            geneNames = geneNames.Distinct().ToList();
+        }
+
+        sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
 
     }
 
-    public void showGeneExpression()
-    {
-        readExpressionList(gene);
-
-    }
-
-    private void readExpressionList(string geneName)
+    public void readExpressionList(string geneName)
     {
         int posInGeneList;
         //for each dataset selected
