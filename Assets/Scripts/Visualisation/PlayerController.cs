@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 { 
@@ -12,6 +14,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 rotation;
     private bool up = false;
     private bool down = false;
+    public GameObject IF;
 
     public void Update()
     {
@@ -19,13 +22,14 @@ public class PlayerController : MonoBehaviour
         Vector3 move = new Vector3(Input.GetAxisRaw("Horizontal") * Time.deltaTime, 0, Input.GetAxisRaw("Vertical") * Time.deltaTime);
         move = this.transform.TransformDirection(move);
         _controller.Move(move * _speed);
+        
+        //TBD disable movement if inputfie;d selected
 
-
-        if (Input.GetKeyDown(KeyCode.Space))up = true;
-        if (Input.GetKeyUp(KeyCode.Space))up = false;
-        if (Input.GetKeyDown(KeyCode.Z))down = true;
-        if (Input.GetKeyUp(KeyCode.Z))down = false;
-
+        if (Input.GetKeyDown(KeyCode.Space)) up = true;
+        if (Input.GetKeyUp(KeyCode.Space)) up = false;
+        if (Input.GetKeyDown(KeyCode.Z)) down = true;
+        if (Input.GetKeyUp(KeyCode.Z)) down = false;
+        
 
         if (up)
         {

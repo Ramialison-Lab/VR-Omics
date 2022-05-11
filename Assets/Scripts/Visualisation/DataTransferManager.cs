@@ -15,12 +15,10 @@ public class DataTransferManager : MonoBehaviour
     public List<string> spotnames;
     public List<string> datSetNames;
 
-
-
     private long[] allrow;
     private long[] allcol;
     private long[] alldepth;
-    void Awake()
+    void Start()
     {
 
         GameObject scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
@@ -38,6 +36,8 @@ public class DataTransferManager : MonoBehaviour
         //TBD delte following lines
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1\\V1_Breast_Cancer_Block_A_Section_1_scanpy.hdf5");
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
 
         //foreach (string p in hdf5datapaths)
         //{
@@ -48,11 +48,11 @@ public class DataTransferManager : MonoBehaviour
         //    scriptHolder.GetComponent<SpotDrawer>().startSpotDrawerCustom(col, row, (float)x);
         //    x++;
         //}        
-
         foreach (string p in hdf5datapaths)
-        {
+        {     
             scriptHolder.GetComponent<FileReader>().calcCoords(p);
             long[] row = scriptHolder.GetComponent<FileReader>().getRowArray();
+            
             for(int i=0; i<row.Length; i++)
             {
                 tempx.Add(row[i]);
@@ -67,8 +67,10 @@ public class DataTransferManager : MonoBehaviour
             for (int k = 0; k < row.Length; k++)
             {
                 tempz.Add(x);
-            }            
+            }
             
+            GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().setSliceCollider((int)col.Min(), (int)col.Max(), (int)row.Max(), (int)row.Min(), x);
+
             string[] sname = scriptHolder.GetComponent<FileReader>().getSpotName();
             for (int l = 0; l < row.Length; l++)
             {

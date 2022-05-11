@@ -164,6 +164,23 @@ public class SpotDrawer : MonoBehaviour
         newColours = true;
     }
 
+    public void identifySpot(float x, float y, float z)
+    {
+        foreach(MeshWrapper mw in batches)
+        {
+          if(mw.location.z == z)
+            {
+                if(mw.location.x == x)
+                {
+                    if(mw.location.y == y)
+                    {
+                        Debug.Log(mw.spotname);
+                    }
+                }
+            }
+        }
+    }
+
     private List<Color> randcolours = new List<Color>();
     bool newColours = true;
 
