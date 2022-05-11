@@ -17,9 +17,9 @@ public class SpotDrawer : MonoBehaviour
     public Material hightlightmaterial;
     const int CubesPerBatch = 2000;
     List<double> normalised;
-
     public Material matUsed;
-
+    private int count=0;
+    private int highlightIdentifier;
 
     private List<Vector3> batchedVertices = new List<Vector3>(24 * CubesPerBatch);
     private  List<int> batchedTriangles = new List<int>(36 * CubesPerBatch);
@@ -34,6 +34,7 @@ public class SpotDrawer : MonoBehaviour
         //public string spotName;
         internal string spotname;
         internal string datasetName;
+        public int uniqueIdentifier;
     }
 
     
@@ -56,7 +57,8 @@ public class SpotDrawer : MonoBehaviour
             string sname = spotBarcodes[i];
             string datasetn = dataSet[i];
             
-            batches.Add(new MeshWrapper { mesh = sphere.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), spotname = sname, datasetName = datasetn});
+            batches.Add(new MeshWrapper { mesh = sphere.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), spotname = sname, datasetName = datasetn, uniqueIdentifier = count});
+            count++;
         }
 
         start = true;
@@ -100,16 +102,24 @@ public class SpotDrawer : MonoBehaviour
                 Color rc;
                 if (newColours)
                 {
-
-                   // rc = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1f);
-                    
-                    try
+                    if (wrap.uniqueIdentifier == highlightIdentifier)
                     {
-                        rc = colorGradient(i);
+                        rc = new Color(255, 0, 0, 1);
+                        mpb.SetColor("_Color", rc);
+                        randcolours.Add(rc);
+
                     }
-                    catch (Exception e) { rc = new Color(0, 0, 0, 1); }
-                    mpb.SetColor("_Color", rc);
-                    randcolours.Add(rc);
+                    else
+                    {
+                        // rc = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1f);        
+                        try
+                        {
+                            rc = colorGradient(i);
+                        }
+                        catch (Exception e) { rc = new Color(0, 0, 0, 1); }
+                        mpb.SetColor("_Color", rc);
+                        randcolours.Add(rc);
+                    }
                 }
                 else
                 {
@@ -174,6 +184,9 @@ public class SpotDrawer : MonoBehaviour
                 {
                     if(mw.location.y == y)
                     {
+                        highlightSpot = true;
+                        newColours = true;
+                        highlightIdentifier = mw.uniqueIdentifier;
                         Debug.Log(mw.spotname);
                     }
                 }
@@ -183,5 +196,6 @@ public class SpotDrawer : MonoBehaviour
 
     private List<Color> randcolours = new List<Color>();
     bool newColours = true;
+    bool highlightSpot = false;
 
 }
