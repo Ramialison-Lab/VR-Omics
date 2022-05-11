@@ -11,9 +11,8 @@ public class SliceCollider : MonoBehaviour
     int depth;
     public List<GameObject> sliceColliders;
     public List<int> zcoords;
-    public void setSliceCollider(int lslice, int rslice, int topslice, int btmslice, int d)
+    public void setSliceCollider(int lslice, int rslice, int topslice, int btmslice, int d, string datasetName)
     {
-
         sliceColliders = new List<GameObject>();
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         var centerx = lslice + (rslice - lslice) / 2;
@@ -23,6 +22,12 @@ public class SliceCollider : MonoBehaviour
         cube.GetComponent<MeshRenderer>().enabled = false;
         sliceColliders.Add(cube);
         zcoords.Add(d);
+        cube.AddComponent<DragObject>();
+        cube.GetComponent<DragObject>().resetCoords(datasetName);
+
+        Color newColor = cube.GetComponent<Renderer>().material.color;
+        newColor.a = 0f;
+        cube.GetComponent<Renderer>().material.color = newColor;
     }
     private void Update()
     {
@@ -40,10 +45,11 @@ public class SliceCollider : MonoBehaviour
 
       if (Physics.Raycast (ray, out hit))
       {
+            //TBD not using name cube here
           if(hit.collider.gameObject.name == "Cube")
             {
                 Debug.Log(Mathf.Round(hit.point.x) +", "+ Mathf.Round(hit.point.y));
-                GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot((int)hit.point.x, (int)hit.point.y, zcoords[0]);
+                GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot((int)hit.point.x, (int)hit.point.y, hit.collider.gameObject.GetComponent<DragObject>().getDatasetName());
             }
       }
     }

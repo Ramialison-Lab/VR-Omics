@@ -21,6 +21,14 @@ public class SpotDrawer : MonoBehaviour
     private int count=0;
     private int highlightIdentifier;
 
+    private List<Color> randcolours = new List<Color>();
+    bool newColours = true;
+    bool slicesMoved = false;
+    string datasetMove;
+    float xoffsetMove;
+    float yoffsetMove;
+    float zoffsetMove;
+
     private List<Vector3> batchedVertices = new List<Vector3>(24 * CubesPerBatch);
     private  List<int> batchedTriangles = new List<int>(36 * CubesPerBatch);
 
@@ -125,8 +133,27 @@ public class SpotDrawer : MonoBehaviour
                 {
                     mpb.SetColor("_Color", randcolours[i]);
                 }
-                matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
-                Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+
+                if (slicesMoved)
+                {
+                    if (wrap.datasetName == datasetMove)
+                    {
+                        matrix = Matrix4x4.TRS(new Vector3(wrap.location.x - xoffsetMove, wrap.location.y - yoffsetMove, wrap.location.z ), sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+                        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                    }
+                    else
+                    {
+                        matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+                        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                    }
+                }
+                else if (!slicesMoved)
+                {
+                    matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                }
+
+
             }
             newColours = false;
         }
@@ -174,17 +201,16 @@ public class SpotDrawer : MonoBehaviour
         newColours = true;
     }
 
-    public void identifySpot(float x, float y, float z)
+    public void identifySpot(float x, float y, string dN)
     {
         foreach(MeshWrapper mw in batches)
         {
-          if(mw.location.z == z)
+          if(mw.datasetName == dN)
             {
                 if(mw.location.x == x)
                 {
                     if(mw.location.y == y)
                     {
-                        highlightSpot = true;
                         newColours = true;
                         highlightIdentifier = mw.uniqueIdentifier;
                         Debug.Log(mw.spotname);
@@ -194,8 +220,16 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
-    private List<Color> randcolours = new List<Color>();
-    bool newColours = true;
-    bool highlightSpot = false;
+    public void moveSlice(float xoffset, float yoffset, float zoffset, string dN)
+    {
+        slicesMoved = true;
+        xoffsetMove = xoffset;
+        yoffsetMove = yoffset;
+        zoffsetMove = zoffset;
+        datasetMove = dN;
+        
+
+    }
+
 
 }
