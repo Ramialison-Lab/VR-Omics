@@ -34,11 +34,12 @@ public class SpotDrawer : MonoBehaviour
 
     private  List<MeshWrapper> batches = new List<MeshWrapper>();
 
-    struct MeshWrapper
+    class MeshWrapper
     {
         //structure for each cube → spot, storing its mesh, the location read from the hdf5, the unique spot name and which dataset it comes from for the depth information
         public Mesh mesh;
         public Vector3 location;
+        public Vector3 origin;
         //public string spotName;
         internal string spotname;
         internal string datasetName;
@@ -65,7 +66,7 @@ public class SpotDrawer : MonoBehaviour
             string sname = spotBarcodes[i];
             string datasetn = dataSet[i];
             
-            batches.Add(new MeshWrapper { mesh = sphere.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), spotname = sname, datasetName = datasetn, uniqueIdentifier = count});
+            batches.Add(new MeshWrapper { mesh = sphere.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), spotname = sname, datasetName = datasetn, uniqueIdentifier = count});
             count++;
         }
 
@@ -134,25 +135,27 @@ public class SpotDrawer : MonoBehaviour
                     mpb.SetColor("_Color", randcolours[i]);
                 }
 
-                if (slicesMoved)
-                {
-                    if (wrap.datasetName == datasetMove)
-                    {
-                        matrix = Matrix4x4.TRS(new Vector3(wrap.location.x - xoffsetMove, wrap.location.y - yoffsetMove, wrap.location.z ), sphereTransform.rotation, sphereTransform.localScale * 0.1f);
-                        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                    }
-                    else
-                    {
-                        matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
-                        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                    }
-                }
-                else if (!slicesMoved)
-                {
-                    matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
-                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                }
+                //if (slicesMoved)
+                //{
+                //    if (wrap.datasetName == datasetMove)
+                //    {
+                //        matrix = Matrix4x4.TRS(new Vector3(wrap.location.x - xoffsetMove, wrap.location.y - yoffsetMove, wrap.location.z ), sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+                //        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                //    }
+                //    else
+                //    {
+                //        matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+                //        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                //    }
+                //}
+                //else if (!slicesMoved)
+                //{
+                //    matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+                //    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                //}
 
+                matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+                Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
 
             }
             newColours = false;
@@ -207,13 +210,12 @@ public class SpotDrawer : MonoBehaviour
         {
           if(mw.datasetName == dN)
             {
-                if(mw.location.x == x)
+                if((int)mw.location.x == x)
                 {
-                    if(mw.location.y == y)
+                    if((int)mw.location.y == y)
                     {
                         newColours = true;
                         highlightIdentifier = mw.uniqueIdentifier;
-                        Debug.Log(mw.spotname);
                     }
                 }
             }
@@ -227,9 +229,21 @@ public class SpotDrawer : MonoBehaviour
         yoffsetMove = yoffset;
         zoffsetMove = zoffset;
         datasetMove = dN;
-        
 
+        foreach (MeshWrapper mw in batches)
+        {
+            if(mw.datasetName == dN)
+            {
+                mw.location = new Vector3(mw.origin.x-xoffset, mw.origin.y-yoffset, mw.origin.z);
+            
+            }
+        }
+        
     }
 
+    public void releasedSlice()
+    {
+        slicesMoved = false;
+    }
 
 }

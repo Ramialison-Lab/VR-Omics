@@ -63,4 +63,13 @@ public class DragObject : MonoBehaviour
     {
         return datasetName;
     }
+
+    public float getXoffset()
+    {
+        return xoffset;
+    }
+    public float getYoffset()
+    {
+        return yoffset;
+    }
 }
