@@ -39,7 +39,6 @@ public class SpotDrawer : MonoBehaviour
         public Mesh mesh;
         public Vector3 location;
         public Vector3 origin;
-        //public string spotName;
         internal string spotname;
         internal string datasetName;
         public int uniqueIdentifier;
@@ -244,27 +243,47 @@ public class SpotDrawer : MonoBehaviour
     {
         slicesMoved = false;
     }
-    public GameObject testCube;
-    public void rotateSlice(int direction, string dN, Vector3 cP)
+    private int  delta = 0;
+    public void rotateSlice(int direction, string dN, Vector3 cP, GameObject cube)
     {
         foreach (MeshWrapper mw in batches)
         {
             if (mw.datasetName == dN)
             {
-                //roate everything around origin
                 Vector3 vec = mw.location;
-                Debug.Log(cP + " → " +mw.location);
-                var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
-                delta = delta + direction* 1;
+                //var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
 
-                var r = Math.Sqrt(Math.Pow(vec.x, 2) + Math.Pow(vec.y, 2));
-                var y = Math.Sin((Math.PI / 180) * (delta));
-                var x = Math.Cos((Math.PI / 180) * (delta));
+                delta = 1*direction;
 
-                mw.location = new Vector3((float)(r*x), (float)(r*y), testCube.transform.position.z);
+                float x0 = ((mw.location.x - cP.x) * (float)Math.Cos((Math.PI / 180) * (delta)));
+                float x1 = ((mw.location.y - cP.y) * (float)Math.Sin((Math.PI / 180) * (delta)));                
                 
+                float y0 = ((mw.location.x - cP.x) * (float)Math.Sin((Math.PI / 180) * (delta)));
+                float y1 = ((mw.location.y - cP.y) * (float)Math.Cos((Math.PI / 180) * (delta)));
+
+                float x = x0 - x1 + cP.x;
+                float y = y0 + y1 + cP.y;
+                float z = mw.location.z;
+
+                mw.location = new Vector3(x, y, z);
+
+                cube.transform.Rotate(new Vector3(0, 0, -direction));
+
+                ////roate everything around origin
+                //Vector3 vec = mw.location;
+                //var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
+                //delta = delta + direction* 1;
+
+                //var r = Math.Sqrt(Math.Pow(vec.x, 2) + Math.Pow(vec.y, 2));
+                //var y = Math.Sin((Math.PI / 180) * (delta));
+                //var x = Math.Cos((Math.PI / 180) * (delta));
+
+                //mw.location = new Vector3((float)(r*x), (float)(r*y), testCube.transform.position.z);
+
             }
         }
+
+
 
         //float s_angle = (float)Math.Sin(1);
         //float c_angle = (float)Math.Sin(1);
@@ -291,20 +310,32 @@ public class SpotDrawer : MonoBehaviour
     {
         MeshWrapper mt = batches[0];
         Vector2 vec = new Vector2(4, 3);
-        Debug.Log(vec);
 
-        var delta = Math.Atan2(vec.y, vec.x)*180/Math.PI;
-        Debug.Log(delta);
-        delta = delta + 30;
+        Vector2 cP = new Vector2(0, 0);
+        //Debug.Log(vec);
 
-        var r = Math.Sqrt(Math.Pow(vec.x,2) + Math.Pow(vec.y,2));
+       var delta = Math.Atan2(vec.y, vec.x)*180/Math.PI;
+        //Debug.Log(delta);
+        //delta = delta + 30;
 
-        Debug.Log(delta);
-        Debug.Log(r);
+        //var r = Math.Sqrt(Math.Pow(vec.x,2) + Math.Pow(vec.y,2));
 
-        var x = Math.Sin((Math.PI/180)*(delta));
+        //Debug.Log(r);
 
-        Debug.Log(r*x);
+        //var x = Math.Sin((Math.PI/180)*(delta));
+
+        //Debug.Log(r*x);
+
+        float x0 = ((vec.x) * (float)Math.Cos((Math.PI / 180) * 30));
+        float x1 = ((vec.y) * (float)Math.Sin((Math.PI / 180) * 30));
+
+        float y0 = ((vec.x) * (float)Math.Sin((Math.PI / 180) * 30));
+        float y1 = ((vec.y) * (float)Math.Cos((Math.PI / 180) * 30));
+
+        float x = x0 - x1;
+        float y = y0 + y1;
+
+        Debug.Log(x + " and " + y);
 
     }
 }                

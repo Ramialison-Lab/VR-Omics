@@ -49,8 +49,8 @@ public class DragObject : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.E)) eKey = false;
         if (Input.GetKeyUp(KeyCode.E)) eKey = false;
 
-        if (qKey) sd.rotateSlice(-1, datasetName, centerpoint);
-        if (eKey) sd.rotateSlice(1, datasetName, centerpoint);
+        if (qKey) sd.rotateSlice(1, datasetName, centerpoint, this.gameObject);
+        if (eKey) sd.rotateSlice(-1, datasetName, centerpoint, this.gameObject);
 
     
         //if (Input.GetMouseButtonDown(0))
