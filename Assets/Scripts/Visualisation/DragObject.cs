@@ -10,8 +10,15 @@ public class DragObject : MonoBehaviour
     public float yoffset;
     public float zoffset;
     public string datasetName;
+    private bool qKey;
+    private bool eKey;
+    public Vector3 centerpoint;
     Vector3 origin;
-
+    SpotDrawer sd;
+    private void Start()
+    {
+        sd = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>();
+    }
     void OnMouseDown()
     {
         mZCoord = Camera.main.WorldToScreenPoint(
@@ -33,6 +40,54 @@ public class DragObject : MonoBehaviour
         return Camera.main.ScreenToWorldPoint(mousePoint);
     }
 
+    private void Update()
+    {
+
+        if (Input.GetKeyDown(KeyCode.Q)) qKey = true;
+        if (Input.GetKeyUp(KeyCode.Q)) qKey = false;        
+        if (Input.GetKeyDown(KeyCode.E)) eKey = true;
+        if (Input.GetKeyUp(KeyCode.E)) eKey = false;
+        if (Input.GetKeyUp(KeyCode.E)) eKey = false;
+
+        if (qKey) sd.rotateSlice(-1, datasetName, centerpoint);
+        if (eKey) sd.rotateSlice(1, datasetName, centerpoint);
+
+    
+        //if (Input.GetMouseButtonDown(0))
+        //{
+        //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        //    RaycastHit hit = new RaycastHit();
+
+        //    if (Physics.Raycast(ray, out hit))
+        //    {
+        //        //TBD not using name cube here
+        //        if (hit.collider.gameObject.name == "Cube")
+        //        {
+        //            Debug.Log("pressed");
+
+        //        }
+        //    }
+        //}
+
+        //if (Input.GetMouseButtonDown(1))
+        //{
+        //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        //    RaycastHit hit = new RaycastHit();
+
+        //    if (Physics.Raycast(ray, out hit))
+        //    {
+        //        //TBD not using name cube here
+        //        if (hit.collider.gameObject.name == "Cube")
+        //        {
+        //            Debug.Log("right");
+
+        //        }
+        //    }
+        //}
+    }
+
     void OnMouseDrag()
     {
         Color newColor = GetComponent<Renderer>().material.color;
@@ -42,11 +97,7 @@ public class DragObject : MonoBehaviour
         xoffset = origin.x - transform.position.x;
         yoffset = origin.y - transform.position.y;
         zoffset = origin.z - transform.position.z;
-
-        //TBD pass datasetname, x,y and z offset 
-
-        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().moveSlice(xoffset, yoffset, zoffset, datasetName);
-
+        sd.moveSlice(xoffset, yoffset, zoffset, datasetName);
     }
 
     public void resetCoords(string datasetName)
@@ -71,5 +122,10 @@ public class DragObject : MonoBehaviour
     public float getYoffset()
     {
         return yoffset;
+    }
+
+    public void setCenterPoint(Vector3 cp)
+    {
+        centerpoint = cp;
     }
 }

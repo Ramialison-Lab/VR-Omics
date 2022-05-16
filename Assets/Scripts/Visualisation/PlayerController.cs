@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Space)) up = false;
         if (Input.GetKeyDown(KeyCode.Z)) down = true;
         if (Input.GetKeyUp(KeyCode.Z)) down = false;
+
         
 
         if (up)

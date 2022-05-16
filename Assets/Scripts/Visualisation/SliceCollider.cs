@@ -24,7 +24,8 @@ public class SliceCollider : MonoBehaviour
         zcoords.Add(d);
         cube.AddComponent<DragObject>();
         cube.GetComponent<DragObject>().resetCoords(datasetName);
-
+        //cube.GetComponent<DragObject>().setCenterPoint(new Vector3(cube.transform.localScale.x / 2, cube.transform.localScale.y / 2, cube.transform.position.z));
+        cube.GetComponent<DragObject>().setCenterPoint(cube.transform.position);
         Color newColor = cube.GetComponent<Renderer>().material.color;
         newColor.a = 0f;
         cube.GetComponent<Renderer>().material.color = newColor;

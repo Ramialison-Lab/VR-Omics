@@ -28,7 +28,6 @@ public class SpotDrawer : MonoBehaviour
     float xoffsetMove;
     float yoffsetMove;
     float zoffsetMove;
-
     private List<Vector3> batchedVertices = new List<Vector3>(24 * CubesPerBatch);
     private  List<int> batchedTriangles = new List<int>(36 * CubesPerBatch);
 
@@ -245,5 +244,67 @@ public class SpotDrawer : MonoBehaviour
     {
         slicesMoved = false;
     }
+    public GameObject testCube;
+    public void rotateSlice(int direction, string dN, Vector3 cP)
+    {
+        foreach (MeshWrapper mw in batches)
+        {
+            if (mw.datasetName == dN)
+            {
+                //roate everything around origin
+                Vector3 vec = mw.location;
+                Debug.Log(cP + " → " +mw.location);
+                var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
+                delta = delta + direction* 1;
 
-}
+                var r = Math.Sqrt(Math.Pow(vec.x, 2) + Math.Pow(vec.y, 2));
+                var y = Math.Sin((Math.PI / 180) * (delta));
+                var x = Math.Cos((Math.PI / 180) * (delta));
+
+                mw.location = new Vector3((float)(r*x), (float)(r*y), testCube.transform.position.z);
+                
+            }
+        }
+
+        //float s_angle = (float)Math.Sin(1);
+        //float c_angle = (float)Math.Sin(1);
+
+        //foreach (MeshWrapper mw in batches)
+        //{
+        //    if (mw.datasetName == dN)
+        //    {
+        //        Vector3 vec = mw.location;
+
+        //        var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
+        //        delta = delta + 0.01;
+
+        //        // var r = Math.Sqrt(Math.Pow(vec.x - cP.x, 2) + Math.Pow(vec.y - cP.y, 2));
+
+        //        var r = Math.Sqrt(Math.Pow(vec.x, 2) + Math.Pow(vec.y, 2));
+        //        mw.location = new Vector3((float)(r*Math.Cos((Math.PI/180)*delta)), (float)(r*Math.Sin((Math.PI*180)*delta)), mw.location.z);
+
+        //    }
+        //}
+    }
+
+    public void testRot()
+    {
+        MeshWrapper mt = batches[0];
+        Vector2 vec = new Vector2(4, 3);
+        Debug.Log(vec);
+
+        var delta = Math.Atan2(vec.y, vec.x)*180/Math.PI;
+        Debug.Log(delta);
+        delta = delta + 30;
+
+        var r = Math.Sqrt(Math.Pow(vec.x,2) + Math.Pow(vec.y,2));
+
+        Debug.Log(delta);
+        Debug.Log(r);
+
+        var x = Math.Sin((Math.PI/180)*(delta));
+
+        Debug.Log(r*x);
+
+    }
+}                
