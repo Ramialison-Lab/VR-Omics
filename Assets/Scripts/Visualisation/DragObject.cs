@@ -90,14 +90,17 @@ public class DragObject : MonoBehaviour
 
     void OnMouseDrag()
     {
-        Color newColor = GetComponent<Renderer>().material.color;
-        newColor.a = 0.2f;
-        GetComponent<Renderer>().material.color = newColor;
-        transform.position = GetMouseAsWorldPoint() + mOffset;
-        xoffset = origin.x - transform.position.x;
-        yoffset = origin.y - transform.position.y;
-        zoffset = origin.z - transform.position.z;
-        sd.moveSlice(xoffset, yoffset, zoffset, datasetName);
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            Color newColor = GetComponent<Renderer>().material.color;
+            newColor.a = 0.2f;
+            GetComponent<Renderer>().material.color = newColor;
+            transform.position = GetMouseAsWorldPoint() + mOffset;
+            xoffset = origin.x - transform.position.x;
+            yoffset = origin.y - transform.position.y;
+            zoffset = origin.z - transform.position.z;
+            sd.moveSlice(xoffset, yoffset, zoffset, datasetName);
+        }
     }
 
     public void resetCoords(string datasetName)

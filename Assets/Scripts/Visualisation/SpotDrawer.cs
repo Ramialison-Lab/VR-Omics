@@ -244,6 +244,9 @@ public class SpotDrawer : MonoBehaviour
         slicesMoved = false;
     }
     private int  delta = 0;
+    Vector3 currentEulerAngles;
+    float cube_z;
+
     public void rotateSlice(int direction, string dN, Vector3 cP, GameObject cube)
     {
         foreach (MeshWrapper mw in batches)
@@ -266,19 +269,10 @@ public class SpotDrawer : MonoBehaviour
                 float z = mw.location.z;
 
                 mw.location = new Vector3(x, y, z);
+                cube_z =  direction;
 
-                cube.transform.Rotate(new Vector3(0, 0, -direction));
-
-                ////roate everything around origin
-                //Vector3 vec = mw.location;
-                //var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
-                //delta = delta + direction* 1;
-
-                //var r = Math.Sqrt(Math.Pow(vec.x, 2) + Math.Pow(vec.y, 2));
-                //var y = Math.Sin((Math.PI / 180) * (delta));
-                //var x = Math.Cos((Math.PI / 180) * (delta));
-
-                //mw.location = new Vector3((float)(r*x), (float)(r*y), testCube.transform.position.z);
+                currentEulerAngles += new Vector3(0, 0, cube_z) * Time.deltaTime * 0.054f;
+                cube.transform.eulerAngles = currentEulerAngles;
 
             }
         }
