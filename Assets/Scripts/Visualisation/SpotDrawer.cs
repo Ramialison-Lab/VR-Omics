@@ -1,7 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections.Generic;
-using System;
-using Random = UnityEngine.Random;
+using UnityEngine;
 
 public class SpotDrawer : MonoBehaviour
 {
@@ -18,7 +17,7 @@ public class SpotDrawer : MonoBehaviour
     const int CubesPerBatch = 2000;
     List<double> normalised;
     public Material matUsed;
-    private int count=0;
+    private int count = 0;
     private int highlightIdentifier;
 
     private List<Color> randcolours = new List<Color>();
@@ -29,9 +28,9 @@ public class SpotDrawer : MonoBehaviour
     float yoffsetMove;
     float zoffsetMove;
     private List<Vector3> batchedVertices = new List<Vector3>(24 * CubesPerBatch);
-    private  List<int> batchedTriangles = new List<int>(36 * CubesPerBatch);
+    private List<int> batchedTriangles = new List<int>(36 * CubesPerBatch);
 
-    private  List<MeshWrapper> batches = new List<MeshWrapper>();
+    private List<MeshWrapper> batches = new List<MeshWrapper>();
 
     class MeshWrapper
     {
@@ -44,7 +43,7 @@ public class SpotDrawer : MonoBehaviour
         public int uniqueIdentifier;
     }
 
-    
+
     // a combined list of all datasets, that are read will be passed to this function to draw each spot
     public void startSpotDrawerCustom(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
     {
@@ -56,15 +55,15 @@ public class SpotDrawer : MonoBehaviour
         for (int i = 0; i < xcoords.Count; i++)
         {
             // reading out the next 3D coordinate from the list
-            float x = xcoords[i]; 
-            float y = ycoords[i]; 
-            float z = zcoords[i]; 
+            float x = xcoords[i];
+            float y = ycoords[i];
+            float z = zcoords[i];
 
             //reading out the next spotname and datasetname
             string sname = spotBarcodes[i];
             string datasetn = dataSet[i];
-            
-            batches.Add(new MeshWrapper { mesh = sphere.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), spotname = sname, datasetName = datasetn, uniqueIdentifier = count});
+
+            batches.Add(new MeshWrapper { mesh = sphere.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
             count++;
         }
 
@@ -204,13 +203,13 @@ public class SpotDrawer : MonoBehaviour
 
     public void identifySpot(float x, float y, string dN)
     {
-        foreach(MeshWrapper mw in batches)
+        foreach (MeshWrapper mw in batches)
         {
-          if(mw.datasetName == dN)
+            if (mw.datasetName == dN)
             {
-                if((int)mw.location.x == x)
+                if ((int)mw.location.x == x)
                 {
-                    if((int)mw.location.y == y)
+                    if ((int)mw.location.y == y)
                     {
                         newColours = true;
                         highlightIdentifier = mw.uniqueIdentifier;
@@ -230,20 +229,20 @@ public class SpotDrawer : MonoBehaviour
 
         foreach (MeshWrapper mw in batches)
         {
-            if(mw.datasetName == dN)
+            if (mw.datasetName == dN)
             {
-                mw.location = new Vector3(mw.origin.x-xoffset, mw.origin.y-yoffset, mw.origin.z);
-            
+                mw.location = new Vector3(mw.origin.x - xoffset, mw.origin.y - yoffset, mw.origin.z);
+
             }
         }
-        
+
     }
 
     public void releasedSlice()
     {
         slicesMoved = false;
     }
-    private int  delta = 0;
+    private int delta = 0;
     Vector3 currentEulerAngles;
     float cube_z;
 
@@ -256,11 +255,11 @@ public class SpotDrawer : MonoBehaviour
                 Vector3 vec = mw.location;
                 //var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
 
-                delta = 1*direction;
+                delta = 1 * direction;
 
                 float x0 = ((mw.location.x - cP.x) * (float)Math.Cos((Math.PI / 180) * (delta)));
-                float x1 = ((mw.location.y - cP.y) * (float)Math.Sin((Math.PI / 180) * (delta)));                
-                
+                float x1 = ((mw.location.y - cP.y) * (float)Math.Sin((Math.PI / 180) * (delta)));
+
                 float y0 = ((mw.location.x - cP.x) * (float)Math.Sin((Math.PI / 180) * (delta)));
                 float y1 = ((mw.location.y - cP.y) * (float)Math.Cos((Math.PI / 180) * (delta)));
 
@@ -269,7 +268,7 @@ public class SpotDrawer : MonoBehaviour
                 float z = mw.location.z;
 
                 mw.location = new Vector3(x, y, z);
-                cube_z =  direction;
+                cube_z = direction;
 
                 currentEulerAngles += new Vector3(0, 0, cube_z) * Time.deltaTime * 0.054f;
                 cube.transform.eulerAngles = currentEulerAngles;
@@ -308,7 +307,7 @@ public class SpotDrawer : MonoBehaviour
         Vector2 cP = new Vector2(0, 0);
         //Debug.Log(vec);
 
-       var delta = Math.Atan2(vec.y, vec.x)*180/Math.PI;
+        var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
         //Debug.Log(delta);
         //delta = delta + 30;
 
@@ -332,4 +331,4 @@ public class SpotDrawer : MonoBehaviour
         Debug.Log(x + " and " + y);
 
     }
-}                
+}

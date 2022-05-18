@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class DataTransferManager : MonoBehaviour
 {
-    private int x =0;
+    private int x = 0;
     public List<string> hdf5datapaths;
     // Start is called before the first frame update
 
@@ -23,7 +22,7 @@ public class DataTransferManager : MonoBehaviour
 
         GameObject scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         GameObject scriptHolder = GameObject.Find("ScriptHolder");
-        
+
 
         //TBD! Comment out following lines to transfer data from pipeline
         //List<string> datapaths = scriptHolderPipeline.GetComponent<UIManager>().getDatapathList();
@@ -35,7 +34,7 @@ public class DataTransferManager : MonoBehaviour
 
         //TBD delte following lines
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1\\V1_Breast_Cancer_Block_A_Section_1_scanpy.hdf5");
-      //  hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
 
         //foreach (string p in hdf5datapaths)
         //{
@@ -47,11 +46,11 @@ public class DataTransferManager : MonoBehaviour
         //    x++;
         //}        
         foreach (string p in hdf5datapaths)
-        {     
+        {
             scriptHolder.GetComponent<FileReader>().calcCoords(p);
             long[] row = scriptHolder.GetComponent<FileReader>().getRowArray();
-            
-            for(int i=0; i<row.Length; i++)
+
+            for (int i = 0; i < row.Length; i++)
             {
                 tempx.Add(row[i]);
                 datSetNames.Add(p);
@@ -66,7 +65,7 @@ public class DataTransferManager : MonoBehaviour
             {
                 tempz.Add(x);
             }
-            
+
             GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().setSliceCollider((int)col.Min(), (int)col.Max(), (int)row.Max(), (int)row.Min(), x, p);
 
             string[] sname = scriptHolder.GetComponent<FileReader>().getSpotName();

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class DragObject : MonoBehaviour
 {
@@ -42,17 +40,16 @@ public class DragObject : MonoBehaviour
 
     private void Update()
     {
-
+        //KEYINPUT
         if (Input.GetKeyDown(KeyCode.Q)) qKey = true;
-        if (Input.GetKeyUp(KeyCode.Q)) qKey = false;        
+        if (Input.GetKeyUp(KeyCode.Q)) qKey = false;
         if (Input.GetKeyDown(KeyCode.E)) eKey = true;
-        if (Input.GetKeyUp(KeyCode.E)) eKey = false;
         if (Input.GetKeyUp(KeyCode.E)) eKey = false;
 
         if (qKey) sd.rotateSlice(1, datasetName, centerpoint, this.gameObject);
         if (eKey) sd.rotateSlice(-1, datasetName, centerpoint, this.gameObject);
 
-    
+
         //if (Input.GetMouseButtonDown(0))
         //{
         //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -130,5 +127,11 @@ public class DragObject : MonoBehaviour
     public void setCenterPoint(Vector3 cp)
     {
         centerpoint = cp;
+    }
+
+    public void setRotationKey()
+    {
+        // transfer q or e pressed to rotate this datset
+
     }
 }

@@ -9,8 +9,6 @@ using System.Text;
 using UnityEngine;
 using UnityH5Loader;
 
-using hid_t = System.Int32;
-
 public class FileReader : MonoBehaviour
 {
     static readonly ulong[] MaxDimensions = { 10000, 10000, 10000 };
@@ -53,8 +51,8 @@ public class FileReader : MonoBehaviour
     public void readIndices(string path)
     {
         indiceVals = H5Loader.LoadDataset<int>(path, "X/indices");
-    }    
-    
+    }
+
     public void readIndPtr(string path)
     {
         indPtr = H5Loader.LoadDataset<int>(path, "X/indptr");
@@ -167,12 +165,12 @@ public class FileReader : MonoBehaviour
     public void clearGeneNames()
     {
         geneNames.Clear();
-    }    
+    }
     public void clearGeneExpressionValues()
     {
         genexp = null; ;
-    }    
-    
+    }
+
     public void clearIndices()
     {
         indiceVals = null; ;
@@ -181,22 +179,25 @@ public class FileReader : MonoBehaviour
     public int[] getIndices()
     {
         return indiceVals;
-    }    
-    
+    }
+
     public int[] getIndptr()
     {
         return indPtr;
     }
 
-    public List<string> getGeneNameList(){
+    public List<string> getGeneNameList()
+    {
         return geneNames;
-    }    
-    
-    public List<string> getEnsembleIds(){
+    }
+
+    public List<string> getEnsembleIds()
+    {
         return ensembleIds;
-    }    
-    
-    public float[] getExpressionValues(){
+    }
+
+    public float[] getExpressionValues()
+    {
         return genexp;
     }
 
@@ -207,7 +208,7 @@ public class FileReader : MonoBehaviour
     public long[] getRowArray()
     {
         return row;
-    }    
+    }
     public long[] getColArray()
     {
         return col;

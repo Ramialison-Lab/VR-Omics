@@ -1,16 +1,15 @@
-﻿using System.Collections;
+﻿using SimpleFileBrowser;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using System;
-using SimpleFileBrowser;
-using System.IO;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine.SceneManagement;
-using System.Linq;
-using System.Diagnostics;
-using System.ComponentModel;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -57,8 +56,8 @@ public class UIManager : MonoBehaviour
     public List<String> storePathForWarning;
     private int[] storePos;
     public String infotext;
-    private  bool skipFilter = false;
-    private bool btnPressed =false;
+    private bool skipFilter = false;
+    private bool btnPressed = false;
 
     private bool filterStep = false;
     private bool correlationStep = false;
@@ -107,7 +106,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void adjust_download_list() 
+    public void adjust_download_list()
     {
         // Read file with names of data files
         string wd = Application.dataPath;
@@ -147,8 +146,8 @@ public class UIManager : MonoBehaviour
             currentSelection.transform.Rotate(0f, 0f, -1);
         }
         catch (Exception) { }
-    }     
-    
+    }
+
     public void rotateImageMinus()
     {
         try
@@ -177,7 +176,8 @@ public class UIManager : MonoBehaviour
             tempcolor.a = slider.value;
             UnityEngine.Debug.Log(tempcolor.a);
             currentSelection.GetComponent<RawImage>().color = tempcolor;
-        } catch(Exception e){ }
+        }
+        catch (Exception e) { }
     }
 
 
@@ -185,15 +185,16 @@ public class UIManager : MonoBehaviour
     {
         UnityEngine.Debug.Log(toggle.GetComponentInChildren<Text>().text);
 
-        foreach(RawImage imag in images)
+        foreach (RawImage imag in images)
         {
-            if(imag.name == toggle.GetComponentInChildren<Text>().text)
+            if (imag.name == toggle.GetComponentInChildren<Text>().text)
             {
                 if (imag.transform.gameObject.active)
                 {
                     imag.transform.gameObject.SetActive(false);
 
-                } else if (!imag.transform.gameObject.active)
+                }
+                else if (!imag.transform.gameObject.active)
                 {
                     imag.transform.gameObject.SetActive(true);
 
@@ -211,7 +212,7 @@ public class UIManager : MonoBehaviour
         List<Toggle> toggleList = new List<Toggle>();
         // alignement process, taking all rawimages of the H&E stains and overlapping them to align their orientation
         List<string> dpOptions = new List<string>();
-       foreach(GameObject gobj in slicesList)
+        foreach (GameObject gobj in slicesList)
         {
             RawImage imageObj = gobj.GetComponentInChildren<RawImage>();
             imageObj.name = gobj.GetComponentInChildren<Text>().text;
@@ -244,11 +245,12 @@ public class UIManager : MonoBehaviour
 
             try
             {
-               // imageObj.GetComponent<Renderer>().material.color.a = 0.5f;
+                // imageObj.GetComponent<Renderer>().material.color.a = 0.5f;
                 var tempcolor = imageObj.color;
                 tempcolor.a = 0.3f;
                 imageObj.color = tempcolor;
-            } catch (Exception) { }
+            }
+            catch (Exception) { }
 
             dropd.ClearOptions();
             dropd.AddOptions(dpOptions);
@@ -275,7 +277,7 @@ public class UIManager : MonoBehaviour
             //TBD Sabrina start pipeline steps based on bools coorelationStep, clusteringStep, SVGstep
             // datapath to file = filepathUpload        
         }
-        }
+    }
 
 
     public void skipFilterStep()
@@ -299,7 +301,7 @@ public class UIManager : MonoBehaviour
         StartCoroutine(loadImages());
     }
 
-    public void save_params_run_step1(string[] filterparam) 
+    public void save_params_run_step1(string[] filterparam)
     {
         // Python integration
         StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Filter_param.txt", false);
@@ -315,7 +317,7 @@ public class UIManager : MonoBehaviour
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = true;
         UnityEngine.Debug.Log("exe started");
-  
+
 
         Process p = new Process
         {
@@ -385,7 +387,7 @@ public class UIManager : MonoBehaviour
             if (pos == 0) return;
             else
             {
-                GameObject temp2 = slicesList[pos - 1]; 
+                GameObject temp2 = slicesList[pos - 1];
                 GameObject temp1 = swapGO;
 
                 // swap in List
@@ -398,9 +400,9 @@ public class UIManager : MonoBehaviour
                 slicesList[pos - 1].transform.position = temp;
             }
         }
-        else if(go.name == "ButtonDown")
+        else if (go.name == "ButtonDown")
         {
-           
+
             if (pos == slicesList.Count) return;
             else
             {
@@ -417,11 +419,11 @@ public class UIManager : MonoBehaviour
                 slicesList[pos].transform.position = slicesList[pos + 1].transform.position;
                 slicesList[pos + 1].transform.position = temp;
 
-            }          
+            }
         }
         else if (go.name == "DeleteBtn")
         {
-            for(int i=slicesList.Count-1; i > pos; i--)
+            for (int i = slicesList.Count - 1; i > pos; i--)
             {
                 slicesList[i].transform.position = slicesList[i - 1].transform.position;
             }
@@ -499,7 +501,7 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < storePathForWarning.Count(); i++)
         {
             slicesStore[i] = Instantiate(sliceContainerPrefab, uploadpanel.transform);
-            slicesStore[i].transform.position = new Vector2(slicesStore[i].transform.position.x, slicesStore[i].transform.position.y + GameObject.FindGameObjectsWithTag("sliceContainer").Length *-300);
+            slicesStore[i].transform.position = new Vector2(slicesStore[i].transform.position.x, slicesStore[i].transform.position.y + GameObject.FindGameObjectsWithTag("sliceContainer").Length * -300);
             slicesStore[i].transform.SetParent(contentPanel.transform);
 
             //Read png image
@@ -514,7 +516,7 @@ public class UIManager : MonoBehaviour
 
             slicesList.Add(slicesStore[i]);
             transferDatapaths.Add(FileBrowser.Result[i]);
-            try { alignBtn.SetActive(true); }catch(Exception e) { }
+            try { alignBtn.SetActive(true); } catch (Exception e) { }
 
             string filename = storePathForWarning[i];
             slicesStore[i].GetComponentInChildren<Text>().text = filename.Split('\\').Last();
@@ -545,7 +547,7 @@ public class UIManager : MonoBehaviour
 
     private void toggleExpand(GameObject go)
     {
-       // Expand H&E stain function while setting order of datasets
+        // Expand H&E stain function while setting order of datasets
         expandPanel.SetActive(true);
         Texture temptext = go.transform.parent.gameObject.GetComponent<RawImage>().texture;
         expandImage.texture = temptext;
@@ -562,7 +564,7 @@ public class UIManager : MonoBehaviour
 
             for (int i = 0; i < FileBrowser.Result.Length; i++)
             {
-               // Debug.Log(FileBrowser.Result[i] + "\\spatial\\tissue_hires_image.png");
+                // Debug.Log(FileBrowser.Result[i] + "\\spatial\\tissue_hires_image.png");
 
                 if (transferDatapaths.Contains(FileBrowser.Result[i]))
                 {

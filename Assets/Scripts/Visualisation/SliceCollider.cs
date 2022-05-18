@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class SliceCollider : MonoBehaviour
@@ -18,7 +17,7 @@ public class SliceCollider : MonoBehaviour
         var centerx = lslice + (rslice - lslice) / 2;
         var centery = btmslice + (topslice - btmslice) / 2;
         cube.transform.position = new Vector3(centerx, centery, d);
-        cube.transform.localScale = new Vector3(rslice - lslice, topslice - btmslice, 1 );
+        cube.transform.localScale = new Vector3(rslice - lslice, topslice - btmslice, 1);
         cube.GetComponent<MeshRenderer>().enabled = false;
         sliceColliders.Add(cube);
         zcoords.Add(d);
@@ -40,18 +39,18 @@ public class SliceCollider : MonoBehaviour
 
     private void clicked()
     {
-      Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
- 
-      RaycastHit hit = new RaycastHit();
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-      if (Physics.Raycast (ray, out hit))
-      {
+        RaycastHit hit = new RaycastHit();
+
+        if (Physics.Raycast(ray, out hit))
+        {
             //TBD not using name cube here
-          if(hit.collider.gameObject.name == "Cube")
+            if (hit.collider.gameObject.name == "Cube")
             {
-                Debug.Log(Mathf.Round(hit.point.x) +", "+ Mathf.Round(hit.point.y));
+                Debug.Log(Mathf.Round(hit.point.x) + ", " + Mathf.Round(hit.point.y));
                 GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot((int)hit.point.x, (int)hit.point.y, hit.collider.gameObject.GetComponent<DragObject>().getDatasetName());
             }
-      }
+        }
     }
 }

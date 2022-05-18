@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,13 +20,13 @@ public class AutoCompleteManager : MonoBehaviour
     public void textEnter()
     {
         int i = 0;
-        foreach(GameObject x in GameObject.FindGameObjectsWithTag("contentBtn"))
+        foreach (GameObject x in GameObject.FindGameObjectsWithTag("contentBtn"))
         {
             Destroy(x);
         }
 
-        if(InputGameObject.GetComponent<TMP_InputField>().text == "") { return; }
-        foreach(string x in geneNames)
+        if (InputGameObject.GetComponent<TMP_InputField>().text == "") { return; }
+        foreach (string x in geneNames)
         {
             // toogle if genenames contain the input or if gene starts with input
             if (!toggle.GetComponent<Toggle>().isOn)
@@ -93,7 +90,7 @@ public class AutoCompleteManager : MonoBehaviour
     {
         InputGameObject.GetComponent<TMP_InputField>().text = btn.GetComponentInChildren<TMP_Text>().text;
         GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readExpressionList(btn.GetComponentInChildren<TMP_Text>().text);
-    } 
+    }
 
     public void valueSelected(GameObject btn)
     {
@@ -103,4 +100,8 @@ public class AutoCompleteManager : MonoBehaviour
         GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readExpressionList(btn.name);
     }
 
+    public bool InputFocused()
+    {
+        return InputGameObject.GetComponent<TMP_InputField>().isFocused;
+    }
 }
