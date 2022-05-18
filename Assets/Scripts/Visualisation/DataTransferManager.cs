@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TMPro;
 
 public class DataTransferManager : MonoBehaviour
 {
@@ -17,13 +18,16 @@ public class DataTransferManager : MonoBehaviour
     private long[] allrow;
     private long[] allcol;
     private long[] alldepth;
+
+    public TMP_Dropdown sel_DropD;
     void Start()
     {
 
         GameObject scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         GameObject scriptHolder = GameObject.Find("ScriptHolder");
 
-
+        List<string> shortList = new List<string>();
+        
         //TBD! Comment out following lines to transfer data from pipeline
         //List<string> datapaths = scriptHolderPipeline.GetComponent<UIManager>().getDatapathList();
 
@@ -45,8 +49,10 @@ public class DataTransferManager : MonoBehaviour
         //    scriptHolder.GetComponent<SpotDrawer>().startSpotDrawerCustom(col, row, (float)x);
         //    x++;
         //}        
+        
         foreach (string p in hdf5datapaths)
         {
+            shortList.Add(p.Split('\\').Last());
             scriptHolder.GetComponent<FileReader>().calcCoords(p);
             long[] row = scriptHolder.GetComponent<FileReader>().getRowArray();
 
@@ -82,6 +88,8 @@ public class DataTransferManager : MonoBehaviour
 
         //tempx and y swapped
         scriptHolder.GetComponent<SpotDrawer>().startSpotDrawerCustom(tempy, tempx, tempz, spotnames, datSetNames);
+        sel_DropD.ClearOptions();
+        sel_DropD.AddOptions(shortList);
 
     }
 
