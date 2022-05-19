@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class SliceCollider : MonoBehaviour
 {
@@ -10,9 +11,10 @@ public class SliceCollider : MonoBehaviour
     int depth;
     public List<GameObject> sliceColliders;
     public List<int> zcoords;
+    public TMP_Dropdown dd;
+
     public void setSliceCollider(int lslice, int rslice, int topslice, int btmslice, int d, string datasetName)
     {
-        sliceColliders = new List<GameObject>();
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         var centerx = lslice + (rslice - lslice) / 2;
         var centery = btmslice + (topslice - btmslice) / 2;
@@ -48,8 +50,20 @@ public class SliceCollider : MonoBehaviour
             //TBD not using name cube here
             if (hit.collider.gameObject.name == "Cube")
             {
-                Debug.Log(Mathf.Round(hit.point.x) + ", " + Mathf.Round(hit.point.y));
                 GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot((int)hit.point.x, (int)hit.point.y, hit.collider.gameObject.GetComponent<DragObject>().getDatasetName());
+            }
+        }
+    }
+
+    public void prepareRotation(int direction)
+    {
+        List<string> paths = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().getDatasetpaths();
+
+        foreach(GameObject x in sliceColliders)
+        {
+            if (x.GetComponent<DragObject>().datasetName == paths[dd.value])
+            {
+                x.GetComponent<DragObject>().rotate(direction);
             }
         }
     }

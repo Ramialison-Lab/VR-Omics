@@ -8,20 +8,17 @@ public class DragObject : MonoBehaviour
     public float yoffset;
     public float zoffset;
     public string datasetName;
-    private bool qKey;
-    private bool eKey;
     public Vector3 centerpoint;
     Vector3 origin;
     SpotDrawer sd;
     private void Start()
     {
         sd = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>();
+
     }
     void OnMouseDown()
     {
-        mZCoord = Camera.main.WorldToScreenPoint(
-        gameObject.transform.position).z;
-
+        mZCoord = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
         // Store offset = gameobject world pos - mouse world pos
         mOffset = gameObject.transform.position - GetMouseAsWorldPoint();
     }
@@ -38,60 +35,16 @@ public class DragObject : MonoBehaviour
         return Camera.main.ScreenToWorldPoint(mousePoint);
     }
 
-    private void Update()
+    public void rotate(int direction)
     {
-        //KEYINPUT
-        if (Input.GetKeyDown(KeyCode.Q)) qKey = true;
-        if (Input.GetKeyUp(KeyCode.Q)) qKey = false;
-        if (Input.GetKeyDown(KeyCode.E)) eKey = true;
-        if (Input.GetKeyUp(KeyCode.E)) eKey = false;
-
-        if (qKey) sd.rotateSlice(1, datasetName, centerpoint, this.gameObject);
-        if (eKey) sd.rotateSlice(-1, datasetName, centerpoint, this.gameObject);
-
-
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        //    RaycastHit hit = new RaycastHit();
-
-        //    if (Physics.Raycast(ray, out hit))
-        //    {
-        //        //TBD not using name cube here
-        //        if (hit.collider.gameObject.name == "Cube")
-        //        {
-        //            Debug.Log("pressed");
-
-        //        }
-        //    }
-        //}
-
-        //if (Input.GetMouseButtonDown(1))
-        //{
-        //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        //    RaycastHit hit = new RaycastHit();
-
-        //    if (Physics.Raycast(ray, out hit))
-        //    {
-        //        //TBD not using name cube here
-        //        if (hit.collider.gameObject.name == "Cube")
-        //        {
-        //            Debug.Log("right");
-
-        //        }
-        //    }
-        //}
+        if(direction==1) sd.rotateSlice(1, datasetName, centerpoint, this.gameObject);
+        if(direction==0) sd.rotateSlice(-1, datasetName, centerpoint, this.gameObject);
     }
 
     void OnMouseDrag()
     {
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            Color newColor = GetComponent<Renderer>().material.color;
-            newColor.a = 0.2f;
-            GetComponent<Renderer>().material.color = newColor;
             transform.position = GetMouseAsWorldPoint() + mOffset;
             xoffset = origin.x - transform.position.x;
             yoffset = origin.y - transform.position.y;
@@ -115,23 +68,9 @@ public class DragObject : MonoBehaviour
         return datasetName;
     }
 
-    public float getXoffset()
-    {
-        return xoffset;
-    }
-    public float getYoffset()
-    {
-        return yoffset;
-    }
-
     public void setCenterPoint(Vector3 cp)
     {
         centerpoint = cp;
     }
 
-    public void setRotationKey()
-    {
-        // transfer q or e pressed to rotate this datset
-
-    }
 }

@@ -19,6 +19,8 @@ public class SpotDrawer : MonoBehaviour
     public Material matUsed;
     private int count = 0;
     private int highlightIdentifier;
+    public float minTresh = 0f;
+    public float maxTresh=0f;
 
     private List<Color> randcolours = new List<Color>();
     bool newColours = true;
@@ -159,23 +161,23 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
+
     private Color colorGradient(int i)
     {
-        float rgb = 255f;
         Gradient gradient = new Gradient();
 
         // Populate the color keys at the relative time 0 and 1 (0 and 100%)
         GradientColorKey[] gck = new GradientColorKey[5];
-        gck[0].color = new Color(0 / rgb, 0 / rgb, 244 / rgb); // Blue
-        gck[0].time = 0.0F;
-        gck[1].color = new Color(24 / rgb, 226 / rgb, 240 / rgb); // Cyan
-        gck[1].time = 0.25F;
-        gck[2].color = new Color(255 / rgb, 255 / rgb, 0 / rgb); // Yellow
+        gck[0].color = new Color(0, 0, 1); // Blue
+        gck[0].time = minTresh;
+        gck[1].color = new Color(0,1,1); // Cyan
+        gck[1].time = 0.24F;
+        gck[2].color = new Color(0,1,0); // green
         gck[2].time = 0.50F;
-        gck[3].color = new Color(255 / rgb, 170 / rgb, 0 / rgb); // Orange
-        gck[3].time = 0.75F;
-        gck[4].color = new Color(254 / rgb, 0 / rgb, 0 / rgb); // Red
-        gck[4].time = 1.0F;
+        gck[3].color = new Color(1,1,0); // yellow
+        gck[3].time = 0.74F;
+        gck[4].color = new Color(1,0,0); // Red
+        gck[4].time = maxTresh;
 
         // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
         GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
@@ -185,14 +187,13 @@ public class SpotDrawer : MonoBehaviour
         alphaKey[1].time = 1.0f;
 
         gradient.SetKeys(gck, alphaKey);
-
-        // What's the color at the relative time 0.25 (25 %) ?
         return gradient.Evaluate((float)normalised[i]);
     }
 
     public void setColors(List<double> normalised)
     {
         this.normalised = normalised;
+        foreach(double x in normalised) { Debug.Log(x); }
         newColours = true;
     }
 
@@ -270,65 +271,22 @@ public class SpotDrawer : MonoBehaviour
                 mw.location = new Vector3(x, y, z);
                 cube_z = direction;
 
-                currentEulerAngles += new Vector3(0, 0, cube_z) * Time.deltaTime * 0.054f;
+                currentEulerAngles += new Vector3(0, 0, cube_z) * Time.deltaTime * 0.025f;
                 cube.transform.eulerAngles = currentEulerAngles;
+
+                mw.origin = mw.location;
 
             }
         }
-
-
-
-        //float s_angle = (float)Math.Sin(1);
-        //float c_angle = (float)Math.Sin(1);
-
-        //foreach (MeshWrapper mw in batches)
-        //{
-        //    if (mw.datasetName == dN)
-        //    {
-        //        Vector3 vec = mw.location;
-
-        //        var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
-        //        delta = delta + 0.01;
-
-        //        // var r = Math.Sqrt(Math.Pow(vec.x - cP.x, 2) + Math.Pow(vec.y - cP.y, 2));
-
-        //        var r = Math.Sqrt(Math.Pow(vec.x, 2) + Math.Pow(vec.y, 2));
-        //        mw.location = new Vector3((float)(r*Math.Cos((Math.PI/180)*delta)), (float)(r*Math.Sin((Math.PI*180)*delta)), mw.location.z);
-
-        //    }
-        //}
     }
 
-    public void testRot()
+    public void setMinTresh(float val)
     {
-        MeshWrapper mt = batches[0];
-        Vector2 vec = new Vector2(4, 3);
-
-        Vector2 cP = new Vector2(0, 0);
-        //Debug.Log(vec);
-
-        var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
-        //Debug.Log(delta);
-        //delta = delta + 30;
-
-        //var r = Math.Sqrt(Math.Pow(vec.x,2) + Math.Pow(vec.y,2));
-
-        //Debug.Log(r);
-
-        //var x = Math.Sin((Math.PI/180)*(delta));
-
-        //Debug.Log(r*x);
-
-        float x0 = ((vec.x) * (float)Math.Cos((Math.PI / 180) * 30));
-        float x1 = ((vec.y) * (float)Math.Sin((Math.PI / 180) * 30));
-
-        float y0 = ((vec.x) * (float)Math.Sin((Math.PI / 180) * 30));
-        float y1 = ((vec.y) * (float)Math.Cos((Math.PI / 180) * 30));
-
-        float x = x0 - x1;
-        float y = y0 + y1;
-
-        Debug.Log(x + " and " + y);
-
+        minTresh = val;
     }
+    public void setMaxTresh(float val)
+    {
+        maxTresh = val;
+    }
+
 }

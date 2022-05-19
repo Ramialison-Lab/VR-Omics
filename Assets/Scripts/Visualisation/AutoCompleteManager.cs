@@ -63,7 +63,6 @@ public class AutoCompleteManager : MonoBehaviour
                     if (i < 10)
                     {
                         //create Button for each entry
-                        Debug.Log(x);
                         // addListener with function to it and transfer button as GO
                         GameObject btn = Instantiate(btnPrefab);
                         btn.transform.SetParent(scrollView.transform);

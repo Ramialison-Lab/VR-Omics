@@ -26,8 +26,6 @@ public class CSVReader : MonoBehaviour
     {
         //pos = UnityEngine.Random.Range(0,1000);
         datapath = datapath.Replace(datapath.Split('\\').Last(),"")+"TransposedTest.csv";
-
-        Debug.Log("Search for: " + gn);
         StartCoroutine(search(datapath, pos, gn));
         sp.setColors(normalised);
     }
@@ -35,7 +33,6 @@ public class CSVReader : MonoBehaviour
     IEnumerator search(string dp, int pos, string gn)
     {
         string[] lines = File.ReadAllLines(dp);
-        Debug.Log(lines[pos].Substring(0, 10));
         // Removing the string with the genename from the CSV list before parsing each entry into a int value for the list
         resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length + 1).Split(',').ToList().Select(int.Parse).ToList();
 
