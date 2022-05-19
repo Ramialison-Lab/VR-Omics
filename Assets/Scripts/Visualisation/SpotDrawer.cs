@@ -171,7 +171,10 @@ public class SpotDrawer : MonoBehaviour
         gck[0].color = new Color(0, 0, 1); // Blue
         gck[0].time = minTresh;
         gck[1].color = new Color(0,1,1); // Cyan
-        gck[1].time = 0.24F;
+        if(minTresh>0.25f)
+        gck[1].time = minTresh;
+        else gck[1].time = .25f;
+
         gck[2].color = new Color(0,1,0); // green
         gck[2].time = 0.50F;
         gck[3].color = new Color(1,1,0); // yellow
@@ -204,6 +207,8 @@ public class SpotDrawer : MonoBehaviour
 
     public void identifySpot(float x, float y, string dN)
     {
+        Debug.Log(x + " and " + y);
+        Debug.Log((int)x + " and " + (int)y);
         foreach (MeshWrapper mw in batches)
         {
             if (mw.datasetName == dN)
@@ -212,6 +217,7 @@ public class SpotDrawer : MonoBehaviour
                 {
                     if ((int)mw.location.y == y)
                     {
+
                         newColours = true;
                         highlightIdentifier = mw.uniqueIdentifier;
                     }
