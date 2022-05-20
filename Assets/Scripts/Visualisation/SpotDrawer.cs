@@ -233,8 +233,11 @@ public class SpotDrawer : MonoBehaviour
                             highlightIdentifier.Remove(mw.uniqueIdentifier);
                         }
                     }
-                Debug.Log("hehehr");
-                GameObject.Find("SideMenu").GetComponent<SideMenuManager>().setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location);
+                try
+                {
+                    GameObject.Find("SideMenu").GetComponent<SideMenuManager>().setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location);
+                }
+                catch (Exception e) { };
             }
             
 
