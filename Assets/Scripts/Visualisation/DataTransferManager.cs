@@ -27,18 +27,20 @@ public class DataTransferManager : MonoBehaviour
         GameObject scriptHolder = GameObject.Find("ScriptHolder");
 
         List<string> shortList = new List<string>();
-        
-        //TBD! Comment out following lines to transfer data from pipeline
-        //List<string> datapaths = scriptHolderPipeline.GetComponent<UIManager>().getDatapathList();
 
-        //foreach(string x in datapaths)
-        //{
-        //    hdf5datapaths.Add(x + "\\" + x.Split('\\').Last() + "_scanpy.hdf5");
-        //}
+        //TBD! Comment out following lines to transfer data from pipeline
+        List<string> datapaths = scriptHolderPipeline.GetComponent<UIManager>().getDatapathList();
+
+        foreach (string x in datapaths)
+        {
+            hdf5datapaths.Add(x + "\\" + x.Split('\\').Last() + "_scanpy.hdf5");
+        }
 
         //TBD delte following lines
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1\\V1_Breast_Cancer_Block_A_Section_1_scanpy.hdf5");
-       hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
+
+
+        // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1\\V1_Breast_Cancer_Block_A_Section_1_scanpy.hdf5");
+        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
 
         //foreach (string p in hdf5datapaths)
         //{
@@ -49,7 +51,7 @@ public class DataTransferManager : MonoBehaviour
         //    scriptHolder.GetComponent<SpotDrawer>().startSpotDrawerCustom(col, row, (float)x);
         //    x++;
         //}        
-        
+
         foreach (string p in hdf5datapaths)
         {
             shortList.Add(p.Split('\\').Last());

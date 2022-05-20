@@ -23,12 +23,12 @@ public class SideMenuManager : MonoBehaviour
         texts[1].text = "Dataset: " +Dataset.Split('\\').Last();
         texts[2].text = "identifier: " +id.ToString();
         texts[3].text = "Location: " + loc.ToString();
-        readSpotInfo(id);
+        readSpotInfo(id, Dataset.Replace(Dataset.Split('\\').Last(),"")); ;
     }
 
-    private void readSpotInfo(int pos)
+    private void readSpotInfo(int pos, string dataset)
     {
-        string[] lines = File.ReadAllLines("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1\\test2Csv.csv");
+        string[] lines = File.ReadAllLines(dataset + "\\test2Csv.csv");
         if (lines.Length > pos)
         {
                 List<string> values = new List<string>();
