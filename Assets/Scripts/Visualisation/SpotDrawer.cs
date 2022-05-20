@@ -196,7 +196,6 @@ public class SpotDrawer : MonoBehaviour
     public void setColors(List<double> normalised)
     {
         this.normalised = normalised;
-        foreach(double x in normalised) { Debug.Log(x); }
         newColours = true;
     }
 
