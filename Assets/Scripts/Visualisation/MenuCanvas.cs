@@ -10,6 +10,8 @@ public class MenuCanvas : MonoBehaviour
     public GameObject ulockBtn;
     private SpotDrawer sd;
     public bool locked = true;
+    public bool lasso = false;
+    public GameObject sidemenu;
     private void Start()
     {
         sd = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>();
@@ -65,5 +67,27 @@ public class MenuCanvas : MonoBehaviour
     {
         Slider sl = slider.GetComponent<Slider>();
         sp.transform.localScale = new Vector3(sl.value*10,sl.value*10,sl.value*10);
+    }
+
+    public void toggleLasso()
+    {
+        lasso = !lasso;
+    }
+
+    public bool getLasso()
+    {
+        return lasso;
+    }
+
+    public void toggleSideMenu()
+    {
+        if (sidemenu.activeSelf)
+        {
+            sidemenu.SetActive(false);
+        }
+        else
+        {
+            sidemenu.SetActive(true);
+        }
     }
 }

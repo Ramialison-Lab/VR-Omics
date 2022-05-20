@@ -18,7 +18,7 @@ public class SpotDrawer : MonoBehaviour
     List<double> normalised;
     public Material matUsed;
     private int count = 0;
-    private int highlightIdentifier;
+    public List<int> highlightIdentifier;
     public float minTresh = 0f;
     public float maxTresh=0f;
 
@@ -110,7 +110,7 @@ public class SpotDrawer : MonoBehaviour
                 Color rc;
                 if (newColours)
                 {
-                    if (wrap.uniqueIdentifier == highlightIdentifier)
+                    if (highlightIdentifier.Contains(wrap.uniqueIdentifier))
                     {
                         rc = new Color(255, 0, 0, 1);
                         mpb.SetColor("_Color", rc);
@@ -200,30 +200,45 @@ public class SpotDrawer : MonoBehaviour
         newColours = true;
     }
 
-    public void ColorMesh()
-    {
-        newColours = true;
-    }
+    //public void ColorMesh()
+    //{
+    //    newColours = true;
+    //}
 
-    public void identifySpot(float x, float y, string dN)
+    //can be adjusted if click on points is off
+    public float clickoffset = 0.25f;
+    public GameObject MC;
+    public void identifySpot(float x_cl, float y_cl, string dN)
     {
-        Debug.Log(x + " and " + y);
-        Debug.Log((int)x + " and " + (int)y);
+        // if lasso tool selected
+
+            var x_click = x_cl + clickoffset;
+            var y_click = y_cl + clickoffset;
         foreach (MeshWrapper mw in batches)
         {
-            if (mw.datasetName == dN)
-            {
-                if ((int)mw.location.x == x)
+            
+                if (mw.datasetName == dN && (int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
                 {
-                    if ((int)mw.location.y == y)
+                    if (MC.GetComponent<MenuCanvas>().getLasso())
                     {
 
-                        newColours = true;
-                        highlightIdentifier = mw.uniqueIdentifier;
+                        if (!highlightIdentifier.Contains(mw.uniqueIdentifier))
+                        {
+                            newColours = true;
+                            highlightIdentifier.Add(mw.uniqueIdentifier);
+                        }
+                        else
+                        {
+                            newColours = true;
+                            highlightIdentifier.Remove(mw.uniqueIdentifier);
+                        }
                     }
-                }
+                Debug.Log("hehehr");
+                GameObject.Find("SideMenu").GetComponent<SideMenuManager>().setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location);
             }
-        }
+            
+
+        }   
     }
 
     public void moveSlice(float xoffset, float yoffset, float zoffset, string dN)
