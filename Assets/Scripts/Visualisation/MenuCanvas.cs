@@ -20,7 +20,6 @@ public class MenuCanvas : MonoBehaviour
         sd.setMaxTresh(1f);
     }
 
-
     public void unlockRotation()
     {
         locked = false;

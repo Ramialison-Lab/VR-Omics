@@ -87,7 +87,7 @@ public class SpotDrawer : MonoBehaviour
     //            }
     //    }    
     //}
-
+    private bool firstSelect = false;
 
     private void Update()
     {
@@ -117,18 +117,16 @@ public class SpotDrawer : MonoBehaviour
                         randcolours.Add(rc);
 
                     }
-                    else
+                    else if (firstSelect)
                     {
-                        // rc = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1f);        
-                        try
-                        {
-                            rc = colorGradient(i);
-                        }
-                        catch (Exception e) { rc = new Color(0, 0, 0, 1); }
+                        rc = colorGradient(i);
+                    }
+                    // catch (Exception e) 
+                    else { rc = new Color(0, 0, 0, 1); }
                         mpb.SetColor("_Color", rc);
                         randcolours.Add(rc);
                     }
-                }
+                
                 else
                 {
                     mpb.SetColor("_Color", randcolours[i]);
@@ -195,6 +193,7 @@ public class SpotDrawer : MonoBehaviour
 
     public void setColors(List<double> normalised)
     {
+        firstSelect = true;
         this.normalised = normalised;
         newColours = true;
     }

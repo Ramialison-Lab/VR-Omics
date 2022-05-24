@@ -37,14 +37,10 @@ public class SliceCollider : MonoBehaviour
         string imagepath = datasetName.Replace(datasetName.Split('\\').Last(),"");
         Debug.Log(imagepath);
         
-        
-        
         //TBD overlay H&E stain image read image 
         //byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
         //Texture2D sampleTexture = new Texture2D(2, 2);
         //bool isLoaded = sampleTexture.LoadImage(byteArray);
-
-
 
         //GameObject newCanvas = new GameObject("Canvas");
         //Canvas c = newCanvas.AddComponent<Canvas>();
