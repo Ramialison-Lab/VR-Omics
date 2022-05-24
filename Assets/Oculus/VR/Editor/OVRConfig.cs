@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
-using System.IO;
 using System;
+using System.IO;
+using UnityEditor;
+using UnityEngine;
 
 // OVRConfig inherits from ScriptableObject for legacy reasons. Conceptually,
 // it's just a static class with path fetching helper methods. However, it
@@ -160,10 +158,10 @@ public class OVRConfig : ScriptableObject
         {
             // Check the enviornment variable as a backup to see if the JDK is there.
             string javaHome = Environment.GetEnvironmentVariable("JAVA_HOME");
-            if(!string.IsNullOrEmpty(javaHome))
+            if (!string.IsNullOrEmpty(javaHome))
             {
                 jdkPath = Path.Combine(javaHome, "bin\\java.exe");
-                if(File.Exists(jdkPath))
+                if (File.Exists(jdkPath))
                 {
                     return jdkPath;
                 }

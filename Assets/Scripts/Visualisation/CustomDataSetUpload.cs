@@ -46,13 +46,13 @@ public class CustomDataSetUpload : MonoBehaviour
     public List<float> getX()
     {
         return x;
-    }    
-    
+    }
+
     public List<float> getY()
     {
         return y;
-    }    
-    
+    }
+
     public List<float> getZ()
     {
         return z;

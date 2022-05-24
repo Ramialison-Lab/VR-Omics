@@ -11,7 +11,6 @@ permissions and limitations under the License.
 ************************************************************************************/
 
 using Oculus.Interaction.Input;
-using System.Linq;
 using UnityEngine;
 
 namespace Oculus.Interaction.HandPosing

@@ -20,7 +20,7 @@ public class SpotDrawer : MonoBehaviour
     private int count = 0;
     public List<int> highlightIdentifier;
     public float minTresh = 0f;
-    public float maxTresh=0f;
+    public float maxTresh = 0f;
 
     private List<Color> randcolours = new List<Color>();
     bool newColours = true;
@@ -123,10 +123,10 @@ public class SpotDrawer : MonoBehaviour
                     }
                     // catch (Exception e) 
                     else { rc = new Color(0, 0, 0, 1); }
-                        mpb.SetColor("_Color", rc);
-                        randcolours.Add(rc);
-                    }
-                
+                    mpb.SetColor("_Color", rc);
+                    randcolours.Add(rc);
+                }
+
                 else
                 {
                     mpb.SetColor("_Color", randcolours[i]);
@@ -168,16 +168,16 @@ public class SpotDrawer : MonoBehaviour
         GradientColorKey[] gck = new GradientColorKey[5];
         gck[0].color = new Color(0, 0, 1); // Blue
         gck[0].time = minTresh;
-        gck[1].color = new Color(0,1,1); // Cyan
-        if(minTresh>0.25f)
-        gck[1].time = minTresh;
+        gck[1].color = new Color(0, 1, 1); // Cyan
+        if (minTresh > 0.25f)
+            gck[1].time = minTresh;
         else gck[1].time = .25f;
 
-        gck[2].color = new Color(0,1,0); // green
+        gck[2].color = new Color(0, 1, 0); // green
         gck[2].time = 0.50F;
-        gck[3].color = new Color(1,1,0); // yellow
+        gck[3].color = new Color(1, 1, 0); // yellow
         gck[3].time = 0.74F;
-        gck[4].color = new Color(1,0,0); // Red
+        gck[4].color = new Color(1, 0, 0); // Red
         gck[4].time = maxTresh;
 
         // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
@@ -210,36 +210,36 @@ public class SpotDrawer : MonoBehaviour
     {
         // if lasso tool selected
 
-            var x_click = x_cl + clickoffset;
-            var y_click = y_cl + clickoffset;
+        var x_click = x_cl + clickoffset;
+        var y_click = y_cl + clickoffset;
         foreach (MeshWrapper mw in batches)
         {
-            
-                if (mw.datasetName == dN && (int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
-                {
-                    if (MC.GetComponent<MenuCanvas>().getLasso())
-                    {
 
-                        if (!highlightIdentifier.Contains(mw.uniqueIdentifier))
-                        {
-                            newColours = true;
-                            highlightIdentifier.Add(mw.uniqueIdentifier);
-                        }
-                        else
-                        {
-                            newColours = true;
-                            highlightIdentifier.Remove(mw.uniqueIdentifier);
-                        }
+            if (mw.datasetName == dN && (int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
+            {
+                if (MC.GetComponent<MenuCanvas>().getLasso())
+                {
+
+                    if (!highlightIdentifier.Contains(mw.uniqueIdentifier))
+                    {
+                        newColours = true;
+                        highlightIdentifier.Add(mw.uniqueIdentifier);
                     }
+                    else
+                    {
+                        newColours = true;
+                        highlightIdentifier.Remove(mw.uniqueIdentifier);
+                    }
+                }
                 try
                 {
                     GameObject.Find("SideMenu").GetComponent<SideMenuManager>().setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location);
                 }
                 catch (Exception e) { };
             }
-            
 
-        }   
+
+        }
     }
 
     public void moveSlice(float xoffset, float yoffset, float zoffset, string dN)

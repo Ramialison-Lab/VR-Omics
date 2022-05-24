@@ -145,7 +145,7 @@ namespace Facebook.WitAi
         /// </summary>
         public Action<string> onFullTranscription;
 
-        public delegate void PreSendRequestDelegate(ref Uri src_uri, out Dictionary<string,string> headers);
+        public delegate void PreSendRequestDelegate(ref Uri src_uri, out Dictionary<string, string> headers);
 
         /// <summary>
         /// Allows customization of the request before it is sent out.
@@ -468,9 +468,9 @@ namespace Facebook.WitAi
             responseStarted = true;
             try
             {
-                response = (HttpWebResponse) _request.EndGetResponse(ar);
+                response = (HttpWebResponse)_request.EndGetResponse(ar);
 
-                statusCode = (int) response.StatusCode;
+                statusCode = (int)response.StatusCode;
                 statusDescription = response.StatusDescription;
 
                 try
@@ -556,10 +556,10 @@ namespace Facebook.WitAi
             }
             catch (WebException e)
             {
-                statusCode = (int) e.Status;
+                statusCode = (int)e.Status;
                 if (e.Response is HttpWebResponse errorResponse)
                 {
-                    statusCode = (int) errorResponse.StatusCode;
+                    statusCode = (int)errorResponse.StatusCode;
 
                     try
                     {
@@ -652,7 +652,7 @@ namespace Facebook.WitAi
         private void ExecuteWriteThread(object obj)
         {
             bytesWritten = 0;
-            Stream stream = (Stream) obj;
+            Stream stream = (Stream)obj;
 
             try
             {

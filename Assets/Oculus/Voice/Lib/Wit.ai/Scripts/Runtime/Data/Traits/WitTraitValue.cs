@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
 using Facebook.WitAi.Lib;
+using System;
 using UnityEngine;
 
 namespace Facebook.WitAi.Data.Traits
@@ -17,7 +17,7 @@ namespace Facebook.WitAi.Data.Traits
         [SerializeField] public string id;
         [SerializeField] public string value;
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         public static WitTraitValue FromJson(WitResponseNode traitValueNode)
         {
             return new WitTraitValue()
@@ -26,6 +26,6 @@ namespace Facebook.WitAi.Data.Traits
                 value = traitValueNode["value"]
             };
         }
-        #endif
+#endif
     }
 }

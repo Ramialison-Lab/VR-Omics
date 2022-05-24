@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System.Text.RegularExpressions;
 using Facebook.WitAi.Lib;
 using Facebook.WitAi.Utilities;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Facebook.WitAi.CallbackHandlers

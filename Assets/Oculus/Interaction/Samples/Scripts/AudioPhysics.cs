@@ -11,9 +11,8 @@ permissions and limitations under the License.
 ************************************************************************************/
 
 using System;
-using UnityEngine.Assertions;
 using UnityEngine;
-using Oculus.Interaction;
+using UnityEngine.Assertions;
 
 namespace Oculus.Interaction
 {

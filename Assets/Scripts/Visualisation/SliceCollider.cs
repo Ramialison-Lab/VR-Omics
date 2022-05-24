@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
-using System.IO;
 using System.Linq;
+using TMPro;
+using UnityEngine;
 
 public class SliceCollider : MonoBehaviour
 {
@@ -19,7 +17,7 @@ public class SliceCollider : MonoBehaviour
     public void setSliceCollider(int lslice, int rslice, int topslice, int btmslice, int d, string datasetName)
     {
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        
+
         var centerx = lslice + (rslice - lslice) / 2;
         var centery = btmslice + (topslice - btmslice) / 2;
         cube.transform.position = new Vector3(centerx, centery, d);
@@ -34,9 +32,9 @@ public class SliceCollider : MonoBehaviour
         Color newColor = cube.GetComponent<Renderer>().material.color;
         newColor.a = 0f;
         cube.GetComponent<Renderer>().material.color = newColor;
-        string imagepath = datasetName.Replace(datasetName.Split('\\').Last(),"");
+        string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
         Debug.Log(imagepath);
-        
+
         //TBD overlay H&E stain image read image 
         //byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
         //Texture2D sampleTexture = new Texture2D(2, 2);
@@ -87,7 +85,7 @@ public class SliceCollider : MonoBehaviour
     {
         List<string> paths = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().getDatasetpaths();
 
-        foreach(GameObject x in sliceColliders)
+        foreach (GameObject x in sliceColliders)
         {
             if (x.GetComponent<DragObject>().datasetName == paths[dd.value])
             {

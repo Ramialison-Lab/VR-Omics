@@ -1,7 +1,4 @@
 ﻿using UnityEngine;
-using TMPro;
-using System.Collections.Generic;
-using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -17,17 +14,17 @@ public class PlayerController : MonoBehaviour
     private bool qKey;
     private bool eKey;
     public GameObject menuCanvas;
-    public float speed =1.5f;
+    public float speed = 1.5f;
     public void Update()
     {
-  if (!GameObject.Find("ScriptHolder").GetComponent<AutoCompleteManager>().InputFocused())
-        {       
-        //KEYINPUT
-        Vector3 move = new Vector3(Input.GetAxisRaw("Horizontal") * Time.deltaTime *speed, 0, Input.GetAxisRaw("Vertical") * Time.deltaTime * speed);
-        move = this.transform.TransformDirection(move);
-        _controller.Move(move * _speed);
+        if (!GameObject.Find("ScriptHolder").GetComponent<AutoCompleteManager>().InputFocused())
+        {
+            //KEYINPUT
+            Vector3 move = new Vector3(Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed, 0, Input.GetAxisRaw("Vertical") * Time.deltaTime * speed);
+            move = this.transform.TransformDirection(move);
+            _controller.Move(move * _speed);
 
-        //TBD disable movement if inputfie;d selected
+            //TBD disable movement if inputfie;d selected
             if (Input.GetKeyDown(KeyCode.Space)) up = true;
             if (Input.GetKeyUp(KeyCode.Space)) up = false;
             if (Input.GetKeyDown(KeyCode.Z)) down = true;
@@ -41,12 +38,12 @@ public class PlayerController : MonoBehaviour
         if (qKey && !menuCanvas.GetComponent<MenuCanvas>().locked)
         {
             GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().prepareRotation(1);
-        }        
+        }
         if (eKey && !menuCanvas.GetComponent<MenuCanvas>().locked)
         {
             GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().prepareRotation(0);
         }
-        
+
         if (Input.GetKeyDown(KeyCode.E)) eKey = true;
         if (Input.GetKeyUp(KeyCode.E)) eKey = false;
 
@@ -62,5 +59,5 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-  
+
 }

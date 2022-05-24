@@ -10,7 +10,6 @@ ANY KIND, either express or implied. See the License for the specific language g
 permissions and limitations under the License.
 ************************************************************************************/
 
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -100,6 +99,6 @@ namespace Oculus.Interaction
             return _empty;
         }
 
-        private  static readonly List<TInteractable> _empty = new List<TInteractable>();
+        private static readonly List<TInteractable> _empty = new List<TInteractable>();
     }
 }

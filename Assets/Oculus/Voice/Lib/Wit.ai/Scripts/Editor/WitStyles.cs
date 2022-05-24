@@ -6,7 +6,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -198,8 +197,8 @@ namespace Facebook.WitAi
             }
             Texts = JsonUtility.FromJson<WitStylesTexts>(textAsset.text);
             // Setup icons
-            TitleIcon = (Texture2D) Resources.Load("witai");
-            HeaderIcon = (Texture2D) Resources.Load("wit-ai-title");
+            TitleIcon = (Texture2D)Resources.Load("witai");
+            HeaderIcon = (Texture2D)Resources.Load("wit-ai-title");
             PasteIcon = EditorGUIUtility.IconContent("Clipboard");
             EditIcon = EditorGUIUtility.IconContent("editicon.sml");
             ResetIcon = EditorGUIUtility.IconContent("TreeEditor.Trash");

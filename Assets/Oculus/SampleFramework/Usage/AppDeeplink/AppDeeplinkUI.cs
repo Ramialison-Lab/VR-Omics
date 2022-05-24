@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -100,7 +98,7 @@ public class AppDeeplinkUI : MonoBehaviour
     void LaunchOtherApp()
     {
         ulong appId;
-        if(ulong.TryParse(deeplinkAppId.GetComponentInChildren<Text>().text, out appId))
+        if (ulong.TryParse(deeplinkAppId.GetComponentInChildren<Text>().text, out appId))
         {
             Debug.Log(string.Format("LaunchOtherApp({0})", appId));
             var options = new Oculus.Platform.ApplicationOptions();

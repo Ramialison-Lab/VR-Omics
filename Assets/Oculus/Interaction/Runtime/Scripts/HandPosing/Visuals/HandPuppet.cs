@@ -13,7 +13,6 @@ permissions and limitations under the License.
 using Oculus.Interaction.Input;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Oculus.Interaction.HandPosing.Visuals
 {

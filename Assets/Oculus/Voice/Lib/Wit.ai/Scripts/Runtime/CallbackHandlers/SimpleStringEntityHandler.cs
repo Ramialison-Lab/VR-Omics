@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
 using Facebook.WitAi.Lib;
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,7 +20,8 @@ namespace Facebook.WitAi.CallbackHandlers
 
         [SerializeField] public string format;
 
-        [SerializeField] private StringEntityMatchEvent onIntentEntityTriggered
+        [SerializeField]
+        private StringEntityMatchEvent onIntentEntityTriggered
             = new StringEntityMatchEvent();
 
         public StringEntityMatchEvent OnIntentEntityTriggered => onIntentEntityTriggered;
@@ -44,5 +45,5 @@ namespace Facebook.WitAi.CallbackHandlers
     }
 
     [Serializable]
-    public class StringEntityMatchEvent : UnityEvent<string> {}
+    public class StringEntityMatchEvent : UnityEvent<string> { }
 }

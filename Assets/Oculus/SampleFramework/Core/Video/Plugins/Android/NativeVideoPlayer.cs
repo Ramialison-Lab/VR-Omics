@@ -4,8 +4,6 @@ Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved
 
 ************************************************************************************/
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class NativeVideoPlayer
@@ -140,8 +138,10 @@ public static class NativeVideoPlayer
         }
     }
 
-    public static PlabackState CurrentPlaybackState {
-        get {
+    public static PlabackState CurrentPlaybackState
+    {
+        get
+        {
             if (getCurrentPlaybackStateMethodId == System.IntPtr.Zero)
             {
                 getCurrentPlaybackStateMethodId = AndroidJNI.GetStaticMethodID(VideoPlayerClass, "getCurrentPlaybackState", "()I");
@@ -302,7 +302,7 @@ public static class NativeVideoPlayer
         AndroidJNI.CallStaticVoidMethod(VideoPlayerClass, setLoopingMethodId, setLoopingParams);
     }
 
-  public static void SetListenerRotation(Quaternion rotation)
+    public static void SetListenerRotation(Quaternion rotation)
     {
         if (setListenerRotationQuaternionMethodId == System.IntPtr.Zero)
         {

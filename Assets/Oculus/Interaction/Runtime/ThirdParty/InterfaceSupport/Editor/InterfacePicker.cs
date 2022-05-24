@@ -11,8 +11,8 @@ permissions and limitations under the License.
 ************************************************************************************/
 
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Oculus.Interaction.InterfaceSupport
 {

@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
 using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Data;
 using Facebook.WitAi.Events;
 using Facebook.WitAi.Interfaces;
 using Facebook.WitAi.Lib;
+using System.Collections;
+using System.Collections.Generic;
+using System.Net;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
@@ -359,7 +359,7 @@ namespace Facebook.WitAi
         {
             if (null == _micDataBuffer && _runtimeConfiguration.micBufferLengthInSeconds > 0)
             {
-                _micDataBuffer = new RingBuffer<byte>((int) Mathf.Ceil(2 * _runtimeConfiguration.micBufferLengthInSeconds * 1000 * _runtimeConfiguration.sampleLengthInMs));
+                _micDataBuffer = new RingBuffer<byte>((int)Mathf.Ceil(2 * _runtimeConfiguration.micBufferLengthInSeconds * 1000 * _runtimeConfiguration.sampleLengthInMs));
                 _lastSampleMarker = _micDataBuffer.CreateMarker();
             }
         }
@@ -386,7 +386,7 @@ namespace Facebook.WitAi
                 if (_isSoundWakeActive && levelMax > _runtimeConfiguration.soundWakeThreshold)
                 {
                     _lastSampleMarker = _micDataBuffer.CreateMarker(
-                        (int) (-_runtimeConfiguration.micBufferLengthInSeconds * 1000 *
+                        (int)(-_runtimeConfiguration.micBufferLengthInSeconds * 1000 *
                                _runtimeConfiguration.sampleLengthInMs));
                 }
 
@@ -395,7 +395,7 @@ namespace Facebook.WitAi
                 if (data.Length > 0)
                 {
                     events.OnByteDataReady?.Invoke(data, 0, data.Length);
-                    for(int i = 0; null != _dataReadyHandlers && i < _dataReadyHandlers.Length; i++)
+                    for (int i = 0; null != _dataReadyHandlers && i < _dataReadyHandlers.Length; i++)
                     {
                         _dataReadyHandlers[i].OnWitDataReady(data, 0, data.Length);
                     }
@@ -470,9 +470,9 @@ namespace Facebook.WitAi
 
             for (int i = 0; i < sampleCount; i++)
             {
-                short data = (short) (samples[i] * rescaleFactor);
-                _byteDataBuffer[i * 2] = (byte) data;
-                _byteDataBuffer[i * 2 + 1] = (byte) (data >> 8);
+                short data = (short)(samples[i] * rescaleFactor);
+                _byteDataBuffer[i * 2] = (byte)data;
+                _byteDataBuffer[i * 2 + 1] = (byte)(data >> 8);
             }
 
             return _byteDataBuffer;
@@ -634,7 +634,7 @@ namespace Facebook.WitAi
             }
 
             // Handle success
-            if (request.StatusCode == (int) HttpStatusCode.OK)
+            if (request.StatusCode == (int)HttpStatusCode.OK)
             {
                 if (null != request.ResponseData)
                 {
@@ -659,7 +659,7 @@ namespace Facebook.WitAi
                 }
             }
             // Remove from transmit list, missing if aborted
-            if ( _transmitRequests.Contains(request))
+            if (_transmitRequests.Contains(request))
             {
                 _transmitRequests.Remove(request);
             }

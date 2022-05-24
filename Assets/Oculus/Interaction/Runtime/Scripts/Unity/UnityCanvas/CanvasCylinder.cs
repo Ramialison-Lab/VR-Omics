@@ -11,10 +11,10 @@ permissions and limitations under the License.
 ************************************************************************************/
 
 using System;
-using UnityEngine.Assertions;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Oculus.Interaction.UnityCanvas
 {

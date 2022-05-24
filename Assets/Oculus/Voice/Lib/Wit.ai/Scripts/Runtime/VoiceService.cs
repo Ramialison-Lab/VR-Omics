@@ -14,7 +14,8 @@ namespace Facebook.WitAi
 {
     public abstract class VoiceService : MonoBehaviour, IVoiceService
     {
-        [Tooltip("Events that will fire before, during and after an activation")] [SerializeField]
+        [Tooltip("Events that will fire before, during and after an activation")]
+        [SerializeField]
         public VoiceEvents events = new VoiceEvents();
 
         /// <summary>

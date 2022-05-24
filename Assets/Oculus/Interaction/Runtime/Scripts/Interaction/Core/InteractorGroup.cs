@@ -268,7 +268,7 @@ namespace Oculus.Interaction
             }
 
             UpdateInteractor();
-            for (int i = 0; i < MaxIterationsPerFrame; i ++)
+            for (int i = 0; i < MaxIterationsPerFrame; i++)
             {
                 if (ShouldSelect || State == InteractorState.Select)
                 {

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
@@ -68,8 +66,8 @@ public class MenuManager : MonoBehaviour
         ortext.SetActive(true);
         visiumbtn.SetActive(true);
         csvbtn.SetActive(true);
-        if(p_selection.activeSelf)p_selection.SetActive(false);
-        if(uploadlocal.activeSelf)uploadlocal.SetActive(false);
+        if (p_selection.activeSelf) p_selection.SetActive(false);
+        if (uploadlocal.activeSelf) uploadlocal.SetActive(false);
     }
 
 }

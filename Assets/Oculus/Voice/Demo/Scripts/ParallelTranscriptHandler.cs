@@ -11,10 +11,7 @@
  **************************************************************************************************/
 
 using Facebook.WitAi;
-using Facebook.WitAi.Configuration;
-using Facebook.WitAi.Lib;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Oculus.Voice.Demo.UIShapesDemo
 {

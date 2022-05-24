@@ -17,7 +17,8 @@ using UnityEngine.Assertions;
 
 namespace Oculus.Interaction.PoseDetection
 {
-    public enum FeatureStateActiveMode {
+    public enum FeatureStateActiveMode
+    {
         Is,
         IsNot,
     }
@@ -98,7 +99,7 @@ namespace Oculus.Interaction.PoseDetection
 
         private static readonly TFeature[] FeatureEnumValues = (TFeature[])Enum.GetValues(typeof(TFeature));
 
-        private IFeatureThresholds<TFeature,TFeatureState> _featureThresholds;
+        private IFeatureThresholds<TFeature, TFeatureState> _featureThresholds;
 
         #endregion
 

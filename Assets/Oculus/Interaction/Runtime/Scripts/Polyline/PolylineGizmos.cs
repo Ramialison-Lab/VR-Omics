@@ -197,14 +197,14 @@ namespace Oculus.Interaction
                 return;
             }
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
             if (_root == this)
             {
                 EditorApplication.playModeStateChanged -= PlayModeStateChanged;
                 Camera.onPreCull -= HandlePreCullRender;
                 _root = null;
             }
-    #endif
+#endif
         }
 
         protected void ClearSegments()

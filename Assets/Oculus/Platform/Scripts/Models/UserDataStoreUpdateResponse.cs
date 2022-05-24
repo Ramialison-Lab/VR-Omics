@@ -2,21 +2,17 @@
 
 namespace Oculus.Platform.Models
 {
-  using System;
-  using System.Collections;
-  using Oculus.Platform.Models;
-  using System.Collections.Generic;
-  using UnityEngine;
+    using System;
 
-  public class UserDataStoreUpdateResponse
-  {
-    public readonly bool Success;
-
-
-    public UserDataStoreUpdateResponse(IntPtr o)
+    public class UserDataStoreUpdateResponse
     {
-      Success = CAPI.ovr_UserDataStoreUpdateResponse_GetSuccess(o);
+        public readonly bool Success;
+
+
+        public UserDataStoreUpdateResponse(IntPtr o)
+        {
+            Success = CAPI.ovr_UserDataStoreUpdateResponse_GetSuccess(o);
+        }
     }
-  }
 
 }

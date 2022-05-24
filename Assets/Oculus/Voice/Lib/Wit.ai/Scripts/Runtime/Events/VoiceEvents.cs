@@ -78,4 +78,4 @@ namespace Facebook.WitAi.Events
         public WitByteDataEvent OnByteDataReady = new WitByteDataEvent();
         public WitByteDataEvent OnByteDataSent = new WitByteDataEvent();
     }
- }
+}

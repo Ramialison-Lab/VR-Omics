@@ -26,17 +26,13 @@ limitations under the License.
 #endif
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Xml;
 using System.Diagnostics;
-using System.Threading;
+using System.IO;
 using UnityEditor;
-using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
+using UnityEngine;
 #if UNITY_ANDROID
 using UnityEditor.Android;
 #endif
@@ -48,17 +44,17 @@ using UnityEditor.XR.OpenXR.Features;
 
 [InitializeOnLoad]
 public class OVRGradleGeneration
-	: IPreprocessBuildWithReport, IPostprocessBuildWithReport
+    : IPreprocessBuildWithReport, IPostprocessBuildWithReport
 #if UNITY_ANDROID
 	, IPostGenerateGradleAndroidProject
 #endif
 {
-	public OVRADBTool adbTool;
-	public Process adbProcess;
+    public OVRADBTool adbTool;
+    public Process adbProcess;
 
-	public int callbackOrder { get { return 3; } }
-	static private System.DateTime buildStartTime;
-	static private System.Guid buildGuid;
+    public int callbackOrder { get { return 3; } }
+    static private System.DateTime buildStartTime;
+    static private System.Guid buildGuid;
 
 #if UNITY_ANDROID
 	public const string prefName = "OVRAutoIncrementVersionCode_Enabled";
@@ -66,18 +62,18 @@ public class OVRGradleGeneration
 	static bool autoIncrementVersion = false;
 #endif
 
-	static OVRGradleGeneration()
-	{
-		EditorApplication.delayCall += OnDelayCall;
-	}
+    static OVRGradleGeneration()
+    {
+        EditorApplication.delayCall += OnDelayCall;
+    }
 
-	static void OnDelayCall()
-	{
+    static void OnDelayCall()
+    {
 #if UNITY_ANDROID
 		autoIncrementVersion = PlayerPrefs.GetInt(prefName, 0) != 0;
 		Menu.SetChecked(menuItemAutoIncVersion, autoIncrementVersion);
 #endif
-	}
+    }
 
 #if UNITY_ANDROID
 	[MenuItem(menuItemAutoIncVersion)]
@@ -94,9 +90,9 @@ public class OVRGradleGeneration
 	}
 #endif
 
-	public void OnPreprocessBuild(BuildReport report)
-	{
-		bool useOpenXR = OVRPluginUpdater.IsOVRPluginOpenXRActivated();
+    public void OnPreprocessBuild(BuildReport report)
+    {
+        bool useOpenXR = OVRPluginUpdater.IsOVRPluginOpenXRActivated();
 
 #if USING_XR_SDK_OPENXR
 		UnityEngine.Debug.LogWarning("The installation of Unity OpenXR Plugin is detected, which should NOT be used in production when developing Oculus apps for production. Please uninstall the package, and install the Oculus XR Plugin from the Package Manager.");
@@ -175,8 +171,8 @@ public class OVRGradleGeneration
 				", you must first \"Remove\" the Oculus XR Plugin package, and then \"Install\" the package at the verified version. Be sure to remove, then install, not just upgrade.");
 #endif
 
-		buildStartTime = System.DateTime.Now;
-		buildGuid = System.Guid.NewGuid();
+        buildStartTime = System.DateTime.Now;
+        buildGuid = System.Guid.NewGuid();
 
 #if BUILDSESSION
 		StreamWriter writer = new StreamWriter("build_session", false);
@@ -184,116 +180,116 @@ public class OVRGradleGeneration
 		writer.WriteLine(buildGuid.ToString());
 		writer.Close();
 #endif
-	}
+    }
 
-	public void OnPostGenerateGradleAndroidProject(string path)
-	{
-		UnityEngine.Debug.Log("OVRGradleGeneration triggered.");
+    public void OnPostGenerateGradleAndroidProject(string path)
+    {
+        UnityEngine.Debug.Log("OVRGradleGeneration triggered.");
 
-		var targetOculusPlatform = new List<string>();
-		if (OVRDeviceSelector.isTargetDeviceQuestFamily)
-		{
-			targetOculusPlatform.Add("quest");
-		}
-		UnityEngine.Debug.LogFormat("QuestFamily = {0}: Quest = {1}, Quest2 = {2}",
-			OVRDeviceSelector.isTargetDeviceQuestFamily,
-			OVRDeviceSelector.isTargetDeviceQuest,
-			OVRDeviceSelector.isTargetDeviceQuest2);
+        var targetOculusPlatform = new List<string>();
+        if (OVRDeviceSelector.isTargetDeviceQuestFamily)
+        {
+            targetOculusPlatform.Add("quest");
+        }
+        UnityEngine.Debug.LogFormat("QuestFamily = {0}: Quest = {1}, Quest2 = {2}",
+            OVRDeviceSelector.isTargetDeviceQuestFamily,
+            OVRDeviceSelector.isTargetDeviceQuest,
+            OVRDeviceSelector.isTargetDeviceQuest2);
 
-		OVRProjectConfig projectConfig = OVRProjectConfig.GetProjectConfig();
-		if (projectConfig != null && projectConfig.systemSplashScreen != null)
-		{
-			if (PlayerSettings.virtualRealitySplashScreen != null)
-			{
-				UnityEngine.Debug.LogWarning("Virtual Reality Splash Screen (in Player Settings) is active. It would be displayed after the system splash screen, before the first game frame be rendered.");
-			}
-			string splashScreenAssetPath = AssetDatabase.GetAssetPath(projectConfig.systemSplashScreen);
-			if (Path.GetExtension(splashScreenAssetPath).ToLower() != ".png")
-			{
-				throw new BuildFailedException("Invalid file format of System Splash Screen. It has to be a PNG file to be used by the Quest OS. The asset path: " + splashScreenAssetPath);
-			}
-			else
-			{
-				string sourcePath = splashScreenAssetPath;
-				string targetFolder = Path.Combine(path, "src/main/assets");
-				string targetPath = targetFolder + "/vr_splash.png";
-				UnityEngine.Debug.LogFormat("Copy splash screen asset from {0} to {1}", sourcePath, targetPath);
-				try
-				{
-					File.Copy(sourcePath, targetPath, true);
-				}
-				catch(Exception e)
-				{
-					throw new BuildFailedException(e.Message);
-				}
-			}
-		}
+        OVRProjectConfig projectConfig = OVRProjectConfig.GetProjectConfig();
+        if (projectConfig != null && projectConfig.systemSplashScreen != null)
+        {
+            if (PlayerSettings.virtualRealitySplashScreen != null)
+            {
+                UnityEngine.Debug.LogWarning("Virtual Reality Splash Screen (in Player Settings) is active. It would be displayed after the system splash screen, before the first game frame be rendered.");
+            }
+            string splashScreenAssetPath = AssetDatabase.GetAssetPath(projectConfig.systemSplashScreen);
+            if (Path.GetExtension(splashScreenAssetPath).ToLower() != ".png")
+            {
+                throw new BuildFailedException("Invalid file format of System Splash Screen. It has to be a PNG file to be used by the Quest OS. The asset path: " + splashScreenAssetPath);
+            }
+            else
+            {
+                string sourcePath = splashScreenAssetPath;
+                string targetFolder = Path.Combine(path, "src/main/assets");
+                string targetPath = targetFolder + "/vr_splash.png";
+                UnityEngine.Debug.LogFormat("Copy splash screen asset from {0} to {1}", sourcePath, targetPath);
+                try
+                {
+                    File.Copy(sourcePath, targetPath, true);
+                }
+                catch (Exception e)
+                {
+                    throw new BuildFailedException(e.Message);
+                }
+            }
+        }
 
-		PatchAndroidManifest(path);
-	}
+        PatchAndroidManifest(path);
+    }
 
-	public void PatchAndroidManifest(string path)
-	{
-		string manifestFolder = Path.Combine(path, "src/main");
-		string file = manifestFolder + "/AndroidManifest.xml";
+    public void PatchAndroidManifest(string path)
+    {
+        string manifestFolder = Path.Combine(path, "src/main");
+        string file = manifestFolder + "/AndroidManifest.xml";
 
-		bool patchedSecurityConfig = false;
-		// If Enable NSC Config, copy XML file into gradle project
-		OVRProjectConfig projectConfig = OVRProjectConfig.GetProjectConfig();
-		if (projectConfig != null)
-		{
-			if (projectConfig.enableNSCConfig)
-			{
-				// If no custom xml security path is specified, look for the default location in the integrations package.
-				string securityConfigFile = projectConfig.securityXmlPath;
-				if (string.IsNullOrEmpty(securityConfigFile))
-				{
-					securityConfigFile = GetOculusProjectNetworkSecConfigPath();
-				}
-				else
-				{
-					Uri configUri = new Uri(Path.GetFullPath(securityConfigFile));
-					Uri projectUri = new Uri(Application.dataPath);
-					Uri relativeUri = projectUri.MakeRelativeUri(configUri);
-					securityConfigFile = relativeUri.ToString();
-				}
+        bool patchedSecurityConfig = false;
+        // If Enable NSC Config, copy XML file into gradle project
+        OVRProjectConfig projectConfig = OVRProjectConfig.GetProjectConfig();
+        if (projectConfig != null)
+        {
+            if (projectConfig.enableNSCConfig)
+            {
+                // If no custom xml security path is specified, look for the default location in the integrations package.
+                string securityConfigFile = projectConfig.securityXmlPath;
+                if (string.IsNullOrEmpty(securityConfigFile))
+                {
+                    securityConfigFile = GetOculusProjectNetworkSecConfigPath();
+                }
+                else
+                {
+                    Uri configUri = new Uri(Path.GetFullPath(securityConfigFile));
+                    Uri projectUri = new Uri(Application.dataPath);
+                    Uri relativeUri = projectUri.MakeRelativeUri(configUri);
+                    securityConfigFile = relativeUri.ToString();
+                }
 
-				string xmlDirectory = Path.Combine(path, "src/main/res/xml");
-				try
-				{
-					if (!Directory.Exists(xmlDirectory))
-					{
-						Directory.CreateDirectory(xmlDirectory);
-					}
-					File.Copy(securityConfigFile, Path.Combine(xmlDirectory, "network_sec_config.xml"), true);
-					patchedSecurityConfig = true;
-				}
-				catch (Exception e)
-				{
-					UnityEngine.Debug.LogError(e.Message);
-				}
-			}
-		}
+                string xmlDirectory = Path.Combine(path, "src/main/res/xml");
+                try
+                {
+                    if (!Directory.Exists(xmlDirectory))
+                    {
+                        Directory.CreateDirectory(xmlDirectory);
+                    }
+                    File.Copy(securityConfigFile, Path.Combine(xmlDirectory, "network_sec_config.xml"), true);
+                    patchedSecurityConfig = true;
+                }
+                catch (Exception e)
+                {
+                    UnityEngine.Debug.LogError(e.Message);
+                }
+            }
+        }
 
-		OVRManifestPreprocessor.PatchAndroidManifest(file, enableSecurity: patchedSecurityConfig);
-	}
+        OVRManifestPreprocessor.PatchAndroidManifest(file, enableSecurity: patchedSecurityConfig);
+    }
 
-	private static string GetOculusProjectNetworkSecConfigPath()
-	{
-		var so = ScriptableObject.CreateInstance(typeof(OVRPluginUpdaterStub));
-		var script = MonoScript.FromScriptableObject(so);
-		string assetPath = AssetDatabase.GetAssetPath(script);
-		string editorDir = Directory.GetParent(assetPath).FullName;
-		string configAssetPath = Path.GetFullPath(Path.Combine(editorDir, "network_sec_config.xml"));
-		Uri configUri = new Uri(configAssetPath);
-		Uri projectUri = new Uri(Application.dataPath);
-		Uri relativeUri = projectUri.MakeRelativeUri(configUri);
+    private static string GetOculusProjectNetworkSecConfigPath()
+    {
+        var so = ScriptableObject.CreateInstance(typeof(OVRPluginUpdaterStub));
+        var script = MonoScript.FromScriptableObject(so);
+        string assetPath = AssetDatabase.GetAssetPath(script);
+        string editorDir = Directory.GetParent(assetPath).FullName;
+        string configAssetPath = Path.GetFullPath(Path.Combine(editorDir, "network_sec_config.xml"));
+        Uri configUri = new Uri(configAssetPath);
+        Uri projectUri = new Uri(Application.dataPath);
+        Uri relativeUri = projectUri.MakeRelativeUri(configUri);
 
-		return relativeUri.ToString();
-	}
+        return relativeUri.ToString();
+    }
 
-	public void OnPostprocessBuild(BuildReport report)
-	{
+    public void OnPostprocessBuild(BuildReport report)
+    {
 #if UNITY_ANDROID
 		if(autoIncrementVersion)
 		{
@@ -326,12 +322,12 @@ public class OVRGradleGeneration
 			}
 		}
 #endif
-		if (!report.summary.outputPath.Contains("OVRGradleTempExport"))
-		{
+        if (!report.summary.outputPath.Contains("OVRGradleTempExport"))
+        {
 #if BUILDSESSION
 			UnityEngine.Debug.LogFormat("build_complete: {0}", (System.DateTime.Now - buildStartTime).TotalSeconds.ToString());
 #endif
-		}
+        }
 
 #if UNITY_ANDROID
 		if (!isExporting)
@@ -382,7 +378,7 @@ public class OVRGradleGeneration
 			}
 		}
 #endif
-	}
+    }
 
 #if UNITY_ANDROID
 	public bool WaitForProcess;

@@ -14,7 +14,6 @@ using Oculus.Interaction.Input;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
 namespace Oculus.Interaction.PoseDetection
 {
@@ -89,7 +88,8 @@ namespace Oculus.Interaction.PoseDetection
                         ++configCount;
                         fingerFeatureStateUsages.Add(new FingerFeatureStateUsage()
                         {
-                            handFinger = handFinger, config = config
+                            handFinger = handFinger,
+                            config = config
                         });
                     }
                 }

@@ -81,7 +81,7 @@ namespace Oculus.Interaction
             _material.SetBuffer(_positionBufferShaderID, _positionBuffer);
             _material.SetBuffer(_colorBufferShaderID, _colorBuffer);
 
-            _argsData = new uint[5] {0, 0, 0, 0, 0};
+            _argsData = new uint[5] { 0, 0, 0, 0, 0 };
             _argsData[0] = (uint)_baseMesh.GetIndexCount(0);
             _argsData[1] = (uint)_maxLineCount;
 

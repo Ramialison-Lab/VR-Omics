@@ -12,7 +12,6 @@ permissions and limitations under the License.
 
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Oculus.Interaction
 {

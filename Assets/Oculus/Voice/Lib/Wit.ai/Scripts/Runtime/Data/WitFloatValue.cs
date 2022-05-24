@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
 using Facebook.WitAi.Lib;
+using System;
 using UnityEngine;
 
 namespace Facebook.WitAi.Data
@@ -27,7 +27,7 @@ namespace Facebook.WitAi.Data
             {
                 fValue = f;
             }
-            else if(null != value && !float.TryParse("" + value, out fValue))
+            else if (null != value && !float.TryParse("" + value, out fValue))
             {
                 return false;
             }

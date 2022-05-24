@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+using Facebook.WitAi.Data.Configuration;
 using System;
 using System.Linq;
-using Facebook.WitAi.Data.Configuration;
 using UnityEditor;
 using UnityEngine;
 

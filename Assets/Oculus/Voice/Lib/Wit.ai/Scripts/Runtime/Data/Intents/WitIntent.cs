@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
 using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Data.Entities;
 using Facebook.WitAi.Lib;
+using System;
 using UnityEngine;
 
 namespace Facebook.WitAi.Data.Intents
@@ -21,7 +21,7 @@ namespace Facebook.WitAi.Data.Intents
         [SerializeField] public string name;
         [SerializeField] public WitEntity[] entities;
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         protected override WitRequest OnCreateRequest()
         {
             return witConfiguration.GetIntentRequest(name);
@@ -47,6 +47,6 @@ namespace Facebook.WitAi.Data.Intents
             intent.UpdateData(intentWitResponse);
             return intent;
         }
-        #endif
+#endif
     }
 }

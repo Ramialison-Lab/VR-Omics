@@ -2,21 +2,17 @@
 
 namespace Oculus.Platform.Models
 {
-  using System;
-  using System.Collections;
-  using Oculus.Platform.Models;
-  using System.Collections.Generic;
-  using UnityEngine;
+    using System;
 
-  public class LaunchInvitePanelFlowResult
-  {
-    public readonly UserList InvitedUsers;
-
-
-    public LaunchInvitePanelFlowResult(IntPtr o)
+    public class LaunchInvitePanelFlowResult
     {
-      InvitedUsers = new UserList(CAPI.ovr_LaunchInvitePanelFlowResult_GetInvitedUsers(o));
+        public readonly UserList InvitedUsers;
+
+
+        public LaunchInvitePanelFlowResult(IntPtr o)
+        {
+            InvitedUsers = new UserList(CAPI.ovr_LaunchInvitePanelFlowResult_GetInvitedUsers(o));
+        }
     }
-  }
 
 }

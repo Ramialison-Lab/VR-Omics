@@ -11,11 +11,11 @@ permissions and limitations under the License.
 ************************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
+using UnityEngine;
 
 namespace Oculus.Interaction.InterfaceSupport
 {

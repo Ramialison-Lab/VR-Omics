@@ -5,10 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using UnityEditor;
-using UnityEngine;
-using Facebook.WitAi.Data.Configuration;
 using System.Reflection;
+using UnityEditor;
 
 namespace Facebook.WitAi.Windows
 {
@@ -37,7 +35,7 @@ namespace Facebook.WitAi.Windows
                 case "createdAt":
                     return WitStyles.Texts.ConfigurationApplicationCreatedLabel;
             }
-            
+
             // Default to base
             return base.GetLocalizedText(property, key);
         }

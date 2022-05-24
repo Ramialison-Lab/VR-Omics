@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,7 +24,7 @@ public class CSVReader : MonoBehaviour
     public void searchGene(string datapath, int pos, string gn, SpotDrawer sp)
     {
         //pos = UnityEngine.Random.Range(0,1000);
-        datapath = datapath.Replace(datapath.Split('\\').Last(),"")+"TransposedTest.csv";
+        datapath = datapath.Replace(datapath.Split('\\').Last(), "") + "TransposedTest.csv";
         StartCoroutine(search(datapath, pos, gn));
         sp.setColors(normalised);
     }
@@ -45,8 +44,6 @@ public class CSVReader : MonoBehaviour
 
         yield return null;
     }
-
-
 
     private string getName()
     {
@@ -70,7 +67,7 @@ public class CSVReader : MonoBehaviour
 
     private void readHeader(string path)
     {
-        header = File.ReadAllLines(path).First<string>().Split(',');        
+        header = File.ReadAllLines(path).First<string>().Split(',');
     }
 
     private void searchExpressionBased(int ind)
@@ -122,7 +119,7 @@ public class CSVReader : MonoBehaviour
             }
 
             yield return new WaitForSeconds(0f);
-            }
+        }
     }
 
     // Reads positions and names of all spots from tissue_positions_list.csv → creates datapoint for each spot using the array and rows and sets spot name

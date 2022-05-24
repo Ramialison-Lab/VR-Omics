@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter))]
 
@@ -68,7 +66,7 @@ public class DrawMeshInstancedDemo : MonoBehaviour
             // upper right triangle
             2, 3, 1
         };
-                mesh.triangles = tris;
+        mesh.triangles = tris;
 
         return mesh;
     }

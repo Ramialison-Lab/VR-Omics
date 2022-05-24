@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+using Facebook.WitAi.Data;
+using Facebook.WitAi.Lib;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Facebook.WitAi.Data;
-using Facebook.WitAi.Lib;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;

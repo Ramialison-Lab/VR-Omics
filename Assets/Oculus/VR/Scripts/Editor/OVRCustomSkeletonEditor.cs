@@ -10,49 +10,47 @@ ANY KIND, either express or implied. See the License for the specific language g
 permissions and limitations under the License.
 ************************************************************************************/
 
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
 using BoneId = OVRSkeleton.BoneId;
 
 [CustomEditor(typeof(OVRCustomSkeleton))]
 public class OVRCustomSkeletonEditor : Editor
 {
-	public override void OnInspectorGUI()
-	{
-		DrawPropertiesExcluding(serializedObject, new string[] { "_customBones" });
-		serializedObject.ApplyModifiedProperties();
+    public override void OnInspectorGUI()
+    {
+        DrawPropertiesExcluding(serializedObject, new string[] { "_customBones" });
+        serializedObject.ApplyModifiedProperties();
 
-		OVRCustomSkeleton skeleton = (OVRCustomSkeleton)target;
-		OVRSkeleton.SkeletonType skeletonType = skeleton.GetSkeletonType();
+        OVRCustomSkeleton skeleton = (OVRCustomSkeleton)target;
+        OVRSkeleton.SkeletonType skeletonType = skeleton.GetSkeletonType();
 
-		if (skeletonType == OVRSkeleton.SkeletonType.None)
-		{
-			EditorGUILayout.HelpBox("Please select a SkeletonType.", MessageType.Warning);
-		}
-		else
-		{
-			if (GUILayout.Button("Auto Map Bones"))
-			{
-				skeleton.TryAutoMapBonesByName();
-				EditorUtility.SetDirty(skeleton);
-				EditorSceneManager.MarkSceneDirty(skeleton.gameObject.scene);
-			}
+        if (skeletonType == OVRSkeleton.SkeletonType.None)
+        {
+            EditorGUILayout.HelpBox("Please select a SkeletonType.", MessageType.Warning);
+        }
+        else
+        {
+            if (GUILayout.Button("Auto Map Bones"))
+            {
+                skeleton.TryAutoMapBonesByName();
+                EditorUtility.SetDirty(skeleton);
+                EditorSceneManager.MarkSceneDirty(skeleton.gameObject.scene);
+            }
 
-			EditorGUILayout.LabelField("Bones", EditorStyles.boldLabel);
-			BoneId start = skeleton.GetCurrentStartBoneId();
-			BoneId end = skeleton.GetCurrentEndBoneId();
-			if (start != BoneId.Invalid && end != BoneId.Invalid)
-			{
-				for (int i = (int)start; i < (int)end; ++i)
-				{
-					string boneName = OVRSkeleton.BoneLabelFromBoneId(skeletonType, (BoneId)i);
-					skeleton.CustomBones[i] = (Transform)EditorGUILayout.ObjectField(boneName, skeleton.CustomBones[i], typeof(Transform), true);
-				}
-			}
-		}
-	}
+            EditorGUILayout.LabelField("Bones", EditorStyles.boldLabel);
+            BoneId start = skeleton.GetCurrentStartBoneId();
+            BoneId end = skeleton.GetCurrentEndBoneId();
+            if (start != BoneId.Invalid && end != BoneId.Invalid)
+            {
+                for (int i = (int)start; i < (int)end; ++i)
+                {
+                    string boneName = OVRSkeleton.BoneLabelFromBoneId(skeletonType, (BoneId)i);
+                    skeleton.CustomBones[i] = (Transform)EditorGUILayout.ObjectField(boneName, skeleton.CustomBones[i], typeof(Transform), true);
+                }
+            }
+        }
+    }
 }
 

@@ -16,7 +16,7 @@ namespace Facebook.WitAi.Lib
         {
             base.OnInspectorGUI();
 
-            var mic = (Mic) target;
+            var mic = (Mic)target;
 
             int index = EditorGUILayout.Popup("Input", mic.CurrentDeviceIndex, mic.Devices.ToArray());
             if (index != mic.CurrentDeviceIndex)

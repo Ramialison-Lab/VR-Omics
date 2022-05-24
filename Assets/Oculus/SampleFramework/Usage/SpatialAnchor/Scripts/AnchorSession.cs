@@ -1,6 +1,5 @@
 // Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 

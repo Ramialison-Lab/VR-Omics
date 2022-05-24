@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System.Text;
-using System.Collections.Generic;
 using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Data.Configuration;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Facebook.WitAi
 {
@@ -84,7 +84,7 @@ namespace Facebook.WitAi
         }
 
         #region IDE Only Requests
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
 
         /// <summary>
         /// Requests a list of intents available under this configuration
@@ -201,7 +201,7 @@ namespace Facebook.WitAi
 
             return request;
         }
-        #endif
+#endif
         #endregion
     }
 }

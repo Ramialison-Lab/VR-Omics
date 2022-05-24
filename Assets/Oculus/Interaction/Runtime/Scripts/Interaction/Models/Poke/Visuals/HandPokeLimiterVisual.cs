@@ -10,10 +10,9 @@ ANY KIND, either express or implied. See the License for the specific language g
 permissions and limitations under the License.
 ************************************************************************************/
 
+using Oculus.Interaction.Input;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Oculus.Interaction.Input;
-using UnityEngine.Serialization;
 
 namespace Oculus.Interaction
 {

@@ -19,12 +19,12 @@
 // THE SOFTWARE.
 // Source: https://github.com/adrenak/unimic/blob/master/Assets/UniMic/Runtime/Mic.cs
 
-using System;
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using Facebook.WitAi.Data;
 using Facebook.WitAi.Interfaces;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Facebook.WitAi.Lib
 {

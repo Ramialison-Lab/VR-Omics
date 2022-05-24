@@ -10,11 +10,11 @@
  * permissions and limitations under the License.
  **************************************************************************************************/
 
-using System;
 using Facebook.WitAi;
 using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Data;
 using Facebook.WitAi.Data.Configuration;
+using System;
 using UnityEditor;
 using UnityEngine;
 

@@ -168,7 +168,7 @@ namespace Oculus.Interaction.Input
         public void InjectAllOVRHandPhysicsCapsules(HandVisual hand)
         {
             InjectHandSkeleton(hand);
-}
+        }
 
         public void InjectHandSkeleton(HandVisual hand)
         {

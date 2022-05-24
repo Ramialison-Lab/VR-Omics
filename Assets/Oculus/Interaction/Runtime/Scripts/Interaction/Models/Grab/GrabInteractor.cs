@@ -10,10 +10,10 @@ ANY KIND, either express or implied. See the License for the specific language g
 permissions and limitations under the License.
 ************************************************************************************/
 
+using Oculus.Interaction.Throw;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Oculus.Interaction.Throw;
 
 namespace Oculus.Interaction
 {
@@ -193,7 +193,7 @@ namespace Oculus.Interaction
         protected override void DoSelectUpdate()
         {
             GrabInteractable interactable = _selectedInteractable;
-            if(interactable == null)
+            if (interactable == null)
             {
                 return;
             }

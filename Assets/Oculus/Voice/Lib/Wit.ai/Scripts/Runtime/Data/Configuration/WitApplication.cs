@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
 using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Lib;
+using System;
 using UnityEngine;
 
 namespace Facebook.WitAi.Data.Configuration
@@ -22,7 +22,7 @@ namespace Facebook.WitAi.Data.Configuration
         [SerializeField] public bool isPrivate;
         [SerializeField] public string createdAt;
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         protected override WitRequest OnCreateRequest()
         {
             return witConfiguration.GetAppRequest(id);
@@ -43,6 +43,6 @@ namespace Facebook.WitAi.Data.Configuration
             app.UpdateData(appWitResponse);
             return app;
         }
-        #endif
+#endif
     }
 }

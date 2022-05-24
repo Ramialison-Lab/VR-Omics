@@ -5,10 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using Facebook.WitAi.Data.Intents;
-using System.Reflection;
 
 namespace Facebook.WitAi.Windows
 {
@@ -32,7 +31,7 @@ namespace Facebook.WitAi.Windows
                 case "entities":
                     return WitStyles.Texts.ConfigurationIntentsEntitiesLabel;
             }
-            
+
             // Default to base
             return base.GetLocalizedText(property, key);
         }
@@ -45,7 +44,7 @@ namespace Facebook.WitAi.Windows
                 base.LayoutPropertyField(subfield, subfieldProperty, labelContent, canEdit);
                 return;
             }
-            
+
             // Entity foldout
             subfieldProperty.isExpanded = WitEditorUI.LayoutFoldout(labelContent, subfieldProperty.isExpanded);
             if (subfieldProperty.isExpanded)

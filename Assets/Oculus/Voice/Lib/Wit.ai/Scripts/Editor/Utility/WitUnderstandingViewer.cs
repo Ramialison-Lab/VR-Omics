@@ -5,14 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
-using System.Collections.Generic;
 using Facebook.WitAi.CallbackHandlers;
 using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Data;
-using Facebook.WitAi.Data.Configuration;
 using Facebook.WitAi.Lib;
-using Facebook.WitAi.Utilities;
+using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -311,7 +309,7 @@ namespace Facebook.WitAi.Windows
         {
             if (null == witResponseNode?.AsObject) return;
 
-            if(string.IsNullOrEmpty(path)) DrawNode(witResponseNode["text"], "text", path);
+            if (string.IsNullOrEmpty(path)) DrawNode(witResponseNode["text"], "text", path);
 
             var names = witResponseNode.AsObject.ChildNodeNames;
             Array.Sort(names);
@@ -433,7 +431,7 @@ namespace Facebook.WitAi.Windows
                     var handler = mvhs[i];
                     menu.AddItem(
                         new GUIContent($"Add {name} matcher to {Selection.activeGameObject.name}/Handler {(i + 1)}"),
-                        false, (h) => AddNewEventHandlerPath((WitResponseMatcher) h, path), handler);
+                        false, (h) => AddNewEventHandlerPath((WitResponseMatcher)h, path), handler);
                 }
             }
             else if (mvhs.Length == 1)
@@ -441,7 +439,7 @@ namespace Facebook.WitAi.Windows
                 var handler = mvhs[0];
                 menu.AddItem(
                     new GUIContent($"Add {name} matcher to {Selection.activeGameObject.name}'s Response Matcher"),
-                    false, (h) => AddNewEventHandlerPath((WitResponseMatcher) h, path), handler);
+                    false, (h) => AddNewEventHandlerPath((WitResponseMatcher)h, path), handler);
             }
         }
 

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class MenuCanvas : MonoBehaviour
@@ -65,7 +63,7 @@ public class MenuCanvas : MonoBehaviour
     public void setSphereSize(GameObject slider)
     {
         Slider sl = slider.GetComponent<Slider>();
-        sp.transform.localScale = new Vector3(sl.value*10,sl.value*10,sl.value*10);
+        sp.transform.localScale = new Vector3(sl.value * 10, sl.value * 10, sl.value * 10);
     }
 
     public void toggleLasso()

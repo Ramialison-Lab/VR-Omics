@@ -25,7 +25,7 @@ namespace Facebook.WitAi.Inspectors
 
             if (Application.isPlaying)
             {
-                wit = (VoiceService) target;
+                wit = (VoiceService)target;
 
                 if (wit.Active)
                 {

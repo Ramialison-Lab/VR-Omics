@@ -12,5 +12,5 @@ permissions and limitations under the License.
 
 public class OVRSandwichComposition
 {
-	// deprecated since SDK 1.41
+    // deprecated since SDK 1.41
 }

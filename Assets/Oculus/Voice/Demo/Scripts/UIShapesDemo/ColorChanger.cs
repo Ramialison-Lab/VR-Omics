@@ -10,9 +10,9 @@
  * permissions and limitations under the License.
  **************************************************************************************************/
 
-using System;
 using Facebook.WitAi;
 using Facebook.WitAi.Lib;
+using System;
 using UnityEngine;
 
 namespace Oculus.Voice.Demo.UIShapesDemo

@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.IO;
-using System;
+using System.Linq;
+using TMPro;
+using UnityEngine;
 
 public class SideMenuManager : MonoBehaviour
 {
@@ -20,10 +18,10 @@ public class SideMenuManager : MonoBehaviour
     {
         foreach (TMP_Text tt in texts) tt.text = "";
         texts[0].text = SpotName;
-        texts[1].text = "Dataset: " +Dataset.Split('\\').Last();
-        texts[2].text = "identifier: " +id.ToString();
+        texts[1].text = "Dataset: " + Dataset.Split('\\').Last();
+        texts[2].text = "identifier: " + id.ToString();
         texts[3].text = "Location: " + loc.ToString();
-        readSpotInfo(id, Dataset.Replace(Dataset.Split('\\').Last(),"")); ;
+        readSpotInfo(id, Dataset.Replace(Dataset.Split('\\').Last(), "")); ;
     }
 
     private void readSpotInfo(int pos, string dataset)
@@ -31,8 +29,8 @@ public class SideMenuManager : MonoBehaviour
         string[] lines = File.ReadAllLines(dataset + "\\test2Csv.csv");
         if (lines.Length > pos)
         {
-                List<string> values = new List<string>();
-                values = lines[pos].Split(',').ToList();
+            List<string> values = new List<string>();
+            values = lines[pos].Split(',').ToList();
             texts[4].text = "n_genes_by_counts: " + values[4];
             texts[5].text = "pct top 50: " + values[8];
             texts[6].text = "cluster: " + values[16];

@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
 using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Data.Keywords;
 using Facebook.WitAi.Lib;
+using System;
 using UnityEngine;
 
 namespace Facebook.WitAi.Data.Entities
@@ -23,7 +23,7 @@ namespace Facebook.WitAi.Data.Entities
         [SerializeField] public WitEntityRole[] roles;
         [SerializeField] public WitKeyword[] keywords;
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         protected override WitRequest OnCreateRequest()
         {
             return witConfiguration.GetEntityRequest(name);
@@ -54,6 +54,6 @@ namespace Facebook.WitAi.Data.Entities
             entity.UpdateData(entityWitResponse);
             return entity;
         }
-        #endif
+#endif
     }
 }

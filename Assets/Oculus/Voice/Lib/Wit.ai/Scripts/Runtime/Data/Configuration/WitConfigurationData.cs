@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
 using Facebook.WitAi.Data.Configuration;
 using Facebook.WitAi.Lib;
+using System;
 using UnityEngine;
 
 namespace Facebook.WitAi.Configuration
@@ -17,7 +17,7 @@ namespace Facebook.WitAi.Configuration
     {
         [SerializeField] public WitConfiguration witConfiguration;
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         public void UpdateData(Action onUpdateComplete = null)
         {
             if (!witConfiguration)
@@ -48,6 +48,6 @@ namespace Facebook.WitAi.Configuration
         }
 
         public abstract void UpdateData(WitResponseNode data);
-        #endif
+#endif
     }
 }

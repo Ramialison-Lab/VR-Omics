@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
 using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Lib;
+using System;
 using UnityEngine;
 
 namespace Facebook.WitAi.Data.Traits
@@ -19,7 +19,7 @@ namespace Facebook.WitAi.Data.Traits
         [SerializeField] public string name;
         [SerializeField] public WitTraitValue[] values;
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         protected override WitRequest OnCreateRequest()
         {
             return witConfiguration.GetTraitRequest(name);
@@ -32,7 +32,8 @@ namespace Facebook.WitAi.Data.Traits
             var valueArray = traitWitResponse["values"].AsArray;
             var n = valueArray.Count;
             values = new WitTraitValue[n];
-            for (int i = 0; i < n; i++) {
+            for (int i = 0; i < n; i++)
+            {
                 values[i] = WitTraitValue.FromJson(valueArray[i]);
             }
         }
@@ -43,6 +44,6 @@ namespace Facebook.WitAi.Data.Traits
             trait.UpdateData(traitWitResponse);
             return trait;
         }
-        #endif
+#endif
     }
 }

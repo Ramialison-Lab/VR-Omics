@@ -37,8 +37,8 @@ public class DragObject : MonoBehaviour
 
     public void rotate(int direction)
     {
-        if(direction==1) sd.rotateSlice(1, datasetName, centerpoint, this.gameObject);
-        if(direction==0) sd.rotateSlice(-1, datasetName, centerpoint, this.gameObject);
+        if (direction == 1) sd.rotateSlice(1, datasetName, centerpoint, this.gameObject);
+        if (direction == 0) sd.rotateSlice(-1, datasetName, centerpoint, this.gameObject);
     }
 
     void OnMouseDrag()

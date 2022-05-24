@@ -150,7 +150,7 @@ namespace Oculus.Interaction.HandPosing
             Colliders = Rigidbody.GetComponentsInChildren<Collider>();
             Assert.IsTrue(Colliders.Length > 0,
                 "The associated Rigidbody must have at least one Collider.");
-            if(MovementProvider == null)
+            if (MovementProvider == null)
             {
                 MoveTowardsTargetProvider movementProvider = this.gameObject.AddComponent<MoveTowardsTargetProvider>();
                 InjectOptionalMovementProvider(movementProvider);

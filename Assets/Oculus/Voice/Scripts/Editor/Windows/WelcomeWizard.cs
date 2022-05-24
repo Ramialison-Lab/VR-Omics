@@ -10,13 +10,11 @@
  * permissions and limitations under the License.
  **************************************************************************************************/
 
-using System;
-using System.Collections.Generic;
 using Facebook.WitAi;
 using Facebook.WitAi.Data.Configuration;
 using Facebook.WitAi.Windows;
 using Oculus.Voice.Utility;
-using UnityEditor;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Oculus.Voice.Windows

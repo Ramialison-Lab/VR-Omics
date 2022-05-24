@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 #if OVR_SAMPLES_ENABLE_FIREBASE
 using Firebase.Analytics;

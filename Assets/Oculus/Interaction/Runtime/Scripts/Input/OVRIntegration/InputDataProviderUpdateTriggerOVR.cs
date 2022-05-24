@@ -94,7 +94,7 @@ namespace Oculus.Interaction.Input
 
         private void InputDataDirtied(bool isLateUpdate)
         {
-            if(!isLateUpdate)
+            if (!isLateUpdate)
             {
                 MarkRequiresUpdate();
             }

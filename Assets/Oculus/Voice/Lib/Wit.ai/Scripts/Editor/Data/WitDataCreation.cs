@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System.Globalization;
-using System.Text.RegularExpressions;
 using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Data.Configuration;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,7 +22,7 @@ namespace Facebook.WitAi.Data
         public static WitConfiguration FindDefaultWitConfig()
         {
             string[] guids = AssetDatabase.FindAssets("t:WitConfiguration");
-            if(guids.Length > 0)
+            if (guids.Length > 0)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guids[0]);
                 return AssetDatabase.LoadAssetAtPath<WitConfiguration>(path);

@@ -10,8 +10,8 @@ ANY KIND, either express or implied. See the License for the specific language g
 permissions and limitations under the License.
 ************************************************************************************/
 
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Oculus.Interaction.Editor
 {
@@ -25,12 +25,12 @@ namespace Oculus.Interaction.Editor
 
         public override float GetHeight()
         {
-            return base.GetHeight() * ( 1f + HEADER_SIZE_AS_PERCENT );
+            return base.GetHeight() * (1f + HEADER_SIZE_AS_PERCENT);
         }
 
         public override void OnGUI(Rect position)
         {
-            position.y += GetHeight() * HEADER_SIZE_AS_PERCENT / ( 1f + HEADER_SIZE_AS_PERCENT );
+            position.y += GetHeight() * HEADER_SIZE_AS_PERCENT / (1f + HEADER_SIZE_AS_PERCENT);
             EditorGUI.LabelField(position, "[Optional]");
         }
     }

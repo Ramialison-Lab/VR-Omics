@@ -10,15 +10,14 @@
  * permissions and limitations under the License.
  **************************************************************************************************/
 
-using UnityEngine;
-using UnityEditor;
-using Facebook.WitAi.Windows;
 using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Data.Configuration;
-using Facebook.WitAi.Data.Intents;
 using Facebook.WitAi.Data.Entities;
+using Facebook.WitAi.Data.Intents;
 using Facebook.WitAi.Data.Traits;
+using Facebook.WitAi.Windows;
 using Oculus.Voice.Windows;
+using UnityEditor;
 
 namespace Oculus.Voice.Utility
 {

@@ -10,10 +10,10 @@ ANY KIND, either express or implied. See the License for the specific language g
 permissions and limitations under the License.
 ************************************************************************************/
 
+using Oculus.Interaction.Surfaces;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Oculus.Interaction.Surfaces;
 
 namespace Oculus.Interaction
 {
@@ -178,7 +178,7 @@ namespace Oculus.Interaction
                 return true;
             }
 
-            if(ComputeDistanceAbove(interactable, _previousOrigin) > -1f * interactable.EnterHoverDistance)
+            if (ComputeDistanceAbove(interactable, _previousOrigin) > -1f * interactable.EnterHoverDistance)
             {
                 return false;
             }

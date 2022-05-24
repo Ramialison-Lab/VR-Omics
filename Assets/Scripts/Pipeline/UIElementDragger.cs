@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class UIElementDragger : EventTrigger
@@ -18,7 +15,7 @@ public class UIElementDragger : EventTrigger
 
         transform = GetComponent<RectTransform>();
         canvasRect = GetComponentInParent<Canvas>().pixelRect;
-      //  cvs = GameObject.Find("SlicePanelCanvas").GetComponent<Canvas>();
+        //  cvs = GameObject.Find("SlicePanelCanvas").GetComponent<Canvas>();
         slicePanel = GameObject.Find("SlicePanel");
     }
 
@@ -34,7 +31,7 @@ public class UIElementDragger : EventTrigger
 
         //Vector2 clamped = transform.anchoredPosition;
         //float imageWidth = transform.rect.x;
-        
+
         //clamped.x = Mathf.Clamp(clamped.x, 0+imageWidth, 1063-imageWidth);
         //clamped.y = Mathf.Clamp(clamped.y, -606+imageWidth,0-imageWidth);
 

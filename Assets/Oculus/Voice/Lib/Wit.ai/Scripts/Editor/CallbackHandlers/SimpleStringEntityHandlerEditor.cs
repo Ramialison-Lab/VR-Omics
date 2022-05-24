@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+using Facebook.WitAi.Data.Configuration;
 using System;
 using System.Linq;
-using Facebook.WitAi.Data.Configuration;
 using UnityEditor;
 using UnityEngine;
 
@@ -47,7 +47,7 @@ namespace Facebook.WitAi.CallbackHandlers
                 GUILayout.Label("Wit component is not present in the scene. Add wit to scene to get intent and entity suggestions.", EditorStyles.helpBox);
             }
 
-            var intentChanged = WitEditorUI.LayoutSerializedObjectPopup(serializedObject,"intent", intentNames, ref intentIndex);
+            var intentChanged = WitEditorUI.LayoutSerializedObjectPopup(serializedObject, "intent", intentNames, ref intentIndex);
             if (intentChanged ||
                 null != intentNames && intentNames.Length > 0 && null == entityNames)
             {

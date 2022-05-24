@@ -143,11 +143,11 @@ namespace Oculus.Voice
 
         private void OnEnable()
         {
-            if(null == voiceServiceImpl) InitVoiceSDK();
+            if (null == voiceServiceImpl) InitVoiceSDK();
 
-            #if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
             platformService?.SetRuntimeConfiguration(witRuntimeConfiguration);
-            #endif
+#endif
         }
     }
 }

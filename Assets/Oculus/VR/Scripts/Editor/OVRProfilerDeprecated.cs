@@ -12,22 +12,20 @@ permissions and limitations under the License.
 
 #if UNITY_EDITOR
 
-using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
-using Assets.OVR.Scripts;
+using UnityEngine;
 
 public class OVRProfilerDeprecated : EditorWindow
 {
-	[MenuItem("Oculus/Tools/(Deprecated) OVR Profiler", false, 200000)]
-	static void Init()
-	{
-		Debug.LogWarning("OVR Profiler has been replaced by OVR Performance Lint Tool");
-		// Get existing open window or if none, make a new one:
-		EditorWindow.GetWindow(typeof(OVRLint));
-		OVRPlugin.SendEvent("perf_lint", "activated");
-		OVRLint.RunCheck();
-	}
+    [MenuItem("Oculus/Tools/(Deprecated) OVR Profiler", false, 200000)]
+    static void Init()
+    {
+        Debug.LogWarning("OVR Profiler has been replaced by OVR Performance Lint Tool");
+        // Get existing open window or if none, make a new one:
+        EditorWindow.GetWindow(typeof(OVRLint));
+        OVRPlugin.SendEvent("perf_lint", "activated");
+        OVRLint.RunCheck();
+    }
 }
 
 #endif

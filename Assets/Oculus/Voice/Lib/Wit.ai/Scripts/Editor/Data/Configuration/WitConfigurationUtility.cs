@@ -9,13 +9,13 @@
 //#define VERBOSE_LOG
 #endif
 
-using System;
-using System.Collections.Generic;
+using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Data.Entities;
 using Facebook.WitAi.Data.Intents;
 using Facebook.WitAi.Data.Traits;
 using Facebook.WitAi.Lib;
-using Facebook.WitAi.Configuration;
+using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -65,7 +65,7 @@ namespace Facebook.WitAi.Data.Configuration
                 ReloadConfigurationData();
             }
             // Search through configs
-            return Array.FindIndex(witConfigs, (checkConfig) => checkConfig == configuration );
+            return Array.FindIndex(witConfigs, (checkConfig) => checkConfig == configuration);
         }
         // Get configuration index
         public static int GetConfigurationIndex(string configurationName)
@@ -547,7 +547,7 @@ namespace Facebook.WitAi.Data.Configuration
         // Log
         private static void Log(string comment, bool error)
         {
-            #if VERBOSE_LOG
+#if VERBOSE_LOG
             string l = "Wit Configuration Utility - " + comment;
             if (error)
             {
@@ -557,7 +557,7 @@ namespace Facebook.WitAi.Data.Configuration
             {
                 Debug.Log(l);
             }
-            #endif
+#endif
         }
         #endregion
     }

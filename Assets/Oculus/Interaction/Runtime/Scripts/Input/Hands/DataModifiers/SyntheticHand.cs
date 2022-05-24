@@ -481,31 +481,38 @@ namespace Oculus.Interaction.Input
             InjectSpreadAllowance(spreadAllowance);
         }
 
-        public void InjectWristPositionLockCurve(ProgressCurve wristPositionLockCurve) {
+        public void InjectWristPositionLockCurve(ProgressCurve wristPositionLockCurve)
+        {
             _wristPositionLockCurve = wristPositionLockCurve;
         }
 
-        public void InjectWristPositionUnlockCurve(ProgressCurve wristPositionUnlockCurve) {
+        public void InjectWristPositionUnlockCurve(ProgressCurve wristPositionUnlockCurve)
+        {
             _wristPositionUnlockCurve = wristPositionUnlockCurve;
         }
 
-        public void InjectWristRotationLockCurve(ProgressCurve wristRotationLockCurve) {
+        public void InjectWristRotationLockCurve(ProgressCurve wristRotationLockCurve)
+        {
             _wristRotationLockCurve = wristRotationLockCurve;
         }
 
-        public void InjectWristRotationUnlockCurve(ProgressCurve wristRotationUnlockCurve) {
+        public void InjectWristRotationUnlockCurve(ProgressCurve wristRotationUnlockCurve)
+        {
             _wristRotationUnlockCurve = wristRotationUnlockCurve;
         }
 
-        public void InjectJointLockCurve(ProgressCurve jointLockCurve) {
+        public void InjectJointLockCurve(ProgressCurve jointLockCurve)
+        {
             _jointLockCurve = jointLockCurve;
         }
 
-        public void InjectJointUnlockCurve(ProgressCurve jointUnlockCurve) {
+        public void InjectJointUnlockCurve(ProgressCurve jointUnlockCurve)
+        {
             _jointUnlockCurve = jointUnlockCurve;
         }
 
-        public void InjectSpreadAllowance(float spreadAllowance) {
+        public void InjectSpreadAllowance(float spreadAllowance)
+        {
             _spreadAllowance = spreadAllowance;
         }
 

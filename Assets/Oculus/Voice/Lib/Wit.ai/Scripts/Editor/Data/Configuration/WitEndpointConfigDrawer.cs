@@ -5,10 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using UnityEditor;
-using UnityEngine;
-using Facebook.WitAi.Configuration;
 using System.Reflection;
+using UnityEditor;
 
 namespace Facebook.WitAi.Windows
 {

@@ -22,10 +22,8 @@ limitations under the License.
 // Uncomment below to test access of read-only spatializer parameters
 //#define TEST_READONLY_PARAMETERS
 
-using UnityEngine;
-using System;
-using System.Collections;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 public class ONSPAudioSource : MonoBehaviour
 {
@@ -51,74 +49,74 @@ public class ONSPAudioSource : MonoBehaviour
     // Public
 
     [SerializeField]
-	private bool enableSpatialization = true;
-	public  bool EnableSpatialization
-	{
-		get
-		{
-			return enableSpatialization;
-		}
-		set
-		{
-			enableSpatialization = value;
-		}
-	}
+    private bool enableSpatialization = true;
+    public bool EnableSpatialization
+    {
+        get
+        {
+            return enableSpatialization;
+        }
+        set
+        {
+            enableSpatialization = value;
+        }
+    }
 
-	[SerializeField]
-	private float gain = 0.0f;
-	public  float Gain
-	{
-		get
-		{
-			return gain;
-		}
-		set
-		{
-			gain = Mathf.Clamp(value, 0.0f, 24.0f);
-		}
-	}
+    [SerializeField]
+    private float gain = 0.0f;
+    public float Gain
+    {
+        get
+        {
+            return gain;
+        }
+        set
+        {
+            gain = Mathf.Clamp(value, 0.0f, 24.0f);
+        }
+    }
 
-	[SerializeField]
-	private bool useInvSqr = false;
-	public  bool UseInvSqr
-	{
-		get
-		{
-			return useInvSqr;
-		}
-		set
-		{
-			useInvSqr = value;
-		}
-	}
+    [SerializeField]
+    private bool useInvSqr = false;
+    public bool UseInvSqr
+    {
+        get
+        {
+            return useInvSqr;
+        }
+        set
+        {
+            useInvSqr = value;
+        }
+    }
 
-	[SerializeField]
-	private float near = 0.25f;
-	public float Near
-	{
-		get
-		{
-			return near;
-		}
-		set
-		{
-			near = Mathf.Clamp(value, 0.0f, 1000000.0f);
-		}
-	}
+    [SerializeField]
+    private float near = 0.25f;
+    public float Near
+    {
+        get
+        {
+            return near;
+        }
+        set
+        {
+            near = Mathf.Clamp(value, 0.0f, 1000000.0f);
+        }
+    }
 
-	[SerializeField]
-	private float far = 250.0f;
-	public float Far
-	{
-		get
-		{
-			return far;
-		}
-		set
-		{
-			far = Mathf.Clamp(value, 0.0f, 1000000.0f);
-		}
-	}
+    [SerializeField]
+    private float far = 250.0f;
+    public float Far
+    {
+        get
+        {
+            return far;
+        }
+        set
+        {
+            far = Mathf.Clamp(value, 0.0f, 1000000.0f);
+        }
+    }
 
     [SerializeField]
     private float volumetricRadius = 0.0f;
@@ -150,43 +148,43 @@ public class ONSPAudioSource : MonoBehaviour
 
 
     [SerializeField]
-	private bool enableRfl = false;
-	public  bool EnableRfl
-	{
-		get
-		{
-			return enableRfl;
-		}
-		set
-		{
-			enableRfl = value;
-		}
-	}
+    private bool enableRfl = false;
+    public bool EnableRfl
+    {
+        get
+        {
+            return enableRfl;
+        }
+        set
+        {
+            enableRfl = value;
+        }
+    }
 
-	/// <summary>
-	/// Awake this instance.
-	/// </summary>
-	void Awake()
-	{
-		// We might iterate through multiple sources / game object
-		var source = GetComponent<AudioSource>();
-		SetParameters(ref source);
-	}
+    /// <summary>
+    /// Awake this instance.
+    /// </summary>
+    void Awake()
+    {
+        // We might iterate through multiple sources / game object
+        var source = GetComponent<AudioSource>();
+        SetParameters(ref source);
+    }
 
-	/// <summary>
-	/// Start this instance.
-	/// </summary>
+    /// <summary>
+    /// Start this instance.
+    /// </summary>
     void Start()
     {
     }
 
-	/// <summary>
-	/// Update this instance.
-	/// </summary>
+    /// <summary>
+    /// Update this instance.
+    /// </summary>
     void Update()
     {
-		// We might iterate through multiple sources / game object
-		var source = GetComponent<AudioSource>();
+        // We might iterate through multiple sources / game object
+        var source = GetComponent<AudioSource>();
 
         // READ-ONLY PARAMETER TEST
 #if TEST_READONLY_PARAMETERS
@@ -236,15 +234,15 @@ public class ONSPAudioSource : MonoBehaviour
     /// </summary>
     /// <param name="source">Source.</param>
     public void SetParameters(ref AudioSource source)
-	{
+    {
         // See if we should enable spatialization
         source.spatialize = enableSpatialization;
 
         source.SetSpatializerFloat((int)Parameters.P_GAIN, gain);
-		// All inputs are floats; convert bool to 0.0 and 1.0
-		if(useInvSqr == true)
+        // All inputs are floats; convert bool to 0.0 and 1.0
+        if (useInvSqr == true)
             source.SetSpatializerFloat((int)Parameters.P_USEINVSQR, 1.0f);
-		else
+        else
             source.SetSpatializerFloat((int)Parameters.P_USEINVSQR, 0.0f);
 
         source.SetSpatializerFloat((int)Parameters.P_NEAR, near);
@@ -252,13 +250,13 @@ public class ONSPAudioSource : MonoBehaviour
 
         source.SetSpatializerFloat((int)Parameters.P_RADIUS, volumetricRadius);
 
-		if(enableRfl == true)
+        if (enableRfl == true)
             source.SetSpatializerFloat((int)Parameters.P_DISABLE_RFL, 0.0f);
-		else
+        else
             source.SetSpatializerFloat((int)Parameters.P_DISABLE_RFL, 1.0f);
 
         source.SetSpatializerFloat((int)Parameters.P_SENDLEVEL, reverbSend);
-	}
+    }
 
     private static ONSPAudioSource RoomReflectionGizmoAS = null;
 
@@ -269,7 +267,7 @@ public class ONSPAudioSource : MonoBehaviour
     {
         // Are we the first one created? make sure to set our static ONSPAudioSource
         // for drawing out room parameters once
-        if(RoomReflectionGizmoAS == null)
+        if (RoomReflectionGizmoAS == null)
         {
             RoomReflectionGizmoAS = this;
         }
@@ -316,20 +314,20 @@ public class ONSPAudioSource : MonoBehaviour
         if (RoomReflectionGizmoAS == this)
         {
             // Get global room parameters (write new C api to get reflection values)
-            bool reflOn    = false;
-            bool reverbOn  = false;
-            float width    = 1.0f;
-            float height   = 1.0f;
-            float length   = 1.0f;
+            bool reflOn = false;
+            bool reverbOn = false;
+            float width = 1.0f;
+            float height = 1.0f;
+            float length = 1.0f;
 
             ONSP_GetGlobalRoomReflectionValues(ref reflOn, ref reverbOn, ref width, ref height, ref length);
 
             // TO DO: Get the room reflection values and render those out as well (like we do in the VST)
 
-            if((Camera.main != null) && (reflOn == true))
+            if ((Camera.main != null) && (reflOn == true))
             {
                 // Set color of cube (cyan is early reflections only, white is with reverb on)
-                if(reverbOn == true)
+                if (reverbOn == true)
                     c = Color.white;
                 else
                     c = Color.cyan;
@@ -352,7 +350,7 @@ public class ONSPAudioSource : MonoBehaviour
         // of the room reflection gizmo since we are being destroyed.
         // Any ONSPAS that is alive or born will re-set this pointer
         // so that we only draw it once
-        if(RoomReflectionGizmoAS == this)
+        if (RoomReflectionGizmoAS == this)
         {
             RoomReflectionGizmoAS = null;
         }

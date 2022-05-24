@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
 using Facebook.WitAi.Lib;
+using System;
 using UnityEngine;
 
 namespace Facebook.WitAi.Data.Keywords
@@ -17,7 +17,7 @@ namespace Facebook.WitAi.Data.Keywords
         [SerializeField] public string keyword;
         [SerializeField] public string[] synonyms;
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         public static WitKeyword FromJson(WitResponseNode keywordNode)
         {
             return new WitKeyword()
@@ -26,6 +26,6 @@ namespace Facebook.WitAi.Data.Keywords
                 synonyms = keywordNode["synonyms"].AsStringArray
             };
         }
-        #endif
+#endif
     }
 }

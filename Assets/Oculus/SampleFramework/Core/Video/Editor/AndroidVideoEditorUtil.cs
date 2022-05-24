@@ -3,9 +3,8 @@
 Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.  
 
 ************************************************************************************/
-using System.Collections.Generic;
-using UnityEditor;
 using System.IO;
+using UnityEditor;
 
 public class AndroidVideoEditorUtil
 {

@@ -10,9 +10,9 @@
  * permissions and limitations under the License.
  **************************************************************************************************/
 
+using Facebook.WitAi;
 using Facebook.WitAi.Data.Configuration;
 using Facebook.WitAi.Windows;
-using Facebook.WitAi;
 using Oculus.Voice.Utility;
 using UnityEditor;
 using UnityEngine;

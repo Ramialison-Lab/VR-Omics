@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using UnityEditor;
 using System.IO;
 using System.Text.RegularExpressions;
+using UnityEditor;
 
 namespace Gradle
 {
@@ -44,8 +44,8 @@ namespace Gradle
 
         public static bool IsUsingGradle()
         {
-            return EditorUserBuildSettings.androidBuildSystem == AndroidBuildSystem.Gradle 
-                && Directory.Exists(androidPluginsFolder) 
+            return EditorUserBuildSettings.androidBuildSystem == AndroidBuildSystem.Gradle
+                && Directory.Exists(androidPluginsFolder)
                 && File.Exists(gradleTemplatePath);
         }
 
@@ -63,28 +63,28 @@ namespace Gradle
             }
         }
 
-//        // doesn't seem to be needed anymore as of Unity 2018.4.28f LTS
-//        public static void VersionFixups(List<string> lines)
-//        {
-//            // add compileOptions to add Java 1.8 compatibility
-//            int android = Gradle.Parsing.GoToSection("android", lines);
-//            if (Gradle.Parsing.FindInScope("compileOptions", android + 1, lines) == -1)
-//            {
-//                int compileOptionsIndex = Gradle.Parsing.GetScopeEnd(android + 1, lines);
-//                lines.Insert(compileOptionsIndex, "\t}");
-//                lines.Insert(compileOptionsIndex, "\t\ttargetCompatibility JavaVersion.VERSION_1_8");
-//                lines.Insert(compileOptionsIndex, "\t\tsourceCompatibility JavaVersion.VERSION_1_8");
-//                lines.Insert(compileOptionsIndex, "\tcompileOptions {");
-//            }
+        //        // doesn't seem to be needed anymore as of Unity 2018.4.28f LTS
+        //        public static void VersionFixups(List<string> lines)
+        //        {
+        //            // add compileOptions to add Java 1.8 compatibility
+        //            int android = Gradle.Parsing.GoToSection("android", lines);
+        //            if (Gradle.Parsing.FindInScope("compileOptions", android + 1, lines) == -1)
+        //            {
+        //                int compileOptionsIndex = Gradle.Parsing.GetScopeEnd(android + 1, lines);
+        //                lines.Insert(compileOptionsIndex, "\t}");
+        //                lines.Insert(compileOptionsIndex, "\t\ttargetCompatibility JavaVersion.VERSION_1_8");
+        //                lines.Insert(compileOptionsIndex, "\t\tsourceCompatibility JavaVersion.VERSION_1_8");
+        //                lines.Insert(compileOptionsIndex, "\tcompileOptions {");
+        //            }
 
-//            // add sourceSets if Version < 2018.2
-//#if !UNITY_2018_2_OR_NEWER
-//            if (Gradle.Parsing.FindInScope("sourceSets\\.main\\.java\\.srcDir", android + 1, lines) == -1)
-//            {
-//                lines.Insert(Gradle.Parsing.GetScopeEnd(android + 1, lines), "\tsourceSets.main.java.srcDir \"" + gradleSourceSetPath + "\"");
-//            }
-//#endif
-//        }
+        //            // add sourceSets if Version < 2018.2
+        //#if !UNITY_2018_2_OR_NEWER
+        //            if (Gradle.Parsing.FindInScope("sourceSets\\.main\\.java\\.srcDir", android + 1, lines) == -1)
+        //            {
+        //                lines.Insert(Gradle.Parsing.GetScopeEnd(android + 1, lines), "\tsourceSets.main.java.srcDir \"" + gradleSourceSetPath + "\"");
+        //            }
+        //#endif
+        //        }
     }
 
     public static class Dependencies

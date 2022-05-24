@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System.Collections.Generic;
 using Facebook.WitAi.Interfaces;
 using Facebook.WitAi.Lib;
+using System.Collections.Generic;
 
 namespace Facebook.WitAi.Data.Entities
 {
@@ -22,7 +22,8 @@ namespace Facebook.WitAi.Data.Entities
             this.keywordsToSynonyms = keywordsToSynonyms;
         }
 
-        public KeyValuePair<string, WitResponseArray> GetEntityPair() {
+        public KeyValuePair<string, WitResponseArray> GetEntityPair()
+        {
             var keywordEntries = new WitResponseArray();
             foreach (var keywordToSynonyms in keywordsToSynonyms)
             {

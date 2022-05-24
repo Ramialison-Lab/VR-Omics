@@ -86,7 +86,7 @@ namespace Oculus.Interaction
                 _fingerGlowColorWithNoInteractable = value;
             }
         }
-#endregion
+        #endregion
 
         private readonly int[] _handShaderGlowPropertyIds = new int[]
         {

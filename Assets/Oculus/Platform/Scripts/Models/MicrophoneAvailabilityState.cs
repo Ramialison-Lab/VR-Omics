@@ -2,21 +2,17 @@
 
 namespace Oculus.Platform.Models
 {
-  using System;
-  using System.Collections;
-  using Oculus.Platform.Models;
-  using System.Collections.Generic;
-  using UnityEngine;
+    using System;
 
-  public class MicrophoneAvailabilityState
-  {
-    public readonly bool MicrophoneAvailable;
-
-
-    public MicrophoneAvailabilityState(IntPtr o)
+    public class MicrophoneAvailabilityState
     {
-      MicrophoneAvailable = CAPI.ovr_MicrophoneAvailabilityState_GetMicrophoneAvailable(o);
+        public readonly bool MicrophoneAvailable;
+
+
+        public MicrophoneAvailabilityState(IntPtr o)
+        {
+            MicrophoneAvailable = CAPI.ovr_MicrophoneAvailabilityState_GetMicrophoneAvailable(o);
+        }
     }
-  }
 
 }

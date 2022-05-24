@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
 using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Data.Entities;
 using Facebook.WitAi.Data.Intents;
@@ -48,13 +47,13 @@ namespace Facebook.WitAi.Data.Configuration
         public WitApplication Application => application;
         private void OnEnable()
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             if (string.IsNullOrEmpty(configId))
             {
                 configId = GUID.Generate().ToString();
                 EditorUtility.SetDirty(this);
             }
-            #endif
+#endif
         }
     }
 }

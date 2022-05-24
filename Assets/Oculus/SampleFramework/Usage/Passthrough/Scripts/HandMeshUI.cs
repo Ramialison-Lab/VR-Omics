@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 // low-effort way to get a UI
 public class HandMeshUI : MonoBehaviour

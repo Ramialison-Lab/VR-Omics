@@ -10,12 +10,12 @@ ANY KIND, either express or implied. See the License for the specific language g
 permissions and limitations under the License.
 ************************************************************************************/
 
-using Oculus.Interaction.Input;
+using Oculus.Interaction.Editor;
 using Oculus.Interaction.HandPosing.Visuals;
+using Oculus.Interaction.Input;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Oculus.Interaction.Editor;
 
 namespace Oculus.Interaction.HandPosing.Editor
 {

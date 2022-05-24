@@ -5,10 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using UnityEditor;
-using UnityEngine;
 using System.Reflection;
-using Facebook.WitAi.Data.Entities;
+using UnityEditor;
 
 namespace Facebook.WitAi.Windows
 {
@@ -20,21 +18,21 @@ namespace Facebook.WitAi.Windows
             // Determine by ids
             switch (key)
             {
-                    case LocalizedTitleKey:
-                        string title = GetFieldStringValue(property, "name");
-                        if (!string.IsNullOrEmpty(title))
-                        {
-                            return title;
-                        }
-                        break;
-                    case "id":
-                        return WitStyles.Texts.ConfigurationEntitiesIdLabel;
-                    case "lookups":
-                        return WitStyles.Texts.ConfigurationEntitiesLookupsLabel;
-                    case "roles":
-                        return WitStyles.Texts.ConfigurationEntitiesRolesLabel;
+                case LocalizedTitleKey:
+                    string title = GetFieldStringValue(property, "name");
+                    if (!string.IsNullOrEmpty(title))
+                    {
+                        return title;
+                    }
+                    break;
+                case "id":
+                    return WitStyles.Texts.ConfigurationEntitiesIdLabel;
+                case "lookups":
+                    return WitStyles.Texts.ConfigurationEntitiesLookupsLabel;
+                case "roles":
+                    return WitStyles.Texts.ConfigurationEntitiesRolesLabel;
             }
-            
+
             // Default to base
             return base.GetLocalizedText(property, key);
         }

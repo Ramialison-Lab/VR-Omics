@@ -10,8 +10,8 @@ ANY KIND, either express or implied. See the License for the specific language g
 permissions and limitations under the License.
 ************************************************************************************/
 
-using UnityEngine;
 using System;
+using UnityEngine;
 
 namespace Oculus.Interaction
 {

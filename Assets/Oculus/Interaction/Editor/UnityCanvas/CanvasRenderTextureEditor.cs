@@ -12,12 +12,11 @@ permissions and limitations under the License.
 
 using Oculus.Interaction.Editor;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEditor;
-
 using props = Oculus.Interaction.UnityCanvas.CanvasRenderTexture.Properties;
 
 namespace Oculus.Interaction.UnityCanvas.Editor
@@ -353,6 +352,6 @@ namespace Oculus.Interaction.UnityCanvas.Editor
             }
             return maskedLayers;
         }
-#endregion
+        #endregion
     }
 }

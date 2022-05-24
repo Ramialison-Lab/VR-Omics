@@ -11,13 +11,13 @@ permissions and limitations under the License.
 ************************************************************************************/
 
 using Oculus.Interaction.Input;
-using UnityEditor;
-using UnityEngine;
-using System.Text.RegularExpressions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System;
+using System.Text.RegularExpressions;
+using UnityEditor;
+using UnityEngine;
 
 namespace Oculus.Interaction.HandPosing.Visuals.Editor
 {
@@ -78,7 +78,7 @@ namespace Oculus.Interaction.HandPosing.Visuals.Editor
                 Transform child = root.GetChild(i);
                 string childName = child.name.ToLower();
 
-                bool shouldCheck = string.IsNullOrEmpty(ignorePattern)|| !childName.Contains(ignorePattern);
+                bool shouldCheck = string.IsNullOrEmpty(ignorePattern) || !childName.Contains(ignorePattern);
                 if (shouldCheck)
                 {
                     bool containsAllArgs = args.All(a => childName.Contains(a));

@@ -11,8 +11,8 @@ permissions and limitations under the License.
 ************************************************************************************/
 
 using System;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace Oculus.Interaction.Input

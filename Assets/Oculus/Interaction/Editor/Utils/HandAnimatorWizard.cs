@@ -11,11 +11,11 @@ permissions and limitations under the License.
 ************************************************************************************/
 
 using Oculus.Interaction.Input;
-using UnityEngine;
-using UnityEditor;
-using UnityEditor.Animations;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
+using UnityEditor.Animations;
+using UnityEngine;
 
 namespace Oculus.Interaction.HandPosing.Editor
 {

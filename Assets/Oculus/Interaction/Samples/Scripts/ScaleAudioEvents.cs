@@ -11,8 +11,8 @@ permissions and limitations under the License.
 ************************************************************************************/
 
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.Assertions;
+using UnityEngine.Events;
 
 namespace Oculus.Interaction.Samples
 {

@@ -14,7 +14,6 @@ using Oculus.Interaction.Input;
 using System;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
 namespace Oculus.Interaction
 {
@@ -108,7 +107,7 @@ namespace Oculus.Interaction
 
         public void InjectController(IController controller)
         {
-            _controller  = controller as MonoBehaviour;;
+            _controller = controller as MonoBehaviour; ;
             Controller = controller;
         }
 

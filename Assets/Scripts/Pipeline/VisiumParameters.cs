@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class VisiumParameters : MonoBehaviour
 {
     public Dropdown m_Dropdown;
-    public string str ="";
+    public string str = "";
     public GameObject DownloadUI;
     public GameObject p_selection;
     public List<string> paramList = new List<string>();

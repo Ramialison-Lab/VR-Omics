@@ -5,9 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Facebook.WitAi.Configuration;
 using Facebook.WitAi.Data.Configuration;
 using UnityEditor;
@@ -105,7 +102,7 @@ namespace Facebook.WitAi.Windows
             {
                 if (string.IsNullOrEmpty(appName))
                 {
-                    bool isValid =  WitConfigurationUtility.IsServerTokenValid(serverToken);
+                    bool isValid = WitConfigurationUtility.IsServerTokenValid(serverToken);
                     GUI.enabled = isValid;
                     if (WitEditorUI.LayoutTextButton(WitStyles.Texts.ConfigurationRefreshButtonLabel))
                     {

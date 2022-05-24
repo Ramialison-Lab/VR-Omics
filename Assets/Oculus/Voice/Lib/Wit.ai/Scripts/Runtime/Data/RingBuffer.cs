@@ -110,7 +110,7 @@ namespace Facebook.WitAi.Data
         {
             if (length > buffer.Length)
                 throw new ArgumentException(
-                    $"Push data exceeds buffer size {length} < {buffer.Length}" );
+                    $"Push data exceeds buffer size {length} < {buffer.Length}");
 
             if (bufferIndex + length < buffer.Length)
             {
@@ -148,10 +148,10 @@ namespace Facebook.WitAi.Data
 
             lock (buffer)
             {
-                int read = (int) (Math.Min(bufferDataIndex + length, bufferDataLength) -
+                int read = (int)(Math.Min(bufferDataIndex + length, bufferDataLength) -
                                   bufferDataIndex);
 
-                int bufferIndex = this.bufferIndex - (int) (bufferDataLength - bufferDataIndex);
+                int bufferIndex = this.bufferIndex - (int)(bufferDataLength - bufferDataIndex);
                 if (bufferIndex < 0)
                 {
                     bufferIndex = buffer.Length + bufferIndex;
