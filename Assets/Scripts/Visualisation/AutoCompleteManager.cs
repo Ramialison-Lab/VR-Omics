@@ -36,7 +36,6 @@ public class AutoCompleteManager : MonoBehaviour
                     if (i < 15)
                     {
                         //create Button for each entry
-                        Debug.Log(x);
                         // addListener with function to it and transfer button as GO
                         GameObject btn = Instantiate(btnPrefab);
                         btn.transform.SetParent(scrollView.transform);
@@ -86,7 +85,8 @@ public class AutoCompleteManager : MonoBehaviour
     }
 
     private void selectGene(GameObject btn)
-    {
+    {        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().resetNormalisedValues();
+
         InputGameObject.GetComponent<TMP_InputField>().text = btn.GetComponentInChildren<TMP_Text>().text;
         GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readExpressionList(btn.GetComponentInChildren<TMP_Text>().text);
     }

@@ -32,8 +32,8 @@ public class SliceCollider : MonoBehaviour
         Color newColor = cube.GetComponent<Renderer>().material.color;
         newColor.a = 0f;
         cube.GetComponent<Renderer>().material.color = newColor;
-        string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
-        Debug.Log(imagepath);
+        //string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
+        //Debug.Log(imagepath);
 
         //TBD overlay H&E stain image read image 
         //byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");

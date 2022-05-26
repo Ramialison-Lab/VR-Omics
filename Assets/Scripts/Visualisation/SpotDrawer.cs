@@ -15,7 +15,7 @@ public class SpotDrawer : MonoBehaviour
     public Material cubesMaterial;
     public Material hightlightmaterial;
     const int CubesPerBatch = 2000;
-    List<double> normalised;
+    public List<double> normalised;
     public Material matUsed;
     private int count = 0;
     public List<int> highlightIdentifier;
@@ -119,7 +119,10 @@ public class SpotDrawer : MonoBehaviour
                     }
                     else if (firstSelect)
                     {
-                        rc = colorGradient(i);
+                        try
+                        {
+                            rc = colorGradient(i);
+                        }catch(Exception e) { rc = new Color(0, 0, 0, 1); };
                     }
                     // catch (Exception e) 
                     else { rc = new Color(0, 0, 0, 1); }
@@ -164,21 +167,25 @@ public class SpotDrawer : MonoBehaviour
     {
         Gradient gradient = new Gradient();
 
+        if ((float)normalised[i]<minTresh)
+        {
+            return Color.black;
+        }
         // Populate the color keys at the relative time 0 and 1 (0 and 100%)
         GradientColorKey[] gck = new GradientColorKey[5];
-        gck[0].color = new Color(0, 0, 1); // Blue
-        gck[0].time = minTresh;
-        gck[1].color = new Color(0, 1, 1); // Cyan
-        if (minTresh > 0.25f)
-            gck[1].time = minTresh;
-        else gck[1].time = .25f;
 
-        gck[2].color = new Color(0, 1, 0); // green
+        float rgb = 255;
+
+        gck[0].color = new Color(65/rgb, 105/rgb, 255/rgb); // Blue
+        gck[0].time = 0f;
+        gck[1].color = new Color(135 / rgb, 206 / rgb, 250 / rgb); // Cyan
+        gck[1].time = .25f;
+        gck[2].color = new Color(60 / rgb, 179 / rgb, 113 / rgb); // green
         gck[2].time = 0.50F;
-        gck[3].color = new Color(1, 1, 0); // yellow
-        gck[3].time = 0.74F;
-        gck[4].color = new Color(1, 0, 0); // Red
-        gck[4].time = maxTresh;
+        gck[3].color = new Color(255 / rgb, 230 / rgb, 0); // yellow
+        gck[3].time = 0.75F;
+        gck[4].color = new Color(180 / rgb, 0, 0); // Red
+        gck[4].time = 1f;
 
         // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
         GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
@@ -191,13 +198,17 @@ public class SpotDrawer : MonoBehaviour
         return gradient.Evaluate((float)normalised[i]);
     }
 
-    public void setColors(List<double> normalised)
+    public void setColors(List<double> normalise)
     {
         firstSelect = true;
-        this.normalised = normalised;
+        normalised.AddRange(normalise);
         newColours = true;
     }
 
+    public void resetNormalisedValues()
+    {
+        normalised.Clear();
+    }
     //public void ColorMesh()
     //{
     //    newColours = true;
@@ -242,7 +253,7 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
-    public void moveSlice(float xoffset, float yoffset, float zoffset, string dN)
+    public void moveSlice(float xoffset, float yoffset, float zoffset, string dN, float z)
     {
         slicesMoved = true;
         xoffsetMove = xoffset;
@@ -252,7 +263,7 @@ public class SpotDrawer : MonoBehaviour
 
         foreach (MeshWrapper mw in batches)
         {
-            if (mw.datasetName == dN)
+            if (mw.datasetName == dN && mw.location.z == z)
             {
                 mw.location = new Vector3(mw.origin.x - xoffset, mw.origin.y - yoffset, mw.origin.z);
 

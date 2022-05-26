@@ -17,13 +17,13 @@ public class CSVReader : MonoBehaviour
     public Material Material1;
     public InputField input;
     public List<float> ev;
-    public List<int> resultExpression;
+    public List<float> resultExpression;
     public List<double> normalised;
 
     // search Function for gene
     public void searchGene(string datapath, int pos, string gn, SpotDrawer sp)
     {
-        //pos = UnityEngine.Random.Range(0,1000);
+;        //pos = UnityEngine.Random.Range(0,1000);
         datapath = datapath.Replace(datapath.Split('\\').Last(), "") + "TransposedTest.csv";
         StartCoroutine(search(datapath, pos, gn));
         sp.setColors(normalised);
@@ -33,7 +33,7 @@ public class CSVReader : MonoBehaviour
     {
         string[] lines = File.ReadAllLines(dp);
         // Removing the string with the genename from the CSV list before parsing each entry into a int value for the list
-        resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length + 1).Split(',').ToList().Select(int.Parse).ToList();
+        resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
 
         var max = resultExpression.Max();
         var min = resultExpression.Min();

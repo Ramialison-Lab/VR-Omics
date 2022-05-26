@@ -52,7 +52,6 @@ public class SearchManager : MonoBehaviour
             {
                 //get position of gene
                 posInGeneList = tempGeneNames.IndexOf(geneName);
-
                 sh.GetComponent<CSVReader>().searchGene(p, posInGeneList, geneName, sh.GetComponent<SpotDrawer>());
             }
 

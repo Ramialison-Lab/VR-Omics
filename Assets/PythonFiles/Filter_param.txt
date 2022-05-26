@@ -1,7 +1,7 @@
-V1_Mouse_Kidney
-
-
-
-
-
-
+V1_Breast_Cancer_Block_A_Section_2
+5000
+20000
+5
+20
+10
+300

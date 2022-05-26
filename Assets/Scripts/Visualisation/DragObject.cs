@@ -49,7 +49,7 @@ public class DragObject : MonoBehaviour
             xoffset = origin.x - transform.position.x;
             yoffset = origin.y - transform.position.y;
             zoffset = origin.z - transform.position.z;
-            sd.moveSlice(xoffset, yoffset, zoffset, datasetName);
+            sd.moveSlice(xoffset, yoffset, zoffset, datasetName, transform.position.z);
         }
     }
 
