@@ -37,6 +37,7 @@ public class SearchManager : MonoBehaviour
 
     }
 
+    // checking the datasets of all slides for the position of the gene 
     public void readExpressionList(string geneName)
     {
         int posInGeneList;
@@ -54,7 +55,6 @@ public class SearchManager : MonoBehaviour
                 posInGeneList = tempGeneNames.IndexOf(geneName);
                 sh.GetComponent<CSVReader>().searchGene(p, posInGeneList, geneName, sh.GetComponent<SpotDrawer>());
             }
-
         }
     }
 

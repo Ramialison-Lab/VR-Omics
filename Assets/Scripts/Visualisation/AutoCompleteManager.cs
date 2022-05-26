@@ -84,21 +84,15 @@ public class AutoCompleteManager : MonoBehaviour
         }
     }
 
+    // Pass gene to SearchManager to read expression values
     private void selectGene(GameObject btn)
-    {        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().resetNormalisedValues();
-
+    {        
+        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().resetNormalisedValues();
         InputGameObject.GetComponent<TMP_InputField>().text = btn.GetComponentInChildren<TMP_Text>().text;
         GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readExpressionList(btn.GetComponentInChildren<TMP_Text>().text);
     }
 
-    public void valueSelected(GameObject btn)
-    {
-        InputGameObject.GetComponent<TMP_InputField>().text = btn.name;
-
-        //might need to be changed to lowercase 
-        GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readExpressionList(btn.name);
-    }
-
+    //check if Inoutfield is focused
     public bool InputFocused()
     {
         return InputGameObject.GetComponent<TMP_InputField>().isFocused;

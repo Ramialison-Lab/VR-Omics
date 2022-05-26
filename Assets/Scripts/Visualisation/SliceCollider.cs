@@ -14,32 +14,34 @@ public class SliceCollider : MonoBehaviour
     public List<int> zcoords;
     public TMP_Dropdown dd;
 
+    // Adding a collider slice to each of the Visium slices to detect user input
     public void setSliceCollider(int lslice, int rslice, int topslice, int btmslice, int d, string datasetName)
     {
+        // create cube as slice
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-
+        // calculate size of collider TBD- some points not coverd
         var centerx = lslice + (rslice - lslice) / 2;
         var centery = btmslice + (topslice - btmslice) / 2;
         cube.transform.position = new Vector3(centerx, centery, d);
         cube.transform.localScale = new Vector3(rslice - lslice, topslice - btmslice, 1);
+        // make them invisible
         cube.GetComponent<MeshRenderer>().enabled = false;
         sliceColliders.Add(cube);
         zcoords.Add(d);
+        // attach DragObject script to move the slices
         cube.AddComponent<DragObject>();
         cube.GetComponent<DragObject>().resetCoords(datasetName);
-        //cube.GetComponent<DragObject>().setCenterPoint(new Vector3(cube.transform.localScale.x / 2, cube.transform.localScale.y / 2, cube.transform.position.z));
         cube.GetComponent<DragObject>().setCenterPoint(cube.transform.position);
         Color newColor = cube.GetComponent<Renderer>().material.color;
         newColor.a = 0f;
         cube.GetComponent<Renderer>().material.color = newColor;
-        //string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
-        //Debug.Log(imagepath);
-
+        
         //TBD overlay H&E stain image read image 
+  
+        //string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
         //byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
         //Texture2D sampleTexture = new Texture2D(2, 2);
         //bool isLoaded = sampleTexture.LoadImage(byteArray);
-
         //GameObject newCanvas = new GameObject("Canvas");
         //Canvas c = newCanvas.AddComponent<Canvas>();
         //c.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -65,6 +67,7 @@ public class SliceCollider : MonoBehaviour
         }
     }
 
+    //recalculate spots based on user click on collider
     private void clicked()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -81,6 +84,7 @@ public class SliceCollider : MonoBehaviour
         }
     }
 
+    // detecting rotation of slices
     public void prepareRotation(int direction)
     {
         List<string> paths = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().getDatasetpaths();

@@ -4,39 +4,36 @@ using UnityEngine;
 
 public class SpotDrawer : MonoBehaviour
 {
-
-    public GameObject sphere;
-
-    private bool start = false;
-    private CustomDataSetUpload customdata;
-    public Material cubeMaterial;
-    private FileReader filereader;
-    private List<string> spotnames;
-    public Material cubesMaterial;
-    public Material hightlightmaterial;
-    const int CubesPerBatch = 2000;
     public List<double> normalised;
-    public Material matUsed;
-    private int count = 0;
     public List<int> highlightIdentifier;
-    public float minTresh = 0f;
-    public float maxTresh = 0f;
-
-    private List<Color> randcolours = new List<Color>();
-    bool newColours = true;
-    bool slicesMoved = false;
-    string datasetMove;
-    float xoffsetMove;
-    float yoffsetMove;
-    float zoffsetMove;
-    private List<Vector3> batchedVertices = new List<Vector3>(24 * CubesPerBatch);
-    private List<int> batchedTriangles = new List<int>(36 * CubesPerBatch);
-
+    private List<string> spotnames;
     private List<MeshWrapper> batches = new List<MeshWrapper>();
+    private List<Color> spotColours = new List<Color>();
+    Vector3 currentEulerAngles;
+
+    public Material matUsed;
+    public GameObject sphere;
+    public GameObject MC;
+    private FileReader filereader;
+    private int count = 0;
+    private int delta = 0;
+    private bool firstSelect = false;
+    private bool start = false;
+    private bool newColours = true;
+    private bool slicesMoved = false;
+    private string datasetMove;
+    public float minTresh = 0f;
+    public float maxTresh = 0f;    
+    public float clickoffset = 0.25f;
+    private float xoffsetMove;
+    private float yoffsetMove;
+    private float zoffsetMove;
+    private float cube_z;
+
 
     class MeshWrapper
     {
-        //structure for each cube → spot, storing its mesh, the location read from the hdf5, the unique spot name and which dataset it comes from for the depth information
+        //structure for each cube → spot, storing its mesh, the location read from the hdf5, it original location, the unique spotname, which dataset it comes from for the depth information, and a unique ID
         public Mesh mesh;
         public Vector3 location;
         public Vector3 origin;
@@ -47,7 +44,7 @@ public class SpotDrawer : MonoBehaviour
 
 
     // a combined list of all datasets, that are read will be passed to this function to draw each spot
-    public void startSpotDrawerCustom(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
+    public void startSpotDrawer(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
     {
         // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
         // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
@@ -69,34 +66,20 @@ public class SpotDrawer : MonoBehaviour
             count++;
         }
 
+        //indicates that the spots are ready
         start = true;
 
     }
 
-    //void Update()
-    //{
-    //    // if all datasets are read
-    //    if (start)
-    //    {
-    //            // Drawing the cubes 
-    //            for (int i = 0; i < batches.Count; i++)
-    //            {
-    //                MeshWrapper wrapper = batches[i];
-    //            // passing cubesMaterial as the material for the cube, that's why it is red
-    //                Graphics.DrawMesh(wrapper.mesh, wrapper.location, Quaternion.identity, cubesMaterial, 0);
-    //            }
-    //    }    
-    //}
-    private bool firstSelect = false;
 
     private void Update()
     {
+        // Update draws the spots each frame
         if (start)
         {
             var main = Camera.main;
-
             if (newColours)
-                randcolours.Clear();
+                spotColours.Clear();
 
             // Map transform
             var sphereTransform = sphere.transform;
@@ -114,7 +97,7 @@ public class SpotDrawer : MonoBehaviour
                     {
                         rc = new Color(255, 0, 0, 1);
                         mpb.SetColor("_Color", rc);
-                        randcolours.Add(rc);
+                        spotColours.Add(rc);
 
                     }
                     else if (firstSelect)
@@ -127,32 +110,13 @@ public class SpotDrawer : MonoBehaviour
                     // catch (Exception e) 
                     else { rc = new Color(0, 0, 0, 1); }
                     mpb.SetColor("_Color", rc);
-                    randcolours.Add(rc);
+                    spotColours.Add(rc);
                 }
 
                 else
                 {
-                    mpb.SetColor("_Color", randcolours[i]);
+                    mpb.SetColor("_Color", spotColours[i]);
                 }
-
-                //if (slicesMoved)
-                //{
-                //    if (wrap.datasetName == datasetMove)
-                //    {
-                //        matrix = Matrix4x4.TRS(new Vector3(wrap.location.x - xoffsetMove, wrap.location.y - yoffsetMove, wrap.location.z ), sphereTransform.rotation, sphereTransform.localScale * 0.1f);
-                //        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                //    }
-                //    else
-                //    {
-                //        matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
-                //        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                //    }
-                //}
-                //else if (!slicesMoved)
-                //{
-                //    matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
-                //    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                //}
 
                 matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
                 Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
@@ -163,6 +127,7 @@ public class SpotDrawer : MonoBehaviour
     }
 
 
+    // calculate color based on expression value
     private Color colorGradient(int i)
     {
         Gradient gradient = new Gradient();
@@ -198,6 +163,7 @@ public class SpotDrawer : MonoBehaviour
         return gradient.Evaluate((float)normalised[i]);
     }
 
+    // set new List of expression values
     public void setColors(List<double> normalise)
     {
         firstSelect = true;
@@ -205,22 +171,16 @@ public class SpotDrawer : MonoBehaviour
         newColours = true;
     }
 
+    // reset expressionValues for new search
     public void resetNormalisedValues()
     {
         normalised.Clear();
     }
-    //public void ColorMesh()
-    //{
-    //    newColours = true;
-    //}
 
-    //can be adjusted if click on points is off
-    public float clickoffset = 0.25f;
-    public GameObject MC;
+    // Identification of a spot if clicked on or lasso tool used
     public void identifySpot(float x_cl, float y_cl, string dN)
     {
         // if lasso tool selected
-
         var x_click = x_cl + clickoffset;
         var y_click = y_cl + clickoffset;
         foreach (MeshWrapper mw in batches)
@@ -248,11 +208,10 @@ public class SpotDrawer : MonoBehaviour
                 }
                 catch (Exception e) { };
             }
-
-
         }
     }
 
+    // moving slices based on the movement of the colider slice
     public void moveSlice(float xoffset, float yoffset, float zoffset, string dN, float z)
     {
         slicesMoved = true;
@@ -269,19 +228,12 @@ public class SpotDrawer : MonoBehaviour
 
             }
         }
-
     }
 
-    public void releasedSlice()
-    {
-        slicesMoved = false;
-    }
-    private int delta = 0;
-    Vector3 currentEulerAngles;
-    float cube_z;
-
+    // rotation of all spots and the according collider slide
     public void rotateSlice(int direction, string dN, Vector3 cP, GameObject cube)
     {
+        //direction= -1 or 1; dN = datasetName to identify which spots need to be rotated, Vector cP is the center of the ColliderSlice which is overlayed with the Spots and cube is the colliderslice 
         foreach (MeshWrapper mw in batches)
         {
             if (mw.datasetName == dN)
@@ -289,6 +241,7 @@ public class SpotDrawer : MonoBehaviour
                 Vector3 vec = mw.location;
                 //var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
 
+                //rotating all spots
                 delta = 1 * direction;
 
                 float x0 = ((mw.location.x - cP.x) * (float)Math.Cos((Math.PI / 180) * (delta)));
@@ -304,6 +257,7 @@ public class SpotDrawer : MonoBehaviour
                 mw.location = new Vector3(x, y, z);
                 cube_z = direction;
 
+                //rotating the collider slice
                 currentEulerAngles += new Vector3(0, 0, cube_z) * Time.deltaTime * 0.025f;
                 cube.transform.eulerAngles = currentEulerAngles;
 
@@ -313,6 +267,7 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
+    // set treshold for colour
     public void setMinTresh(float val)
     {
         minTresh = val;

@@ -7,8 +7,6 @@ public class DataTransferManager : MonoBehaviour
 {
     private int x = 0;
     public List<string> hdf5datapaths;
-    // Start is called before the first frame update
-
     public List<float> tempx;
     public List<float> tempy;
     public List<float> tempz;
@@ -29,30 +27,21 @@ public class DataTransferManager : MonoBehaviour
         List<string> shortList = new List<string>();
 
         ////TBD! Comment out following lines to transfer data from pipeline
-        List<string> datapaths = scriptHolderPipeline.GetComponent<UIManager>().getDatapathList();
+        //List<string> datapaths = scriptHolderPipeline.GetComponent<UIManager>().getDatapathList();
 
-        foreach (string x in datapaths)
-        {
-            hdf5datapaths.Add(x + "\\" + x.Split('\\').Last() + "_scanpy.hdf5");
-        }
+        //foreach (string data in datapaths)
+        //{
+        //    hdf5datapaths.Add(data + "\\" + data.Split('\\').Last() + "_scanpy.hdf5");
+        //}
 
-        //TBD - Testdatasets delte following lines
-
+        //TBD - Testdatasets for Denis local - delete following lines
 
         // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\Heart\\Heart.hdf5");
 
-        //     hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
 
-        //foreach (string p in hdf5datapaths)
-        //{
-        //    scriptHolder.GetComponent<FileReader>().calcCoords(p);
-        //    long[] row = scriptHolder.GetComponent<FileReader>().getRowArray();
-        //    long[] col = scriptHolder.GetComponent<FileReader>().getColArray();
-        //    scriptHolder.GetComponent<FileReader>().resetRowCol();
-        //    scriptHolder.GetComponent<SpotDrawer>().startSpotDrawerCustom(col, row, (float)x);
-        //    x++;
-        //}        
-
+        // Reading datasets and creating merged List for all coordinates
         foreach (string p in hdf5datapaths)
         {
             shortList.Add(p.Split('\\').Last());
@@ -85,12 +74,12 @@ public class DataTransferManager : MonoBehaviour
 
             scriptHolder.GetComponent<FileReader>().resetRowCol();
 
-            //x as placeholder to add depth information to slices TBD 
+            // TBD - depth automatically increased by 10, needs to be replaced with depth information set in pipeline alignment 
             x = x + 10;
         }
 
-        //tempx and y swapped
-        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawerCustom(tempy, tempx, tempz, spotnames, datSetNames);
+        //tempx and y swapped for better view
+        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(tempy, tempx, tempz, spotnames, datSetNames);
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
 

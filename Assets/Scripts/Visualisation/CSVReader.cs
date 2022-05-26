@@ -23,8 +23,8 @@ public class CSVReader : MonoBehaviour
     // search Function for gene
     public void searchGene(string datapath, int pos, string gn, SpotDrawer sp)
     {
-;        //pos = UnityEngine.Random.Range(0,1000);
         datapath = datapath.Replace(datapath.Split('\\').Last(), "") + "TransposedTest.csv";
+        //TBD this operation causes the runtime to freeze
         StartCoroutine(search(datapath, pos, gn));
         sp.setColors(normalised);
     }
