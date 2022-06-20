@@ -12,6 +12,7 @@ public class SpotDrawer : MonoBehaviour
     Vector3 currentEulerAngles;
 
     public Material matUsed;
+    public Material transparentMaterial;
     public GameObject sphere;
     public GameObject MC;
     private FileReader filereader;
@@ -71,7 +72,6 @@ public class SpotDrawer : MonoBehaviour
 
     }
 
-
     private void Update()
     {
         // Update draws the spots each frame
@@ -93,8 +93,10 @@ public class SpotDrawer : MonoBehaviour
                 Color rc;
                 if (newColours)
                 {
+                    // check if spots are selected while recoloring
                     if (highlightIdentifier.Contains(wrap.uniqueIdentifier))
                     {
+                        // set colour red if manually selected
                         rc = new Color(255, 0, 0, 1);
                         mpb.SetColor("_Color", rc);
                         spotColours.Add(rc);
@@ -104,11 +106,13 @@ public class SpotDrawer : MonoBehaviour
                     {
                         try
                         {
+                            // evaluate expression value with colorgradient
                             rc = colorGradient(i);
-                        }catch(Exception e) { rc = new Color(0, 0, 0, 1); };
+
+                        }catch(Exception e) { rc = Color.clear; };
                     }
-                    // catch (Exception e) 
-                    else { rc = new Color(0, 0, 0, 1); }
+                    // if spot not found
+                    else { rc = Color.clear; }
                     mpb.SetColor("_Color", rc);
                     spotColours.Add(rc);
                 }
@@ -118,9 +122,18 @@ public class SpotDrawer : MonoBehaviour
                     mpb.SetColor("_Color", spotColours[i]);
                 }
 
-                matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
-                Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                if (spotColours[i] == Color.clear && firstSelect)
+                {
+                    matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+                    Graphics.DrawMesh(wrap.mesh, matrix, transparentMaterial, 0, main, 0, mpb, false, false);
+                }
+                else
+                {
+                    matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                }
 
+                
             }
             newColours = false;
         }
@@ -134,7 +147,7 @@ public class SpotDrawer : MonoBehaviour
 
         if ((float)normalised[i]<minTresh)
         {
-            return Color.black;
+            return Color.clear;
         }
         // Populate the color keys at the relative time 0 and 1 (0 and 100%)
         GradientColorKey[] gck = new GradientColorKey[5];
@@ -208,6 +221,30 @@ public class SpotDrawer : MonoBehaviour
                 }
                 catch (Exception e) { };
             }
+        }
+    }
+
+    public void expandDataset(float expandValue)
+    {
+        GameObject cube = GameObject.Find("Cube");
+
+        float width = cube.transform.localScale.x;
+        float heigth = cube.transform.localScale.y;
+
+        float cp_x = cube.transform.localPosition.x;
+        float cp_y = cube.transform.localPosition.y;
+
+        foreach (MeshWrapper mw in batches)
+        {
+            float distance = ((float)Math.Sqrt((float)Math.Pow(cp_x - mw.location.x, 2) + (float)Math.Pow(cp_y - mw.location.y, 2)));
+            float norm_x = mw.location.x / distance;
+            float norm_y = mw.location.y / distance;
+
+
+            if(mw.location.x>cp_x && mw.location.y > cp_y) mw.location = new Vector3(mw.origin.x + (expandValue * norm_x), mw.origin.y + (expandValue * norm_y), mw.origin.z);
+            if(mw.location.x>cp_x && mw.location.y < cp_y) mw.location = new Vector3(mw.origin.x + (expandValue * norm_x), mw.origin.y - (expandValue * norm_y), mw.origin.z);
+            if(mw.location.x<cp_x && mw.location.y > cp_y) mw.location = new Vector3(mw.origin.x - (expandValue * norm_x), mw.origin.y + (expandValue * norm_y), mw.origin.z);
+            if(mw.location.x<cp_x && mw.location.y < cp_y) mw.location = new Vector3(mw.origin.x - (expandValue * norm_x), mw.origin.y - (expandValue * norm_y), mw.origin.z);
         }
     }
 

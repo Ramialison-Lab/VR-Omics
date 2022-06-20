@@ -66,6 +66,15 @@ public class MenuCanvas : MonoBehaviour
         sp.transform.localScale = new Vector3(sl.value * 10, sl.value * 10, sl.value * 10);
     }
 
+    public void expandDataset(GameObject slider)
+    {
+        // get slider value
+        Slider sl = slider.GetComponent<Slider>();
+        sd.expandDataset(sl.value);
+        //tbd increase sphere size
+        //sp.transform.localScale = new Vector3(sl.value * 10, sl.value * 10, sl.value * 10);
+    }
+
     public void toggleLasso()
     {
         lasso = !lasso;

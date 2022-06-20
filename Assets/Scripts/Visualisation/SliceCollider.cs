@@ -17,6 +17,7 @@ public class SliceCollider : MonoBehaviour
     // Adding a collider slice to each of the Visium slices to detect user input
     public void setSliceCollider(int lslice, int rslice, int topslice, int btmslice, int d, string datasetName)
     {
+
         // create cube as slice
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         // calculate size of collider TBD- some points not coverd
@@ -67,6 +68,9 @@ public class SliceCollider : MonoBehaviour
         }
     }
 
+    private Vector3 screenPos;
+    private Vector3 worldPos;
+
     //recalculate spots based on user click on collider
     private void clicked()
     {
@@ -74,11 +78,14 @@ public class SliceCollider : MonoBehaviour
 
         RaycastHit hit = new RaycastHit();
 
+
+
         if (Physics.Raycast(ray, out hit))
         {
             //TBD not using name cube here
             if (hit.collider.gameObject.name == "Cube")
             {
+                Debug.Log(hit.point.ToString());
                 GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot(hit.point.x, hit.point.y, hit.collider.gameObject.GetComponent<DragObject>().getDatasetName());
             }
         }
