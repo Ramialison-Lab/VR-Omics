@@ -15,9 +15,12 @@ public class SliceCollider : MonoBehaviour
     public TMP_Dropdown dd;
 
     // Adding a collider slice to each of the Visium slices to detect user input
-    public void setSliceCollider(int lslice, int rslice, int topslice, int btmslice, int d, string datasetName)
+    public void setSliceCollider(int btmslice, int topslice, int rslice, int lslice, int d, string datasetName)
     {
-
+        Debug.Log(lslice);
+        Debug.Log(rslice);
+        Debug.Log(topslice);
+        Debug.Log(btmslice);
         // create cube as slice
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         // calculate size of collider TBD- some points not coverd

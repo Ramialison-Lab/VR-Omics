@@ -38,8 +38,8 @@ public class DataTransferManager : MonoBehaviour
 
         // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\Heart\\Heart.hdf5");
 
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_2\\V1_Breast_Cancer_Block_A_Section_2_scanpy.hdf5");
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1\\V1_Breast_Cancer_Block_A_Section_1_scanpy.hdf5");
+        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1B\\V1_Breast_Cancer_Block_A_Section_1B_scanpy.hdf5");
 
         // Reading datasets and creating merged List for all coordinates
         foreach (string p in hdf5datapaths)
@@ -78,8 +78,7 @@ public class DataTransferManager : MonoBehaviour
             x = x + 10;
         }
 
-        //tempx and y swapped for better view
-        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(tempy, tempx, tempz, spotnames, datSetNames);
+        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(tempx, tempy, tempz, spotnames, datSetNames);
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
 
