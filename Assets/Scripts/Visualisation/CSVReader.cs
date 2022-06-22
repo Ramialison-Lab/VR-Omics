@@ -20,6 +20,7 @@ public class CSVReader : MonoBehaviour
     public List<float> resultExpression;
     public List<double> normalised;
     public List<List<string>> geneNameDictionary = new List<List<string>>();
+    public List<List<string>> SpotNameDictionary = new List<List<string>>();
 
     // search Function for gene
     public void searchGene(string datapath, int pos, string gn)
@@ -36,10 +37,33 @@ public class CSVReader : MonoBehaviour
         searchGene(dp, geneNameDictionary[x].IndexOf(gn), gn);
     }
 
+    public void createSpotList(string dp, int x)
+    {
+        datapath = dp.Replace(dp.Split('\\').Last(), "") + "test2Csv.csv";
+        StartCoroutine(createSpotDic(datapath, x));
+    }
+
     public void createGeneLists(string dp, int count)
     {
         datapath = dp.Replace(dp.Split('\\').Last(), "") + "Original.csv";
         StartCoroutine(createGeneDic(datapath, count));
+    }
+    IEnumerator createSpotDic(string dp, int count)
+    {
+        string[] lines = File.ReadAllLines(dp);
+        lines = lines.Skip(1).ToArray();
+        List<string> values = new List<string>();
+        foreach( string x in lines)
+        {
+            values.Add(x.Split(',').First());
+        }
+        SpotNameDictionary.Add(values);
+        yield return null;
+    }
+
+    public List<List<string>> getSpotList()
+    {
+        return SpotNameDictionary;
     }
 
     IEnumerator createGeneDic(string dp, int count)
@@ -53,7 +77,6 @@ public class CSVReader : MonoBehaviour
     {
         string[] lines = File.ReadAllLines(dp);
         // Removing the string with the genename from the CSV list before parsing each entry into a int value for the list
-        Debug.Log(lines[pos].Split(',').First());
         resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
 
         var max = resultExpression.Max();

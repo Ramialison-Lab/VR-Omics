@@ -36,7 +36,7 @@ public class DataTransferManager : MonoBehaviour
 
         //TBD - Testdatasets for Denis local - delete following lines
 
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\Heart\\Heart.hdf5");
+       // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
 
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1\\V1_Breast_Cancer_Block_A_Section_1_scanpy.hdf5");
         //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1B\\V1_Breast_Cancer_Block_A_Section_1B_scanpy.hdf5");
@@ -79,6 +79,7 @@ public class DataTransferManager : MonoBehaviour
             x = x + 10;
 
             scriptHolder.GetComponent<CSVReader>().createGeneLists(p, count);
+            scriptHolder.GetComponent<CSVReader>().createSpotList(p, count);
             count = count + 1;
         }
 
@@ -86,6 +87,12 @@ public class DataTransferManager : MonoBehaviour
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
 
+
+    }
+
+    public int identifyDatasetInt(string datasetNameToCheck)
+    {
+        return hdf5datapaths.IndexOf(datasetNameToCheck);
     }
 
     public List<string> getDatasetpaths()
