@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SpotDrawer : MonoBehaviour
 {
@@ -69,6 +70,7 @@ public class SpotDrawer : MonoBehaviour
 
         //indicates that the spots are ready
         start = true;
+        createColorGradientMenu();
 
     }
 
@@ -138,7 +140,58 @@ public class SpotDrawer : MonoBehaviour
     }
     private bool customColour = false;
     private GradientColorKey[] ngck;
-    
+
+    public GameObject colourGradientObject;
+    public List<GameObject> colGradChilds;
+    public void createColorGradientMenu()
+    {
+        foreach(GameObject go in colGradChilds)
+        {
+            Destroy(go);
+        }
+        colGradChilds.Clear();
+
+        if (customColour)
+        {
+            for(int i=0; i< ngck.Length; i++)
+            {
+                GameObject NewObj = new GameObject();
+                Image NewImage = NewObj.AddComponent<Image>();
+                NewImage.rectTransform.sizeDelta = new Vector2(20, 20);
+                NewImage.color = ngck[i].color;
+                NewObj.GetComponent<RectTransform>().SetParent(colourGradientObject.transform);
+                NewObj.SetActive(true);
+                colGradChilds.Add(NewObj);
+            }
+
+        }
+        else
+        {
+            GradientColorKey[] gck = new GradientColorKey[5];
+            float rgb = 255;
+            gck[0].color = new Color(65 / rgb, 105 / rgb, 255 / rgb); // Blue
+            gck[0].time = 0f;
+            gck[1].color = new Color(135 / rgb, 206 / rgb, 250 / rgb); // Cyan
+            gck[1].time = .25f;
+            gck[2].color = new Color(60 / rgb, 179 / rgb, 113 / rgb); // green
+            gck[2].time = 0.50F;
+            gck[3].color = new Color(255 / rgb, 230 / rgb, 0); // yellow
+            gck[3].time = 0.75F;
+            gck[4].color = new Color(180 / rgb, 0, 0); // Red
+            gck[4].time = 1f;
+
+            for (int i = 0; i < gck.Length; i++)
+            {
+                GameObject NewObj = new GameObject();
+                Image NewImage = NewObj.AddComponent<Image>();
+                NewImage.rectTransform.sizeDelta = new Vector2(20, 20);
+                NewImage.color = gck[i].color;
+                NewObj.GetComponent<RectTransform>().SetParent(colourGradientObject.transform);
+                NewObj.SetActive(true);
+                colGradChilds.Add(NewObj);
+            }
+        }
+    }
     public void defaultColour()
     {
         Debug.Log("defaut");
@@ -150,7 +203,7 @@ public class SpotDrawer : MonoBehaviour
         int numberInt = colorScheme.Count / 5;
         ngck = new GradientColorKey[numberInt];
         int offset = 0;
-        int rgb = 255;
+        float rgb = 255;
         for (int i=0; i<numberInt; i++)
         {
             if(colorScheme[offset+4] == "Please choose")
@@ -196,7 +249,7 @@ public class SpotDrawer : MonoBehaviour
             offset += 5;
         }
         customColour = true;
-
+        createColorGradientMenu();
     }
 
 
@@ -233,8 +286,8 @@ public class SpotDrawer : MonoBehaviour
             alphaKey[0].time = 0.0f;
             alphaKey[1].alpha = 0.0f;
             alphaKey[1].time = 1.0f;
-
             gradient.SetKeys(gck, alphaKey);
+
             return gradient.Evaluate((float)normalised[i]);
         }
         else

@@ -19,7 +19,7 @@ public class SettingsManager : MonoBehaviour
     }
     public void AddContainer()
     {
-        if(containerList.Count<10) containerList.Add(Instantiate(containerPrefab, colourPanel.transform));
+        if(containerList.Count<8) containerList.Add(Instantiate(containerPrefab, colourPanel.transform));
     }
 
     public void RemoveContainer()

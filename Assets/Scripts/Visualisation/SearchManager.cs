@@ -34,27 +34,18 @@ public class SearchManager : MonoBehaviour
         }
 
         sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
-
+        
     }
 
     // checking the datasets of all slides for the position of the gene 
     public void readExpressionList(string geneName)
     {
-        int posInGeneList;
+        int x = 0;
         //for each dataset selected
         foreach (string p in datasetPaths)
         {
-            // create list of all genes in dataset
-            fr.readGeneNames(p);
-            List<string> tempGeneNames = fr.getGeneNameList();
-
-            // iterate through whole list to find gene
-            if (tempGeneNames.Contains(geneName))
-            {
-                //get position of gene
-                posInGeneList = tempGeneNames.IndexOf(geneName);
-                sh.GetComponent<CSVReader>().searchGene(p, posInGeneList, geneName, sh.GetComponent<SpotDrawer>());
-            }
+                sh.GetComponent<CSVReader>().searchForGene(p, geneName, x);
+                x++; 
         }
     }
 

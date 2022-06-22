@@ -19,20 +19,41 @@ public class CSVReader : MonoBehaviour
     public List<float> ev;
     public List<float> resultExpression;
     public List<double> normalised;
+    public List<List<string>> geneNameDictionary = new List<List<string>>();
 
     // search Function for gene
-    public void searchGene(string datapath, int pos, string gn, SpotDrawer sp)
+    public void searchGene(string datapath, int pos, string gn)
     {
         datapath = datapath.Replace(datapath.Split('\\').Last(), "") + "TransposedTest.csv";
         //TBD this operation causes the runtime to freeze
         StartCoroutine(search(datapath, pos, gn));
-        sp.setColors(normalised);
+        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
+    }
+
+    public void searchForGene(string dp, string gn, int x)
+    {
+        
+        searchGene(dp, geneNameDictionary[x].IndexOf(gn), gn);
+    }
+
+    public void createGeneLists(string dp, int count)
+    {
+        datapath = dp.Replace(dp.Split('\\').Last(), "") + "Original.csv";
+        StartCoroutine(createGeneDic(datapath, count));
+    }
+
+    IEnumerator createGeneDic(string dp, int count)
+    {
+        StreamReader sr = new StreamReader(dp);
+        geneNameDictionary.Add(sr.ReadLine().Split(',').ToList<string>());
+        yield return null;
     }
 
     IEnumerator search(string dp, int pos, string gn)
     {
         string[] lines = File.ReadAllLines(dp);
         // Removing the string with the genename from the CSV list before parsing each entry into a int value for the list
+        Debug.Log(lines[pos].Split(',').First());
         resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
 
         var max = resultExpression.Max();
