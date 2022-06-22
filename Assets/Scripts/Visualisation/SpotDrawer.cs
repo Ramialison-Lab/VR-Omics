@@ -108,8 +108,8 @@ public class SpotDrawer : MonoBehaviour
                         {
                             // evaluate expression value with colorgradient
                             rc = colorGradient(i);
-
-                        }catch(Exception e) { rc = Color.clear; };
+                        }
+                        catch (Exception e) { rc = Color.clear; };
                     }
                     // if spot not found
                     else { rc = Color.clear; }
@@ -131,49 +131,127 @@ public class SpotDrawer : MonoBehaviour
                 {
                     matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
                     Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                }
-
-                
+                }                
             }
             newColours = false;
         }
+    }
+    private bool customColour = false;
+    private GradientColorKey[] ngck;
+    
+    public void defaultColour()
+    {
+        Debug.Log("defaut");
+        customColour = false;
+    }
+    
+    public void setColourScheme(List<string> colorScheme)
+    {
+        int numberInt = colorScheme.Count / 5;
+        ngck = new GradientColorKey[numberInt];
+        int offset = 0;
+        int rgb = 255;
+        for (int i=0; i<numberInt; i++)
+        {
+            if(colorScheme[offset+4] == "Please choose")
+            {
+                ngck[i].color = new Color(int.Parse(colorScheme[offset+1]) , int.Parse(colorScheme[offset + 2])/rgb, int.Parse(colorScheme[offset + 3])/rgb);
+            }
+            else
+            {
+                switch (colorScheme[offset + 4])
+                {
+                    case "Black": 
+                        ngck[i].color = Color.black;
+                        break;
+                    case "Blue":
+                        ngck[i].color = Color.blue;
+                        break;
+                    case "Cyan":
+                        ngck[i].color = Color.cyan;
+                        break;
+                    case "Gray":
+                        ngck[i].color = Color.gray;
+                        break;
+                    case "Green":
+                        ngck[i].color = Color.green;
+                        break;
+                    case "Magenta":
+                        ngck[i].color = Color.magenta;
+                        break;
+                    case "Red":
+                        ngck[i].color = Color.red;
+                        break;
+                    case "White":
+                        ngck[i].color = Color.white;
+                        break;
+                    case "Yellow":
+                        ngck[i].color = Color.yellow;
+                        break;
+
+                }
+            }
+            
+            ngck[i].time = float.Parse(colorScheme[offset])/100;
+            offset += 5;
+        }
+        customColour = true;
+
     }
 
 
     // calculate color based on expression value
     private Color colorGradient(int i)
     {
-        Gradient gradient = new Gradient();
 
         if ((float)normalised[i]<minTresh)
         {
             return Color.clear;
         }
-        // Populate the color keys at the relative time 0 and 1 (0 and 100%)
-        GradientColorKey[] gck = new GradientColorKey[5];
+        if (!customColour)
+        {
+            Gradient gradient = new Gradient();
+            // Populate the color keys at the relative time 0 and 1 (0 and 100%)
+            GradientColorKey[] gck = new GradientColorKey[5];
 
-        float rgb = 255;
+            float rgb = 255;
 
-        gck[0].color = new Color(65/rgb, 105/rgb, 255/rgb); // Blue
-        gck[0].time = 0f;
-        gck[1].color = new Color(135 / rgb, 206 / rgb, 250 / rgb); // Cyan
-        gck[1].time = .25f;
-        gck[2].color = new Color(60 / rgb, 179 / rgb, 113 / rgb); // green
-        gck[2].time = 0.50F;
-        gck[3].color = new Color(255 / rgb, 230 / rgb, 0); // yellow
-        gck[3].time = 0.75F;
-        gck[4].color = new Color(180 / rgb, 0, 0); // Red
-        gck[4].time = 1f;
+            gck[0].color = new Color(65 / rgb, 105 / rgb, 255 / rgb); // Blue
+            gck[0].time = 0f;
+            gck[1].color = new Color(135 / rgb, 206 / rgb, 250 / rgb); // Cyan
+            gck[1].time = .25f;
+            gck[2].color = new Color(60 / rgb, 179 / rgb, 113 / rgb); // green
+            gck[2].time = 0.50F;
+            gck[3].color = new Color(255 / rgb, 230 / rgb, 0); // yellow
+            gck[3].time = 0.75F;
+            gck[4].color = new Color(180 / rgb, 0, 0); // Red
+            gck[4].time = 1f;
 
-        // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
-        GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
-        alphaKey[0].alpha = 1.0f;
-        alphaKey[0].time = 0.0f;
-        alphaKey[1].alpha = 0.0f;
-        alphaKey[1].time = 1.0f;
+            // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
+            GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
+            alphaKey[0].alpha = 1.0f;
+            alphaKey[0].time = 0.0f;
+            alphaKey[1].alpha = 0.0f;
+            alphaKey[1].time = 1.0f;
 
-        gradient.SetKeys(gck, alphaKey);
-        return gradient.Evaluate((float)normalised[i]);
+            gradient.SetKeys(gck, alphaKey);
+            return gradient.Evaluate((float)normalised[i]);
+        }
+        else
+        {
+            Gradient gradient = new Gradient();
+
+            // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
+            GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
+            alphaKey[0].alpha = 1.0f;
+            alphaKey[0].time = 0.0f;
+            alphaKey[1].alpha = 0.0f;
+            alphaKey[1].time = 1.0f;
+
+            gradient.SetKeys(ngck, alphaKey);
+
+            return gradient.Evaluate((float)normalised[i]);
+        }
     }
 
     // set new List of expression values

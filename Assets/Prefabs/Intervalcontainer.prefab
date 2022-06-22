@@ -807,7 +807,7 @@ GameObject:
   - component: {fileID: 8383782098081433446}
   - component: {fileID: 8383782098081433447}
   m_Layer: 5
-  m_Name: InputField
+  m_Name: RVal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1026,7 +1026,7 @@ GameObject:
   - component: {fileID: 8383782098116588262}
   - component: {fileID: 8383782098116588263}
   m_Layer: 5
-  m_Name: InputField (1)
+  m_Name: GVal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1359,6 +1359,8 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
+    - m_Text: Please choose
+      m_Image: {fileID: 0}
     - m_Text: Black
       m_Image: {fileID: 0}
     - m_Text: Blue
@@ -1519,7 +1521,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Black
+  m_text: Please choose
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1882,7 +1884,7 @@ GameObject:
   - component: {fileID: 8383782098464351087}
   - component: {fileID: 8383782098464351084}
   m_Layer: 5
-  m_Name: InputField (2)
+  m_Name: BVal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2023,7 +2025,7 @@ GameObject:
   - component: {fileID: 8383782098501056939}
   - component: {fileID: 8383782098501056936}
   m_Layer: 5
-  m_Name: InputField (TMP)
+  m_Name: PercentageVal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -96,4 +96,12 @@ public class MenuCanvas : MonoBehaviour
             sidemenu.SetActive(true);
         }
     }
+    public GameObject settingsMenu;
+    private bool settingsActive = false;
+    public void toggleSettingsMenu()
+    {
+        if (settingsActive) settingsMenu.SetActive(false);
+        else settingsMenu.SetActive(true);
+        settingsActive = !settingsActive;
+    }
 }
