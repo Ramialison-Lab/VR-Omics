@@ -15,13 +15,13 @@ public class SideMenuManager : MonoBehaviour
 
     }
 
-    public void setSpotInfo(string SpotName, string Dataset, int id, Vector3 loc)
+    public void setSpotInfo(string SpotName, string Dataset, int id, Vector3 loc, float expVal)
     {
         int datasetId = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().identifyDatasetInt(Dataset);
         foreach (TMP_Text tt in texts) tt.text = "";
         texts[0].text = SpotName;
         texts[1].text = "Dataset: " + Dataset.Split('\\').Last();
-        texts[2].text = "identifier: " + id.ToString();
+        texts[2].text = "Expressionvalue: " + expVal.ToString() ;
         texts[3].text = "Location: " + loc.ToString();
 
         SpotNameDictionary = GameObject.Find("ScriptHolder").GetComponent<CSVReader>().getSpotList();

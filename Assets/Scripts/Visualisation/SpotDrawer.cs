@@ -42,6 +42,7 @@ public class SpotDrawer : MonoBehaviour
         internal string spotname;
         internal string datasetName;
         public int uniqueIdentifier;
+        public float expVal;
     }
 
 
@@ -98,7 +99,6 @@ public class SpotDrawer : MonoBehaviour
                     // check if spots are selected while recoloring
                     if (highlightIdentifier.Contains(wrap.uniqueIdentifier))
                     {
-                        Debug.Log(wrap.uniqueIdentifier);
                         // set colour red if manually selected
                         rc = new Color(255, 0, 0, 1);
                         mpb.SetColor("_Color", rc);
@@ -111,6 +111,7 @@ public class SpotDrawer : MonoBehaviour
                         {
                             // evaluate expression value with colorgradient
                             rc = colorGradient(i);
+                            wrap.expVal = (float)normalised[i];
                         }
                         catch (Exception e) { rc = Color.clear; };
                     }
@@ -349,7 +350,7 @@ public class SpotDrawer : MonoBehaviour
                 }
                 try
                 {
-                    GameObject.Find("SideMenu").GetComponent<SideMenuManager>().setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location);
+                    GameObject.Find("SideMenu").GetComponent<SideMenuManager>().setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location, mw.expVal);
                 }
                 catch (Exception e) { };
             }
