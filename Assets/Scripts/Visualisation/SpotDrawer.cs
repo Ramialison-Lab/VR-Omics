@@ -98,6 +98,7 @@ public class SpotDrawer : MonoBehaviour
                     // check if spots are selected while recoloring
                     if (highlightIdentifier.Contains(wrap.uniqueIdentifier))
                     {
+                        Debug.Log(wrap.uniqueIdentifier);
                         // set colour red if manually selected
                         rc = new Color(255, 0, 0, 1);
                         mpb.SetColor("_Color", rc);

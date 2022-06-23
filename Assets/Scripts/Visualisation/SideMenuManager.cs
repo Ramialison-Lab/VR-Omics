@@ -32,8 +32,6 @@ public class SideMenuManager : MonoBehaviour
 
     private void readSpotInfo(int pos, string dataset)
     {
-        Debug.Log(dataset);
-        Debug.Log(dataset.Replace(dataset.Split('\\').Last(), "") + "test2Csv.csv");
         string[] lines = File.ReadAllLines(dataset.Replace(dataset.Split('\\').Last(), "") + "test2Csv.csv");
 
             List<string> values = new List<string>();
