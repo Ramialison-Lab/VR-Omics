@@ -137,7 +137,8 @@ public class SpotDrawer : MonoBehaviour
                     Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
                 }                
             }
-            newColours = false;
+            //TBD Deleted, might cause error
+            //newColours = false;
         }
     }
     private bool customColour = false;
@@ -326,6 +327,9 @@ public class SpotDrawer : MonoBehaviour
     // Identification of a spot if clicked on or lasso tool used
     public void identifySpot(float x_cl, float y_cl, string dN)
     {
+        Debug.Log(x_cl);
+        Debug.Log(y_cl);
+
         // if lasso tool selected
         var x_click = x_cl + clickoffset;
         var y_click = y_cl + clickoffset;
@@ -345,7 +349,7 @@ public class SpotDrawer : MonoBehaviour
                     else
                     {
                         newColours = true;
-                        highlightIdentifier.Remove(mw.uniqueIdentifier);
+                        //highlightIdentifier.Remove(mw.uniqueIdentifier);
                     }
                 }
                 try

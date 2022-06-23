@@ -38,7 +38,6 @@ public class SideMenuManager : MonoBehaviour
             values = lines.ToList<string>();
 
         List<string> res = values[pos].Split(',').ToList();
-        Debug.Log(res.Count);
             texts[4].text = "n_genes_by_counts: " + res[4];
             texts[5].text = "pct top 50: " + res[8];
             texts[6].text = "cluster: " + res[16];
