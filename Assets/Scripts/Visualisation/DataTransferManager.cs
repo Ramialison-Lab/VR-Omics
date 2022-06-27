@@ -39,7 +39,7 @@ public class DataTransferManager : MonoBehaviour
        // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
 
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1\\V1_Breast_Cancer_Block_A_Section_1_scanpy.hdf5");
-        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1B\\V1_Breast_Cancer_Block_A_Section_1B_scanpy.hdf5");
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1B\\V1_Breast_Cancer_Block_A_Section_1B_scanpy.hdf5");
             int count = 0;
 
         // Reading datasets and creating merged List for all coordinates

@@ -14,6 +14,7 @@ public class SliceCollider : MonoBehaviour
     public List<GameObject> sliceColliders;
     public List<int> zcoords;
     public TMP_Dropdown dd;
+    public List<GameObject> HandEobjs;
 
     // Adding a collider slice to each of the Visium slices to detect user input
     public void setSliceCollider(int btmslice, int topslice, int rslice, int lslice, int d, string datasetName)
@@ -52,6 +53,8 @@ public class SliceCollider : MonoBehaviour
         imagePlane.AddComponent<HAndEImageManager>();
         imagePlane.AddComponent<BoxCollider>();
         imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
+        HandEobjs.Add(imagePlane);
+        imagePlane.SetActive(false);
         //GameObject newCanvas = new GameObject("Canvas");
         //Canvas c = newCanvas.AddComponent<Canvas>();
         //c.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -75,6 +78,11 @@ public class SliceCollider : MonoBehaviour
         {
             clicked();
         }
+    }
+
+    public List<GameObject> getHandEObjs()
+    {
+        return HandEobjs;
     }
 
     private Vector3 screenPos;
@@ -111,5 +119,10 @@ public class SliceCollider : MonoBehaviour
                 x.GetComponent<DragObject>().rotate(direction);
             }
         }
+    }
+
+    public List<GameObject> getSliceColliders()
+    {
+        return sliceColliders;
     }
 }

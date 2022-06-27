@@ -6,8 +6,6 @@ public class HAndEImageManager : MonoBehaviour
 {
     public void createDragObjects()
     {
-        return;
-
         // TBD resize feature
         GameObject widthDrag = GameObject.CreatePrimitive(PrimitiveType.Plane);
         widthDrag.name = "widthDrag";

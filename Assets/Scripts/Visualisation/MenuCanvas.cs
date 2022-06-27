@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class MenuCanvas : MonoBehaviour
 {
@@ -47,6 +49,34 @@ public class MenuCanvas : MonoBehaviour
             darkmode = false;
         }
     }
+
+    public GameObject contextMenuHandESelection;
+    public GameObject activationPanelHandE;
+    public TMP_Dropdown dd;
+    public void toggleHAndEMode()
+    {
+        if (contextMenuHandESelection.activeSelf) contextMenuHandESelection.SetActive(false);
+        else contextMenuHandESelection.SetActive(true);
+        if (activationPanelHandE.activeSelf) activationPanelHandE.SetActive(false);
+        else activationPanelHandE.SetActive(true);
+
+        //  List<string> paths = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().getDatasetpaths();
+
+        // List<GameObject> sc = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().getSliceColliders();
+
+        List<GameObject> hAndEobjs = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().getHandEObjs(); ;
+
+        foreach(GameObject obs in hAndEobjs)
+        {
+            if (obs.activeSelf) obs.SetActive(false);
+            else obs.SetActive(true);
+        }
+
+        // paths[dd.value]
+    }
+
+    public List<GameObject> hAndEObjects;
+
 
     public void setColorMinTreshold(GameObject slider)
     {
