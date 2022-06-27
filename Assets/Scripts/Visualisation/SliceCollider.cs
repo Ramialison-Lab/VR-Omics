@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -36,13 +37,21 @@ public class SliceCollider : MonoBehaviour
         Color newColor = cube.GetComponent<Renderer>().material.color;
         newColor.a = 0f;
         cube.GetComponent<Renderer>().material.color = newColor;
-        
-        //TBD overlay H&E stain image read image 
-  
-        //string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
-        //byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
-        //Texture2D sampleTexture = new Texture2D(2, 2);
-        //bool isLoaded = sampleTexture.LoadImage(byteArray);
+
+        GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        imagePlane.transform.SetParent(cube.transform);
+        imagePlane.transform.localScale = new Vector3(0.1f, 1, 0.1f);
+        imagePlane.transform.Rotate(new Vector3(-90, 0, 0));
+        imagePlane.transform.localPosition = new Vector3(0, 0, -2);
+        string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
+        byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
+        Texture2D sampleTexture = new Texture2D(2, 2);
+        bool isLoaded = sampleTexture.LoadImage(byteArray);
+
+        imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
+        imagePlane.AddComponent<HAndEImageManager>();
+        imagePlane.AddComponent<BoxCollider>();
+        imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
         //GameObject newCanvas = new GameObject("Canvas");
         //Canvas c = newCanvas.AddComponent<Canvas>();
         //c.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -62,7 +71,7 @@ public class SliceCollider : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButton(0))
         {
             clicked();
         }
@@ -85,7 +94,6 @@ public class SliceCollider : MonoBehaviour
             //TBD not using name cube here
             if (hit.collider.gameObject.name == "Cube")
             {
-                Debug.Log(hit.point.ToString());
                 GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot(hit.point.x, hit.point.y, hit.collider.gameObject.GetComponent<DragObject>().getDatasetName());
             }
         }

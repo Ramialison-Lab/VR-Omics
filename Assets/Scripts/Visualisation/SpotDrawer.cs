@@ -324,17 +324,46 @@ public class SpotDrawer : MonoBehaviour
         normalised.Clear();
     }
 
+    public bool passThrough = false;
+    public void togglePassThrough()
+    {
+        passThrough = !passThrough;
+    }
+
     // Identification of a spot if clicked on or lasso tool used
     public void identifySpot(float x_cl, float y_cl, string dN)
     {
-        Debug.Log(x_cl);
-        Debug.Log(y_cl);
 
         // if lasso tool selected
         var x_click = x_cl + clickoffset;
         var y_click = y_cl + clickoffset;
         foreach (MeshWrapper mw in batches)
         {
+            if (passThrough)
+            {
+                if ((int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
+                {
+                    if (MC.GetComponent<MenuCanvas>().getLasso())
+                    {
+
+                        if (!highlightIdentifier.Contains(mw.uniqueIdentifier))
+                        {
+                            newColours = true;
+                            highlightIdentifier.Add(mw.uniqueIdentifier);
+                        }
+                        else
+                        {
+                            newColours = true;
+                            //highlightIdentifier.Remove(mw.uniqueIdentifier);
+                        }
+                    }
+                    try
+                    {
+                        GameObject.Find("SideMenu").GetComponent<SideMenuManager>().setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location, mw.expVal);
+                    }
+                    catch (Exception e) { };
+                }
+            }
 
             if (mw.datasetName == dN && (int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
             {

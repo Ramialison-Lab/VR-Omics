@@ -75,9 +75,17 @@ public class MenuCanvas : MonoBehaviour
         //sp.transform.localScale = new Vector3(sl.value * 10, sl.value * 10, sl.value * 10);
     }
 
+    public GameObject contextMenuSelection;
+    public GameObject activationPanel;
     public void toggleLasso()
     {
+        if (contextMenuSelection.activeSelf) contextMenuSelection.SetActive(false);
+        else contextMenuSelection.SetActive(true);
         lasso = !lasso;
+        if (lasso) activationPanel.SetActive(true);
+        else activationPanel.SetActive(false);
+
+
     }
 
     public bool getLasso()
