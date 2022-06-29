@@ -164,10 +164,22 @@ public class MenuCanvas : MonoBehaviour
         else DragActivationPanel.SetActive(true);
     }
 
+    public GameObject ExportPanel;
+    public bool export = false;
+    public void toggleExport()
+    {
+        if (export) export = false;
+        else export = true;
+        if (ExportPanel.activeSelf) ExportPanel.SetActive(false);
+        else ExportPanel.SetActive(true);
+    }
+
     public bool dragActive()
     {
         return HAndEDrag;
     }
+    
+
 
     public bool resizeActive()
     {

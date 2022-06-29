@@ -15,6 +15,7 @@ public class SliceCollider : MonoBehaviour
     public List<int> zcoords;
     public TMP_Dropdown dd;
     public List<GameObject> HandEobjs;
+    public Material transparentMat;
 
     // Adding a collider slice to each of the Visium slices to detect user input
     public void setSliceCollider(int btmslice, int topslice, int rslice, int lslice, int d, string datasetName)
@@ -44,6 +45,7 @@ public class SliceCollider : MonoBehaviour
         imagePlane.transform.localScale = new Vector3(0.1f, 1, 0.1f);
         imagePlane.transform.Rotate(new Vector3(-90, 0, 0));
         imagePlane.transform.localPosition = new Vector3(0, 0, -2);
+        imagePlane.GetComponent<Renderer>().material = transparentMat;
         string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
         byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
         Texture2D sampleTexture = new Texture2D(2, 2);
@@ -51,6 +53,7 @@ public class SliceCollider : MonoBehaviour
 
         imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
         imagePlane.AddComponent<HAndEImageManager>();
+        imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\spatial\\tissue_hires_image.png");
         imagePlane.AddComponent<BoxCollider>();
         imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
         HandEobjs.Add(imagePlane);

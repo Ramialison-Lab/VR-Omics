@@ -15,6 +15,10 @@ public class SettingsManager : MonoBehaviour
     private void Start()
     {
         containerList.Add(Instantiate(containerPrefab, colourPanel.transform));
+        containerList.Add(Instantiate(containerPrefab, colourPanel.transform));
+        containerList.Add(Instantiate(containerPrefab, colourPanel.transform));
+        containerList.Add(Instantiate(containerPrefab, colourPanel.transform));
+        containerList.Add(Instantiate(containerPrefab, colourPanel.transform));
 
     }
     public void AddContainer()
@@ -33,9 +37,9 @@ public class SettingsManager : MonoBehaviour
         colourParam.Clear();
         foreach(GameObject go in containerList)
         {
-            TMP_InputField txt = go.GetComponentInChildren<TMP_InputField>();
+           // TMP_InputField txt = go.GetComponentInChildren<TMP_InputField>();
 
-            colourParam.Add(txt.text);
+            colourParam.Add("NaN");
             InputField[] rgbs = go.GetComponentsInChildren<InputField>();
             foreach (InputField rgb in rgbs)
             {

@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class HAndEImageManager : MonoBehaviour
 {
+    private string imagePath;
     public void createDragObjects()
     {
         // TBD resize feature
@@ -31,16 +33,16 @@ public class HAndEImageManager : MonoBehaviour
         heighthDrag.GetComponent<ResizeManager>().setParent(this.gameObject);
         widthDrag.GetComponent<ResizeManager>().setParent(this.gameObject);
 
-        GameObject diagDrag = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        diagDrag.name = "diagDrag";
+        //GameObject diagDrag = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        //diagDrag.name = "diagDrag";
 
-        diagDrag.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-        diagDrag.transform.SetParent(this.transform);
-        diagDrag.transform.Rotate(new Vector3(-90, 0, 0));
+        //diagDrag.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        //diagDrag.transform.SetParent(this.transform);
+        //diagDrag.transform.Rotate(new Vector3(-90, 0, 0));
 
-        diagDrag.transform.position = new Vector3(transform.root.position.x * 2, 0, transform.root.position.x * 2);
-        diagDrag.transform.localPosition = new Vector3(diagDrag.transform.localPosition.x, 0, heighthDrag.transform.localPosition.x);
-        diagDrag.transform.localScale = new Vector3(0.05f, diagDrag.transform.localScale.y, diagDrag.transform.localScale.z);
+        //diagDrag.transform.position = new Vector3(transform.root.position.x * 2, 0, transform.root.position.x * 2);
+        //diagDrag.transform.localPosition = new Vector3(diagDrag.transform.localPosition.x, 0, heighthDrag.transform.localPosition.x);
+        //diagDrag.transform.localScale = new Vector3(0.05f, diagDrag.transform.localScale.y, diagDrag.transform.localScale.z);
     }
 
     private Vector3 mOffset;
@@ -98,13 +100,20 @@ public class HAndEImageManager : MonoBehaviour
 
     public void setAlpha(float alpha, Material transpMat)
     {
-        Texture2D tex = this.gameObject.GetComponent<Texture2D>();
-        // TBD ooses texture
         Color color = this.gameObject.GetComponent<Renderer>().material.color;
         color.a = alpha;
         transpMat.color = color;
-        //this.gameObject.GetComponent<Renderer>().material = transpMat;
-        this.gameObject.GetComponent<Renderer>().material.mainTexture = tex;
-        
+        this.gameObject.GetComponent<Renderer>().material = transpMat;
+        byte[] byteArray = File.ReadAllBytes(imagePath);
+        Texture2D sampleTexture = new Texture2D(2, 2);
+        bool isLoaded = sampleTexture.LoadImage(byteArray);
+
+        this.gameObject.GetComponent<Renderer>().material.mainTexture = sampleTexture;
+
+    }
+
+    public void setImagePath(string imagePath)
+    {
+        this.imagePath = imagePath;
     }
 }

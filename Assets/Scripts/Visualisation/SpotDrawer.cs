@@ -204,6 +204,7 @@ public class SpotDrawer : MonoBehaviour
     public void setColourScheme(List<string> colorScheme)
     {
         int numberInt = colorScheme.Count / 5;
+        float[] percentages = { 0.2f, 0.4f, 0.6f, 0.8f, 1 };
         ngck = new GradientColorKey[numberInt];
         int offset = 0;
         float rgb = 255;
@@ -211,7 +212,17 @@ public class SpotDrawer : MonoBehaviour
         {
             if(colorScheme[offset+4] == "Please choose")
             {
-                ngck[i].color = new Color(int.Parse(colorScheme[offset+1]) , int.Parse(colorScheme[offset + 2])/rgb, int.Parse(colorScheme[offset + 3])/rgb);
+                try { ngck[i].color = new Color(int.Parse(colorScheme[offset + 1]), int.Parse(colorScheme[offset + 2]) / rgb, int.Parse(colorScheme[offset + 3]) / rgb); }
+                catch(Exception e) {
+                    try
+                    {
+                        ngck[i].color = ngck[i - 1].color;
+                    }
+                    catch (Exception de)
+                    {
+                        ngck[i].color = Color.white;
+                    }
+                }
             }
             else
             {
@@ -244,11 +255,14 @@ public class SpotDrawer : MonoBehaviour
                     case "Yellow":
                         ngck[i].color = Color.yellow;
                         break;
-
+                    default:
+                        if (i > 1) ngck[i].color = ngck[i - 1].color;
+                        else ngck[i].color = Color.white;
+                        break;
                 }
             }
-            
-            ngck[i].time = float.Parse(colorScheme[offset])/100;
+
+            ngck[i].time = percentages[i];
             offset += 5;
         }
         customColour = true;
