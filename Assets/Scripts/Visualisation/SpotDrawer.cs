@@ -39,13 +39,28 @@ public class SpotDrawer : MonoBehaviour
         public Mesh mesh;
         public Vector3 location;
         public Vector3 origin;
+        public string loc;
         internal string spotname;
         internal string datasetName;
         public int uniqueIdentifier;
         public float expVal;
     }
 
+    public void callDataForExport()
+    {
+        List<string> dataEntry = new List<string>();
+        foreach(MeshWrapper mw in batches)
+        {
+            dataEntry.Add(mw.spotname);
+            dataEntry.Add(mw.expVal.ToString());
+            dataEntry.Add(mw.loc);
+            dataEntry.Add(mw.datasetName);
+            dataEntry.Add(mw.uniqueIdentifier.ToString());
 
+            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
+            dataEntry.Clear();
+        }
+    }
     // a combined list of all datasets, that are read will be passed to this function to draw each spot
     public void startSpotDrawer(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
     {
@@ -65,7 +80,7 @@ public class SpotDrawer : MonoBehaviour
             string sname = spotBarcodes[i];
             string datasetn = dataSet[i];
 
-            batches.Add(new MeshWrapper { mesh = sphere.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
+            batches.Add(new MeshWrapper { mesh = sphere.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x,y).ToString() ,spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
             count++;
         }
 
