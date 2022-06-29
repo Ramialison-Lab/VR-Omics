@@ -64,7 +64,7 @@ public class MenuCanvas : MonoBehaviour
 
         // List<GameObject> sc = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().getSliceColliders();
 
-        List<GameObject> hAndEobjs = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().getHandEObjs(); ;
+        List<GameObject> hAndEobjs = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().getHandEObjs();
 
         foreach(GameObject obs in hAndEobjs)
         {
@@ -141,5 +141,48 @@ public class MenuCanvas : MonoBehaviour
         if (settingsActive) settingsMenu.SetActive(false);
         else settingsMenu.SetActive(true);
         settingsActive = !settingsActive;
+    }
+    
+    public GameObject ResizeActivationPanel;
+    public bool HAndEResize = false;
+
+    public void toggleHAndEResize()
+    {
+        if (HAndEResize) HAndEResize = false;
+        else HAndEResize = true;
+        if (ResizeActivationPanel.activeSelf) ResizeActivationPanel.SetActive(false);
+        else ResizeActivationPanel.SetActive(true);
+    }
+
+    public GameObject DragActivationPanel;
+    public bool HAndEDrag = false;
+    public void toggleHAndEDrag()
+    {
+        if (HAndEDrag) HAndEDrag = false;
+        else HAndEDrag = true;
+        if (DragActivationPanel.activeSelf) DragActivationPanel.SetActive(false);
+        else DragActivationPanel.SetActive(true);
+    }
+
+    public bool dragActive()
+    {
+        return HAndEDrag;
+    }
+
+    public bool resizeActive()
+    {
+        return HAndEResize;
+    }
+
+    public Material transparentMat;
+
+    public void setAlphaHAneE(GameObject slider)
+    {
+        List<GameObject> hAndEobjs = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().getHandEObjs();
+
+        foreach (GameObject obs in hAndEobjs)
+        {
+            obs.GetComponent<HAndEImageManager>().setAlpha(slider.GetComponent<Slider>().value, transparentMat);
+        }
     }
 }

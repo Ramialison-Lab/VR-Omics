@@ -43,6 +43,38 @@ public class HAndEImageManager : MonoBehaviour
         diagDrag.transform.localScale = new Vector3(0.05f, diagDrag.transform.localScale.y, diagDrag.transform.localScale.z);
     }
 
+    private Vector3 mOffset;
+    private float mZCoord;
+
+    void OnMouseDown()
+    {
+        mZCoord = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
+        // Store offset = gameobject world pos - mouse world pos
+        mOffset = gameObject.transform.position - GetMouseAsWorldPoint();
+    }
+
+    private Vector3 GetMouseAsWorldPoint()
+    {
+        // Pixel coordinates of mouse (x,y)
+        Vector3 mousePoint = Input.mousePosition;
+
+        // z coordinate of game object on screen
+        mousePoint.z = mZCoord;
+
+        // Convert it to world points
+        return Camera.main.ScreenToWorldPoint(mousePoint);
+    }
+
+    void OnMouseDrag()
+    {
+        
+        if (GameObject.Find("MainMenuPanel").GetComponent<MenuCanvas>().dragActive()) { 
+
+                transform.position = GetMouseAsWorldPoint() + mOffset;
+
+        }
+    }
+
     private void Update()
     {
         if (Input.GetMouseButton(0))
@@ -62,5 +94,17 @@ public class HAndEImageManager : MonoBehaviour
         {
          //   Debug.Log(hit.point);
         }
+    }
+
+    public void setAlpha(float alpha, Material transpMat)
+    {
+        Texture2D tex = this.gameObject.GetComponent<Texture2D>();
+        // TBD ooses texture
+        Color color = this.gameObject.GetComponent<Renderer>().material.color;
+        color.a = alpha;
+        transpMat.color = color;
+        //this.gameObject.GetComponent<Renderer>().material = transpMat;
+        this.gameObject.GetComponent<Renderer>().material.mainTexture = tex;
+        
     }
 }
