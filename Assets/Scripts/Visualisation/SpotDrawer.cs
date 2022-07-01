@@ -6,7 +6,10 @@ using UnityEngine.UI;
 public class SpotDrawer : MonoBehaviour
 {
     public List<double> normalised;
-    public List<int> highlightIdentifier;
+    public List<int> highlightIdentifier1;
+    public List<int> highlightIdentifier2;
+    public List<int> highlightIdentifier3;
+    public List<int> highlightIdentifier4;
     private List<string> spotnames;
     private List<MeshWrapper> batches = new List<MeshWrapper>();
     private List<Color> spotColours = new List<Color>();
@@ -92,6 +95,7 @@ public class SpotDrawer : MonoBehaviour
 
     private void Update()
     {
+
         // Update draws the spots each frame
         if (start)
         {
@@ -112,15 +116,36 @@ public class SpotDrawer : MonoBehaviour
                 if (newColours)
                 {
                     // check if spots are selected while recoloring
-                    if (highlightIdentifier.Contains(wrap.uniqueIdentifier))
+                    if (highlightIdentifier1.Contains(wrap.uniqueIdentifier))
                     {
                         // set colour red if manually selected
                         rc = new Color(255, 0, 0, 1);
                         mpb.SetColor("_Color", rc);
                         spotColours.Add(rc);
 
+                    }                 else   if (highlightIdentifier2.Contains(wrap.uniqueIdentifier))
+                    {
+                        // set colour red if manually selected
+                        rc = new Color(0, 255, 0, 1);
+                        mpb.SetColor("_Color", rc);
+                        spotColours.Add(rc);
+
+                    }                  else  if (highlightIdentifier3.Contains(wrap.uniqueIdentifier))
+                    {
+                        // set colour red if manually selected
+                        rc = new Color(0, 0, 255, 1);
+                        mpb.SetColor("_Color", rc);
+                        spotColours.Add(rc);
+
+                    }                  else  if (highlightIdentifier4.Contains(wrap.uniqueIdentifier))
+                    {
+                        // set colour red if manually selected
+                        rc = new Color(0, 255, 255, 1);
+                        mpb.SetColor("_Color", rc);
+                        spotColours.Add(rc);
+
                     }
-                    else if (firstSelect)
+                else if (firstSelect)
                     {
                         try
                         {
@@ -359,6 +384,21 @@ public class SpotDrawer : MonoBehaviour
         passThrough = !passThrough;
     }
 
+    public List<GameObject> activepanels = new List<GameObject>(4);
+    public int active = 0;
+    public void setGroupActive(GameObject go)
+    {
+        foreach(GameObject g in activepanels)
+        {
+            if (g.activeSelf) g.SetActive(false);
+            
+        }
+
+        activepanels[int.Parse(go.name)].SetActive(true);
+        active = int.Parse(go.name);
+
+    }
+
     // Identification of a spot if clicked on or lasso tool used
     public void identifySpot(float x_cl, float y_cl, string dN)
     {
@@ -374,17 +414,73 @@ public class SpotDrawer : MonoBehaviour
                 {
                     if (MC.GetComponent<MenuCanvas>().getLasso())
                     {
+                        try
+                        {
+                            highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                        }catch(Exception e) { }try
+                        {
+                            highlightIdentifier2.Remove(mw.uniqueIdentifier);
+                        }catch(Exception e) { }try
+                        {
+                            highlightIdentifier3.Remove(mw.uniqueIdentifier);
+                        }catch(Exception e) { }try
+                        {
+                            highlightIdentifier4.Remove(mw.uniqueIdentifier);
+                        }catch(Exception e) { }
 
-                        if (!highlightIdentifier.Contains(mw.uniqueIdentifier))
-                        {
-                            newColours = true;
-                            highlightIdentifier.Add(mw.uniqueIdentifier);
+
+                        switch (active) {
+                            case 0:
+                                if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
+                                {
+                                    newColours = true;
+                                    highlightIdentifier1.Add(mw.uniqueIdentifier);
+                                }
+                                else
+                                {
+                                    newColours = true;
+                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                                }
+                                break;                            
+                            case 1:
+                                if (!highlightIdentifier2.Contains(mw.uniqueIdentifier))
+                                {
+                                    newColours = true;
+                                    highlightIdentifier2.Add(mw.uniqueIdentifier);
+                                }
+                                else
+                                {
+                                    newColours = true;
+                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                                }
+                                break;                          
+                            case 2:
+                                if (!highlightIdentifier3.Contains(mw.uniqueIdentifier))
+                                {
+                                    newColours = true;
+                                    highlightIdentifier3.Add(mw.uniqueIdentifier);
+                                }
+                                else
+                                {
+                                    newColours = true;
+                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                                }
+                                break;                           
+                            case 3:
+                                if (!highlightIdentifier4.Contains(mw.uniqueIdentifier))
+                                {
+                                    newColours = true;
+                                    highlightIdentifier4.Add(mw.uniqueIdentifier);
+                                }
+                                else
+                                {
+                                    newColours = true;
+                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                                }
+                                break;
+
                         }
-                        else
-                        {
-                            newColours = true;
-                            //highlightIdentifier.Remove(mw.uniqueIdentifier);
-                        }
+
                     }
                     try
                     {
@@ -398,16 +494,78 @@ public class SpotDrawer : MonoBehaviour
             {
                 if (MC.GetComponent<MenuCanvas>().getLasso())
                 {
-
-                    if (!highlightIdentifier.Contains(mw.uniqueIdentifier))
+                    try
                     {
-                        newColours = true;
-                        highlightIdentifier.Add(mw.uniqueIdentifier);
+                        highlightIdentifier1.Remove(mw.uniqueIdentifier);
                     }
-                    else
+                    catch (Exception e) { }
+                    try
                     {
-                        newColours = true;
-                        //highlightIdentifier.Remove(mw.uniqueIdentifier);
+                        highlightIdentifier2.Remove(mw.uniqueIdentifier);
+                    }
+                    catch (Exception e) { }
+                    try
+                    {
+                        highlightIdentifier3.Remove(mw.uniqueIdentifier);
+                    }
+                    catch (Exception e) { }
+                    try
+                    {
+                        highlightIdentifier4.Remove(mw.uniqueIdentifier);
+                    }
+                    catch (Exception e) { }
+
+                    switch (active)
+                    {
+                        case 0:
+                            if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
+                            {
+                                newColours = true;
+                                highlightIdentifier1.Add(mw.uniqueIdentifier);
+                            }
+                            else
+                            {
+                                newColours = true;
+                                //highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                            }
+                            break;
+                        case 1:
+                            if (!highlightIdentifier2.Contains(mw.uniqueIdentifier))
+                            {
+                                newColours = true;
+                                highlightIdentifier2.Add(mw.uniqueIdentifier);
+                            }
+                            else
+                            {
+                                newColours = true;
+                                //highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                            }
+                            break;
+                        case 2:
+                            if (!highlightIdentifier3.Contains(mw.uniqueIdentifier))
+                            {
+                                newColours = true;
+                                highlightIdentifier3.Add(mw.uniqueIdentifier);
+                            }
+                            else
+                            {
+                                newColours = true;
+                                //highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                            }
+                            break;
+                        case 3:
+                            if (!highlightIdentifier4.Contains(mw.uniqueIdentifier))
+                            {
+                                newColours = true;
+                                highlightIdentifier4.Add(mw.uniqueIdentifier);
+                            }
+                            else
+                            {
+                                newColours = true;
+                                //highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                            }
+                            break;
+
                     }
                 }
                 try
