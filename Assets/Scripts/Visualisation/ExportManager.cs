@@ -30,4 +30,9 @@ public class ExportManager : MonoBehaviour
 
         writer.WriteLine("Barcode" + "," + "Expressionvalue" + "," + "Row" + "," + "Col" + "," + "Dataset" + "," + "Unique_ID");
     }
+
+    public void newLine()
+    {
+        writer.WriteLine();
+    }
 }

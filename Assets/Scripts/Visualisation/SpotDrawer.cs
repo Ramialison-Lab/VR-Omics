@@ -51,7 +51,21 @@ public class SpotDrawer : MonoBehaviour
     public void callDataForExport()
     {
         List<string> dataEntry = new List<string>();
+        List<MeshWrapper> group1 = new List<MeshWrapper>();
+        List<MeshWrapper> group2 = new List<MeshWrapper>();
+        List<MeshWrapper> group3 = new List<MeshWrapper>();
+        List<MeshWrapper> group4 = new List<MeshWrapper>();
+
         foreach(MeshWrapper mw in batches)
+        {
+            if (highlightIdentifier1.Contains(mw.uniqueIdentifier)) group1.Add(mw);
+            if (highlightIdentifier2.Contains(mw.uniqueIdentifier)) group2.Add(mw);
+            if (highlightIdentifier3.Contains(mw.uniqueIdentifier)) group3.Add(mw);
+            if (highlightIdentifier4.Contains(mw.uniqueIdentifier)) group4.Add(mw);
+
+        }
+
+        foreach(MeshWrapper mw in group1)
         {
             dataEntry.Add(mw.spotname);
             dataEntry.Add(mw.expVal.ToString());
@@ -62,6 +76,51 @@ public class SpotDrawer : MonoBehaviour
             this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
             dataEntry.Clear();
         }
+
+        this.gameObject.GetComponent<ExportManager>().newLine();
+
+        foreach(MeshWrapper mw in group2)
+        {
+            dataEntry.Add(mw.spotname);
+            dataEntry.Add(mw.expVal.ToString());
+            dataEntry.Add(mw.loc);
+            dataEntry.Add(mw.datasetName);
+            dataEntry.Add(mw.uniqueIdentifier.ToString());
+
+            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
+            dataEntry.Clear();
+        }
+
+        this.gameObject.GetComponent<ExportManager>().newLine();
+
+        foreach (MeshWrapper mw in group3)
+        {
+            dataEntry.Add(mw.spotname);
+            dataEntry.Add(mw.expVal.ToString());
+            dataEntry.Add(mw.loc);
+            dataEntry.Add(mw.datasetName);
+            dataEntry.Add(mw.uniqueIdentifier.ToString());
+
+            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
+            dataEntry.Clear();
+        }
+
+        this.gameObject.GetComponent<ExportManager>().newLine();
+
+        foreach (MeshWrapper mw in group4)
+        {
+            dataEntry.Add(mw.spotname);
+            dataEntry.Add(mw.expVal.ToString());
+            dataEntry.Add(mw.loc);
+            dataEntry.Add(mw.datasetName);
+            dataEntry.Add(mw.uniqueIdentifier.ToString());
+
+            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
+            dataEntry.Clear();
+        }
+
+        this.gameObject.GetComponent<ExportManager>().newLine();
+
     }
     // a combined list of all datasets, that are read will be passed to this function to draw each spot
     public void startSpotDrawer(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
