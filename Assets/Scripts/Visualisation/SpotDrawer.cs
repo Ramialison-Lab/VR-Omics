@@ -35,7 +35,6 @@ public class SpotDrawer : MonoBehaviour
     private float zoffsetMove;
     private float cube_z;
 
-
     class MeshWrapper
     {
         //structure for each cube → spot, storing its mesh, the location read from the hdf5, it original location, the unique spotname, which dataset it comes from for the depth information, and a unique ID

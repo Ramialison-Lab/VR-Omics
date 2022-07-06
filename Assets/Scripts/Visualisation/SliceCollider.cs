@@ -40,22 +40,26 @@ public class SliceCollider : MonoBehaviour
         newColor.a = 0f;
         cube.GetComponent<Renderer>().material.color = newColor;
 
-        GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        imagePlane.name = "StainImageObject";
+      //  imagePlane.transform.SetParent(cube.transform);
+    //    imagePlane.transform.localScale = new Vector3(0.1f, 1, 0.1f);
+        imagePlane.transform.localScale = new Vector3(cube.transform.localScale.x *1.544f, 0.1f, cube.transform.localScale.z * 1.361f);
         imagePlane.transform.SetParent(cube.transform);
-        imagePlane.transform.localScale = new Vector3(0.1f, 1, 0.1f);
-        imagePlane.transform.Rotate(new Vector3(-90, 0, 0));
+
+        imagePlane.transform.Rotate(new Vector3(-270, -90, 90));
         imagePlane.transform.localPosition = new Vector3(0, 0, -2);
         imagePlane.GetComponent<Renderer>().material = transparentMat;
         string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
         byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
         Texture2D sampleTexture = new Texture2D(2, 2);
         bool isLoaded = sampleTexture.LoadImage(byteArray);
-
+        calculateImageSize(datasetName);
         imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
         imagePlane.AddComponent<HAndEImageManager>();
         imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\spatial\\tissue_hires_image.png");
         imagePlane.AddComponent<BoxCollider>();
-        imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
+        //imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
         HandEobjs.Add(imagePlane);
         imagePlane.SetActive(false);
         //GameObject newCanvas = new GameObject("Canvas");
@@ -82,7 +86,17 @@ public class SliceCollider : MonoBehaviour
             clicked();
         }
     }
+    private void calculateImageSize(string dn)
+    {
+        string dnLoc = dn.Substring(0, dn.Length - dn.Split('\\').Last().Length);
+        //get Scalefactor → HDF5 reader "uns/spatial/V1_Breast_Cancer_Block_A_Section_1/scalefactors/tissue_hires_scalef"
+        float scalef = GameObject.Find("ScriptHolder").GetComponent<JSONManager>().readScaleFactor(dnLoc);
 
+        float originalDim = 2000 / scalef;
+        // hires 2000x2000 px size
+
+
+    }
     public List<GameObject> getHandEObjs()
     {
         return HandEobjs;
