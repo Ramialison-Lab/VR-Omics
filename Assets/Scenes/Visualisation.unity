@@ -7941,6 +7941,7 @@ MonoBehaviour:
   minTresh: 0
   maxTresh: 0
   clickoffset: 0.2
+  visium: 0
   colourGradientObject: {fileID: 1336465869}
   colGradChilds: []
   passThrough: 0
@@ -7974,6 +7975,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31da021c5ceef0247b03ac6c2ab786e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sphere: {fileID: 1796680520}
+  matUsed: {fileID: 2100000, guid: c9bc76c72c37a394da98510ae1328fbf, type: 2}
 --- !u!114 &1052670663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8020,6 +8023,8 @@ MonoBehaviour:
   resultSpotname: []
   resultExpression: []
   resultExpressionTemp: []
+  visium: 1
+  tomoseq: 0
 --- !u!114 &1052670665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8059,6 +8064,8 @@ MonoBehaviour:
   ev: []
   resultExpression: []
   normalised: []
+  visium: 1
+  tomoseq: 0
 --- !u!114 &1052670668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8077,6 +8084,8 @@ MonoBehaviour:
   scrollView: {fileID: 1307057898}
   tempBtns: []
   toggle: {fileID: 1365139254}
+  visium: 1
+  tomoseq: 0
 --- !u!114 &1052670669
 MonoBehaviour:
   m_ObjectHideFlags: 0
