@@ -20,6 +20,9 @@ public class SearchManager : MonoBehaviour
     public List<float> resultExpression;
     public float[] resultExpressionTemp;
 
+    public bool visium = true;
+    public bool tomoseq = false;
+
     private void Start()
     {
         sh = GameObject.Find("ScriptHolder");

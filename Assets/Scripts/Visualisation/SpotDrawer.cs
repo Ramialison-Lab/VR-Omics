@@ -34,7 +34,13 @@ public class SpotDrawer : MonoBehaviour
     private float yoffsetMove;
     private float zoffsetMove;
     private float cube_z;
+    public bool visium =false;
 
+
+    public void setVisiumBool(bool visBool)
+    {
+        visium = visBool;
+    }
     class MeshWrapper
     {
         //structure for each cube → spot, storing its mesh, the location read from the hdf5, it original location, the unique spotname, which dataset it comes from for the depth information, and a unique ID
@@ -155,7 +161,7 @@ public class SpotDrawer : MonoBehaviour
     {
 
         // Update draws the spots each frame
-        if (start)
+        if (start|| visium)
         {
             var main = Camera.main;
             if (newColours)

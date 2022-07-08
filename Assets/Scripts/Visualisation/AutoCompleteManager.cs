@@ -11,10 +11,18 @@ public class AutoCompleteManager : MonoBehaviour
     public GameObject scrollView;
     public List<GameObject> tempBtns;
     public GameObject toggle;
+    public bool visium = true;
+    public bool tomoseq = false;
 
     public void setGeneNameList(List<string> geneNames)
     {
         this.geneNames = new HashSet<string>(geneNames);
+    }
+
+    public void setTomoSeq()
+    {
+        if (visium) visium = false;
+        tomoseq = true;
     }
 
     public void textEnter()
@@ -89,7 +97,8 @@ public class AutoCompleteManager : MonoBehaviour
     {        
         GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().resetNormalisedValues();
         InputGameObject.GetComponent<TMP_InputField>().text = btn.GetComponentInChildren<TMP_Text>().text;
-        GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readExpressionList(btn.GetComponentInChildren<TMP_Text>().text);
+        if (visium) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readExpressionList(btn.GetComponentInChildren<TMP_Text>().text);
+        else if (tomoseq) GameObject.Find("ScriptHolder").GetComponent<CSVReader>().searchGeneTomoseq(btn.GetComponentInChildren<TMP_Text>().text);
     }
 
     //check if Inoutfield is focused
