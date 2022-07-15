@@ -28,6 +28,17 @@ public class FileReader : MonoBehaviour
 
     public float[] genexp;
 
+    private void TestDimitar()
+    {
+        string dim_path = "SET STRING TO HDF5 file";
+        string dim_dataset = "X/data";
+
+        var readFloat = H5Loader.LoadFloatDataset(dim_path, dim_dataset);
+        //or 
+        //var readFloat = H5Loader.LoadDataset<float>(dim_path, dim_dataset);
+        
+    }
+
     private async void Start()
     {
         //// 1. Read spot positions 

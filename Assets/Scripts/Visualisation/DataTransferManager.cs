@@ -58,23 +58,23 @@ public class DataTransferManager : MonoBehaviour
         List<string> shortList = new List<string>();
 
         ////TBD! Comment out following lines to transfer data from pipeline
-        //List<string> datapaths = scriptHolderPipeline.GetComponent<UIManager>().getDatapathList();
+        List<string> datapaths = scriptHolderPipeline.GetComponent<UIManager>().getDatapathList();
 
-        //foreach (string data in datapaths)
-        //{
-        //    hdf5datapaths.Add(data + "\\" + data.Split('\\').Last() + "_scanpy.hdf5");
-        //}
+        foreach (string data in datapaths)
+        {
+            hdf5datapaths.Add(data + "\\" + data.Split('\\').Last() + "_scanpy.hdf5");
+        }
 
         //TBD - Testdatasets for Denis local - delete following lines
 
         //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
 
 
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1\\V1_Breast_Cancer_Block_A_Section_1_scanpy.hdf5");
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1B\\V1_Breast_Cancer_Block_A_Section_1B_scanpy.hdf5");
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1B\\V1_Breast_Cancer_Block_A_Section_1B_scanpy.hdf5");
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1B\\V1_Breast_Cancer_Block_A_Section_1B_scanpy.hdf5");
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Breast_Cancer_Block_A_Section_1B\\V1_Breast_Cancer_Block_A_Section_1B_scanpy.hdf5");
+        //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1\\v1_breast_cancer_block_a_section_1_scanpy.hdf5");
+        //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1b\\v1_breast_cancer_block_a_section_1b_scanpy.hdf5");
+        //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1b\\v1_breast_cancer_block_a_section_1b_scanpy.hdf5");
+        //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1b\\v1_breast_cancer_block_a_section_1b_scanpy.hdf5");
+        //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1b\\v1_breast_cancer_block_a_section_1b_scanpy.hdf5");
         int count = 0;
 
         // Reading datasets and creating merged List for all coordinates
