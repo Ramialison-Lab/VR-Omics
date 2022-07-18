@@ -41,6 +41,7 @@ public class FileReader : MonoBehaviour
 
     private async void Start()
     {
+        
         //// 1. Read spot positions 
         //StartCoroutine(readInt(filePath + H5FileName));
 
