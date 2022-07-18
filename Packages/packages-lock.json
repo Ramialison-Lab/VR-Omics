@@ -1,12 +1,5 @@
 {
   "dependencies": {
-    "com.adambebko.unityh5loader": {
-      "version": "https://github.com/AdamBebko/UnityH5Loader.git#1.0.1",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "5e657c0d75f646bce85c0ad5929ca13143119756"
-    },
     "com.unity.burst": {
       "version": "1.3.0-preview.12",
       "depth": 2,
