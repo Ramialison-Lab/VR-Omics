@@ -34,7 +34,7 @@ public class DataTransferManager : MonoBehaviour
 
         //TBD set visium, tomoseq, stomics bools true or false from pipeline
         //visium = true;
-        tomoseq = true;
+        visium = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
