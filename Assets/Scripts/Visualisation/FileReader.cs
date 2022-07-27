@@ -39,43 +39,47 @@ public class FileReader : MonoBehaviour
         
     }
 
-    private async void Start()
-    {
-        
-        //// 1. Read spot positions 
-        //StartCoroutine(readInt(filePath + H5FileName));
-
-        //// 2. Read spot names and genenames
-        //StartCoroutine(readVarLengthString(filePath + H5FileName, "/var/_index", geneNames));
-        //StartCoroutine(readVarLengthString(filePath + H5FileName, "/obs/_index", spotBarcodes));
-
-        ////StartCoroutine(printStuff());
-        //// 3. Start SpotDrawer
-        //GameObject.Find("SpotDrawer").GetComponent<SpotDrawer>().startSpotDrawer();
-
-    }
-
+    /// <summary>
+    /// Read Visium genenames from var/index in h5 file path
+    /// </summary>
+    /// <param name="path"></param>
     public void readGeneNames(string path)
     {
         StartCoroutine(readVarLengthString(path, "var/_index", geneNames));
     }
 
+    /// <summary>
+    /// Read Visium indices values from X/indices from h5 file path
+    /// </summary>
+    /// <param name="path"></param>
     public void readIndices(string path)
     {
         indiceVals = H5Loader.LoadDataset<int>(path, "X/indices");
     }
 
+    /// <summary>
+    /// Read Visium indptr values from X/indptr from h5 file path
+    /// </summary>
+    /// <param name="path"></param>
     public void readIndPtr(string path)
     {
         indPtr = H5Loader.LoadDataset<int>(path, "X/indptr");
     }
 
+    /// <summary>
+    /// Read visium gene expression values from X/data in h5 file path
+    /// </summary>
+    /// <param name="path"></param>
     public void readGeneExpressionValues(string path)
     {
         string name = "X/data";
         genexp = H5Loader.LoadDataset<float>(path, name);
     }
 
+    /// <summary>
+    /// Calculates Visium coordiantes from obs/_index
+    /// </summary>
+    /// <param name="dpath"></param>
     public void calcCoords(string dpath)
     {
         StartCoroutine(readInt(dpath));
@@ -85,8 +89,26 @@ public class FileReader : MonoBehaviour
         spotNames = spotBarcodes.ToArray();
     }
 
+    /// <summary>
+    /// Reads variable length strings from H5 file filepath, in datasetpath datasetName to target strs 
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <param name="dataSetName"></param>
+    /// <param name="strs"></param>
+    /// <returns></returns>
+    public List<string> readH5StringVar(string filePath, string dataSetName, List<string> strs)
+    {
+        StartCoroutine(readVarLengthString(filePath, dataSetName, strs));
+        return strs;
+    }
 
-    // Reads strings from HDF5 dataset with variable length 
+    /// <summary>
+    /// Read H5 strings with variable string length for h5 file - filepath, datasetname e.g. var/_index, and target string list 
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <param name="dataSetName"></param>
+    /// <param name="strs"></param>
+    /// <returns></returns>
     IEnumerator readVarLengthString(string filePath, string dataSetName, List<string> strs)
     {
         long fileId = H5F.open(filePath, H5F.ACC_RDONLY);
@@ -125,11 +147,43 @@ public class FileReader : MonoBehaviour
         StartCoroutine(readVarLengthString(datapath, "var/gene_ids", ensembleIds));
     }
 
-    //Reads float values from HDF5 dataset 
-    IEnumerator readFloat(string path, string dataset, float[] target)
+    public List<float> readH5Float(string path, string dataset)
     {
+        StartCoroutine(readFloat(path, dataset));
+
+        var x = floatArr.ToList();
+        return x;
+    }
+
+    public float[,] stomicsExpVals;
+
+    public float[,] read2DH5Float(string path, string dataset)
+    {
+        StartCoroutine(read2DFloat(path, dataset));
+        return stomicsExpVals;
+
+    }
+
+    IEnumerator read2DFloat(string path, string dataset)
+    {
+
         // TBD not working use direct call 
-        target = H5Loader.LoadDataset<float>(path, dataset);
+        // floatArr  = H5Loader.LoadDataset<float>(path, dataset);
+        stomicsExpVals = H5Loader.Load2dFloatDataset(path, dataset);
+
+        yield return null;
+    }
+
+    private float[] floatArr;
+
+    //Reads float values from HDF5 dataset 
+    IEnumerator readFloat(string path, string dataset)
+    {
+
+        // TBD not working use direct call 
+        // floatArr  = H5Loader.LoadDataset<float>(path, dataset);
+        floatArr = H5Loader.LoadFloatDataset(path, dataset);
+        
         yield return null;
     }
 

@@ -1,9 +1,0 @@
-working directory: C:\Users\Denis.Bienroth\Documents\GitHub\VR_Omics
-Filter values used:{'file_name': 'V1_Breast_Cancer_Block_A_Section_1', 'mincount': '', 'maxcount': '', 'pct_mt_min': '', 'pct_mt_max': '', 'geneincellmin': '', 'genefiltermin': '', '': ''}
-File to load: V1_Breast_Cancer_Block_A_Section_1
-File was downloaded.
-Filtering started..
-Start normalization
-Number of data points left: 3798
-Finished normalization
-Wrote outputfile! Processing finished

@@ -128,8 +128,6 @@ namespace UnityH5Loader {
             return floatArray;
         }
 
-        
-
         /// <summary>
         /// WARNING: ADVANCED USE ONLY!! Loads a 1D generic dataset from an H5 file.
         /// The generic loaders only loads data in non-Unity friendly types, such as bytes, uints, longs etc...

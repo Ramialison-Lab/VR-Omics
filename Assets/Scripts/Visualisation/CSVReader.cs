@@ -21,44 +21,18 @@ public class CSVReader : MonoBehaviour
     public List<double> normalised;
     public List<List<string>> geneNameDictionary = new List<List<string>>();
     public List<List<string>> SpotNameDictionary = new List<List<string>>();
-    public bool visium = true;
-    public bool tomoseq;
-    private string tomo_ap;
-    private string tomo_vd;
-    private string tomo_lr;
 
     // search Function for gene
     public void searchGene(string datapath, int pos, string gn)
     {
-        if (visium)
-        {
             datapath = datapath.Replace(datapath.Split('\\').Last(), "") + "TransposedTest.csv";
             //TBD this operation causes the runtime to freeze
             StartCoroutine(search(datapath, pos, gn));
-            GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
-        }
-
-    }
-
-    public void searchGeneTomoseq(string gene)
-    {
-        Debug.Log(gene);
-    }
-
-    public void setTomoSeqDatapaths(string ap, string vd, string lr)
-    {
-
-    }
-
-    public void setTomoseq()
-    {
-        if (visium) visium = false;
-        tomoseq = true;
+            GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);       
     }
 
     public void searchForGene(string dp, string gn, int x)
-    {
-        
+    {        
         searchGene(dp, geneNameDictionary[x].IndexOf(gn), gn);
     }
 

@@ -10,7 +10,7 @@ public class SpotDrawer : MonoBehaviour
     public List<int> highlightIdentifier2;
     public List<int> highlightIdentifier3;
     public List<int> highlightIdentifier4;
-    private List<string> spotnames;
+    public List<Color> colVals = new List<Color>();
     private List<MeshWrapper> batches = new List<MeshWrapper>();
     private List<Color> spotColours = new List<Color>();
     Vector3 currentEulerAngles;
@@ -128,6 +128,13 @@ public class SpotDrawer : MonoBehaviour
         this.gameObject.GetComponent<ExportManager>().newLine();
 
     }
+    public string stomicsPath = "";
+
+    public void setStomicsPath(string stomPath)
+    {
+        stomicsPath = stomPath;
+    }
+
     // a combined list of all datasets, that are read will be passed to this function to draw each spot
     public void startSpotDrawer(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
     {
@@ -145,7 +152,9 @@ public class SpotDrawer : MonoBehaviour
 
             //reading out the next spotname and datasetname
             string sname = spotBarcodes[i];
-            string datasetn = dataSet[i];
+            string datasetn = stomicsPath;
+            try { datasetn = dataSet[i]; }
+            catch(Exception e) { }
 
             batches.Add(new MeshWrapper { mesh = sphere.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x,y).ToString() ,spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
             count++;
@@ -161,7 +170,8 @@ public class SpotDrawer : MonoBehaviour
     {
 
         // Update draws the spots each frame
-        if (start|| visium)
+        // TBD check start||visium or start&&visium or even needed since own drawer script for tomo
+        if (start || visium)
         {
             var main = Camera.main;
             if (newColours)
@@ -214,7 +224,7 @@ public class SpotDrawer : MonoBehaviour
                         try
                         {
                             // evaluate expression value with colorgradient
-                            rc = colorGradient(i);
+                            rc = colVals[i];
                             wrap.expVal = (float)normalised[i];
                         }
                         catch (Exception e) { rc = Color.clear; };
@@ -301,7 +311,6 @@ public class SpotDrawer : MonoBehaviour
     }
     public void defaultColour()
     {
-        Debug.Log("defaut");
         customColour = false;
     }
     
@@ -373,7 +382,6 @@ public class SpotDrawer : MonoBehaviour
         createColorGradientMenu();
     }
 
-
     // calculate color based on expression value
     private Color colorGradient(int i)
     {
@@ -431,9 +439,17 @@ public class SpotDrawer : MonoBehaviour
     // set new List of expression values
     public void setColors(List<double> normalise)
     {
+        normalised.Clear();
+        colVals.Clear();
         firstSelect = true;
         normalised.AddRange(normalise);
         newColours = true;
+
+        for (int i = 0; i < batches.Count; i++)
+        {
+            colVals.Add(colorGradient(i));
+
+        }
     }
 
     // reset expressionValues for new search
@@ -503,7 +519,6 @@ public class SpotDrawer : MonoBehaviour
                                 else
                                 {
                                     newColours = true;
-                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
                                 }
                                 break;                            
                             case 1:
@@ -515,7 +530,6 @@ public class SpotDrawer : MonoBehaviour
                                 else
                                 {
                                     newColours = true;
-                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
                                 }
                                 break;                          
                             case 2:
@@ -527,7 +541,6 @@ public class SpotDrawer : MonoBehaviour
                                 else
                                 {
                                     newColours = true;
-                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
                                 }
                                 break;                           
                             case 3:
@@ -539,10 +552,8 @@ public class SpotDrawer : MonoBehaviour
                                 else
                                 {
                                     newColours = true;
-                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
                                 }
                                 break;
-
                         }
 
                     }
@@ -561,6 +572,7 @@ public class SpotDrawer : MonoBehaviour
                     try
                     {
                         highlightIdentifier1.Remove(mw.uniqueIdentifier);
+
                     }
                     catch (Exception e) { }
                     try
@@ -590,7 +602,7 @@ public class SpotDrawer : MonoBehaviour
                             else
                             {
                                 newColours = true;
-                                //highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                                highlightIdentifier1.Remove(mw.uniqueIdentifier);
                             }
                             break;
                         case 1:
@@ -725,10 +737,15 @@ public class SpotDrawer : MonoBehaviour
     public void setMinTresh(float val)
     {
         minTresh = val;
+        gameObject.GetComponent<TomoSeqDrawer>().setMinTresh(val);
     }
     public void setMaxTresh(float val)
     {
         maxTresh = val;
     }
 
+    public float getMinTresh()
+    {
+        return minTresh;
+    }
 }

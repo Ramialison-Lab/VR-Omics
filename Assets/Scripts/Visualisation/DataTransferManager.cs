@@ -33,8 +33,8 @@ public class DataTransferManager : MonoBehaviour
     {
 
         //TBD set visium, tomoseq, stomics bools true or false from pipeline
-        visium = true;
-        //tomoseq = true;
+        //visium = true;
+        tomoseq = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
@@ -47,10 +47,28 @@ public class DataTransferManager : MonoBehaviour
         }
         else if (tomoseq)
         {
-            scriptHolder.GetComponent<CSVReader>().setTomoseq();
             startTomoSeq();
         }
+        else if (stomics)
+        {
+            startStomics();
+        }
 
+    }
+
+    public bool VisiumActive()
+    {
+        return visium;
+    }
+
+    public bool TomoseqActive()
+    {
+        return tomoseq;
+    }    
+    
+    public bool StomicsActive()
+    {
+        return stomics;
     }
 
     private void startVisium()
@@ -68,7 +86,6 @@ public class DataTransferManager : MonoBehaviour
         //TBD - Testdatasets for Denis local - delete following lines
 
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-
 
         //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1\\v1_breast_cancer_block_a_section_1_scanpy.hdf5");
         //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1b\\v1_breast_cancer_block_a_section_1b_scanpy.hdf5");
@@ -125,50 +142,40 @@ public class DataTransferManager : MonoBehaviour
     private void startTomoSeq()
     {
         // transfer from pipeline
-        string ap_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_AP";
-        string vd_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_VD";
-        string lr_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_LR";
+        string ap_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_AP.csv";
+        string vd_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_VD.csv";
+        string lr_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_LR.csv";
 
-        scriptHolder.GetComponent<CSVReader>().setTomoSeqDatapaths(ap_path, vd_path, lr_path);
+        scriptHolder.GetComponent<TomoSeqDrawer>().setDataPaths(ap_path, vd_path, lr_path);
+        scriptHolder.GetComponent<TomoSeqDrawer>().generateGrid();
+    }
 
-        // calculate these by cols per dataset
-        int ap_size = 55;
-        int vd_size = 57;
-        int lr_size = 59; // 59
+    public List<string> stomicsSpotId = new List<string>();
+    public List<string> stomicsGeneNames = new List<string>();
+    public List<float> stomicsX = new List<float>();
+    public List<float> stomicsY = new List<float>();
+    public List<float> stomicsZ = new List<float>();
+    private FileReader fr;
 
-        //calculate grid
+    private void startStomics()
+    {
+        fr = gameObject.GetComponent<FileReader>();
+        string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\1_Include\\L3_b_count_normal_stereoseq.h5ad";
+        scriptHolder.GetComponent<SpotDrawer>().setStomicsPath(datapath);
+        stomicsSpotId = fr.readH5StringVar(datapath, "obs/_index", stomicsSpotId);
+        stomicsGeneNames = fr.readH5StringVar(datapath, "var/geneID", stomicsGeneNames);
+        stomicsX = fr.readH5Float(datapath, "obs/new_x");
+        stomicsY = fr.readH5Float(datapath, "obs/new_y");
+        stomicsZ = fr.readH5Float(datapath, "obs/new_z");
 
-        //one slice sl = VDxAP
+        List<string> dp = new List<string>();
+        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(stomicsX, stomicsY, stomicsZ, stomicsSpotId, dp);
 
-        //LR times the slices sl → sl[] = slxLR
+    }
 
-        List<string> spotname = new List<string>();
-        List<string> datasets = new List<string>();
-        int total = lr_size * vd_size * ap_size;
-        int[] bitMask = new int[total];
-
-        for (int z = 0; z < lr_size; z++)
-        {
-
-            for (int x = 0; x < vd_size; x++)
-            {
-                for (int y = 0; y < ap_size; y++)
-                {
-                    
-                    if (UnityEngine.Random.Range(0, 3) >=2)
-                    {                   
-                        tempx.Add(x);
-                        tempy.Add(y);
-                        tempz.Add(z);
-                    }
-                }
-            }
-        }
-
-         scriptHolder.GetComponent<TomoSeqDrawer>().startSpotDrawer(tempx, tempy, tempz);
-
-
-
+    public List<string> getStomicsGeneNames()
+    {
+        return stomicsGeneNames;
     }
 
     public int identifyDatasetInt(string datasetNameToCheck)

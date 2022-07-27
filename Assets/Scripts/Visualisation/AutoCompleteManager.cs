@@ -11,18 +11,20 @@ public class AutoCompleteManager : MonoBehaviour
     public GameObject scrollView;
     public List<GameObject> tempBtns;
     public GameObject toggle;
-    public bool visium = true;
+    public bool visium = false;
     public bool tomoseq = false;
+    public bool stomics = false;
 
     public void setGeneNameList(List<string> geneNames)
     {
         this.geneNames = new HashSet<string>(geneNames);
     }
 
-    public void setTomoSeq()
+    private void Start()
     {
-        if (visium) visium = false;
-        tomoseq = true;
+       visium = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().VisiumActive();
+       tomoseq = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().TomoseqActive();
+       stomics = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().StomicsActive();
     }
 
     public void textEnter()
@@ -48,6 +50,7 @@ public class AutoCompleteManager : MonoBehaviour
                         GameObject btn = Instantiate(btnPrefab);
                         btn.transform.SetParent(scrollView.transform);
                         btn.transform.localPosition = new Vector3(0, 0, 0);
+                        btn.GetComponentInChildren<TMP_Text>().fontSize = 16;
                         btn.GetComponentInChildren<TMP_Text>().text = x;
                         tempBtns.Add(btn);
                         btn.GetComponent<Button>().onClick.AddListener(delegate
@@ -74,6 +77,7 @@ public class AutoCompleteManager : MonoBehaviour
                         GameObject btn = Instantiate(btnPrefab);
                         btn.transform.SetParent(scrollView.transform);
                         btn.transform.localPosition = new Vector3(0, 0, 0);
+                        btn.GetComponentInChildren<TMP_Text>().fontSize = 14;
                         btn.GetComponentInChildren<TMP_Text>().text = x;
                         tempBtns.Add(btn);
                         btn.GetComponent<Button>().onClick.AddListener(delegate
@@ -94,11 +98,18 @@ public class AutoCompleteManager : MonoBehaviour
 
     // Pass gene to SearchManager to read expression values
     private void selectGene(GameObject btn)
-    {        
-        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().resetNormalisedValues();
+    {
+
         InputGameObject.GetComponent<TMP_InputField>().text = btn.GetComponentInChildren<TMP_Text>().text;
+
+        //TBD indexof genenames transfer to read hdf
+
+            GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().resetNormalisedValues();
+
         if (visium) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readExpressionList(btn.GetComponentInChildren<TMP_Text>().text);
-        else if (tomoseq) GameObject.Find("ScriptHolder").GetComponent<CSVReader>().searchGeneTomoseq(btn.GetComponentInChildren<TMP_Text>().text);
+        else if (tomoseq) GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().runSearchTomo(btn.GetComponentInChildren<TMP_Text>().text);
+        else if (stomics) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readStomicsExpression(btn.GetComponentInChildren<TMP_Text>().text); 
+        
     }
 
     //check if Inoutfield is focused

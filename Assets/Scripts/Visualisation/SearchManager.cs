@@ -26,19 +26,56 @@ public class SearchManager : MonoBehaviour
     private void Start()
     {
         sh = GameObject.Find("ScriptHolder");
-        fr = sh.GetComponent<FileReader>();
-        datasetPaths = sh.GetComponent<DataTransferManager>().getDatasetpaths();
-        searchEnsembleId(gene);
-        foreach (string p in datasetPaths)
+
+        if (gameObject.GetComponent<DataTransferManager>().VisiumActive())
         {
-            fr.readGeneNames(p);
-            geneNames.AddRange(fr.getGeneNameList());
-            geneNames = geneNames.Distinct().ToList();
+            fr = sh.GetComponent<FileReader>();
+            datasetPaths = sh.GetComponent<DataTransferManager>().getDatasetpaths();
+            searchEnsembleId(gene);
+            foreach (string p in datasetPaths)
+            {
+                fr.readGeneNames(p);
+                geneNames.AddRange(fr.getGeneNameList());
+                geneNames = geneNames.Distinct().ToList();
+            }
+
+            sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
         }
 
-        sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
-        
+        else if (gameObject.GetComponent<DataTransferManager>().TomoseqActive())
+        {
+            geneNames.AddRange(gameObject.GetComponent<TomoSeqDrawer>().getGeneNames());
+            //geneNames = geneNames.Distinct().ToList();
+            sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
+        }
+
+        else if (gameObject.GetComponent<DataTransferManager>().StomicsActive())
+        {
+            geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().getStomicsGeneNames());
+            //geneNames = geneNames.Distinct().ToList();
+            sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
+        }
+
     }
+
+    public void readStomicsExpression(string geneName)
+    {
+
+
+        var Xdata= gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\new.h5ad", "X/data");
+        var indices = gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\new.h5ad", "X/indices");
+        var indptr = gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\new.h5ad", "X/indptr");
+
+        Debug.Log(Xdata.Count);
+        Debug.Log(indices.Count);
+        Debug.Log(indptr.Count);
+
+        //Sparse matrix input from transposed HDF5 file 
+
+        //GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
+
+    }
+
 
     // checking the datasets of all slides for the position of the gene 
     public void readExpressionList(string geneName)
