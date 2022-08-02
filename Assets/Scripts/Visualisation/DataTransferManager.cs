@@ -34,7 +34,7 @@ public class DataTransferManager : MonoBehaviour
 
         //TBD set visium, tomoseq, stomics bools true or false from pipeline
         //visium = true;
-        visium = true;
+        tomoseq = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
@@ -86,6 +86,7 @@ public class DataTransferManager : MonoBehaviour
         //TBD - Testdatasets for Denis local - delete following lines
 
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+       // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
 
         //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1\\v1_breast_cancer_block_a_section_1_scanpy.hdf5");
         //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1b\\v1_breast_cancer_block_a_section_1b_scanpy.hdf5");
@@ -141,6 +142,9 @@ public class DataTransferManager : MonoBehaviour
 
     private void startTomoSeq()
     {
+        Camera.main.transform.position = new Vector3(40, 85, 40);
+        Camera.main.transform.eulerAngles = new Vector3(65, 210, -70);
+
         // transfer from pipeline
         string ap_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_AP.csv";
         string vd_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_VD.csv";

@@ -154,8 +154,8 @@ public class TomoSeqDrawer : MonoBehaviour
         ap_size = 50;
 
         List<float> RipList = new List<float>();
-        string[] lines = File.ReadAllLines("Assets/Datasets/mymatrix.txt");
-       // string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/10ss_3dbitmask.txt");
+       // string[] lines = File.ReadAllLines("Assets/Datasets/mymatrix.txt");
+        string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/10ss_3dbitmask.txt");
         foreach(string line in lines)
         {
             List<string> values = new List<string>();
@@ -209,13 +209,13 @@ public class TomoSeqDrawer : MonoBehaviour
         }
 
 
-        var max = nonZero.Max();
-        var min = nonZero.Min();
-        var range = (double)(max - min);
+        //var max = nonZero.Max();
+        //var min = nonZero.Min();
+        //var range = (double)(max - min);
 
-        normalisedVal = nonZero.Select(i => 1 * (i - min) / range).ToList();
+        //normalisedVal = nonZero.Select(i => 1 * (i - min) / range).ToList();
 
-        setColors(normalisedVal);
+        //setColors(normalisedVal);
 
     }
 
@@ -270,6 +270,7 @@ public class TomoSeqDrawer : MonoBehaviour
         }
 
         start = true;
+        if (tomoGraphCanvas.activeSelf == false) tomoGraphCanvas.SetActive(true);
     }
 
     public void runSearchTomo(string ensembleId)
@@ -288,14 +289,49 @@ public class TomoSeqDrawer : MonoBehaviour
             return;
         }
     }
+    private bool expand = false;
+    public void toggleGraphCanvas()
+    {
+        if (expand)
+        {
+            //
+
+            tomoGraphCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 600);
+            AP_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 200);
+            VD_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 200);
+            LR_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 200);
+        }
+        else
+        {
+            //expand here
+
+            tomoGraphCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 600);
+            AP_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 200);
+            VD_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 200);
+            LR_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 200);
+
+        }
+
+        expand = !expand;
+    }
+
 
     public List<string> getGeneNames()
     {
         return APgenes.Union(VDgenes.Union(LRgenes.ToList())).ToList();
     }
 
+    public GameObject AP_Graph_panel;
+    public GameObject VD_Graph_panel;
+    public GameObject LR_Graph_panel;
+    public GameObject tomoGraphCanvas;
+    public GameObject Graph_datapoint;
+    public GameObject black_bg;
+
     IEnumerator searchTomo(int APpos, int VDpos, int LRpos)
     {
+
+
         normalisedVal.Clear();
         Vals.Clear();
 
@@ -307,15 +343,36 @@ public class TomoSeqDrawer : MonoBehaviour
 
         string[] linesAP = File.ReadAllLines(ap_path);
         AP_Exp = new List<float>();
-        AP_Exp = linesAP[APpos].Remove(0, linesAP[APpos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();       
-        
+        AP_Exp = linesAP[APpos].Remove(0, linesAP[APpos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
+
+        foreach(float x in AP_Exp)
+        {
+            GameObject go = Instantiate(Graph_datapoint, AP_Graph_panel.transform);
+            go.transform.GetChild(0).transform.localPosition = new Vector3(0, (int)x *2 ,0);
+
+        }  
+
         string[] linesVD = File.ReadAllLines(vd_path);
         VD_Exp = new List<float>();
-        VD_Exp = linesVD[VDpos].Remove(0, linesVD[VDpos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();   
-        
+        VD_Exp = linesVD[VDpos].Remove(0, linesVD[VDpos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
+
+        foreach (float x in VD_Exp)
+        {
+            GameObject go = Instantiate(Graph_datapoint, VD_Graph_panel.transform);
+            go.transform.GetChild(0).transform.localPosition = new Vector3(0, (int)x*2, 0);
+
+        }
+
         string[] linesLR = File.ReadAllLines(lr_path);
         LR_Exp = new List<float>();
         LR_Exp = linesLR[LRPos].Remove(0, linesLR[LRPos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
+
+        foreach (float x in LR_Exp)
+        {
+            GameObject go = Instantiate(Graph_datapoint, LR_Graph_panel.transform);
+            go.transform.GetChild(0).transform.localPosition = new Vector3(0, (int)x*2, 0);
+
+        }
 
         // mapping values on 3x3 grid
         for (int z = 0; z < lr_size; z++)

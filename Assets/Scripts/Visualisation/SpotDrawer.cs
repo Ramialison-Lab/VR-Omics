@@ -270,16 +270,16 @@ public class SpotDrawer : MonoBehaviour
 
         if (customColour)
         {
-            for(int i=0; i< ngck.Length; i++)
-            {
-                GameObject NewObj = new GameObject();
-                Image NewImage = NewObj.AddComponent<Image>();
-                NewImage.rectTransform.sizeDelta = new Vector2(20, 20);
-                NewImage.color = ngck[i].color;
-                NewObj.GetComponent<RectTransform>().SetParent(colourGradientObject.transform);
-                NewObj.SetActive(true);
-                colGradChilds.Add(NewObj);
-            }
+            //for(int i=0; i< ngck.Length; i++)
+            //{
+            //    GameObject NewObj = new GameObject();
+            //    Image NewImage = NewObj.AddComponent<Image>();
+            //    NewImage.rectTransform.sizeDelta = new Vector2(20, 20);
+            //    NewImage.color = ngck[i].color;
+            //    NewObj.GetComponent<RectTransform>().SetParent(colourGradientObject.transform);
+            //    NewObj.SetActive(true);
+            //    colGradChilds.Add(NewObj);
+            //}
 
         }
         else
@@ -297,16 +297,16 @@ public class SpotDrawer : MonoBehaviour
             gck[4].color = new Color(180 / rgb, 0, 0); // Red
             gck[4].time = 1f;
 
-            for (int i = 0; i < gck.Length; i++)
-            {
-                GameObject NewObj = new GameObject();
-                Image NewImage = NewObj.AddComponent<Image>();
-                NewImage.rectTransform.sizeDelta = new Vector2(20, 20);
-                NewImage.color = gck[i].color;
-                NewObj.GetComponent<RectTransform>().SetParent(colourGradientObject.transform);
-                NewObj.SetActive(true);
-                colGradChilds.Add(NewObj);
-            }
+            //for (int i = 0; i < gck.Length; i++)
+            //{
+            //    GameObject NewObj = new GameObject();
+            //    Image NewImage = NewObj.AddComponent<Image>();
+            //    NewImage.rectTransform.sizeDelta = new Vector2(20, 20);
+            //    NewImage.color = gck[i].color;
+            //    NewObj.GetComponent<RectTransform>().SetParent(colourGradientObject.transform);
+            //    NewObj.SetActive(true);
+            //    colGradChilds.Add(NewObj);
+            //}
         }
     }
     public void defaultColour()
