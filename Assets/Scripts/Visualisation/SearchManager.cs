@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -26,6 +27,27 @@ public class SearchManager : MonoBehaviour
     private void Start()
     {
         sh = GameObject.Find("ScriptHolder");
+
+        if (gameObject.GetComponent<DataTransferManager>().VisiumActive())
+        {
+
+            //    string c18path = gameObject.GetComponent<DataTransferManager>().getC18Path();
+            string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
+            string[] lines = File.ReadAllLines(geneC18);
+            lines = lines.Skip(1).ToArray();
+
+            foreach(string line in lines)
+            {
+                List<string> values = new List<string>();
+                values = line.Split(',').ToList();
+                geneNames.Add(values[0]);
+            }
+
+            //geneNames = geneNames.Distinct().ToList();
+            sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
+
+        }
+
 
         if (gameObject.GetComponent<DataTransferManager>().VisiumActive())
         {
@@ -66,16 +88,34 @@ public class SearchManager : MonoBehaviour
         var indices = gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\new.h5ad", "X/indices");
         var indptr = gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\new.h5ad", "X/indptr");
 
-        Debug.Log(Xdata.Count);
-        Debug.Log(indices.Count);
-        Debug.Log(indptr.Count);
-
+        //TBD search 
         //Sparse matrix input from transposed HDF5 file 
 
         //GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
 
     }
 
+
+    public void readC18Expression(string geneName)
+    {
+        int pos = geneNames.IndexOf(geneName);
+        string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
+        string[] lines = File.ReadAllLines(geneC18);
+        List<double> normalised = new List<double>();
+
+        List<float> resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
+
+        var max = resultExpression.Max();
+        var min = resultExpression.Min();
+        var range = (double)(max - min);
+        normalised
+            = resultExpression.Select(i => 1 * (i - min) / range)
+                .ToList();
+
+        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
+
+
+    }
 
     // checking the datasets of all slides for the position of the gene 
     public void readExpressionList(string geneName)

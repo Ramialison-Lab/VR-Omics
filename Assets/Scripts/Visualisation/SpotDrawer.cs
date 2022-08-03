@@ -17,7 +17,10 @@ public class SpotDrawer : MonoBehaviour
 
     public Material matUsed;
     public Material transparentMaterial;
-    public GameObject sphere;
+    public GameObject symbolSelect;
+    public GameObject sphereSymb;
+    public GameObject cubeSymb;
+    public GameObject diamondSymb;
     public GameObject MC;
     private FileReader filereader;
     private int count = 0;
@@ -36,11 +39,6 @@ public class SpotDrawer : MonoBehaviour
     private float cube_z;
     public bool visium =false;
 
-
-    public void setVisiumBool(bool visBool)
-    {
-        visium = visBool;
-    }
     class MeshWrapper
     {
         //structure for each cube → spot, storing its mesh, the location read from the hdf5, it original location, the unique spotname, which dataset it comes from for the depth information, and a unique ID
@@ -52,6 +50,109 @@ public class SpotDrawer : MonoBehaviour
         internal string datasetName;
         public int uniqueIdentifier;
         public float expVal;
+    }
+
+    private void Start()
+    {
+        symbolSelect = sphereSymb;
+    }
+
+    private void Update()
+    {
+
+        // Update draws the spots each frame
+        // TBD check start||visium or start&&visium or even needed since own drawer script for tomo
+        if (start || visium)
+        {
+            var main = Camera.main;
+            if (newColours)
+                spotColours.Clear();
+
+            // Map transform
+            var symbolTransform = symbolSelect.transform;
+            Matrix4x4 matrix;
+
+            for (int i = 0; i < batches.Count; i++)
+            {
+                // draw all spots from the batches list
+                MeshWrapper wrap = batches[i];
+                var mpb = new MaterialPropertyBlock();
+                Color rc;
+                if (newColours)
+                {
+                    // check if spots are selected while recoloring
+                    if (highlightIdentifier1.Contains(wrap.uniqueIdentifier))
+                    {
+                        // set colour red if manually selected
+                        rc = new Color(255, 0, 0, 1);
+                        mpb.SetColor("_Color", rc);
+                        spotColours.Add(rc);
+
+                    }
+                    else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier))
+                    {
+                        // set colour red if manually selected
+                        rc = new Color(0, 255, 0, 1);
+                        mpb.SetColor("_Color", rc);
+                        spotColours.Add(rc);
+
+                    }
+                    else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier))
+                    {
+                        // set colour red if manually selected
+                        rc = new Color(0, 0, 255, 1);
+                        mpb.SetColor("_Color", rc);
+                        spotColours.Add(rc);
+
+                    }
+                    else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier))
+                    {
+                        // set colour red if manually selected
+                        rc = new Color(0, 255, 255, 1);
+                        mpb.SetColor("_Color", rc);
+                        spotColours.Add(rc);
+
+                    }
+                    else if (firstSelect)
+                    {
+                        try
+                        {
+                            // evaluate expression value with colorgradient
+                            rc = colVals[i];
+                            wrap.expVal = (float)normalised[i];
+                        }
+                        catch (Exception e) { rc = Color.clear; };
+                    }
+                    // if spot not found
+                    else { rc = Color.clear; }
+                    mpb.SetColor("_Color", rc);
+                    spotColours.Add(rc);
+                }
+
+                else
+                {
+                    mpb.SetColor("_Color", spotColours[i]);
+                }
+
+                if (spotColours[i] == Color.clear && firstSelect)
+                {
+                    matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+                    Graphics.DrawMesh(wrap.mesh, matrix, transparentMaterial, 0, main, 0, mpb, false, false);
+                }
+                else
+                {
+                    matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                }
+            }
+            //TBD Deleted, might cause error
+            //newColours = false;
+        }
+    }
+
+    public void setVisiumBool(bool visBool)
+    {
+        visium = visBool;
     }
 
     public void callDataForExport()
@@ -130,6 +231,29 @@ public class SpotDrawer : MonoBehaviour
     }
     public string stomicsPath = "";
 
+    public void setSymbol(string symbol)
+    {
+        switch (symbol)
+        {
+            case "Sphere": symbolSelect = sphereSymb;
+                            break;
+            case "Cube": symbolSelect = cubeSymb; 
+                break;
+            case "Diamond": symbolSelect = diamondSymb; 
+                break;
+        }
+
+        foreach(MeshWrapper mw in batches)
+        {
+            mw.mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
+        }
+    }
+
+    public GameObject getSelectedSymbol()
+    {
+        return symbolSelect;
+    }
+
     public void setStomicsPath(string stomPath)
     {
         stomicsPath = stomPath;
@@ -156,7 +280,7 @@ public class SpotDrawer : MonoBehaviour
             try { datasetn = dataSet[i]; }
             catch(Exception e) { }
 
-            batches.Add(new MeshWrapper { mesh = sphere.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x,y).ToString() ,spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
+            batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x,y).ToString() ,spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
             count++;
         }
 
@@ -166,95 +290,6 @@ public class SpotDrawer : MonoBehaviour
 
     }
 
-    private void Update()
-    {
-
-        // Update draws the spots each frame
-        // TBD check start||visium or start&&visium or even needed since own drawer script for tomo
-        if (start || visium)
-        {
-            var main = Camera.main;
-            if (newColours)
-                spotColours.Clear();
-
-            // Map transform
-            var sphereTransform = sphere.transform;
-            Matrix4x4 matrix;
-
-            for (int i = 0; i < batches.Count; i++)
-            {
-                // draw all spots from the batches list
-                MeshWrapper wrap = batches[i];
-                var mpb = new MaterialPropertyBlock();
-                Color rc;
-                if (newColours)
-                {
-                    // check if spots are selected while recoloring
-                    if (highlightIdentifier1.Contains(wrap.uniqueIdentifier))
-                    {
-                        // set colour red if manually selected
-                        rc = new Color(255, 0, 0, 1);
-                        mpb.SetColor("_Color", rc);
-                        spotColours.Add(rc);
-
-                    }                 else   if (highlightIdentifier2.Contains(wrap.uniqueIdentifier))
-                    {
-                        // set colour red if manually selected
-                        rc = new Color(0, 255, 0, 1);
-                        mpb.SetColor("_Color", rc);
-                        spotColours.Add(rc);
-
-                    }                  else  if (highlightIdentifier3.Contains(wrap.uniqueIdentifier))
-                    {
-                        // set colour red if manually selected
-                        rc = new Color(0, 0, 255, 1);
-                        mpb.SetColor("_Color", rc);
-                        spotColours.Add(rc);
-
-                    }                  else  if (highlightIdentifier4.Contains(wrap.uniqueIdentifier))
-                    {
-                        // set colour red if manually selected
-                        rc = new Color(0, 255, 255, 1);
-                        mpb.SetColor("_Color", rc);
-                        spotColours.Add(rc);
-
-                    }
-                else if (firstSelect)
-                    {
-                        try
-                        {
-                            // evaluate expression value with colorgradient
-                            rc = colVals[i];
-                            wrap.expVal = (float)normalised[i];
-                        }
-                        catch (Exception e) { rc = Color.clear; };
-                    }
-                    // if spot not found
-                    else { rc = Color.clear; }
-                    mpb.SetColor("_Color", rc);
-                    spotColours.Add(rc);
-                }
-
-                else
-                {
-                    mpb.SetColor("_Color", spotColours[i]);
-                }
-
-                if (spotColours[i] == Color.clear && firstSelect)
-                {
-                    matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
-                    Graphics.DrawMesh(wrap.mesh, matrix, transparentMaterial, 0, main, 0, mpb, false, false);
-                }
-                else
-                {
-                    matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
-                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                }                
-            }
-            //TBD Deleted, might cause error
-            //newColours = false;
-        }
-    }
     private bool customColour = false;
     private GradientColorKey[] ngck;
 

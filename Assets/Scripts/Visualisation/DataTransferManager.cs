@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -11,6 +12,8 @@ public class DataTransferManager : MonoBehaviour
     public bool stomics = false;
     public bool tomoseq = false;
     public bool merfish = false;
+
+    public bool c18_visium = false;
 
     private int x = 0;
     public List<string> hdf5datapaths;
@@ -34,7 +37,8 @@ public class DataTransferManager : MonoBehaviour
 
         //TBD set visium, tomoseq, stomics bools true or false from pipeline
         //visium = true;
-        tomoseq = true;
+        visium = true;
+        //c18_visium = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
@@ -43,7 +47,9 @@ public class DataTransferManager : MonoBehaviour
         if (visium)
         {
             sp.setVisiumBool(visium);
-            startVisium();
+
+            if (c18_visium) startC18();
+            else startVisium();
         }
         else if (tomoseq)
         {
@@ -59,6 +65,11 @@ public class DataTransferManager : MonoBehaviour
     public bool VisiumActive()
     {
         return visium;
+    }    
+    
+    public bool C18Data()
+    {
+        return c18_visium;
     }
 
     public bool TomoseqActive()
@@ -69,6 +80,41 @@ public class DataTransferManager : MonoBehaviour
     public bool StomicsActive()
     {
         return stomics;
+    }
+
+    public string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
+
+    private void startC18()
+    {
+        string coordsC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18heart.csv";
+
+        List<float> c18x = new List<float>();
+        List<float> c18y = new List<float>();
+        List<float> c18z = new List<float>();
+        List<string> c18spot = new List<string>();
+
+        string[] lines = File.ReadAllLines(coordsC18);
+        lines = lines.Skip(1).ToArray();
+
+        foreach (string line in lines)
+        {
+            List<string> values = new List<string>();
+            values = line.Split(',').ToList();
+
+            c18x.Add(float.Parse(values[10]));
+            c18y.Add(float.Parse(values[11]));
+            c18z.Add(float.Parse(values[12]));
+            c18spot.Add(values[16]);
+        }
+
+
+        List<string> dp = new List<string>();
+        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(c18x, c18y, c18z, c18spot, dp);
+    }
+
+    public string getC18Path()
+    {
+        return geneC18;
     }
 
     private void startVisium()
@@ -140,6 +186,7 @@ public class DataTransferManager : MonoBehaviour
         sel_DropD.AddOptions(shortList);
     }
 
+    
     private void startTomoSeq()
     {
         Camera.main.transform.position = new Vector3(40, 85, 40);

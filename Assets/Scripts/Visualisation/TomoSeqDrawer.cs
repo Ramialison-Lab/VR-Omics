@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TomoSeqDrawer : MonoBehaviour
 {
@@ -40,6 +41,11 @@ public class TomoSeqDrawer : MonoBehaviour
     public List<string> VDgenes;
     public List<string> LRgenes;
 
+    public GameObject symbolSelect;
+    public GameObject sphereSymb;
+    public GameObject cubeSymb;
+    public GameObject diamondSymb;
+
     public List<float> AP_Exp = new List<float>();
     public List<float> VD_Exp = new List<float>();
     public List<float> LR_Exp = new List<float>();
@@ -59,9 +65,17 @@ public class TomoSeqDrawer : MonoBehaviour
         public Vector3 location;
     }
 
+
+    public GameObject getSelectedSymbol()
+    {
+        return symbolSelect;
+    }
+
     private void Start()
     {
-        foreach(GameObject go in deactivePanels)
+        symbolSelect = cubeSymb;
+
+        foreach (GameObject go in deactivePanels)
         {
             try { go.SetActive(false); } catch(Exception e) { }
         }
@@ -71,7 +85,8 @@ public class TomoSeqDrawer : MonoBehaviour
     {
         if (start)
         {
-            var sphereTransform = sphere.transform;
+            var symbolTransform = symbolSelect.transform;
+            
             Matrix4x4 matrix;
             var main = Camera.main;
             for (int i = 0; i < batches.Count; i++)
@@ -100,13 +115,13 @@ public class TomoSeqDrawer : MonoBehaviour
 
                     if (colVals[i] != Color.clear)
                     {
-                        matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+                        matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
                         Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
                     }
                 }
                 else
                 {
-                    matrix = Matrix4x4.TRS(wrap.location, sphereTransform.rotation, sphereTransform.localScale * 0.1f);
+                    matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
                     Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
                 }
             }
@@ -117,6 +132,28 @@ public class TomoSeqDrawer : MonoBehaviour
             setColors(normalisedVal);
         }
     }
+
+    public void setSymbol(string symbol)
+    {
+        switch (symbol)
+        {
+            case "Sphere":
+                symbolSelect = sphereSymb;
+                break;
+            case "Cube":
+                symbolSelect = cubeSymb;
+                break;
+            case "Diamond":
+                symbolSelect = diamondSymb;
+                break;
+        }
+
+        foreach (MeshWrapper mw in batches)
+        {
+            mw.mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
+        }
+    }
+
 
     private float minTreshRef;
     public void setMinTresh(float val)
@@ -154,8 +191,8 @@ public class TomoSeqDrawer : MonoBehaviour
         ap_size = 50;
 
         List<float> RipList = new List<float>();
-       // string[] lines = File.ReadAllLines("Assets/Datasets/mymatrix.txt");
-        string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/10ss_3dbitmask.txt");
+        string[] lines = File.ReadAllLines("Assets/Datasets/mymatrix.txt");
+        //string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/10ss_3dbitmask.txt");
         foreach(string line in lines)
         {
             List<string> values = new List<string>();
@@ -208,14 +245,16 @@ public class TomoSeqDrawer : MonoBehaviour
             }
         }
 
+        Debug.Log(nonZero.Count);
 
-        //var max = nonZero.Max();
-        //var min = nonZero.Min();
-        //var range = (double)(max - min);
 
-        //normalisedVal = nonZero.Select(i => 1 * (i - min) / range).ToList();
+        var max = nonZero.Max();
+        var min = nonZero.Min();
+        var range = (double)(max - min);
 
-        //setColors(normalisedVal);
+        normalisedVal = nonZero.Select(i => 1 * (i - min) / range).ToList();
+
+        setColors(normalisedVal);
 
     }
 
@@ -294,8 +333,6 @@ public class TomoSeqDrawer : MonoBehaviour
     {
         if (expand)
         {
-            //
-
             tomoGraphCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 600);
             AP_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 200);
             VD_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 200);
@@ -303,8 +340,6 @@ public class TomoSeqDrawer : MonoBehaviour
         }
         else
         {
-            //expand here
-
             tomoGraphCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 600);
             AP_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 200);
             VD_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 200);
@@ -314,7 +349,6 @@ public class TomoSeqDrawer : MonoBehaviour
 
         expand = !expand;
     }
-
 
     public List<string> getGeneNames()
     {

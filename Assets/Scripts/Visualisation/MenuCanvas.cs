@@ -8,6 +8,7 @@ public class MenuCanvas : MonoBehaviour
     private Color backupCol;
     public GameObject lockBtn;
     public GameObject ulockBtn;
+    private DataTransferManager dfm;
     private SpotDrawer sd;
     public bool locked = true;
     public bool lasso = false;
@@ -16,6 +17,7 @@ public class MenuCanvas : MonoBehaviour
     {
         sd = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>();
         backupCol = Camera.main.backgroundColor;
+        dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
         sd.setMinTresh(0f);
         sd.setMaxTresh(1f);
     }
@@ -93,7 +95,17 @@ public class MenuCanvas : MonoBehaviour
     public void setSphereSize(GameObject slider)
     {
         Slider sl = slider.GetComponent<Slider>();
-        sp.transform.localScale = new Vector3(sl.value * 10, sl.value * 10, sl.value * 10);
+        GameObject go;
+
+        if (dfm.TomoseqActive())
+        {
+            go = GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().getSelectedSymbol();
+        }
+        else
+        {
+            go = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().getSelectedSymbol();
+        }
+        go.transform.localScale = new Vector3(sl.value * 10, sl.value * 10, sl.value * 10);
     }
 
     public void expandDataset(GameObject slider)
@@ -178,8 +190,37 @@ public class MenuCanvas : MonoBehaviour
     {
         return HAndEDrag;
     }
-    
 
+    public GameObject colourPanel;
+    public GameObject symbolPanel;
+
+    public void switchSymbolMenu()
+    {
+        if (colourPanel.active) { 
+            colourPanel.SetActive(false);
+            symbolPanel.SetActive(true);
+        }
+        else
+        {
+            colourPanel.SetActive(true);
+            symbolPanel.SetActive(false);
+        }
+    }
+
+    public TMP_Dropdown symbDrop;
+    public void setSymbol()
+    {
+        Debug.Log(symbDrop.options[symbDrop.value].text);
+
+        if (dfm.TomoseqActive())
+        {
+            GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().setSymbol(symbDrop.options[symbDrop.value].text);
+        }
+        else
+        {
+            GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setSymbol(symbDrop.options[symbDrop.value].text);
+        }
+    }
 
     public bool resizeActive()
     {
