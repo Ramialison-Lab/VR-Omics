@@ -28,7 +28,7 @@ public class SearchManager : MonoBehaviour
     {
         sh = GameObject.Find("ScriptHolder");
 
-        if (gameObject.GetComponent<DataTransferManager>().VisiumActive())
+        if (gameObject.GetComponent<DataTransferManager>().C18Data())
         {
 
             //    string c18path = gameObject.GetComponent<DataTransferManager>().getC18Path();

@@ -6,13 +6,17 @@ using UnityEngine.UI;
 public class SpotDrawer : MonoBehaviour
 {
     public List<double> normalised;
+    public List<double> normalisedCopy;
     public List<int> highlightIdentifier1;
     public List<int> highlightIdentifier2;
     public List<int> highlightIdentifier3;
     public List<int> highlightIdentifier4;
     public List<Color> colVals = new List<Color>();
+    public List<Color> colValsCopy = new List<Color>();
     private List<MeshWrapper> batches = new List<MeshWrapper>();
+    private List<MeshWrapper> batchesCopy = new List<MeshWrapper>();
     private List<Color> spotColours = new List<Color>();
+    private List<Color> spotColoursCopy = new List<Color>();
     Vector3 currentEulerAngles;
 
     public Material matUsed;
@@ -28,6 +32,7 @@ public class SpotDrawer : MonoBehaviour
     private bool firstSelect = false;
     private bool start = false;
     private bool newColours = true;
+    private bool newColoursCopy = false;
     private bool slicesMoved = false;
     private string datasetMove;
     public float minTresh = 0f;
@@ -65,8 +70,8 @@ public class SpotDrawer : MonoBehaviour
         if (start || visium)
         {
             var main = Camera.main;
-            if (newColours)
-                spotColours.Clear();
+            //if (newColours)
+            //    spotColours.Clear();
 
             // Map transform
             var symbolTransform = symbolSelect.transform;
@@ -134,12 +139,12 @@ public class SpotDrawer : MonoBehaviour
                     mpb.SetColor("_Color", spotColours[i]);
                 }
 
-                if (spotColours[i] == Color.clear && firstSelect)
-                {
-                    matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                    Graphics.DrawMesh(wrap.mesh, matrix, transparentMaterial, 0, main, 0, mpb, false, false);
-                }
-                else
+                //if (spotColours[i] == Color.clear && firstSelect)
+                //{
+                //    matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+                //    Graphics.DrawMesh(wrap.mesh, matrix, transparentMaterial, 0, main, 0, mpb, false, false);
+                //}
+                //else
                 {
                     matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
                     Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
@@ -148,7 +153,144 @@ public class SpotDrawer : MonoBehaviour
             //TBD Deleted, might cause error
             //newColours = false;
         }
+
+        if (copy)
+           // if (start || visium)
+            {
+                var main = Camera.main;
+            //if (newColoursCopy)
+            //    spotColoursCopy.Clear();
+
+            // Map transform
+            var symbolTransform = symbolSelect.transform;
+            Matrix4x4 matrix;
+            for (int i = 0; i < batchesCopy.Count; i++)
+            {
+                // draw all spots from the batches list
+                MeshWrapper wrap = batchesCopy[i];
+                var mpb = new MaterialPropertyBlock();
+                Color rc;
+                if (newColoursCopy)
+                {
+
+                    // check if spots are selected while recoloring
+                    //if (highlightIdentifier1.Contains(wrap.uniqueIdentifier))
+                    //{
+                    //    // set colour red if manually selected
+                    //    rc = new Color(255, 0, 0, 1);
+                    //    mpb.SetColor("_Color", rc);
+                    //        spotColoursCopy.Add(rc);
+
+                    //}
+                    //else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier))
+                    //{
+                    //    // set colour red if manually selected
+                    //    rc = new Color(0, 255, 0, 1);
+                    //    mpb.SetColor("_Color", rc);
+                    //        spotColoursCopy.Add(rc);
+
+                    //}
+                    //else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier))
+                    //{
+                    //    // set colour red if manually selected
+                    //    rc = new Color(0, 0, 255, 1);
+                    //    mpb.SetColor("_Color", rc);
+                    //        spotColoursCopy.Add(rc);
+
+                    //}
+                    //else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier))
+                    //{
+                    //    // set colour red if manually selected
+                    //    rc = new Color(0, 255, 255, 1);
+                    //    mpb.SetColor("_Color", rc);
+                    //        spotColoursCopy.Add(rc);
+
+                    //}
+                    //else
+
+                    if (firstSelect)
+                    {
+                         try
+                        {
+                            // evaluate expression value with colorgradient
+                            rc = colValsCopy[i];
+                            wrap.expVal = (float)normalisedCopy[i];
+                        }
+                         catch (Exception e) {rc = Color.clear; };
+                    }
+                    // if spot not found
+                    else { rc = Color.clear; }
+
+                    mpb.SetColor("_Color", rc);
+                    spotColoursCopy.Add(rc);
+
+
+
+                //else
+                //    {
+                //        mpb.SetColor("_Color", spotColoursCopy[i]);
+                //    }
+                }
+                    //if (spotColoursCopy[i] == Color.clear && firstSelect)
+                    //{
+                    //    matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 75, wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+                    //    Graphics.DrawMesh(wrap.mesh, matrix, transparentMaterial, 0, main, 0, mpb, false, false);
+                    //}
+                    //else
+                    {
+                        matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 100 , wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                }
+            }
+            //TBD Deleted, might cause error
+            //newColours = false;
+        }
     }
+
+    // set new List of expression values
+    public void setColors(List<double> normalise)
+    {
+        firstSelect = true;
+
+        if (!colourcopy)
+        {
+            normalised.Clear();
+            normalised.AddRange(normalise);
+            newColours = true;
+            colVals.Clear();
+
+            for (int i = 0; i < batches.Count; i++)
+            {
+                colVals.Add(colorGradient(i, normalised));
+            }
+        }
+        else if(copy && colourcopy)
+        {
+            normalisedCopy.Clear();
+            normalisedCopy.AddRange(normalise);
+            newColoursCopy = true;
+            colValsCopy.Clear();
+
+            for (int i = 0; i < batches.Count; i++)
+            {
+                colValsCopy.Add(colorGradient(i, normalisedCopy));
+            }
+        }
+
+    }
+
+    private bool copy = false;
+    public void sideBySide()
+    {
+        copy = !copy;
+    }
+
+    private bool colourcopy = false;
+    public void colorMode()
+    {
+        colourcopy = !colourcopy;
+    }
+
 
     public void setVisiumBool(bool visBool)
     {
@@ -281,6 +423,23 @@ public class SpotDrawer : MonoBehaviour
             catch(Exception e) { }
 
             batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x,y).ToString() ,spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
+            count++;
+        }
+
+        for (int i = 0; i < xcoords.Count; i++)
+        {
+            // reading out the next 3D coordinate from the list
+            float x = xcoords[i];
+            float y = ycoords[i];
+            float z = zcoords[i];
+
+            //reading out the next spotname and datasetname
+            string sname = spotBarcodes[i];
+            string datasetn = stomicsPath;
+            try { datasetn = dataSet[i]; }
+            catch (Exception e) { }
+
+            batchesCopy.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
             count++;
         }
 
@@ -418,10 +577,10 @@ public class SpotDrawer : MonoBehaviour
     }
 
     // calculate color based on expression value
-    private Color colorGradient(int i)
+    private Color colorGradient(int i, List<double> normValues)
     {
 
-        if ((float)normalised[i]<minTresh)
+        if ((float)normValues[i]<minTresh)
         {
             return Color.clear;
         }
@@ -452,7 +611,7 @@ public class SpotDrawer : MonoBehaviour
             alphaKey[1].time = 1.0f;
             gradient.SetKeys(gck, alphaKey);
 
-            return gradient.Evaluate((float)normalised[i]);
+            return gradient.Evaluate((float)normValues[i]);
         }
         else
         {
@@ -467,29 +626,14 @@ public class SpotDrawer : MonoBehaviour
 
             gradient.SetKeys(ngck, alphaKey);
 
-            return gradient.Evaluate((float)normalised[i]);
-        }
-    }
-
-    // set new List of expression values
-    public void setColors(List<double> normalise)
-    {
-        normalised.Clear();
-        colVals.Clear();
-        firstSelect = true;
-        normalised.AddRange(normalise);
-        newColours = true;
-
-        for (int i = 0; i < batches.Count; i++)
-        {
-            colVals.Add(colorGradient(i));
-
+            return gradient.Evaluate((float)normValues[i]);
         }
     }
 
     // reset expressionValues for new search
     public void resetNormalisedValues()
     {
+        if(!colourcopy)
         normalised.Clear();
     }
 
