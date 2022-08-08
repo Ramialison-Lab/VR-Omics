@@ -15,8 +15,6 @@ public class SpotDrawer : MonoBehaviour
     public List<Color> colValsCopy = new List<Color>();
     private List<MeshWrapper> batches = new List<MeshWrapper>();
     private List<MeshWrapper> batchesCopy = new List<MeshWrapper>();
-    private List<Color> spotColours = new List<Color>();
-    private List<Color> spotColoursCopy = new List<Color>();
     Vector3 currentEulerAngles;
 
     public Material matUsed;
@@ -64,16 +62,10 @@ public class SpotDrawer : MonoBehaviour
 
     private void Update()
     {
-
-        // Update draws the spots each frame
-        // TBD check start||visium or start&&visium or even needed since own drawer script for tomo
+        // Update: draws the spots each frame
         if (start || visium)
         {
             var main = Camera.main;
-            //if (newColours)
-            //    spotColours.Clear();
-
-            // Map transform
             var symbolTransform = symbolSelect.transform;
             Matrix4x4 matrix;
 
@@ -82,87 +74,37 @@ public class SpotDrawer : MonoBehaviour
                 // draw all spots from the batches list
                 MeshWrapper wrap = batches[i];
                 var mpb = new MaterialPropertyBlock();
-                Color rc;
-                if (newColours)
+                Color rc;              
+
+                // check if spots are selected with lasso tool
+                if (highlightIdentifier1.Contains(wrap.uniqueIdentifier)) rc = new Color(255, 0, 0, 1);
+                else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 0, 1);
+                else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 0, 255, 1);
+                else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 255, 1);
+                else if (firstSelect)
                 {
-
-                    // check if spots are selected while recoloring
-                    if (highlightIdentifier1.Contains(wrap.uniqueIdentifier))
+                    try
                     {
-                        // set colour red if manually selected
-                        rc = new Color(255, 0, 0, 1);
-                        mpb.SetColor("_Color", rc);
-                        spotColours.Add(rc);
-
+                        // read color for expression and expression value as float
+                        rc = colVals[i];
+                        wrap.expVal = (float)normalised[i];
                     }
-                    else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier))
-                    {
-                        // set colour red if manually selected
-                        rc = new Color(0, 255, 0, 1);
-                        mpb.SetColor("_Color", rc);
-                        spotColours.Add(rc);
-
-                    }
-                    else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier))
-                    {
-                        // set colour red if manually selected
-                        rc = new Color(0, 0, 255, 1);
-                        mpb.SetColor("_Color", rc);
-                        spotColours.Add(rc);
-
-                    }
-                    else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier))
-                    {
-                        // set colour red if manually selected
-                        rc = new Color(0, 255, 255, 1);
-                        mpb.SetColor("_Color", rc);
-                        spotColours.Add(rc);
-
-                    }
-                    else if (firstSelect)
-                    {
-                        try
-                        {
-                            // evaluate expression value with colorgradient
-                            rc = colVals[i];
-                            wrap.expVal = (float)normalised[i];
-                        }
-                        catch (Exception e) { rc = Color.clear; };
-                    }
-                    // if spot not found
-                    else { rc = Color.clear; }
-                    mpb.SetColor("_Color", rc);
-                    spotColours.Add(rc);
+                    catch (Exception e) { rc = Color.clear; };
                 }
-
-                else
-                {
-                    mpb.SetColor("_Color", spotColours[i]);
-                }
-
-                //if (spotColours[i] == Color.clear && firstSelect)
-                //{
-                //    matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                //    Graphics.DrawMesh(wrap.mesh, matrix, transparentMaterial, 0, main, 0, mpb, false, false);
-                //}
-                //else
-                {
-                    matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                }
+                // if spot not found
+                else { rc = Color.clear; }
+                // set the colour defined above 
+                mpb.SetColor("_Color", rc);
+                //draw spots by graphic
+                matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+                Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);              
             }
-            //TBD Deleted, might cause error
-            //newColours = false;
         }
 
+        // if side-by-side copy of the slice is active
         if (copy)
-           // if (start || visium)
-            {
-                var main = Camera.main;
-            //if (newColoursCopy)
-            //    spotColoursCopy.Clear();
-
-            // Map transform
+        {
+            var main = Camera.main;
             var symbolTransform = symbolSelect.transform;
             Matrix4x4 matrix;
             for (int i = 0; i < batchesCopy.Count; i++)
@@ -176,75 +118,32 @@ public class SpotDrawer : MonoBehaviour
 
                     if (firstSelect)
                     {
-                         try
+                        try
                         {
                             // evaluate expression value with colorgradient
                             rc = colValsCopy[i];
                             wrap.expVal = (float)normalisedCopy[i];
                         }
-                         catch (Exception e) {rc = Color.clear; };
+                        catch (Exception e) {rc = Color.clear; };
                     }
                     // if spot not found
                     else { rc = Color.clear; }
 
-                    // check if spots are selected while recoloring
-                    if (highlightIdentifier1.Contains(wrap.uniqueIdentifier - batches.Count))
-                    {
-                        Debug.Log("in there");
-                        // set colour red if manually selected
-                        rc = new Color(255, 0, 0, 1);
-                        mpb.SetColor("_Color", rc);
-                        spotColoursCopy.Add(rc);
-
-                    }
-                    else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier - batches.Count))
-                    {
-                        // set colour red if manually selected
-                        rc = new Color(0, 255, 0, 1);
-                        mpb.SetColor("_Color", rc);
-                        spotColoursCopy.Add(rc);
-
-                    }
-                    else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier - batches.Count))
-                    {
-                        // set colour red if manually selected
-                        rc = new Color(0, 0, 255, 1);
-                        mpb.SetColor("_Color", rc);
-                        spotColoursCopy.Add(rc);
-
-                    }
-                    else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier - batches.Count))
-                    {
-                        // set colour red if manually selected
-                        rc = new Color(0, 255, 255, 1);
-                        mpb.SetColor("_Color", rc);
-                        spotColoursCopy.Add(rc);
-
-                    }
+                    //search if original slice spot is selected by lasso and colours spot in copy
+                    if (highlightIdentifier1.Contains(wrap.uniqueIdentifier - batches.Count)) rc = new Color(255, 0, 0, 1);
+                    else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier - batches.Count)) rc = new Color(0, 255, 0, 1);
+                    else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier - batches.Count)) rc = new Color(0, 0, 255, 1);
+                    else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier - batches.Count)) rc = new Color(0, 255, 255, 1);
 
                     mpb.SetColor("_Color", rc);
-                    spotColoursCopy.Add(rc);
 
-
-
-                //else
-                //    {
-                //        mpb.SetColor("_Color", spotColoursCopy[i]);
-                //    }
                 }
-                    //if (spotColoursCopy[i] == Color.clear && firstSelect)
-                    //{
-                    //    matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 75, wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                    //    Graphics.DrawMesh(wrap.mesh, matrix, transparentMaterial, 0, main, 0, mpb, false, false);
-                    //}
-                    //else
-                    {
-                        matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 100 , wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+
+                {
+                    matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 100 , wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
                     Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
                 }
             }
-            //TBD Deleted, might cause error
-            //newColours = false;
         }
     }
 
@@ -677,18 +576,10 @@ public class SpotDrawer : MonoBehaviour
                         try
                         {
                             highlightIdentifier1.Remove(mw.uniqueIdentifier);
-                        }catch(Exception e) { }try
-                        {
                             highlightIdentifier2.Remove(mw.uniqueIdentifier);
-                        }catch(Exception e) { }try
-                        {
                             highlightIdentifier3.Remove(mw.uniqueIdentifier);
-                        }catch(Exception e) { }try
-                        {
                             highlightIdentifier4.Remove(mw.uniqueIdentifier);
                         }catch(Exception e) { }
-
-
                         switch (active) {
                             case 0:
                                 if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
