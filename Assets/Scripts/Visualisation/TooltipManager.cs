@@ -77,8 +77,8 @@ public class TooltipManager : MonoBehaviour
             case "3":
                 x = "Activate Group 4";
                 break;                
-            case "LassoDuplicateCopySlider":
-                x = "Transfer selection to copy slide";
+            case "LassoAddorRemoveToggle":
+                x = "Toggle to add or remove spots from selection";
                 break;                
             case "CSVBtn":
                 x = "Export selection as CSV file";
@@ -94,6 +94,9 @@ public class TooltipManager : MonoBehaviour
                 break;               
             case "SettingsBtn":
                 x = "Open settings menu";
+                break;              
+            case "UnselectLassoBtn":
+                x = "Undo all selections";
                 break;                
 
         }

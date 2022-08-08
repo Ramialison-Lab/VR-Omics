@@ -562,6 +562,17 @@ public class SpotDrawer : MonoBehaviour
         addToggle = !addToggle;
     }
 
+    public void unselectAll()
+    {
+        // Unselects all spots form Lassotool
+        highlightIdentifier1.Clear();
+        highlightIdentifier2.Clear();
+        highlightIdentifier3.Clear();
+        highlightIdentifier4.Clear();
+
+
+    }
+
     // Identification of a spot if clicked on or lasso tool used
     public void identifySpot(float x_cl, float y_cl, string dN)
     {
