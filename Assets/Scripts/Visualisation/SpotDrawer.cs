@@ -41,6 +41,9 @@ public class SpotDrawer : MonoBehaviour
     private float zoffsetMove;
     private float cube_z;
     public bool visium =false;
+    private bool copy = false;
+    private bool colourcopy = false;
+
 
     class MeshWrapper
     {
@@ -138,7 +141,6 @@ public class SpotDrawer : MonoBehaviour
                     mpb.SetColor("_Color", rc);
 
                 }
-
                 {
                     matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 100 , wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
                     Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
@@ -176,21 +178,17 @@ public class SpotDrawer : MonoBehaviour
                 colValsCopy.Add(colorGradient(i, normalisedCopy));
             }
         }
-
     }
 
-    private bool copy = false;
     public void sideBySide()
     {
         copy = !copy;
     }
 
-    private bool colourcopy = false;
     public void colorMode()
     {
         colourcopy = !colourcopy;
     }
-
 
     public void setVisiumBool(bool visBool)
     {
@@ -558,6 +556,12 @@ public class SpotDrawer : MonoBehaviour
 
     }
 
+    private bool addToggle = true;
+    public void LassoToggle()
+    {
+        addToggle = !addToggle;
+    }
+
     // Identification of a spot if clicked on or lasso tool used
     public void identifySpot(float x_cl, float y_cl, string dN)
     {
@@ -640,79 +644,84 @@ public class SpotDrawer : MonoBehaviour
             {
                 if (MC.GetComponent<MenuCanvas>().getLasso())
                 {
-                    try
-                    {
-                        highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                    if(!addToggle)
+                    { 
+                        try
+                        {
+                            Debug.Log("remove");
+                            highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                        }
+                        catch (Exception e) { }
+                        try
+                        {
+                            highlightIdentifier2.Remove(mw.uniqueIdentifier);
+                        }
+                        catch (Exception e) { }
+                        try
+                        {
+                            highlightIdentifier3.Remove(mw.uniqueIdentifier);
+                        }
+                        catch (Exception e) { }
+                        try
+                        {
+                            highlightIdentifier4.Remove(mw.uniqueIdentifier);
+                        }
+                        catch (Exception e) { }
+                    }
 
-                    }
-                    catch (Exception e) { }
-                    try
+                    else if(addToggle)
                     {
-                        highlightIdentifier2.Remove(mw.uniqueIdentifier);
-                    }
-                    catch (Exception e) { }
-                    try
-                    {
-                        highlightIdentifier3.Remove(mw.uniqueIdentifier);
-                    }
-                    catch (Exception e) { }
-                    try
-                    {
-                        highlightIdentifier4.Remove(mw.uniqueIdentifier);
-                    }
-                    catch (Exception e) { }
-
-                    switch (active)
-                    {
-                        case 0:
-                            if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
-                            {
-                                newColours = true;
-                                highlightIdentifier1.Add(mw.uniqueIdentifier);
-                            }
-                            else
-                            {
-                                newColours = true;
-                                highlightIdentifier1.Remove(mw.uniqueIdentifier);
-                            }
-                            break;
-                        case 1:
-                            if (!highlightIdentifier2.Contains(mw.uniqueIdentifier))
-                            {
-                                newColours = true;
-                                highlightIdentifier2.Add(mw.uniqueIdentifier);
-                            }
-                            else
-                            {
-                                newColours = true;
-                                //highlightIdentifier1.Remove(mw.uniqueIdentifier);
-                            }
-                            break;
-                        case 2:
-                            if (!highlightIdentifier3.Contains(mw.uniqueIdentifier))
-                            {
-                                newColours = true;
-                                highlightIdentifier3.Add(mw.uniqueIdentifier);
-                            }
-                            else
-                            {
-                                newColours = true;
-                                //highlightIdentifier1.Remove(mw.uniqueIdentifier);
-                            }
-                            break;
-                        case 3:
-                            if (!highlightIdentifier4.Contains(mw.uniqueIdentifier))
-                            {
-                                newColours = true;
-                                highlightIdentifier4.Add(mw.uniqueIdentifier);
-                            }
-                            else
-                            {
-                                newColours = true;
-                                //highlightIdentifier1.Remove(mw.uniqueIdentifier);
-                            }
-                            break;
-
+                        switch (active)
+                        {
+                            case 0:
+                                if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
+                                {
+                                    newColours = true;
+                                    highlightIdentifier1.Add(mw.uniqueIdentifier);
+                                }
+                                else
+                                {
+                                    newColours = true;
+                                    highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                                }
+                                break;
+                            case 1:
+                                if (!highlightIdentifier2.Contains(mw.uniqueIdentifier))
+                                {
+                                    newColours = true;
+                                    highlightIdentifier2.Add(mw.uniqueIdentifier);
+                                }
+                                else
+                                {
+                                    newColours = true;
+                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                                }
+                                break;
+                            case 2:
+                                if (!highlightIdentifier3.Contains(mw.uniqueIdentifier))
+                                {
+                                    newColours = true;
+                                    highlightIdentifier3.Add(mw.uniqueIdentifier);
+                                }
+                                else
+                                {
+                                    newColours = true;
+                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                                }
+                                break;
+                            case 3:
+                                if (!highlightIdentifier4.Contains(mw.uniqueIdentifier))
+                                {
+                                    newColours = true;
+                                    highlightIdentifier4.Add(mw.uniqueIdentifier);
+                                }
+                                else
+                                {
+                                    newColours = true;
+                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                                }
+                                break;
+                        }
                     }
                 }
                 try
