@@ -648,22 +648,9 @@ public class SpotDrawer : MonoBehaviour
                     { 
                         try
                         {
-                            Debug.Log("remove");
                             highlightIdentifier1.Remove(mw.uniqueIdentifier);
-                        }
-                        catch (Exception e) { }
-                        try
-                        {
                             highlightIdentifier2.Remove(mw.uniqueIdentifier);
-                        }
-                        catch (Exception e) { }
-                        try
-                        {
                             highlightIdentifier3.Remove(mw.uniqueIdentifier);
-                        }
-                        catch (Exception e) { }
-                        try
-                        {
                             highlightIdentifier4.Remove(mw.uniqueIdentifier);
                         }
                         catch (Exception e) { }
@@ -671,54 +658,32 @@ public class SpotDrawer : MonoBehaviour
 
                     else if(addToggle)
                     {
+                        newColours = true;
+
                         switch (active)
                         {
                             case 0:
                                 if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
                                 {
-                                    newColours = true;
                                     highlightIdentifier1.Add(mw.uniqueIdentifier);
-                                }
-                                else
-                                {
-                                    newColours = true;
-                                    highlightIdentifier1.Remove(mw.uniqueIdentifier);
                                 }
                                 break;
                             case 1:
                                 if (!highlightIdentifier2.Contains(mw.uniqueIdentifier))
                                 {
-                                    newColours = true;
                                     highlightIdentifier2.Add(mw.uniqueIdentifier);
-                                }
-                                else
-                                {
-                                    newColours = true;
-                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
                                 }
                                 break;
                             case 2:
                                 if (!highlightIdentifier3.Contains(mw.uniqueIdentifier))
                                 {
-                                    newColours = true;
                                     highlightIdentifier3.Add(mw.uniqueIdentifier);
-                                }
-                                else
-                                {
-                                    newColours = true;
-                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
                                 }
                                 break;
                             case 3:
                                 if (!highlightIdentifier4.Contains(mw.uniqueIdentifier))
                                 {
-                                    newColours = true;
                                     highlightIdentifier4.Add(mw.uniqueIdentifier);
-                                }
-                                else
-                                {
-                                    newColours = true;
-                                    //highlightIdentifier1.Remove(mw.uniqueIdentifier);
                                 }
                                 break;
                         }

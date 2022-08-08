@@ -3,15 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-
+using UnityEngine.EventSystems;
 
 public class TooltipManager : MonoBehaviour
 {
 
     public string tooltipText = "";
+    public GameObject tooltipBox;
 
-    private void OnMouseEnter()
+
+    public void enterTT(GameObject go)
     {
-        //TBD add tooltip
+        tooltipBox.SetActive(true);   
+        tooltipBox.transform.GetComponent<RectTransform>().position = go.transform.localPosition;
+        tooltipBox.GetComponentInChildren<TMP_Text>().text = "Test";
     }
+
+    public void exitTT()
+    {
+        tooltipBox.SetActive(false);
+    }
+
 }
