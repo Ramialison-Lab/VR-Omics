@@ -85,6 +85,7 @@ public class SpotDrawer : MonoBehaviour
                 Color rc;
                 if (newColours)
                 {
+
                     // check if spots are selected while recoloring
                     if (highlightIdentifier1.Contains(wrap.uniqueIdentifier))
                     {
@@ -173,41 +174,6 @@ public class SpotDrawer : MonoBehaviour
                 if (newColoursCopy)
                 {
 
-                    // check if spots are selected while recoloring
-                    //if (highlightIdentifier1.Contains(wrap.uniqueIdentifier))
-                    //{
-                    //    // set colour red if manually selected
-                    //    rc = new Color(255, 0, 0, 1);
-                    //    mpb.SetColor("_Color", rc);
-                    //        spotColoursCopy.Add(rc);
-
-                    //}
-                    //else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier))
-                    //{
-                    //    // set colour red if manually selected
-                    //    rc = new Color(0, 255, 0, 1);
-                    //    mpb.SetColor("_Color", rc);
-                    //        spotColoursCopy.Add(rc);
-
-                    //}
-                    //else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier))
-                    //{
-                    //    // set colour red if manually selected
-                    //    rc = new Color(0, 0, 255, 1);
-                    //    mpb.SetColor("_Color", rc);
-                    //        spotColoursCopy.Add(rc);
-
-                    //}
-                    //else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier))
-                    //{
-                    //    // set colour red if manually selected
-                    //    rc = new Color(0, 255, 255, 1);
-                    //    mpb.SetColor("_Color", rc);
-                    //        spotColoursCopy.Add(rc);
-
-                    //}
-                    //else
-
                     if (firstSelect)
                     {
                          try
@@ -220,6 +186,41 @@ public class SpotDrawer : MonoBehaviour
                     }
                     // if spot not found
                     else { rc = Color.clear; }
+
+                    // check if spots are selected while recoloring
+                    if (highlightIdentifier1.Contains(wrap.uniqueIdentifier - batches.Count))
+                    {
+                        Debug.Log("in there");
+                        // set colour red if manually selected
+                        rc = new Color(255, 0, 0, 1);
+                        mpb.SetColor("_Color", rc);
+                        spotColoursCopy.Add(rc);
+
+                    }
+                    else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier - batches.Count))
+                    {
+                        // set colour red if manually selected
+                        rc = new Color(0, 255, 0, 1);
+                        mpb.SetColor("_Color", rc);
+                        spotColoursCopy.Add(rc);
+
+                    }
+                    else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier - batches.Count))
+                    {
+                        // set colour red if manually selected
+                        rc = new Color(0, 0, 255, 1);
+                        mpb.SetColor("_Color", rc);
+                        spotColoursCopy.Add(rc);
+
+                    }
+                    else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier - batches.Count))
+                    {
+                        // set colour red if manually selected
+                        rc = new Color(0, 255, 255, 1);
+                        mpb.SetColor("_Color", rc);
+                        spotColoursCopy.Add(rc);
+
+                    }
 
                     mpb.SetColor("_Color", rc);
                     spotColoursCopy.Add(rc);
