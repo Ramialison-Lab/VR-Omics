@@ -25,10 +25,11 @@ public class CSVReader : MonoBehaviour
     // search Function for gene
     public void searchGene(string datapath, int pos, string gn)
     {
-            datapath = datapath.Replace(datapath.Split('\\').Last(), "") + "TransposedTest.csv";
-            //TBD this operation causes the runtime to freeze
-            StartCoroutine(search(datapath, pos, gn));
-            GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);       
+        datapath = datapath.Replace(datapath.Split('\\').Last(), "") + "TransposedTest.csv";
+        //TBD this operation causes the runtime to freeze
+        StartCoroutine(search(datapath, pos, gn));
+        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
+        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().lastGeneName(gn);       
     }
 
     public void searchForGene(string dp, string gn, int x)

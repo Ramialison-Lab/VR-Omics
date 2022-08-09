@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 using UnityEngine.UI;
 
 public class SpotDrawer : MonoBehaviour
@@ -149,6 +150,19 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
+    private string lastGene;
+    private string lastGeneCopy;
+    public TMP_Text geneSelection;
+
+    public void lastGeneName(string gn)
+    {
+        if (!colourcopy) { lastGene = gn; }
+        else { lastGeneCopy = gn; }
+
+        if(!colourcopy) geneSelection.text = "Original: " + lastGene;
+        else geneSelection.text = "Original: " + lastGene + ",\n Clone: " + lastGeneCopy;
+    }
+    
     // set new List of expression values
     public void setColors(List<double> normalise)
     {
@@ -183,7 +197,36 @@ public class SpotDrawer : MonoBehaviour
     public void sideBySide()
     {
         copy = !copy;
+        if (!copy && newColoursCopy)
+        {
+            mergeContext();
+        }
     }
+    public GameObject mergePanel;
+    private void mergeContext()
+    {
+        mergePanel.SetActive(true);
+    }
+
+    public void mergeSelection(bool merge)
+    {
+        if (merge)
+        {
+            List<double> mergeList = new List<double>();
+            for(int i=0; i< normalised.Count; i++)
+            {
+                mergeList.Add((double)Mathf.Abs((float)(normalised[i] - normalisedCopy[i])));
+            }
+            colourcopy = false;
+            setColors(mergeList);
+            mergePanel.SetActive(false);
+            geneSelection.text = "Merged: " + lastGene + "\nwith " + lastGeneCopy;
+            colourcopy = true;
+        }
+        else mergePanel.SetActive(false);
+    }
+
+
 
     public void colorMode()
     {

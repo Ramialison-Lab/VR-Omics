@@ -10,19 +10,31 @@ public class TooltipManager : MonoBehaviour
 
     public string tooltipText = "";
     public GameObject tooltipBox;
+    private bool active = false;
 
 
     public void enterTT(GameObject go)
     {
-        tooltipBox.SetActive(true);
-        tooltipBox.GetComponentInChildren<TMP_Text>().text = getDescription(go.name);
-        tooltipBox.transform.position = new Vector2(Input.mousePosition.x +20, Input.mousePosition.y+20);
+        active = true;
+        wait();
+        if (active)
+        {
+            tooltipBox.SetActive(true);
+            tooltipBox.GetComponentInChildren<TMP_Text>().text = getDescription(go.name);
+            tooltipBox.transform.position = new Vector2(Input.mousePosition.x + 20, Input.mousePosition.y + 20);
+        }
 
+    }
+
+    private IEnumerator wait()
+    {
+        yield return new WaitForSeconds(10);
     }
 
     public void exitTT()
     {
         tooltipBox.SetActive(false);
+        active = false;
     }
 
     private string getDescription(string name)
@@ -92,7 +104,7 @@ public class TooltipManager : MonoBehaviour
             case "SphereSizeSlider":
                 x = "Set the size of the symbol";
                 break;               
-            case "SettingsBtn":
+            case "SettingBtn":
                 x = "Open settings menu";
                 break;              
             case "UnselectLassoBtn":
