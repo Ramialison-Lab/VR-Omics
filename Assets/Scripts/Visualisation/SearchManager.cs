@@ -95,6 +95,13 @@ public class SearchManager : MonoBehaviour
 
     }
 
+    //public List<int> queryH5Cluster()
+    //{
+    //    //foreach
+    //    //sh.GetComponent<FileReader>().readH5Cluster();
+    //    //return
+    //}
+
 
     public void readC18Expression(string geneName)
     {
@@ -121,6 +128,7 @@ public class SearchManager : MonoBehaviour
     public void readExpressionList(string geneName)
     {
         int x = 0;
+        gameObject.GetComponent<SpotDrawer>().clearBatchcounter();
         //for each dataset selected
         foreach (string p in datasetPaths)
         {

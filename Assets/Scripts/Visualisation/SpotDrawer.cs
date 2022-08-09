@@ -150,6 +150,21 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
+    public TMP_Dropdown dd;
+
+    public void ReadSpecial()
+    {
+        switch (dd.value)
+        {
+            case 1: // Leiden
+                break;
+            case 2: //HVG
+                break;
+            case 3: //SVG
+                break;
+        }
+    }
+
     private string lastGene;
     private string lastGeneCopy;
     public TMP_Text geneSelection;
@@ -162,7 +177,13 @@ public class SpotDrawer : MonoBehaviour
         if(!colourcopy) geneSelection.text = "Original: " + lastGene;
         else geneSelection.text = "Original: " + lastGene + ",\n Clone: " + lastGeneCopy;
     }
-    
+
+    private int batchCounter = 0;
+
+    public void clearBatchcounter()
+    {
+        batchCounter = 0;
+    }
     // set new List of expression values
     public void setColors(List<double> normalise)
     {
@@ -170,12 +191,15 @@ public class SpotDrawer : MonoBehaviour
 
         if (!colourcopy)
         {
-            normalised.Clear();
+            //normalised.Clear();
             normalised.AddRange(normalise);
             newColours = true;
             colVals.Clear();
-
-            for (int i = 0; i < batches.Count; i++)
+            Debug.Log(normalise.Count);
+            Debug.Log(batches.Count);
+            if (normalise.Count < batches.Count) batchCounter = batchCounter + normalise.Count;
+            
+            for (int i = 0; i < batchCounter; i++)
             {
                 colVals.Add(colorGradient(i, normalised));
             }
@@ -193,6 +217,61 @@ public class SpotDrawer : MonoBehaviour
             }
         }
     }
+
+    // calculate color based on expression value
+    private Color colorGradient(int i, List<double> normValues)
+    {
+
+        //if ((float)normValues[i] < minTresh)
+        //{
+        //    return Color.clear;
+        //}
+        if (!customColour)
+        {
+            Gradient gradient = new Gradient();
+            // Populate the color keys at the relative time 0 and 1 (0 and 100%)
+            GradientColorKey[] gck = new GradientColorKey[5];
+
+            float rgb = 255;
+
+            gck[0].color = new Color(65 / rgb, 105 / rgb, 255 / rgb); // Blue
+            gck[0].time = 0f;
+            gck[1].color = new Color(135 / rgb, 206 / rgb, 250 / rgb); // Cyan
+            gck[1].time = .25f;
+            gck[2].color = new Color(60 / rgb, 179 / rgb, 113 / rgb); // green
+            gck[2].time = 0.50F;
+            gck[3].color = new Color(255 / rgb, 230 / rgb, 0); // yellow
+            gck[3].time = 0.75F;
+            gck[4].color = new Color(180 / rgb, 0, 0); // Red
+            gck[4].time = 1f;
+
+            // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
+            GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
+            alphaKey[0].alpha = 1.0f;
+            alphaKey[0].time = 0.0f;
+            alphaKey[1].alpha = 0.0f;
+            alphaKey[1].time = 1.0f;
+            gradient.SetKeys(gck, alphaKey);
+
+            return gradient.Evaluate((float)normValues[i]);
+        }
+        else
+        {
+            Gradient gradient = new Gradient();
+
+            // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
+            GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
+            alphaKey[0].alpha = 1.0f;
+            alphaKey[0].time = 0.0f;
+            alphaKey[1].alpha = 0.0f;
+            alphaKey[1].time = 1.0f;
+
+            gradient.SetKeys(ngck, alphaKey);
+
+            return gradient.Evaluate((float)normValues[i]);
+        }
+    }
+
 
     public void sideBySide()
     {
@@ -515,60 +594,6 @@ public class SpotDrawer : MonoBehaviour
         }
         customColour = true;
         createColorGradientMenu();
-    }
-
-    // calculate color based on expression value
-    private Color colorGradient(int i, List<double> normValues)
-    {
-
-        if ((float)normValues[i]<minTresh)
-        {
-            return Color.clear;
-        }
-        if (!customColour)
-        {
-            Gradient gradient = new Gradient();
-            // Populate the color keys at the relative time 0 and 1 (0 and 100%)
-            GradientColorKey[] gck = new GradientColorKey[5];
-
-            float rgb = 255;
-
-            gck[0].color = new Color(65 / rgb, 105 / rgb, 255 / rgb); // Blue
-            gck[0].time = 0f;
-            gck[1].color = new Color(135 / rgb, 206 / rgb, 250 / rgb); // Cyan
-            gck[1].time = .25f;
-            gck[2].color = new Color(60 / rgb, 179 / rgb, 113 / rgb); // green
-            gck[2].time = 0.50F;
-            gck[3].color = new Color(255 / rgb, 230 / rgb, 0); // yellow
-            gck[3].time = 0.75F;
-            gck[4].color = new Color(180 / rgb, 0, 0); // Red
-            gck[4].time = 1f;
-
-            // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
-            GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
-            alphaKey[0].alpha = 1.0f;
-            alphaKey[0].time = 0.0f;
-            alphaKey[1].alpha = 0.0f;
-            alphaKey[1].time = 1.0f;
-            gradient.SetKeys(gck, alphaKey);
-
-            return gradient.Evaluate((float)normValues[i]);
-        }
-        else
-        {
-            Gradient gradient = new Gradient();
-
-            // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
-            GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
-            alphaKey[0].alpha = 1.0f;
-            alphaKey[0].time = 0.0f;
-            alphaKey[1].alpha = 0.0f;
-            alphaKey[1].time = 1.0f;
-
-            gradient.SetKeys(ngck, alphaKey);
-
-            return gradient.Evaluate((float)normValues[i]);
-        }
     }
 
     // reset expressionValues for new search

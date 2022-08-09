@@ -65,6 +65,13 @@ public class FileReader : MonoBehaviour
         genexp = H5Loader.LoadDataset<float>(path, name);
     }
 
+    public List<int> readH5Cluster(string path)
+    {
+        string name = "obs/clusters";
+        List<int> cluster = new List<int>(H5Loader.LoadIntDataset(path, name));
+        return cluster;
+    }
+
     /// <summary>
     /// Calculates Visium coordiantes from obs/_index
     /// </summary>
