@@ -217,6 +217,7 @@ public class SpotDrawer : MonoBehaviour
             }
         }
     }
+    public Gradient gd;
 
     // calculate color based on expression value
     private Color colorGradient(int i, List<double> normValues)
@@ -252,7 +253,7 @@ public class SpotDrawer : MonoBehaviour
             alphaKey[1].alpha = 0.0f;
             alphaKey[1].time = 1.0f;
             gradient.SetKeys(gck, alphaKey);
-
+            gd = gradient;
             return gradient.Evaluate((float)normValues[i]);
         }
         else
