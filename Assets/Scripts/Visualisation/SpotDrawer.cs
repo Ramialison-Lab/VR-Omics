@@ -156,7 +156,7 @@ public class SpotDrawer : MonoBehaviour
     {
         switch (dd.value)
         {
-            case 1: // Leiden
+            case 1: gameObject.GetComponent<SearchManager>().queryH5Cluster();
                 break;
             case 2: //HVG
                 break;
@@ -195,11 +195,9 @@ public class SpotDrawer : MonoBehaviour
             normalised.AddRange(normalise);
             newColours = true;
             colVals.Clear();
-            Debug.Log(normalise.Count);
-            Debug.Log(batches.Count);
             if (normalise.Count < batches.Count) batchCounter = batchCounter + normalise.Count;
-            
-            for (int i = 0; i < batchCounter; i++)
+            else batchCounter = batches.Count;
+            for (int i = 0; i < batches.Count; i++)
             {
                 colVals.Add(colorGradient(i, normalised));
             }

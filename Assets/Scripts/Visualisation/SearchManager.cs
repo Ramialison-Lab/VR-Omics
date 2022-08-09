@@ -95,12 +95,32 @@ public class SearchManager : MonoBehaviour
 
     }
 
-    //public List<int> queryH5Cluster()
-    //{
-    //    //foreach
-    //    //sh.GetComponent<FileReader>().readH5Cluster();
-    //    //return
-    //}
+    public void queryH5Cluster()
+    {
+        List<float> readList;
+        foreach (string dp in datasetPaths) {
+            readList = sh.GetComponent<FileReader>().readH5Cluster(dp);
+
+            var max = readList.Max();
+            var min = readList.Min();
+            var range = (double)(max - min);
+
+
+            var normalised
+                = readList.Select(i => 1 * (i - min) / range)
+                    .ToList();
+
+            Debug.Log(normalised[0]);
+            Debug.Log(normalised[1]);
+            Debug.Log(normalised[2]);
+            Debug.Log(normalised[3]);
+            Debug.Log(normalised[4]);
+
+            gameObject.GetComponent<SpotDrawer>().clearBatchcounter();
+            gameObject.GetComponent<SpotDrawer>().setColors(normalised);
+        }
+
+    }
 
 
     public void readC18Expression(string geneName)
