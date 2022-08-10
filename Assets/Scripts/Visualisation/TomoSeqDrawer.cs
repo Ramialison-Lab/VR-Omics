@@ -245,8 +245,6 @@ public class TomoSeqDrawer : MonoBehaviour
             }
         }
 
-        Debug.Log(nonZero.Count);
-
 
         var max = nonZero.Max();
         var min = nonZero.Min();
