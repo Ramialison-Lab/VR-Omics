@@ -235,6 +235,7 @@ public class SpotDrawer : MonoBehaviour
     // set new List of expression values
     public void setColors(List<double> normalise)
     {
+        Debug.Log(minTresh);
         firstSelect = true;
 
         if (!colourcopy)
@@ -269,10 +270,10 @@ public class SpotDrawer : MonoBehaviour
     private Color colorGradient(int i, List<double> normValues)
     {
 
-        //if ((float)normValues[i] < minTresh)
-        //{
-        //    return Color.clear;
-        //}
+        if ((float)normValues[i] < minTresh)
+        {
+            return Color.clear;
+        }
         if (!customColour)
         {
             Gradient gradient = new Gradient();

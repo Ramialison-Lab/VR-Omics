@@ -201,6 +201,11 @@ public class SearchManager : MonoBehaviour
     {
         var max = readList.Max();
         var min = readList.Min();
+        //var min = readList
+        //      .Where(item => item > 0) // Only positive numbers
+        //      .Min();
+
+
         var range = (double)(max - min);
 
 
