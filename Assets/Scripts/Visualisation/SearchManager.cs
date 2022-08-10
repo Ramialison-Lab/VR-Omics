@@ -95,33 +95,91 @@ public class SearchManager : MonoBehaviour
 
     }
 
-    public void queryH5Cluster()
+    //public void queryH5Cluster()
+    //{
+    //    List<float> readList;
+    //    foreach (string dp in datasetPaths) {
+    //        readList = sh.GetComponent<FileReader>().readSbytetoFloat(dp);
+
+    //        var max = readList.Max();
+    //        var min = readList.Min();
+    //        var range = (double)(max - min);
+
+
+    //        var normalised
+    //            = readList.Select(i => 1 * (i - min) / range)
+    //                .ToList();
+
+    //        gameObject.GetComponent<SpotDrawer>().clearBatchcounter();
+    //        gameObject.GetComponent<SpotDrawer>().setColors(normalised);
+    //    }
+
+    //}
+
+    public void querySbyte(string hdfpath)
     {
         List<float> readList;
-        foreach (string dp in datasetPaths) {
-            readList = sh.GetComponent<FileReader>().readH5Cluster(dp);
+        foreach (string dp in datasetPaths)
+        {
+            readList = sh.GetComponent<FileReader>().querySbytetoFloat(dp, hdfpath);
 
-            var max = readList.Max();
-            var min = readList.Min();
-            var range = (double)(max - min);
+            normaliseAndDraw(readList);
 
-
-            var normalised
-                = readList.Select(i => 1 * (i - min) / range)
-                    .ToList();
-
-            Debug.Log(normalised[0]);
-            Debug.Log(normalised[1]);
-            Debug.Log(normalised[2]);
-            Debug.Log(normalised[3]);
-            Debug.Log(normalised[4]);
-
-            gameObject.GetComponent<SpotDrawer>().clearBatchcounter();
-            gameObject.GetComponent<SpotDrawer>().setColors(normalised);
         }
 
     }
 
+    public void query64bitFloat(string hdfpath)
+    {
+        List<float> readList;
+        foreach (string dp in datasetPaths)
+        {
+            readList = sh.GetComponent<FileReader>().queryFloat(dp, hdfpath);
+
+            normaliseAndDraw(readList);
+
+        }
+
+    }
+
+    public void query32bitFloat(string hdfpath)
+    {
+        List<float> readList;
+        foreach (string dp in datasetPaths)
+        {
+            readList = sh.GetComponent<FileReader>().querf32Float(dp, hdfpath);
+            normaliseAndDraw(readList);
+
+        }
+
+    }
+
+    public void queryInt(string hdfpath)
+    {
+        List<float> readList;
+        foreach (string dp in datasetPaths)
+        {
+            readList = sh.GetComponent<FileReader>().query32BitInt(dp, hdfpath);
+            normaliseAndDraw(readList);
+        }
+
+    }
+
+
+    private void normaliseAndDraw(List<float> readList)
+    {
+        var max = readList.Max();
+        var min = readList.Min();
+        var range = (double)(max - min);
+
+
+        var normalised
+            = readList.Select(i => 1 * (i - min) / range)
+                .ToList();
+
+        gameObject.GetComponent<SpotDrawer>().clearBatchcounter();
+        gameObject.GetComponent<SpotDrawer>().setColors(normalised);
+    }
 
     public void readC18Expression(string geneName)
     {

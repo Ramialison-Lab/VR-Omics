@@ -340,14 +340,37 @@ public class TomoSeqDrawer : MonoBehaviour
         }
         else
         {
-            tomoGraphCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 600);
-            AP_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 200);
-            VD_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 200);
-            LR_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 200);
+            tomoGraphCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 900);
+            AP_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 300);
+            VD_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 300);
+            LR_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 300);
 
         }
 
         expand = !expand;
+    }
+
+    private bool fullscreen = false;
+
+    public void toggleFullScreenGraphCanvas()
+    {
+        if (fullscreen)
+        {
+            tomoGraphCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 600);
+            AP_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 200);
+            VD_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 200);
+            LR_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 200);
+        }
+        else
+        {
+            tomoGraphCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
+            AP_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, 300);
+            VD_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, 300);
+            LR_Graph_panel.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, 300);
+
+        }
+
+        fullscreen = !fullscreen;
     }
 
     public List<string> getGeneNames()
@@ -361,14 +384,15 @@ public class TomoSeqDrawer : MonoBehaviour
     public GameObject tomoGraphCanvas;
     public GameObject Graph_datapoint;
     public GameObject black_bg;
-
+    private List<GameObject> datapoints = new List<GameObject>();
     IEnumerator searchTomo(int APpos, int VDpos, int LRpos)
     {
 
 
         normalisedVal.Clear();
         Vals.Clear();
-
+        foreach (GameObject go in datapoints) Destroy(go);
+        datapoints.Clear();
         int sum = ap_size + vd_size + lr_size;
 
         // LR → z
@@ -381,9 +405,11 @@ public class TomoSeqDrawer : MonoBehaviour
 
         foreach(float x in AP_Exp)
         {
-            GameObject go = Instantiate(Graph_datapoint, AP_Graph_panel.transform);
-            go.transform.GetChild(0).transform.localPosition = new Vector3(0, (int)x *2 ,0);
 
+                GameObject go = Instantiate(Graph_datapoint, AP_Graph_panel.transform);
+                go.transform.GetChild(0).transform.localPosition = new Vector3(0, (int)x * 2, 0);
+                datapoints.Add(go);
+            
         }  
 
         string[] linesVD = File.ReadAllLines(vd_path);
@@ -394,6 +420,8 @@ public class TomoSeqDrawer : MonoBehaviour
         {
             GameObject go = Instantiate(Graph_datapoint, VD_Graph_panel.transform);
             go.transform.GetChild(0).transform.localPosition = new Vector3(0, (int)x*2, 0);
+            datapoints.Add(go);
+
 
         }
 
@@ -405,6 +433,8 @@ public class TomoSeqDrawer : MonoBehaviour
         {
             GameObject go = Instantiate(Graph_datapoint, LR_Graph_panel.transform);
             go.transform.GetChild(0).transform.localPosition = new Vector3(0, (int)x*2, 0);
+            datapoints.Add(go);
+
 
         }
 

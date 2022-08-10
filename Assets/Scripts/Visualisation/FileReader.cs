@@ -65,18 +65,39 @@ public class FileReader : MonoBehaviour
         genexp = H5Loader.LoadDataset<float>(path, name);
     }
 
-    public List<float> readH5Cluster(string path)
+    public List<float> querySbytetoFloat(string path, string hdfpath)
     {
-        string name = "obs/clusters";
 
+        sbyte[] read = H5Loader.LoadDataset<sbyte>(path, hdfpath);
 
-        sbyte[] sbyteRead = H5Loader.LoadDataset<sbyte>(path, name);
+        return read.Select(x => (float)x).ToArray().ToList<float>();
+    }
 
-        float[] bytesAsInts = sbyteRead.Select(x => (float)x).ToArray();
+    public List<float> queryFloat(string path, string hdfpath)
+    {
+        float[] read = H5Loader.LoadFloatDataset(path, hdfpath);
 
-        List<float> clusterValues = bytesAsInts.ToList<float>();
+        return read.ToList<float>();
+    }
 
-        return clusterValues;
+    public List<float> query32BitInt(string path, string hdfpath)
+    {
+        int[] read = H5Loader.LoadIntDataset(path, hdfpath);
+        Debug.Log(read[0]);
+        Debug.Log(read[1]);
+        Debug.Log(read[2]);
+        Debug.Log(read[3]);
+
+        return read.Select(x => (float)x).ToArray().ToList<float>();
+
+    }
+
+    public List<float> querf32Float(string path, string hdfpath)
+    {
+
+        float[] read = H5Loader.LoadDataset<float>(path, hdfpath);
+
+        return read.ToList<float>();
     }
 
     /// <summary>

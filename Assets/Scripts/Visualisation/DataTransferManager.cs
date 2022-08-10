@@ -37,8 +37,9 @@ public class DataTransferManager : MonoBehaviour
 
         //TBD set visium, tomoseq, stomics bools true or false from pipeline
         //visium = true;
-        visium = true;
-        //c18_visium = true;
+        //c18_visium = true; visium = true;
+        // stomics= true;
+        tomoseq = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
@@ -84,8 +85,11 @@ public class DataTransferManager : MonoBehaviour
 
     public string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
 
+    public GameObject c18heartObj;
+
     private void startC18()
     {
+        c18heartObj.SetActive(true);
         string coordsC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18heart.csv";
 
         List<float> c18x = new List<float>();
