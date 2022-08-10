@@ -2640,7 +2640,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _controller: {fileID: 245421343}
-  _speed: 10
+  _speed: 50
   _rotationSpeed: 180
   horizontalSpeed: 2
   verticalSpeed: 2
@@ -12283,6 +12283,7 @@ GameObject:
   - component: {fileID: 1052670661}
   - component: {fileID: 1052670662}
   - component: {fileID: 1052670666}
+  - component: {fileID: 1052670670}
   m_Layer: 0
   m_Name: ScriptHolder
   m_TagString: Untagged
@@ -12485,7 +12486,7 @@ MonoBehaviour:
   visium: 0
   stomics: 0
   tomoseq: 0
-  merfish: 0
+  xenium: 0
   c18_visium: 0
   hdf5datapaths: []
   tempx: []
@@ -12621,6 +12622,23 @@ MonoBehaviour:
   dd: {fileID: 562369942}
   HandEobjs: []
   transparentMat: {fileID: 2100000, guid: 40e9cc00e6949ab4996621be974ddf61, type: 2}
+--- !u!114 &1052670670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052670655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94a05ef6ccd123c40a2adf3b84af1697, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  symbolSelect: {fileID: 0}
+  sphereSymb: {fileID: 1796680520}
+  cubeSymb: {fileID: 1002074612}
+  diamondSymb: {fileID: 1355762986}
+  matUsed: {fileID: 2100000, guid: c9bc76c72c37a394da98510ae1328fbf, type: 2}
 --- !u!1 &1068165109
 GameObject:
   m_ObjectHideFlags: 0

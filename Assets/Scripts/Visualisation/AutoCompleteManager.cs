@@ -14,6 +14,7 @@ public class AutoCompleteManager : MonoBehaviour
     public bool visium = false;
     public bool tomoseq = false;
     public bool stomics = false;
+    public bool xenium = false;
 
     public void setGeneNameList(List<string> geneNames)
     {
@@ -25,6 +26,7 @@ public class AutoCompleteManager : MonoBehaviour
        visium = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().VisiumActive();
        tomoseq = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().TomoseqActive();
        stomics = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().StomicsActive();
+       xenium = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().XeniumActive();
     }
 
     public void textEnter()
@@ -109,8 +111,8 @@ public class AutoCompleteManager : MonoBehaviour
         if (GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().c18_visium) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readC18Expression(btn.GetComponentInChildren<TMP_Text>().text);
         else if (visium) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readExpressionList(btn.GetComponentInChildren<TMP_Text>().text);
         else if (tomoseq) GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().runSearchTomo(btn.GetComponentInChildren<TMP_Text>().text);
-        else if (stomics) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readStomicsExpression(btn.GetComponentInChildren<TMP_Text>().text); 
-        
+        else if (stomics) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readStomicsExpression(btn.GetComponentInChildren<TMP_Text>().text);
+        else if (xenium) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readXeniumExpression(btn.GetComponentInChildren<TMP_Text>().text);
     }
 
     //check if Inoutfield is focused

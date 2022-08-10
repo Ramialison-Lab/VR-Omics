@@ -68,12 +68,12 @@ public class PlayerController : MonoBehaviour
 
             if (up)
             {
-                transform.position = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
+                transform.position = new Vector3(transform.position.x, transform.position.y + 10 * Time.deltaTime * speed, transform.position.z);
 
             }
             if (down)
             {
-                transform.position = new Vector3(transform.position.x, transform.position.y - 1, transform.position.z);
+                transform.position = new Vector3(transform.position.x, transform.position.y - 10 * Time.deltaTime * speed, transform.position.z);
 
             }
         }

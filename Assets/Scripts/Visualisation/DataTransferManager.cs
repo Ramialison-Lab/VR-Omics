@@ -11,7 +11,7 @@ public class DataTransferManager : MonoBehaviour
     public bool visium = false;
     public bool stomics = false;
     public bool tomoseq = false;
-    public bool merfish = false;
+    public bool xenium = false;
 
     public bool c18_visium = false;
 
@@ -39,7 +39,8 @@ public class DataTransferManager : MonoBehaviour
         //visium = true;
         //c18_visium = true; visium = true;
         // stomics= true;
-        tomoseq = true;
+        //tomoseq = true;
+        xenium = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
@@ -59,6 +60,9 @@ public class DataTransferManager : MonoBehaviour
         else if (stomics)
         {
             startStomics();
+        }else if (xenium)
+        {
+            startXenium();
         }
 
     }
@@ -83,9 +87,64 @@ public class DataTransferManager : MonoBehaviour
         return stomics;
     }
 
+    public bool XeniumActive()
+    {
+        return xenium;
+    }
+
     public string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
 
     public GameObject c18heartObj;
+    public List<string> XeniumGeneNames = new List<string>();
+
+    private void startXenium()
+    {
+        string xeniumCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_info\\cell_info_csv.csv";
+        string xeniumGeneList = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_feature_matrix_mtx\\features.tsv";
+
+        List<float> xeniumX = new List<float>();
+        List<float> xeniumY = new List<float>();
+        List<float> xeniumZ = new List<float>();
+        List<string> xeniumCell = new List<string>();
+
+
+        string[] lines = File.ReadAllLines(xeniumCoords);
+        lines = lines.Skip(1).ToArray();
+
+        foreach (string line in lines)
+        {
+            List<string> values = new List<string>();
+            values = line.Split(',').ToList();
+
+            xeniumX.Add(float.Parse(values[1]));
+            xeniumY.Add(float.Parse(values[2]));
+            xeniumZ.Add(0);
+            xeniumCell.Add(values[0]);
+
+        }
+
+
+        string[] linesGn = File.ReadAllLines(xeniumGeneList);
+        foreach (string line in linesGn)
+        {
+            List<string> values = new List<string>();
+            values = line.Split('\t').ToList();
+
+            XeniumGeneNames.Add(values[0]);
+        }
+
+        List<string> dp = new List<string>();
+
+
+
+        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell,dp);
+
+    }
+
+    public List<string> getXeniumGeneNames()
+    {
+        return XeniumGeneNames;
+    }
 
     private void startC18()
     {

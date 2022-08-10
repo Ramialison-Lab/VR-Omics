@@ -77,12 +77,18 @@ public class SearchManager : MonoBehaviour
             //geneNames = geneNames.Distinct().ToList();
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
         }
+        else if (gameObject.GetComponent<DataTransferManager>().XeniumActive())
+        {
+            geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().getXeniumGeneNames());
+            sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
+
+
+        }
 
     }
 
     public void readStomicsExpression(string geneName)
     {
-
 
         var Xdata= gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\new.h5ad", "X/data");
         var indices = gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\new.h5ad", "X/indices");
@@ -139,6 +145,31 @@ public class SearchManager : MonoBehaviour
             normaliseAndDraw(readList);
 
         }
+
+    }
+
+    internal void readXeniumExpression(string searchGene)
+    {
+        var genes = gameObject.GetComponent<DataTransferManager>().getXeniumGeneNames();
+
+        int x = genes.IndexOf(searchGene);
+
+        string XeniumData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
+
+        string[] lines = File.ReadAllLines(XeniumData);
+        lines = lines.Skip(1).ToArray();
+
+        List<string> values = new List<string>();
+        values = lines[x].Split(',').ToList();
+        List<float> readList = new List<float>();
+
+        foreach(string str in values)
+        {
+            readList.Add(float.Parse(str));
+        }
+
+        normaliseAndDraw(readList);
+
 
     }
 

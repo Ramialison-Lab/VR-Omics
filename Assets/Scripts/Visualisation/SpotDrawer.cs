@@ -479,8 +479,8 @@ public class SpotDrawer : MonoBehaviour
         for (int i = 0; i < xcoords.Count; i++)
         {
             // reading out the next 3D coordinate from the list
-            float x = xcoords[i];
-            float y = ycoords[i];
+            float x = xcoords[i]/10;
+            float y = ycoords[i]/10;
             float z = zcoords[i];
 
             //reading out the next spotname and datasetname
@@ -493,21 +493,24 @@ public class SpotDrawer : MonoBehaviour
             count++;
         }
 
-        for (int i = 0; i < xcoords.Count; i++)
+        if (!gameObject.GetComponent<DataTransferManager>().XeniumActive())
         {
-            // reading out the next 3D coordinate from the list
-            float x = xcoords[i];
-            float y = ycoords[i];
-            float z = zcoords[i];
+            for (int i = 0; i < xcoords.Count; i++)
+            {
+                // reading out the next 3D coordinate from the list
+                float x = xcoords[i];
+                float y = ycoords[i];
+                float z = zcoords[i];
 
-            //reading out the next spotname and datasetname
-            string sname = spotBarcodes[i];
-            string datasetn = stomicsPath;
-            try { datasetn = dataSet[i]; }
-            catch (Exception e) { }
+                //reading out the next spotname and datasetname
+                string sname = spotBarcodes[i];
+                string datasetn = stomicsPath;
+                try { datasetn = dataSet[i]; }
+                catch (Exception e) { }
 
-            batchesCopy.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
-            count++;
+                batchesCopy.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
+                count++;
+            }
         }
 
         //indicates that the spots are ready
