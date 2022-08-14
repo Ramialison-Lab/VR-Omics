@@ -235,7 +235,6 @@ public class SpotDrawer : MonoBehaviour
     // set new List of expression values
     public void setColors(List<double> normalise)
     {
-        Debug.Log(minTresh);
         firstSelect = true;
 
         if (!colourcopy)

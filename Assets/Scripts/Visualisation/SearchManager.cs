@@ -163,9 +163,9 @@ public class SearchManager : MonoBehaviour
         values = lines[x].Split(',').ToList();
         List<float> readList = new List<float>();
 
-        foreach(string str in values)
+        for (int i = 0; i < values.Count; i++)
         {
-            readList.Add(float.Parse(str));
+            if (i > 0) readList.Add(float.Parse(values[i]));
         }
 
         normaliseAndDraw(readList);
@@ -205,14 +205,27 @@ public class SearchManager : MonoBehaviour
         //      .Where(item => item > 0) // Only positive numbers
         //      .Min();
 
-
         var range = (double)(max - min);
-
 
         var normalised
             = readList.Select(i => 1 * (i - min) / range)
                 .ToList();
 
+        Debug.Log("Min: " + min);
+        Debug.Log("Max: " + max);
+        Debug.Log("Average: " + readList.Sum()/readList.Count);
+
+        readList.Sort();
+
+        Debug.Log("Median: " + readList[readList.Count / 2]);
+
+        Debug.Log("Before: " + readList.Count);
+
+        for (int i = 0; i < readList.Count; i++)
+        {
+            if (readList[i] == 0) readList.Remove(readList[i]);
+        }
+        Debug.Log("After: " + readList.Count);
         gameObject.GetComponent<SpotDrawer>().clearBatchcounter();
         gameObject.GetComponent<SpotDrawer>().setColors(normalised);
     }
