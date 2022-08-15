@@ -37,6 +37,9 @@ public class UIManager : MonoBehaviour
 
     public String destinationPath;
     public String filepathUpload;
+    public String xeniumMatrix;
+    public String xeniumFeatures;
+    public String xeniumSpots;
 
     public List<GameObject> storedSlices;
     public GameObject sliceContainerPrefab;
@@ -50,6 +53,8 @@ public class UIManager : MonoBehaviour
     public GameObject pipelineParamPanel;
     public GameObject alignmentTogglePanel;
     public GameObject alignmentSelectionPanel;
+    public GameObject xeniumProcessPanel;
+    public GameObject xeniumLoadPanel;
     public GameObject loadingPanel;
     public Sprite checkmark;
 
@@ -83,27 +88,68 @@ public class UIManager : MonoBehaviour
             pipelinepanel.SetActive(false);
             vrpanel.SetActive(false);
             alignmentPanel.SetActive(false);
+            xeniumProcessPanel.SetActive(false);
+            xeniumLoadPanel.SetActive(false);
         }
         catch (Exception) { }
 
         switch (EventSystem.current.currentSelectedGameObject.name)
         {
-            case "DownloadMenuBtn":
+            case "VisiumdownloadBtn":
                 downloadpanel.SetActive(true);
                 // add download exe here
                 adjust_download_list(); //added by SJ 
                 break;
-            case "UploadMenuBtn":
+            case "VisiumLoadBtn":
                 uploadpanel.SetActive(true);
                 break;
-            case "PipelineBtn":
+            case "VisiumPipelineBtn":
                 pipelinepanel.SetActive(true);
                 break;
             case "AlignmentBtn":
                 alignmentPanel.SetActive(true);
                 alignment();
                 break;
+            case "XeniumPreProcessBtn":
+                xeniumProcessPanel.SetActive(true);
+                alignment();
+                break;
+            case "XeniumLoadBtn":
+                xeniumLoadPanel.SetActive(true);
+                alignment();
+                break;
         }
+    }
+
+    private bool expMenu = false;
+    public GameObject mainExpandPanelVis;
+    public GameObject mainExpandPanelXenium;
+    public void toggleExpandMenu()
+    {
+
+        if (!expMenu)
+        {
+            mainExpandPanelVis.transform.localPosition =  new Vector2(mainExpandPanelVis.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandPanelVis.GetComponent<RectTransform>().transform.localPosition.y);
+        }
+        else
+        {
+            mainExpandPanelVis.transform.localPosition =  new Vector2(mainExpandPanelVis.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelVis.GetComponent<RectTransform>().transform.localPosition.y);
+        }
+        expMenu = !expMenu;
+    }
+
+    public void toggleExpandMenuXenium()
+    {
+
+        if (!expMenu)
+        {
+            mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
+        }
+        else
+        {
+            mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
+        }
+        expMenu = !expMenu;
     }
 
     public void adjust_download_list()
@@ -471,6 +517,51 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public TMP_InputField xeniumFeaturesTMP;
+    public TMP_InputField xeniumSpotsTMP;
+    public TMP_InputField xeniumMatPathField;
+
+    //Browse for GeneList of Xenium data
+    public void selectXeniumFeatures()
+    {
+        StartCoroutine(selectBrowseFile(xeniumFeatures, xeniumFeaturesTMP));
+    }
+    //Browse for Spotlist of Xenium data
+    public void selectXeniumSpot()
+    {
+        StartCoroutine(selectBrowseFile(xeniumSpots, xeniumSpotsTMP));
+    }
+    // Browse for Matrix gene expression file
+    public void selectXeniumMatrix()
+    {
+        StartCoroutine(selectBrowseFile(xeniumMatrix, xeniumMatPathField));
+    }
+
+    // Browse local machine for Xenium datapaths
+    IEnumerator selectBrowseFile(string target, TMP_InputField tmpinputfield)
+    {
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
+
+        if (FileBrowser.Success)
+        {
+            for (int i = 0; i < FileBrowser.Result.Length; i++)
+            {
+                target = FileBrowser.Result[i];             
+            }
+            tmpinputfield.text = target;
+        }
+    }
+
+    public void processXenium()
+    {
+        //TBD Sabrina 
+        // path for matrix file is xeniumMatrix → use adata = scanpy.read(xeniumMatrix) and output with adata.to_df().to_csv(output) and/ or adata.write_h5ad(output);  
+        
+    }
+
+
+
+
     IEnumerator selectUploadfile()
     {
         // Selecting dataset directories to load
@@ -482,7 +573,6 @@ public class UIManager : MonoBehaviour
             for (int i = 0; i < FileBrowser.Result.Length; i++)
             {
                 filepathUpload = FileBrowser.Result[i];
-                UnityEngine.Debug.Log(destinationPath);
             }
 
         }

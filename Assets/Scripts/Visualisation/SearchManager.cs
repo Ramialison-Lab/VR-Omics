@@ -154,6 +154,7 @@ public class SearchManager : MonoBehaviour
 
         int x = genes.IndexOf(searchGene);
 
+        //TBD replace this with data transfered
         string XeniumData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
 
         string[] lines = File.ReadAllLines(XeniumData);
