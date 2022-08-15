@@ -249,9 +249,12 @@ public class SpotDrawer : MonoBehaviour
             normalised.AddRange(normalise);
             newColours = true;
             colVals.Clear();
+
+            Debug.Log(normalise.Count);
+            Debug.Log(batches.Count);
             if (normalise.Count < batches.Count) batchCounter = batchCounter + normalise.Count;
             else batchCounter = batches.Count;
-            for (int i = 0; i < batches.Count; i++)
+            for (int i = 0; i < batchCounter; i++)
             {
                 colVals.Add(colorGradient(i, normalised));
             }
@@ -717,10 +720,10 @@ public class SpotDrawer : MonoBehaviour
     // Identification of a spot if clicked on or lasso tool used
     public void identifySpot(float x_cl, float y_cl, string dN)
     {
-
         // if lasso tool selected
         var x_click = x_cl + clickoffset;
         var y_click = y_cl + clickoffset;
+
         foreach (MeshWrapper mw in batches)
         {
             if (passThrough)
@@ -820,7 +823,6 @@ public class SpotDrawer : MonoBehaviour
                                 if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
                                 {
                                     highlightIdentifier1.Add(mw.uniqueIdentifier);
-                                    Debug.Log(mw.uniqueIdentifier);
                                 }
                                 break;
                             case 1:
@@ -939,8 +941,6 @@ public class SpotDrawer : MonoBehaviour
         minTresh = val;
         if(gameObject.GetComponent<DataTransferManager>().TomoseqActive())
             gameObject.GetComponent<TomoSeqDrawer>().setMinTresh(val);
-        else if(gameObject.GetComponent<DataTransferManager>().XeniumActive())
-            gameObject.GetComponent<XeniumDrawer>().setMinTresh(val);
     }
     public void setMaxTresh(float val)
     {

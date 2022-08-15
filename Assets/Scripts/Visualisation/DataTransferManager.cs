@@ -36,11 +36,11 @@ public class DataTransferManager : MonoBehaviour
     {
 
         //TBD set visium, tomoseq, stomics bools true or false from pipeline
-        //visium = true;
-        c18_visium = true; visium = true;
+        // visium = true;
+        // c18_visium = true; visium = true;
         // stomics= true;
-        //tomoseq = true;
-        //xenium = true;
+         tomoseq = true;
+        // xenium = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
@@ -216,14 +216,13 @@ public class DataTransferManager : MonoBehaviour
 
         //TBD - Testdatasets for Denis local - delete following lines
 
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+      // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
 
-        //hdf5datapaths.Add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1\\v1_breast_cancer_block_a_section_1_scanpy.hdf5");
-        //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1b\\v1_breast_cancer_block_a_section_1b_scanpy.hdf5");
-        //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1b\\v1_breast_cancer_block_a_section_1b_scanpy.hdf5");
-        //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1b\\v1_breast_cancer_block_a_section_1b_scanpy.hdf5");
-        //hdf5datapaths.add("c:\\users\\denis.bienroth\\desktop\\testdatasets\\v1_breast_cancer_block_a_section_1b\\v1_breast_cancer_block_a_section_1b_scanpy.hdf5");
+
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node2\\V1_Human_Lymph_Node_scanpy.hdf5");
+
+
         int count = 0;
 
         if(hdf5datapaths.Count > 1)
