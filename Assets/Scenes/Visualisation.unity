@@ -12376,7 +12376,6 @@ GameObject:
   - component: {fileID: 1052670661}
   - component: {fileID: 1052670662}
   - component: {fileID: 1052670666}
-  - component: {fileID: 1052670670}
   m_Layer: 0
   m_Name: ScriptHolder
   m_TagString: Untagged
@@ -12552,7 +12551,7 @@ MonoBehaviour:
   Vals: []
   normalisedVal: []
   deactivePanels:
-  - {fileID: 0}
+  - {fileID: 126598705}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 1118143220}
@@ -12592,10 +12591,12 @@ MonoBehaviour:
   geneC18: C:\Users\Denis.Bienroth\Desktop\ST_technologies\Visium\C18genes.csv
   c18heartObj: {fileID: 781491928}
   XeniumGeneNames: []
+  c18Sphere: {fileID: 1796680520}
   disableBtn:
   - {fileID: 1359217083}
   - {fileID: 599666541}
   - {fileID: 126598705}
+  addHAndEImg: 0
   stomicsSpotId: []
   stomicsGeneNames: []
   stomicsX: []
@@ -12718,26 +12719,6 @@ MonoBehaviour:
   dd: {fileID: 562369942}
   HandEobjs: []
   transparentMat: {fileID: 2100000, guid: 40e9cc00e6949ab4996621be974ddf61, type: 2}
---- !u!114 &1052670670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1052670655}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94a05ef6ccd123c40a2adf3b84af1697, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  symbolSelect: {fileID: 1002074612}
-  sphereSymb: {fileID: 1796680520}
-  cubeSymb: {fileID: 1002074612}
-  diamondSymb: {fileID: 1355762986}
-  matUsed: {fileID: 2100000, guid: c9bc76c72c37a394da98510ae1328fbf, type: 2}
-  normalised: []
-  minTresh: 0
-  colVals: []
 --- !u!1 &1068165109
 GameObject:
   m_ObjectHideFlags: 0
