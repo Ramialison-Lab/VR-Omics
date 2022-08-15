@@ -210,22 +210,23 @@ public class SearchManager : MonoBehaviour
         var normalised
             = readList.Select(i => 1 * (i - min) / range)
                 .ToList();
+        //TBD remove only for data check
 
-        Debug.Log("Min: " + min);
-        Debug.Log("Max: " + max);
-        Debug.Log("Average: " + readList.Sum()/readList.Count);
+        //Debug.Log("Min: " + min);
+        //Debug.Log("Max: " + max);
+        //Debug.Log("Average: " + readList.Sum()/readList.Count);
 
-        readList.Sort();
+        //readList.Sort();
 
-        Debug.Log("Median: " + readList[readList.Count / 2]);
+        //Debug.Log("Median: " + readList[readList.Count / 2]);
 
-        Debug.Log("Before: " + readList.Count);
+        //Debug.Log("Before: " + readList.Count);
 
-        for (int i = 0; i < readList.Count; i++)
-        {
-            if (readList[i] == 0) readList.Remove(readList[i]);
-        }
-        Debug.Log("After: " + readList.Count);
+        //for (int i = 0; i < readList.Count; i++)
+        //{
+        //    if (readList[i] == 0) readList.Remove(readList[i]);
+        //}
+        //Debug.Log("After: " + readList.Count);
         gameObject.GetComponent<SpotDrawer>().clearBatchcounter();
         gameObject.GetComponent<SpotDrawer>().setColors(normalised);
     }

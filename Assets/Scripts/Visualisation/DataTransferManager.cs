@@ -37,10 +37,10 @@ public class DataTransferManager : MonoBehaviour
 
         //TBD set visium, tomoseq, stomics bools true or false from pipeline
         //visium = true;
-        //c18_visium = true; visium = true;
+        c18_visium = true; visium = true;
         // stomics= true;
         //tomoseq = true;
-        xenium = true;
+        //xenium = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
@@ -134,10 +134,12 @@ public class DataTransferManager : MonoBehaviour
         }
 
         List<string> dp = new List<string>();
+        
+        GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().setSliceCollider((int)xeniumX.Min(), (int)xeniumX.Max(), (int)xeniumY.Max(), (int)xeniumY.Min(), x, "");
 
+        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell, dp);
 
-
-        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell,dp);
+       // scriptHolder.GetComponent<XeniumDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell);
 
     }
 
@@ -146,10 +148,14 @@ public class DataTransferManager : MonoBehaviour
         return XeniumGeneNames;
     }
 
+    public GameObject c18Sphere;
+
     private void startC18()
     {
         c18heartObj.SetActive(true);
         string coordsC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18heart.csv";
+
+        c18Sphere.transform.localScale = new Vector3(30, 30, 30);
 
         List<float> c18x = new List<float>();
         List<float> c18y = new List<float>();
@@ -170,6 +176,12 @@ public class DataTransferManager : MonoBehaviour
             c18spot.Add(values[16]);
         }
 
+        int[] c18xHC = { 192,205,230,250,285,289,321,327,353};
+        
+        for (int i = 0; i < 9; i++)
+        {
+            GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().setSliceCollider((int)c18x.Min(), (int)c18x.Max(), (int)c18y.Max(), (int)c18y.Min(), c18xHC[i], "");
+        }
 
         List<string> dp = new List<string>();
         scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(c18x, c18y, c18z, c18spot, dp);
@@ -181,8 +193,17 @@ public class DataTransferManager : MonoBehaviour
     }
 
    public GameObject[] disableBtn = new GameObject[3];
+   
+    public bool addHAndEImg = false;
+
+    public bool addHandEImage()
+    {
+        return addHAndEImg;
+    }
+
     private void startVisium()
     {
+        addHAndEImg = true;
         List<string> shortList = new List<string>();
 
         ////TBD! Comment out following lines to transfer data from pipeline

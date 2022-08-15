@@ -898,6 +898,99 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 86582925}
   m_CullTransparentMesh: 0
+--- !u!1 &97734267
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 97734271}
+  - component: {fileID: 97734270}
+  - component: {fileID: 97734269}
+  - component: {fileID: 97734268}
+  m_Layer: 0
+  m_Name: Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &97734268
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 97734267}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &97734269
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 97734267}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &97734270
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 97734267}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &97734271
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 97734267}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 815.8109, y: 393.41183, z: -381.7206}
+  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &99987403
 GameObject:
   m_ObjectHideFlags: 0
@@ -11998,7 +12091,7 @@ GameObject:
   - component: {fileID: 1002074614}
   - component: {fileID: 1002074613}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: XeniumCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12361,7 +12454,8 @@ MonoBehaviour:
   transparentMaterial: {fileID: 2100000, guid: 74849508c93e3c44ea08ad900a58f679, type: 2}
   symbolSelect: {fileID: 0}
   sphereSymb: {fileID: 1796680520}
-  cubeSymb: {fileID: 1002074612}
+  xeniumCubeSymb: {fileID: 1002074612}
+  cubeSymb: {fileID: 97734267}
   diamondSymb: {fileID: 1355762986}
   MC: {fileID: 1202353247}
   minTresh: 0
@@ -12497,6 +12591,7 @@ MonoBehaviour:
   sel_DropD: {fileID: 562369942}
   geneC18: C:\Users\Denis.Bienroth\Desktop\ST_technologies\Visium\C18genes.csv
   c18heartObj: {fileID: 781491928}
+  XeniumGeneNames: []
   disableBtn:
   - {fileID: 1359217083}
   - {fileID: 599666541}
@@ -12605,6 +12700,7 @@ MonoBehaviour:
   visium: 1
   tomoseq: 0
   stomics: 0
+  xenium: 0
 --- !u!114 &1052670669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12634,11 +12730,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a05ef6ccd123c40a2adf3b84af1697, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  symbolSelect: {fileID: 0}
+  symbolSelect: {fileID: 1002074612}
   sphereSymb: {fileID: 1796680520}
   cubeSymb: {fileID: 1002074612}
   diamondSymb: {fileID: 1355762986}
   matUsed: {fileID: 2100000, guid: c9bc76c72c37a394da98510ae1328fbf, type: 2}
+  normalised: []
+  minTresh: 0
+  colVals: []
 --- !u!1 &1068165109
 GameObject:
   m_ObjectHideFlags: 0

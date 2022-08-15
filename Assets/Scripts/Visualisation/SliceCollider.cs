@@ -39,45 +39,48 @@ public class SliceCollider : MonoBehaviour
         Color newColor = cube.GetComponent<Renderer>().material.color;
         newColor.a = 0f;
         cube.GetComponent<Renderer>().material.color = newColor;
+        if (gameObject.GetComponent<DataTransferManager>().addHandEImage())
+        {
+            GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            imagePlane.name = "StainImageObject";
+        //  imagePlane.transform.SetParent(cube.transform);
+        //  imagePlane.transform.localScale = new Vector3(0.1f, 1, 0.1f);
+            imagePlane.transform.localScale = new Vector3(cube.transform.localScale.x *1.544f, 0.1f, cube.transform.localScale.z * 1.361f);
+            imagePlane.transform.SetParent(cube.transform);
 
-        GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        imagePlane.name = "StainImageObject";
-      //  imagePlane.transform.SetParent(cube.transform);
-    //    imagePlane.transform.localScale = new Vector3(0.1f, 1, 0.1f);
-        imagePlane.transform.localScale = new Vector3(cube.transform.localScale.x *1.544f, 0.1f, cube.transform.localScale.z * 1.361f);
-        imagePlane.transform.SetParent(cube.transform);
+            imagePlane.transform.Rotate(new Vector3(-270, -90, 90));
+            imagePlane.transform.localPosition = new Vector3(0, 0, -2);
+            imagePlane.GetComponent<Renderer>().material = transparentMat;
 
-        imagePlane.transform.Rotate(new Vector3(-270, -90, 90));
-        imagePlane.transform.localPosition = new Vector3(0, 0, -2);
-        imagePlane.GetComponent<Renderer>().material = transparentMat;
-        string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
-        byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
-        Texture2D sampleTexture = new Texture2D(2, 2);
-        bool isLoaded = sampleTexture.LoadImage(byteArray);
-        calculateImageSize(datasetName);
-        imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
-        imagePlane.AddComponent<HAndEImageManager>();
-        imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\spatial\\tissue_hires_image.png");
-        imagePlane.AddComponent<BoxCollider>();
-        //imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
-        HandEobjs.Add(imagePlane);
-        imagePlane.SetActive(false);
-        //GameObject newCanvas = new GameObject("Canvas");
-        //Canvas c = newCanvas.AddComponent<Canvas>();
-        //c.renderMode = RenderMode.ScreenSpaceOverlay;
-        //newCanvas.AddComponent<CanvasScaler>();
-        //newCanvas.AddComponent<GraphicRaycaster>();
-        //GameObject panel = new GameObject("Panel");
-        //panel.AddComponent<CanvasRenderer>();
-        //RawImage i = panel.AddComponent<RawImage>();
-        //panel.transform.SetParent(newCanvas.transform, false);
-        //newCanvas.transform.position = new Vector3(0, 0, 0);
-        //newCanvas.transform.SetParent(cube.transform);
+            string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
+            byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
+            Texture2D sampleTexture = new Texture2D(2, 2);
+            bool isLoaded = sampleTexture.LoadImage(byteArray);
+            calculateImageSize(datasetName);
+            imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
+            imagePlane.AddComponent<HAndEImageManager>();
+            imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\spatial\\tissue_hires_image.png");
+            imagePlane.AddComponent<BoxCollider>();
+            //imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
+            HandEobjs.Add(imagePlane);
+            imagePlane.SetActive(false);
+            //GameObject newCanvas = new GameObject("Canvas");
+            //Canvas c = newCanvas.AddComponent<Canvas>();
+            //c.renderMode = RenderMode.ScreenSpaceOverlay;
+            //newCanvas.AddComponent<CanvasScaler>();
+            //newCanvas.AddComponent<GraphicRaycaster>();
+            //GameObject panel = new GameObject("Panel");
+            //panel.AddComponent<CanvasRenderer>();
+            //RawImage i = panel.AddComponent<RawImage>();
+            //panel.transform.SetParent(newCanvas.transform, false);
+            //newCanvas.transform.position = new Vector3(0, 0, 0);
+            //newCanvas.transform.SetParent(cube.transform);
 
-        //if (isLoaded)
-        //{
-        //    i.texture = sampleTexture;
-        //}
+            //if (isLoaded)
+            //{
+            //    i.texture = sampleTexture;
+            //}
+        }
     }
     private void Update()
     {

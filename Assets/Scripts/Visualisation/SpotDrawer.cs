@@ -23,6 +23,7 @@ public class SpotDrawer : MonoBehaviour
     public Material transparentMaterial;
     public GameObject symbolSelect;
     public GameObject sphereSymb;
+    public GameObject xeniumCubeSymb;
     public GameObject cubeSymb;
     public GameObject diamondSymb;
     public GameObject MC;
@@ -45,6 +46,7 @@ public class SpotDrawer : MonoBehaviour
     public bool visium =false;
     private bool copy = false;
     private bool colourcopy = false;
+    bool highlightIdentifyUsed = false;
 
 
     class MeshWrapper
@@ -62,7 +64,6 @@ public class SpotDrawer : MonoBehaviour
 
     private void Start()
     {
-        symbolSelect = sphereSymb;
         sm = gameObject.GetComponent<SearchManager>();
     }
 
@@ -77,31 +78,36 @@ public class SpotDrawer : MonoBehaviour
 
             for (int i = 0; i < batches.Count; i++)
             {
-                // draw all spots from the batches list
-                MeshWrapper wrap = batches[i];
-                var mpb = new MaterialPropertyBlock();
-                Color rc;              
 
-                // check if spots are selected with lasso tool
-                if (highlightIdentifier1.Contains(wrap.uniqueIdentifier)) rc = new Color(255, 0, 0, 1);
-                else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 0, 1);
-                else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 0, 255, 1);
-                else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 255, 1);
-                else if (firstSelect)
+                    // draw all spots from the batches list
+                    MeshWrapper wrap = batches[i];
+                    var mpb = new MaterialPropertyBlock();
+                    Color rc = Color.clear;
+                if (firstSelect)
                 {
-                    try
+                    // check if spots are selected with lasso tool
+                   // if (highlightIdentifyUsed)
+                 //   {
+                        if (highlightIdentifier1.Contains(wrap.uniqueIdentifier)) rc = new Color(255, 0, 0, 1);
+                        else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 0, 1);
+                        else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 0, 255, 1);
+                        else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 255, 1);
+                 //  }
+                    else
                     {
-                        // read color for expression and expression value as float
-                        rc = colVals[i];
-                        wrap.expVal = (float)normalised[i];
+                        try
+                        {
+                            // read color for expression and expression value as float
+                            rc = colVals[i];
+                            wrap.expVal = (float)normalised[i];
+                        }
+                        catch (Exception e) { rc = Color.clear; };
                     }
-                    catch (Exception e) { rc = Color.clear; };
                 }
-                // if spot not found
-                else { rc = Color.clear; }
-                // set the colour defined above 
+
                 mpb.SetColor("_Color", rc);
-                //draw spots by graphic
+                    //draw spots by graphic
+                
                 matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
                 Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);              
             }
@@ -471,6 +477,8 @@ public class SpotDrawer : MonoBehaviour
     // a combined list of all datasets, that are read will be passed to this function to draw each spot
     public void startSpotDrawer(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
     {
+        if (gameObject.GetComponent<DataTransferManager>().XeniumActive()) symbolSelect = xeniumCubeSymb;
+        else symbolSelect = sphereSymb;
         // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
         // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
         // dataset is the name of the dataset dor ech slice
@@ -478,10 +486,24 @@ public class SpotDrawer : MonoBehaviour
         // for each coordinate passed
         for (int i = 0; i < xcoords.Count; i++)
         {
+            float x;
+            float y;
+            float z;
+              
             // reading out the next 3D coordinate from the list
-            float x = xcoords[i]/10;
-            float y = ycoords[i]/10;
-            float z = zcoords[i];
+            if (gameObject.GetComponent<DataTransferManager>().XeniumActive())
+            {
+
+                 x = xcoords[i] / 10;
+                 y = ycoords[i] / 10;
+                 z = zcoords[i];
+            }
+            else
+            {
+                 x = xcoords[i];
+                 y = ycoords[i];
+                 z = zcoords[i];
+            }
 
             //reading out the next spotname and datasetname
             string sname = spotBarcodes[i];
@@ -688,6 +710,7 @@ public class SpotDrawer : MonoBehaviour
         highlightIdentifier3.Clear();
         highlightIdentifier4.Clear();
 
+        highlightIdentifyUsed = false;
 
     }
 
@@ -769,7 +792,8 @@ public class SpotDrawer : MonoBehaviour
                 }
             }
 
-            if (mw.datasetName == dN && (int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
+
+            if ((gameObject.GetComponent<DataTransferManager>().XeniumActive() || gameObject.GetComponent<DataTransferManager>().C18Data() ||mw.datasetName == dN) && (int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
             {
                 if (MC.GetComponent<MenuCanvas>().getLasso())
                 {
@@ -788,6 +812,7 @@ public class SpotDrawer : MonoBehaviour
                     else if(addToggle)
                     {
                         newColours = true;
+                        highlightIdentifyUsed = true;
 
                         switch (active)
                         {
@@ -795,6 +820,7 @@ public class SpotDrawer : MonoBehaviour
                                 if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
                                 {
                                     highlightIdentifier1.Add(mw.uniqueIdentifier);
+                                    Debug.Log(mw.uniqueIdentifier);
                                 }
                                 break;
                             case 1:
@@ -911,7 +937,10 @@ public class SpotDrawer : MonoBehaviour
     public void setMinTresh(float val)
     {
         minTresh = val;
-        gameObject.GetComponent<TomoSeqDrawer>().setMinTresh(val);
+        if(gameObject.GetComponent<DataTransferManager>().TomoseqActive())
+            gameObject.GetComponent<TomoSeqDrawer>().setMinTresh(val);
+        else if(gameObject.GetComponent<DataTransferManager>().XeniumActive())
+            gameObject.GetComponent<XeniumDrawer>().setMinTresh(val);
     }
     public void setMaxTresh(float val)
     {
