@@ -55,6 +55,7 @@ public class UIManager : MonoBehaviour
     public GameObject alignmentSelectionPanel;
     public GameObject xeniumProcessPanel;
     public GameObject xeniumLoadPanel;
+    public GameObject tomoLoadPanel;
     public GameObject loadingPanel;
     public Sprite checkmark;
 
@@ -90,6 +91,8 @@ public class UIManager : MonoBehaviour
             alignmentPanel.SetActive(false);
             xeniumProcessPanel.SetActive(false);
             xeniumLoadPanel.SetActive(false);
+            tomoLoadPanel.SetActive(false);
+           
         }
         catch (Exception) { }
 
@@ -97,8 +100,7 @@ public class UIManager : MonoBehaviour
         {
             case "VisiumdownloadBtn":
                 downloadpanel.SetActive(true);
-                // add download exe here
-                adjust_download_list(); //added by SJ 
+                adjust_download_list(); 
                 break;
             case "VisiumLoadBtn":
                 uploadpanel.SetActive(true);
@@ -112,18 +114,22 @@ public class UIManager : MonoBehaviour
                 break;
             case "XeniumPreProcessBtn":
                 xeniumProcessPanel.SetActive(true);
-                alignment();
                 break;
             case "XeniumLoadBtn":
                 xeniumLoadPanel.SetActive(true);
-                alignment();
+                break;
+            case "LoadTomoBtn":
+                tomoLoadPanel.SetActive(true);
                 break;
         }
     }
 
     private bool expMenu = false;
+    private bool expMenuXen = false;
+    private bool expMenuTomo = false;
     public GameObject mainExpandPanelVis;
     public GameObject mainExpandPanelXenium;
+    public GameObject mainExpandPanelTomo;
     public void toggleExpandMenu()
     {
 
@@ -140,8 +146,7 @@ public class UIManager : MonoBehaviour
 
     public void toggleExpandMenuXenium()
     {
-
-        if (!expMenu)
+        if (!expMenuXen)
         {
             mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
         }
@@ -149,8 +154,24 @@ public class UIManager : MonoBehaviour
         {
             mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
         }
-        expMenu = !expMenu;
+        expMenuXen = !expMenuXen;
     }
+
+    public void toggleExpandMenuTomoSeq()
+    {
+        if (!expMenuTomo)
+        {
+            mainExpandPanelTomo.transform.localPosition = new Vector2(mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.y);
+        }
+        else
+        {
+            mainExpandPanelTomo.transform.localPosition = new Vector2(mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.y);
+        }
+        expMenuTomo = !expMenuTomo;
+    }
+
+
+
 
     public void adjust_download_list()
     {

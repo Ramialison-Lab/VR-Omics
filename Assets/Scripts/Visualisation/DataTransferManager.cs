@@ -38,8 +38,8 @@ public class DataTransferManager : MonoBehaviour
         //TBD set visium, tomoseq, stomics bools true or false from pipeline
         // visium = true;
         // c18_visium = true; visium = true;
-        // stomics= true;
-         tomoseq = true;
+         stomics= true;
+        // tomoseq = true;
         // xenium = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
@@ -220,7 +220,7 @@ public class DataTransferManager : MonoBehaviour
 
 
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node2\\V1_Human_Lymph_Node_scanpy.hdf5");
+       // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node2\\V1_Human_Lymph_Node_scanpy.hdf5");
 
 
         int count = 0;
