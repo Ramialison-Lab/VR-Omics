@@ -38,9 +38,9 @@ public class DataTransferManager : MonoBehaviour
         //TBD set visium, tomoseq, stomics bools true or false from pipeline
         // visium = true;
         // c18_visium = true; visium = true;
-         stomics= true;
+        // stomics= true;
         // tomoseq = true;
-        // xenium = true;
+         xenium = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
@@ -120,9 +120,7 @@ public class DataTransferManager : MonoBehaviour
             xeniumY.Add(float.Parse(values[2]));
             xeniumZ.Add(0);
             xeniumCell.Add(values[0]);
-
         }
-
 
         string[] linesGn = File.ReadAllLines(xeniumGeneList);
         foreach (string line in linesGn)

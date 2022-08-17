@@ -107,7 +107,6 @@ public class SpotDrawer : MonoBehaviour
 
                 mpb.SetColor("_Color", rc);
                     //draw spots by graphic
-                
                 matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
                 Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);              
             }

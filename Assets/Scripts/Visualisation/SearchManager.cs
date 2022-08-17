@@ -169,9 +169,17 @@ public class SearchManager : MonoBehaviour
             if (i > 0) readList.Add(float.Parse(values[i]));
         }
 
+
+
         normaliseAndDraw(readList);
 
 
+    }
+    private bool skipTopVal = false;
+
+    public void toggleCropValues()
+    {
+        skipTopVal = !skipTopVal;
     }
 
     public void query32bitFloat(string hdfpath)
@@ -197,6 +205,7 @@ public class SearchManager : MonoBehaviour
 
     }
 
+    public int cropLimit = 50;
 
     private void normaliseAndDraw(List<float> readList)
     {
@@ -208,10 +217,21 @@ public class SearchManager : MonoBehaviour
 
         var range = (double)(max - min);
 
+       //if (true)
+       //     {
+       //     for (int i = 0; i < cropLimit; i++)
+       //         {
+       //              Debug.Log(readList.Max());
+       //             readList[readList.IndexOf(readList.Max())] = 0;
+       //         }
+       //     }
+
         var normalised
             = readList.Select(i => 1 * (i - min) / range)
                 .ToList();
         //TBD remove only for data check
+
+     
 
         //Debug.Log("Min: " + min);
         //Debug.Log("Max: " + max);

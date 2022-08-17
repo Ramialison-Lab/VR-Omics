@@ -47,6 +47,7 @@ public class UIManager : MonoBehaviour
 
     public List<GameObject> slicesList;
     public List<String> datapaths;
+    public List<String> filePaths;
     public List<String> transferDatapaths;
     public GameObject alignBtn;
     public GameObject alignmentPanel;
@@ -56,6 +57,7 @@ public class UIManager : MonoBehaviour
     public GameObject xeniumProcessPanel;
     public GameObject xeniumLoadPanel;
     public GameObject tomoLoadPanel;
+    public GameObject stomicsLoadPanel;
     public GameObject loadingPanel;
     public Sprite checkmark;
 
@@ -77,6 +79,7 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         DontDestroyOnLoad(transform.gameObject);
+        filePaths = new List<string>();
     }
 
     public void switchPanel()
@@ -92,6 +95,7 @@ public class UIManager : MonoBehaviour
             xeniumProcessPanel.SetActive(false);
             xeniumLoadPanel.SetActive(false);
             tomoLoadPanel.SetActive(false);
+            stomicsLoadPanel.SetActive(false);
            
         }
         catch (Exception) { }
@@ -121,15 +125,20 @@ public class UIManager : MonoBehaviour
             case "LoadTomoBtn":
                 tomoLoadPanel.SetActive(true);
                 break;
+            case "LoadStomicsBtn":
+                stomicsLoadPanel.SetActive(true);
+                break;
         }
     }
 
     private bool expMenu = false;
     private bool expMenuXen = false;
     private bool expMenuTomo = false;
+    private bool expMenuStomics = false;
     public GameObject mainExpandPanelVis;
     public GameObject mainExpandPanelXenium;
     public GameObject mainExpandPanelTomo;
+    public GameObject mainExpandStomics;
     public void toggleExpandMenu()
     {
 
@@ -170,6 +179,18 @@ public class UIManager : MonoBehaviour
         expMenuTomo = !expMenuTomo;
     }
 
+    public void toggleExpandMenuStomics()
+    {
+        if (!expMenuStomics)
+        {
+            mainExpandStomics.transform.localPosition = new Vector2(mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.y);
+        }
+        else
+        {
+            mainExpandStomics.transform.localPosition = new Vector2(mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.y);
+        }
+        expMenuStomics = !expMenuStomics;
+    }
 
 
 
@@ -541,6 +562,11 @@ public class UIManager : MonoBehaviour
     public TMP_InputField xeniumFeaturesTMP;
     public TMP_InputField xeniumSpotsTMP;
     public TMP_InputField xeniumMatPathField;
+    public TMP_InputField stomicsPathField;
+    public TMP_InputField tomoAPfield;
+    public TMP_InputField tomoVDfield;
+    public TMP_InputField tomoLRfield;
+    public TMP_InputField tomoGenefield;
 
     //Browse for GeneList of Xenium data
     public void selectXeniumFeatures()
@@ -558,6 +584,39 @@ public class UIManager : MonoBehaviour
         StartCoroutine(selectBrowseFile(xeniumMatrix, xeniumMatPathField));
     }
 
+    public string stomicsPath;
+    public string APPath;
+    public string VDPath;
+    public string LRPath;
+    public string tomoGenePath;
+
+    public void selectStomicssFile()
+    {
+        StartCoroutine(selectBrowseFile("stomics", stomicsPathField));
+        
+    }    
+    
+    public void selectTomoAP()
+    {
+        StartCoroutine(selectBrowseFile("AP", stomicsPathField));
+        
+    }
+    public void selectTomoVD()
+    {
+        StartCoroutine(selectBrowseFile("VD", stomicsPathField));
+
+    }
+    public void selectTomoLR()
+    {
+        StartCoroutine(selectBrowseFile("LR", stomicsPathField));
+
+    }
+    public void selectTomoGene()
+    {
+        StartCoroutine(selectBrowseFile("tomoGene", stomicsPathField));
+
+    }
+
     // Browse local machine for Xenium datapaths
     IEnumerator selectBrowseFile(string target, TMP_InputField tmpinputfield)
     {
@@ -565,23 +624,48 @@ public class UIManager : MonoBehaviour
 
         if (FileBrowser.Success)
         {
+            string res = "";
             for (int i = 0; i < FileBrowser.Result.Length; i++)
             {
-                target = FileBrowser.Result[i];             
+                res = FileBrowser.Result[i];             
             }
-            tmpinputfield.text = target;
+            tmpinputfield.text = res;
+
+            switch (target)
+            {
+
+                case "stomics": stomicsPath = res;
+                    break;
+                case "AP": APPath = res;
+                    break;
+                case "VD":
+                    VDPath = res;
+                    break;
+                case "LR":
+                    LRPath = res;
+                    break;
+                case "tomoGene":
+                    tomoGenePath= res;
+                    break;
+                    //case "stomics": stomicsPath = res;
+                    //    break;
+                    //case "stomics": stomicsPath = res;
+                    //    break;
+                    //case "stomics": stomicsPath = res;
+                    //    break;
+                    //case "stomics": stomicsPath = res;
+                    //    break;
+                    //case "stomics": stomicsPath = res;
+                    //    break;
+            }
         }
     }
 
     public void processXenium()
     {
         //TBD Sabrina 
-        // path for matrix file is xeniumMatrix → use adata = scanpy.read(xeniumMatrix) and output with adata.to_df().to_csv(output) and/ or adata.write_h5ad(output);  
-        
+        // path for matrix file is xeniumMatrix → use adata = scanpy.read(xeniumMatrix) and output with adata.to_df().to_csv(output) and/ or adata.write_h5ad(output);         
     }
-
-
-
 
     IEnumerator selectUploadfile()
     {
