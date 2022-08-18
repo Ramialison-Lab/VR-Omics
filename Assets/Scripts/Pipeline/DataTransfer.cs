@@ -18,10 +18,21 @@ public class DataTransfer : MonoBehaviour
     public string VDPath;
     public string LRPath;
     public string tomoGenePath;
+    public string visiumPath;
+    public string xeniumPath;
+    public string xeniumGenesPath;
+    public string xeniumSpotsPath;
+
 
     private void Start()
     {
         ui = gameObject.GetComponent<UIManager>();
+    }
+
+    public void startVisium(string datapath)
+    {
+        visium = true;
+        visiumPath = datapath;
     }
 
     public void startTomo()
@@ -45,6 +56,14 @@ public class DataTransfer : MonoBehaviour
     {
         stomics = true;
         stomicsPath =  ui.stomicsPath;
+        startVisualisationScene();
+    }
+    public void startXenium()
+    {
+        xenium = true;
+        xeniumPath = ui.xeniumPAth;
+        xeniumGenesPath = ui.xeniumGenesPath;
+        xeniumSpotsPath = ui.xeniumSpotsPath;
         startVisualisationScene();
     }
 

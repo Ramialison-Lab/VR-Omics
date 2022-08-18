@@ -37,9 +37,6 @@ public class UIManager : MonoBehaviour
 
     public String destinationPath;
     public String filepathUpload;
-    public String xeniumMatrix;
-    public String xeniumFeatures;
-    public String xeniumSpots;
 
     public List<GameObject> storedSlices;
     public GameObject sliceContainerPrefab;
@@ -349,7 +346,13 @@ public class UIManager : MonoBehaviour
 
     public void nextPipelineStep()
     {
+
+        if (GameObject.Find("Step6").GetComponentInChildren<Toggle>().isOn)
+        {
+            //TBD1 skip all filter steps and just prepare data for VR-Omics = preprocess without filter values
+        }
         // Manages the workflow of the pipeline part to guide through the 4 individual steps
+        
         filterStep = GameObject.Find("Step1").GetComponentInChildren<Toggle>().isOn;
         correlationStep = GameObject.Find("Step2").GetComponentInChildren<Toggle>().isOn;
         clusteringStep = GameObject.Find("Step3").GetComponentInChildren<Toggle>().isOn;
@@ -362,8 +365,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            //TBD Sabrina start pipeline steps based on bools coorelationStep, clusteringStep, SVGstep
-            // datapath to file = filepathUpload        
+            //TBD1 skip filtetr values and go to steps selected      
         }
     }
 
@@ -418,8 +420,47 @@ public class UIManager : MonoBehaviour
         //loadingPanel.SetActive(false);
     }
 
+    public Toggle svgToggle;
+    public Toggle plotToggle;
+
+    public GameObject visiumSuccessPanel;
+    public void processOnlyVisium()
+    {
+        // this function only processes the data and doesn't start the visualisation scene
+        startPipelineDownloadData();
+
+        //TBD1 if processed return datapath via outputDirectory to UI and successful filtered
+        string outputDirectory = "";
+
+        visiumSuccessPanel.SetActive(true);
+        visiumSuccessPanel.GetComponentInChildren<TMP_Text>().text = "Data successful saved to: " + outputDirectory;
+        
+    }
+
+    public void processAndRunVisium()
+    {
+        // this function processes the data [filter + SVG only] and starts the Visualisation
+        startPipelineDownloadData();
+
+        string outputDirectory = "";
+
+        gameObject.GetComponent<DataTransfer>().startVisium(outputDirectory);
+
+        //TBD1 if processed return datapath to UI
+    }
+
     public void startPipelineDownloadData()
     {
+        if (svgToggle.isOn) { 
+            
+            //TBD1 Sabrina if toggle on, include SVG analysis to filter step
+        }
+
+        if (plotToggle.isOn)
+        {
+            //TBD1 create output plots
+        }
+
         //Stores db literal and the filter params
         if (destinationPath != "")
         {
@@ -523,8 +564,15 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public Toggle poltTogglePip;
+
     public void getFilterParamPipeline()
     {
+        if (poltTogglePip.isOn)
+        {
+
+        }
+
         // Reading filter parameters for python pipeline
         string[] filterPipelineParam = new string[7];
 
@@ -571,17 +619,21 @@ public class UIManager : MonoBehaviour
     //Browse for GeneList of Xenium data
     public void selectXeniumFeatures()
     {
-        StartCoroutine(selectBrowseFile(xeniumFeatures, xeniumFeaturesTMP));
+        StartCoroutine(selectBrowseFile("xeniumGene", xeniumFeaturesTMP));
     }
     //Browse for Spotlist of Xenium data
     public void selectXeniumSpot()
     {
-        StartCoroutine(selectBrowseFile(xeniumSpots, xeniumSpotsTMP));
+        StartCoroutine(selectBrowseFile("xeniumSpots", xeniumSpotsTMP));
     }
     // Browse for Matrix gene expression file
     public void selectXeniumMatrix()
     {
-        StartCoroutine(selectBrowseFile(xeniumMatrix, xeniumMatPathField));
+        StartCoroutine(selectBrowseFile("xeniumPAth", xeniumMatPathField));
+    }
+        public void selectXeniumHDF()
+    {
+        StartCoroutine(selectBrowseFile("xeniumHDF", xeniumMatPathField));
     }
 
     public string stomicsPath;
@@ -589,6 +641,9 @@ public class UIManager : MonoBehaviour
     public string VDPath;
     public string LRPath;
     public string tomoGenePath;
+    public string xeniumPAth;
+    public string xeniumGenesPath;
+    public string xeniumSpotsPath;
 
     public void selectStomicssFile()
     {
@@ -647,14 +702,18 @@ public class UIManager : MonoBehaviour
                 case "tomoGene":
                     tomoGenePath= res;
                     break;
-                    //case "stomics": stomicsPath = res;
-                    //    break;
-                    //case "stomics": stomicsPath = res;
-                    //    break;
-                    //case "stomics": stomicsPath = res;
-                    //    break;
-                    //case "stomics": stomicsPath = res;
-                    //    break;
+                case "xenium":
+                    xeniumPAth = res;
+                    break;
+                case "xeniumGene":
+                    xeniumGenesPath = res;
+                    break;
+                case "xeniumSpots":
+                    xeniumSpotsPath = res;
+                    break;
+                case "xeniumHDF":
+                    xeniumPAth = res;
+                    break;
                     //case "stomics": stomicsPath = res;
                     //    break;
             }
@@ -663,8 +722,22 @@ public class UIManager : MonoBehaviour
 
     public void processXenium()
     {
-        //TBD Sabrina 
+        //TBD1 Sabrina 
         // path for matrix file is xeniumMatrix → use adata = scanpy.read(xeniumMatrix) and output with adata.to_df().to_csv(output) and/ or adata.write_h5ad(output);         
+    }
+
+    public void processXeniumandRun()
+    {
+        processXenium();
+        //TBD1 return hdf5 file datapath to xeniumPath string 
+        xeniumPAth = "";
+        gameObject.GetComponent<DataTransfer>().startXenium();
+
+    }
+
+    public void XeniumRun()
+    {
+        gameObject.GetComponent<DataTransfer>().startXenium();
     }
 
     IEnumerator selectUploadfile()
