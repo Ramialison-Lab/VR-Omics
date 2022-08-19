@@ -216,82 +216,6 @@ public class UIManager : MonoBehaviour
 
     private GameObject currentSelection;
 
-    public void selectForRotation()
-    {
-        currentSelection = GameObject.Find(dropd.options[dropd.value].text.ToString());
-        setTransperencyLevel(currentSelection);
-    }
-
-    public void rotateImagePlus()
-    {
-        try
-        {
-            selectForRotation();
-
-            currentSelection.transform.Rotate(0f, 0f, -1);
-        }
-        catch (Exception) { }
-    }
-
-    public void rotateImageMinus()
-    {
-        try
-        {
-            selectForRotation();
-
-            currentSelection.transform.Rotate(0f, 0f, 1);
-        }
-        catch (Exception) { }
-    }
-
-    public Slider slider;
-
-    private void setTransperencyLevel(GameObject selObj)
-    {
-        var tempcolor = selObj.GetComponent<RawImage>().color;
-
-        slider.value = tempcolor.a;
-    }
-
-    public void changeTransperency()
-    {
-        try
-        {
-            var tempcolor = currentSelection.GetComponent<RawImage>().color;
-            tempcolor.a = slider.value;
-            UnityEngine.Debug.Log(tempcolor.a);
-            currentSelection.GetComponent<RawImage>().color = tempcolor;
-        }
-        catch (Exception e) { }
-    }
-
-
-    public void toggleListener(GameObject toggle)
-    {
-        UnityEngine.Debug.Log(toggle.GetComponentInChildren<Text>().text);
-
-        foreach (RawImage imag in images)
-        {
-            if (imag.name == toggle.GetComponentInChildren<Text>().text)
-            {
-                if (imag.transform.gameObject.active)
-                {
-                    imag.transform.gameObject.SetActive(false);
-
-                }
-                else if (!imag.transform.gameObject.active)
-                {
-                    imag.transform.gameObject.SetActive(true);
-
-                }
-            }
-        }
-
-    }
-
-    public List<RawImage> images;
-    public Dropdown dropd;
-
     public void alignment()
     {
         List<Toggle> toggleList = new List<Toggle>();
@@ -344,6 +268,92 @@ public class UIManager : MonoBehaviour
 
     }
 
+    private int rotPos = 0;
+
+    public void selectForRotation()
+    {
+        currentSelection = GameObject.Find(dropd.options[dropd.value].text.ToString());
+        rotPos = dropd.value;
+        setTransperencyLevel(currentSelection);
+    }
+
+    public void rotateImagePlus()
+    {
+        try
+        {
+            selectForRotation();
+
+            currentSelection.transform.Rotate(0f, 0f, -1);
+            rotationValues[rotPos]++; 
+        }
+        catch (Exception) { }
+    }
+
+    public void rotateImageMinus()
+    {
+        try
+        {
+            selectForRotation();
+
+            currentSelection.transform.Rotate(0f, 0f, 1);
+            rotationValues[rotPos]--;
+        }
+        catch (Exception) { }
+    }
+
+    public Slider slider;
+
+    private void setTransperencyLevel(GameObject selObj)
+    {
+        try
+        {
+            var tempcolor = selObj.GetComponent<RawImage>().color;
+
+            slider.value = tempcolor.a;
+        }
+        catch (Exception e) { }
+    }
+
+    public void changeTransperency()
+    {
+        try
+        {
+            var tempcolor = currentSelection.GetComponent<RawImage>().color;
+            tempcolor.a = slider.value;
+            currentSelection.GetComponent<RawImage>().color = tempcolor;
+        }
+        catch (Exception e) { }
+    }
+
+
+    public void toggleListener(GameObject toggle)
+    {
+        UnityEngine.Debug.Log(toggle.GetComponentInChildren<Text>().text);
+
+        foreach (RawImage imag in images)
+        {
+            if (imag.name == toggle.GetComponentInChildren<Text>().text)
+            {
+                if (imag.transform.gameObject.active)
+                {
+                    imag.transform.gameObject.SetActive(false);
+
+                }
+                else if (!imag.transform.gameObject.active)
+                {
+                    imag.transform.gameObject.SetActive(true);
+
+                }
+            }
+        }
+
+    }
+
+    public List<RawImage> images;
+    public Dropdown dropd;
+
+
+
     public void nextPipelineStep()
     {
 
@@ -354,6 +364,7 @@ public class UIManager : MonoBehaviour
         // Manages the workflow of the pipeline part to guide through the 4 individual steps
         
         filterStep = GameObject.Find("Step1").GetComponentInChildren<Toggle>().isOn;
+        // filter and svg only
         correlationStep = GameObject.Find("Step2").GetComponentInChildren<Toggle>().isOn;
         clusteringStep = GameObject.Find("Step3").GetComponentInChildren<Toggle>().isOn;
         SVGStep = GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn;
@@ -484,9 +495,7 @@ public class UIManager : MonoBehaviour
             filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
 
             save_params_run_step1(filterparam);
-
         }
-
         else
         {
             //TBD Sabrina: run Step1 Python notebook WITH following filter params
@@ -516,17 +525,21 @@ public class UIManager : MonoBehaviour
             if (pos == 0) return;
             else
             {
-                GameObject temp2 = slicesList[pos - 1];
-                GameObject temp1 = swapGO;
+                try
+                {
+                    GameObject temp2 = slicesList[pos - 1];
+                    GameObject temp1 = swapGO;
 
-                // swap in List
-                slicesList[pos] = temp2; // new swapgo
-                slicesList[pos - 1] = temp1; //2nd place
+                    // swap in List
+                    slicesList[pos] = temp2; // new swapgo
+                    slicesList[pos - 1] = temp1; //2nd place
 
-                // swap vector
-                Vector3 temp = slicesList[pos].transform.position;
-                slicesList[pos].transform.position = slicesList[pos - 1].transform.position;
-                slicesList[pos - 1].transform.position = temp;
+                    // swap vector
+                    Vector3 temp = slicesList[pos].transform.position;
+                    slicesList[pos].transform.position = slicesList[pos - 1].transform.position;
+                    slicesList[pos - 1].transform.position = temp;
+                }
+                catch (Exception e) { }
             }
         }
         else if (go.name == "ButtonDown")
@@ -535,18 +548,21 @@ public class UIManager : MonoBehaviour
             if (pos == slicesList.Count) return;
             else
             {
+                try
+                {
+                    GameObject temp2 = slicesList[pos + 1];
+                    GameObject temp1 = swapGO;
 
-                GameObject temp2 = slicesList[pos + 1];
-                GameObject temp1 = swapGO;
+                    // swap in List
+                    slicesList[pos] = temp2; // new swapgo
+                    slicesList[pos + 1] = temp1; //2nd place
 
-                // swap in List
-                slicesList[pos] = temp2; // new swapgo
-                slicesList[pos + 1] = temp1; //2nd place
-
-                // swap vector
-                Vector3 temp = slicesList[pos].transform.position;
-                slicesList[pos].transform.position = slicesList[pos + 1].transform.position;
-                slicesList[pos + 1].transform.position = temp;
+                    // swap vector
+                    Vector3 temp = slicesList[pos].transform.position;
+                    slicesList[pos].transform.position = slicesList[pos + 1].transform.position;
+                    slicesList[pos + 1].transform.position = temp;
+                }
+                catch (Exception e) { }
 
             }
         }
@@ -559,6 +575,7 @@ public class UIManager : MonoBehaviour
 
             slicesList.Remove(swapGO);
             transferDatapaths.RemoveAt(pos);
+            rotationValues.Remove(rotationValues[0]);
             Destroy(swapGO);
 
         }
@@ -570,8 +587,14 @@ public class UIManager : MonoBehaviour
     {
         if (poltTogglePip.isOn)
         {
-
+            //TBD1 include plot png download 
         }
+
+        if (GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn)
+        {
+            //TBD1 include SVG step
+        }
+
 
         // Reading filter parameters for python pipeline
         string[] filterPipelineParam = new string[7];
@@ -724,6 +747,7 @@ public class UIManager : MonoBehaviour
     {
         //TBD1 Sabrina 
         // path for matrix file is xeniumMatrix → use adata = scanpy.read(xeniumMatrix) and output with adata.to_df().to_csv(output) and/ or adata.write_h5ad(output);         
+        // return datapath as string
     }
 
     public void processXeniumandRun()
@@ -731,11 +755,11 @@ public class UIManager : MonoBehaviour
         processXenium();
         //TBD1 return hdf5 file datapath to xeniumPath string 
         xeniumPAth = "";
-        gameObject.GetComponent<DataTransfer>().startXenium();
+        runXenium();
 
     }
 
-    public void XeniumRun()
+    public void runXenium()
     {
         gameObject.GetComponent<DataTransfer>().startXenium();
     }
@@ -744,15 +768,12 @@ public class UIManager : MonoBehaviour
     {
         // Selecting dataset directories to load
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
-
         if (FileBrowser.Success)
         {
-
             for (int i = 0; i < FileBrowser.Result.Length; i++)
             {
                 filepathUpload = FileBrowser.Result[i];
             }
-
         }
     }
 
@@ -760,6 +781,8 @@ public class UIManager : MonoBehaviour
     {
         warningPanel.SetActive(false);
     }
+
+    public List<int> rotationValues;
 
     public void confirmDuplicate()
     {
@@ -784,6 +807,7 @@ public class UIManager : MonoBehaviour
 
             slicesList.Add(slicesStore[i]);
             transferDatapaths.Add(FileBrowser.Result[i]);
+            rotationValues.Add(0);
             try { alignBtn.SetActive(true); } catch (Exception e) { }
 
             string filename = storePathForWarning[i];
@@ -861,6 +885,7 @@ public class UIManager : MonoBehaviour
 
                     slicesList.Add(slices[i]);
                     transferDatapaths.Add(FileBrowser.Result[i]);
+                    rotationValues.Add(0);
                     alignBtn.SetActive(true);
 
                     string filename = FileBrowser.Result[i];
@@ -896,13 +921,28 @@ public class UIManager : MonoBehaviour
         filterPanel.SetActive(true);
     }
 
-
     public void startVR()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-    }
 
-    public List<GameObject> getSliceList()
+        //TBD get distances by UI input
+        List<int> distances = new List<int>();
+        foreach (int x in rotationValues) distances.Add(10);
+
+
+        List<string> datapathVisium = new List<string>();
+        foreach (Dropdown.OptionData option in dropd.options)
+        {
+            foreach(string x in transferDatapaths)
+            {
+                if (x.Split('\\').Last() == option.text)
+                {
+                    datapathVisium.Add(x);
+                }
+            }
+            gameObject.GetComponent<DataTransfer>().startMultipleVisium(datapathVisium, rotationValues, distances);
+        }
+    }
+        public List<GameObject> getSliceList()
     {
         return slicesList;
     }

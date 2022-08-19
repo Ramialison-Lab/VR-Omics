@@ -32,19 +32,56 @@ public class DataTransferManager : MonoBehaviour
     private GameObject scriptHolderPipeline;
     private GameObject scriptHolder;
     private SpotDrawer sp;
+    public DataTransfer df;
+
     void Start()
     {
-
         //TBD set visium, tomoseq, stomics bools true or false from pipeline
         // visium = true;
         // c18_visium = true; visium = true;
         // stomics= true;
         // tomoseq = true;
-         xenium = true;
+       // xenium = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
+        df = scriptHolderPipeline.GetComponent<DataTransfer>();
         scriptHolder = GameObject.Find("ScriptHolder");
         sp = scriptHolder.GetComponent<SpotDrawer>();
+
+        if (df.visium)
+        {
+            visium = true;
+            sp.setVisiumBool(visium);
+            startVisium();
+        }
+        else if (df.visiumMultiple)
+        {
+            visium = true;
+            sp.setVisiumBool(visium);
+            startVisium();
+        }
+        else if (df.c18)
+        {
+            visium = true;
+            sp.setVisiumBool(visium);
+            startC18();
+        }
+        else if (df.tomoseq)
+        {
+            tomoseq = true;
+            startTomoSeq();
+        }
+        else if (df.stomics)
+        {
+            stomics = true;
+            startStomics();
+        }
+        else if (df.xenium)
+        {
+            xenium = true;
+            startXenium();
+        }
+
 
         if (visium)
         {

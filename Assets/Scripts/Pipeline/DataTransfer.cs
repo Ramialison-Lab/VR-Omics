@@ -8,6 +8,7 @@ public class DataTransfer : MonoBehaviour
     private UIManager ui;
     //bools
     public bool visium =false;
+    public bool visiumMultiple =false;
     public bool c18 = false;
     public bool xenium = false;
     public bool tomoseq = false;
@@ -22,8 +23,11 @@ public class DataTransfer : MonoBehaviour
     public string xeniumPath;
     public string xeniumGenesPath;
     public string xeniumSpotsPath;
+    public List<string> pathList;
+    public List<int> rotationValues;
+    public List<int> distances;
 
-
+    // This script stores the datapaths and all values that need to be transfered to the Visualisation scene
     private void Start()
     {
         ui = gameObject.GetComponent<UIManager>();
@@ -64,6 +68,15 @@ public class DataTransfer : MonoBehaviour
         xeniumPath = ui.xeniumPAth;
         xeniumGenesPath = ui.xeniumGenesPath;
         xeniumSpotsPath = ui.xeniumSpotsPath;
+        startVisualisationScene();
+    }
+
+    public void startMultipleVisium(List<string> paths, List<int> rotationValues, List<int> distances)
+    {
+        visiumMultiple = true;
+        pathList = paths;
+        this.rotationValues = rotationValues;
+        this.distances = distances;
         startVisualisationScene();
     }
 
