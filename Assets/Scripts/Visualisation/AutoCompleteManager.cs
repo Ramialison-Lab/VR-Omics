@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class AutoCompleteManager : MonoBehaviour
 {
     public GameObject InputGameObject;
-    public HashSet<string> geneNames;
+    public List<string> geneNames;
     public GameObject btnPrefab;
     public GameObject scrollView;
     public List<GameObject> tempBtns;
@@ -18,7 +18,8 @@ public class AutoCompleteManager : MonoBehaviour
 
     public void setGeneNameList(List<string> geneNames)
     {
-        this.geneNames = new HashSet<string>(geneNames);
+       // this.geneNames = new HashSet<string>(geneNames);
+        this.geneNames = geneNames;
     }
 
     private void Start()
@@ -111,7 +112,12 @@ public class AutoCompleteManager : MonoBehaviour
         if (GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().c18_visium) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readC18Expression(btn.GetComponentInChildren<TMP_Text>().text);
         else if (visium) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readExpressionList(btn.GetComponentInChildren<TMP_Text>().text);
         else if (tomoseq) GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().runSearchTomo(btn.GetComponentInChildren<TMP_Text>().text);
-        else if (stomics) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readStomicsExpression(btn.GetComponentInChildren<TMP_Text>().text);
+        else if (stomics)
+        {
+            int pos = geneNames.IndexOf(btn.GetComponentInChildren<TMP_Text>().text);
+            GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readStomicsExpression(btn.GetComponentInChildren<TMP_Text>().text, pos);
+            
+        }
         else if (xenium) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readXeniumExpression(btn.GetComponentInChildren<TMP_Text>().text);
     }
 

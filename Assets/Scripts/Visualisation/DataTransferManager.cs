@@ -39,48 +39,48 @@ public class DataTransferManager : MonoBehaviour
         //TBD set visium, tomoseq, stomics bools true or false from pipeline
         // visium = true;
         // c18_visium = true; visium = true;
-        // stomics= true;
+         stomics= true;
         // tomoseq = true;
        // xenium = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
-        df = scriptHolderPipeline.GetComponent<DataTransfer>();
+       // df = scriptHolderPipeline.GetComponent<DataTransfer>();
         scriptHolder = GameObject.Find("ScriptHolder");
         sp = scriptHolder.GetComponent<SpotDrawer>();
 
-        if (df.visium)
-        {
-            visium = true;
-            sp.setVisiumBool(visium);
-            startVisium();
-        }
-        else if (df.visiumMultiple)
-        {
-            visium = true;
-            sp.setVisiumBool(visium);
-            startVisium();
-        }
-        else if (df.c18)
-        {
-            visium = true;
-            sp.setVisiumBool(visium);
-            startC18();
-        }
-        else if (df.tomoseq)
-        {
-            tomoseq = true;
-            startTomoSeq();
-        }
-        else if (df.stomics)
-        {
-            stomics = true;
-            startStomics();
-        }
-        else if (df.xenium)
-        {
-            xenium = true;
-            startXenium();
-        }
+        //if (df.visium)
+        //{
+        //    visium = true;
+        //    sp.setVisiumBool(visium);
+        //    startVisium();
+        //}
+        //else if (df.visiumMultiple)
+        //{
+        //    visium = true;
+        //    sp.setVisiumBool(visium);
+        //    startVisium();
+        //}
+        //else if (df.c18)
+        //{
+        //    visium = true;
+        //    sp.setVisiumBool(visium);
+        //    startC18();
+        //}
+        //else if (df.tomoseq)
+        //{
+        //    tomoseq = true;
+        //    startTomoSeq();
+        //}
+        //else if (df.stomics)
+        //{
+        //    stomics = true;
+        //    startStomics();
+        //}
+        //else if (df.xenium)
+        //{
+        //    xenium = true;
+        //    startXenium();
+        //}
 
 
         if (visium)
@@ -337,13 +337,24 @@ public class DataTransferManager : MonoBehaviour
     private void startStomics()
     {
         fr = gameObject.GetComponent<FileReader>();
-        string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\1_Include\\L3_b_count_normal_stereoseq.h5ad";
+       // string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\1_Include\\L3_b_count_normal_stereoseq.h5ad";
+        // Original files paths
+        //stomicsSpotId = fr.readH5StringVar(datapath, "obs/_index", stomicsSpotId);
+        //stomicsGeneNames = fr.readH5StringVar(datapath, "var/geneID", stomicsGeneNames);
+        //stomicsX = fr.readH5Float(datapath, "obs/new_x");
+        //stomicsY = fr.readH5Float(datapath, "obs/new_y");
+        //stomicsZ = fr.readH5Float(datapath, "obs/new_z");
+
+        //Pipeline transposed paths files:
+        string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad";
+        stomicsSpotId = fr.readH5StringVar(datapath, "var/_index", stomicsSpotId);
+        stomicsGeneNames = fr.readH5StringVar(datapath, "obs/geneID", stomicsGeneNames);
+        stomicsX = fr.readH5Float(datapath, "var/new_x");
+        stomicsY = fr.readH5Float(datapath, "var/new_y");
+        stomicsZ = fr.readH5Float(datapath, "var/new_z");
+        Debug.Log(stomicsSpotId.Count);
+
         scriptHolder.GetComponent<SpotDrawer>().setStomicsPath(datapath);
-        stomicsSpotId = fr.readH5StringVar(datapath, "obs/_index", stomicsSpotId);
-        stomicsGeneNames = fr.readH5StringVar(datapath, "var/geneID", stomicsGeneNames);
-        stomicsX = fr.readH5Float(datapath, "obs/new_x");
-        stomicsY = fr.readH5Float(datapath, "obs/new_y");
-        stomicsZ = fr.readH5Float(datapath, "obs/new_z");
 
         List<string> dp = new List<string>();
         scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(stomicsX, stomicsY, stomicsZ, stomicsSpotId, dp);

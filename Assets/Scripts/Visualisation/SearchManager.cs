@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -86,18 +87,48 @@ public class SearchManager : MonoBehaviour
         }
 
     }
+    public List<float> expVals;
 
-    public void readStomicsExpression(string geneName)
+    public void readStomicsExpression(string geneName, int pos)
     {
 
-        var Xdata= gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\new.h5ad", "X/data");
-        var indices = gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\new.h5ad", "X/indices");
-        var indptr = gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\new.h5ad", "X/indptr");
 
-        //TBD search 
-        //Sparse matrix input from transposed HDF5 file 
+        //TBD overwrite with datapaths from Pipeline
+        var Xdata = gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/data");
+        var indices = gameObject.GetComponent<FileReader>().query32BitInttoIntArray("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/indices");
+        int[] indptr = gameObject.GetComponent<FileReader>().query32BitInttoIntArray("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/indptr");
 
-        //GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
+
+        int start = indptr[pos];
+        int end = indptr[pos + 1];
+        int cubesCount = gameObject.GetComponent<DataTransferManager>().stomicsSpotId.Count;
+
+        List<int> indicesInterest = indices.Skip(start).Take(end - start).ToList();
+        expVals = new List<float>();
+
+        for(int i=0; i<cubesCount; i++)
+        {
+            expVals.Add(0);
+        }
+
+        int counter = 0;
+        foreach(int x in indicesInterest)
+        {
+            expVals[x] = Xdata[counter];
+                counter++;
+        }
+
+        var max = expVals.Max();
+        var min = expVals.Min();
+
+        Debug.Log(max);
+        var range = (double)(max - min);
+        var normalised
+            = expVals.Select(i => 1 * (i - min) / range)
+                .ToList();
+
+        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
+        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().lastGeneName(geneName);
 
     }
 

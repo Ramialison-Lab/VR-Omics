@@ -55,6 +55,7 @@ public class UIManager : MonoBehaviour
     public GameObject xeniumLoadPanel;
     public GameObject tomoLoadPanel;
     public GameObject stomicsLoadPanel;
+    public GameObject stomicsProcessPanel;
     public GameObject loadingPanel;
     public Sprite checkmark;
 
@@ -93,6 +94,7 @@ public class UIManager : MonoBehaviour
             xeniumLoadPanel.SetActive(false);
             tomoLoadPanel.SetActive(false);
             stomicsLoadPanel.SetActive(false);
+            stomicsProcessPanel.SetActive(false);
            
         }
         catch (Exception) { }
@@ -124,6 +126,9 @@ public class UIManager : MonoBehaviour
                 break;
             case "LoadStomicsBtn":
                 stomicsLoadPanel.SetActive(true);
+                break;          
+            case "ProcessStomicsBtn":
+                stomicsProcessPanel.SetActive(true);
                 break;
         }
     }
@@ -634,6 +639,7 @@ public class UIManager : MonoBehaviour
     public TMP_InputField xeniumSpotsTMP;
     public TMP_InputField xeniumMatPathField;
     public TMP_InputField stomicsPathField;
+    public TMP_InputField stomicsPathProcessField;
     public TMP_InputField tomoAPfield;
     public TMP_InputField tomoVDfield;
     public TMP_InputField tomoLRfield;
@@ -670,28 +676,36 @@ public class UIManager : MonoBehaviour
 
     public void selectStomicssFile()
     {
+        //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("stomics", stomicsPathField));
         
-    }    
-    
+    }
+
+    public void selectStomicssFileProcess()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("stomics", stomicsPathProcessField));
+
+    }
+
     public void selectTomoAP()
     {
-        StartCoroutine(selectBrowseFile("AP", stomicsPathField));
+        StartCoroutine(selectBrowseFile("AP", tomoAPfield));
         
     }
     public void selectTomoVD()
     {
-        StartCoroutine(selectBrowseFile("VD", stomicsPathField));
+        StartCoroutine(selectBrowseFile("VD", tomoVDfield));
 
     }
     public void selectTomoLR()
     {
-        StartCoroutine(selectBrowseFile("LR", stomicsPathField));
+        StartCoroutine(selectBrowseFile("LR", tomoLRfield));
 
     }
     public void selectTomoGene()
     {
-        StartCoroutine(selectBrowseFile("tomoGene", stomicsPathField));
+        StartCoroutine(selectBrowseFile("tomoGene", tomoGenefield));
 
     }
 
@@ -763,6 +777,29 @@ public class UIManager : MonoBehaviour
     {
         gameObject.GetComponent<DataTransfer>().startXenium();
     }
+
+
+
+
+    public void processStomics()
+    {
+        //TBD load file from datapath: stomicsPath to pipeline and transpose the file (see Sharepoint)
+    }
+
+    public void processAndRunStomics()
+    {
+        //TBD1 Sabrian process Stomics via processStomics() function and return datapath to new transposed hdf file
+        processStomics();
+        stomicsPath = "";
+        runStomics();
+    }
+
+    public void runStomics()
+    {
+        gameObject.GetComponent<DataTransfer>().startStomics();
+
+    }
+
 
     IEnumerator selectUploadfile()
     {

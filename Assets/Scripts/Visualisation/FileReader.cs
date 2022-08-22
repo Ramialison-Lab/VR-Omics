@@ -83,12 +83,16 @@ public class FileReader : MonoBehaviour
     public List<float> query32BitInt(string path, string hdfpath)
     {
         int[] read = H5Loader.LoadIntDataset(path, hdfpath);
-        Debug.Log(read[0]);
-        Debug.Log(read[1]);
-        Debug.Log(read[2]);
-        Debug.Log(read[3]);
 
         return read.Select(x => (float)x).ToArray().ToList<float>();
+
+    }  
+    
+    public int[] query32BitInttoIntArray(string path, string hdfpath)
+    {
+        int[] read = H5Loader.LoadDataset<int>(path, hdfpath);
+
+        return read;
 
     }
 

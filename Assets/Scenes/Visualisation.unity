@@ -985,7 +985,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 97734267}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 815.8109, y: 393.41183, z: -381.7206}
+  m_LocalPosition: {x: 5000, y: 393.41183, z: -381.7206}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 0}
@@ -5563,10 +5563,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 831387773}
   m_HandleRect: {fileID: 1092023742}
   m_Direction: 0
-  m_MinValue: 0.1
+  m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.568
+  m_Value: 0.01
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -12628,6 +12628,7 @@ MonoBehaviour:
   resultExpressionTemp: []
   visium: 1
   tomoseq: 0
+  expVals: []
   cropLimit: 20
 --- !u!114 &1052670665
 MonoBehaviour:
@@ -12695,6 +12696,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InputGameObject: {fileID: 914573081}
+  geneNames: []
   btnPrefab: {fileID: 2321156847687075793, guid: 8089e265019767945b5d81f7993da8a6,
     type: 3}
   scrollView: {fileID: 1307057898}
