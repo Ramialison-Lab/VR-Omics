@@ -82,7 +82,11 @@ public class SearchManager : MonoBehaviour
         {
             geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().getXeniumGeneNames());
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
-
+        }
+        else if (gameObject.GetComponent<DataTransferManager>().MerfishActive())
+        {
+            geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().getMerfishGeneNames());
+            sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
 
         }
 
@@ -92,8 +96,6 @@ public class SearchManager : MonoBehaviour
     public void readStomicsExpression(string geneName, int pos)
     {
 
-
-        //TBD overwrite with datapaths from Pipeline
         var Xdata = gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/data");
         var indices = gameObject.GetComponent<FileReader>().query32BitInttoIntArray("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/indices");
         int[] indptr = gameObject.GetComponent<FileReader>().query32BitInttoIntArray("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/indptr");
@@ -102,7 +104,7 @@ public class SearchManager : MonoBehaviour
         int start = indptr[pos];
         int end = indptr[pos + 1];
         int cubesCount = gameObject.GetComponent<DataTransferManager>().stomicsSpotId.Count;
-
+        
         List<int> indicesInterest = indices.Skip(start).Take(end - start).ToList();
         expVals = new List<float>();
 
@@ -176,6 +178,30 @@ public class SearchManager : MonoBehaviour
             normaliseAndDraw(readList);
 
         }
+
+    }
+
+    public void readMerfishExpression(string searchGene)
+    {
+        var genes = gameObject.GetComponent<DataTransferManager>().getMerfishGeneNames();
+        int x = genes.IndexOf(searchGene);
+        string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transposed.csv";
+
+
+        string[] lines = File.ReadAllLines(merfishData);
+        lines = lines.Skip(1).ToArray();
+
+        List<string> values = new List<string>();
+        values = lines[x].Split(',').ToList();
+        List<float> readList = new List<float>();
+
+        for (int i = 0; i < values.Count; i++)
+        {
+            if (i > 0) readList.Add(float.Parse(values[i]));
+        }
+
+
+        normaliseAndDraw(readList);
 
     }
 

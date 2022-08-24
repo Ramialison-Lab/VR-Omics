@@ -17776,7 +17776,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -20946,6 +20946,7 @@ MonoBehaviour:
   xeniumSpotsTMP: {fileID: 736833854}
   xeniumMatPathField: {fileID: 188053400}
   stomicsPathField: {fileID: 1958235422}
+  stomicsPathProcessField: {fileID: 403163096}
   tomoAPfield: {fileID: 357347388}
   tomoVDfield: {fileID: 380731690}
   tomoLRfield: {fileID: 1028241807}
@@ -23554,8 +23555,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 994948024}
-        m_MethodName: startStomics
+      - m_Target: {fileID: 994948022}
+        m_MethodName: processAndRunStomics
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -25236,8 +25237,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 994948024}
-        m_MethodName: startStomics
+      - m_Target: {fileID: 994948022}
+        m_MethodName: processStomics
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -37830,7 +37831,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Stomics
+  m_text: STOmics
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -39765,7 +39766,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 994948022}
-        m_MethodName: selectStomicssFile
+        m_MethodName: selectStomicssFileProcess
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

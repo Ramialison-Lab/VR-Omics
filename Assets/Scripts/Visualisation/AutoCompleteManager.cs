@@ -15,6 +15,7 @@ public class AutoCompleteManager : MonoBehaviour
     public bool tomoseq = false;
     public bool stomics = false;
     public bool xenium = false;
+    public bool merfish = false;
 
     public void setGeneNameList(List<string> geneNames)
     {
@@ -28,6 +29,7 @@ public class AutoCompleteManager : MonoBehaviour
        tomoseq = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().TomoseqActive();
        stomics = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().StomicsActive();
        xenium = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().XeniumActive();
+       merfish = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().MerfishActive();
     }
 
     public void textEnter()
@@ -119,6 +121,7 @@ public class AutoCompleteManager : MonoBehaviour
             
         }
         else if (xenium) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readXeniumExpression(btn.GetComponentInChildren<TMP_Text>().text);
+        else if (merfish) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readMerfishExpression(btn.GetComponentInChildren<TMP_Text>().text);
     }
 
     //check if Inoutfield is focused

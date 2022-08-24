@@ -480,6 +480,7 @@ public class SpotDrawer : MonoBehaviour
     public void startSpotDrawer(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
     {
         if (gameObject.GetComponent<DataTransferManager>().XeniumActive()) symbolSelect = xeniumCubeSymb;
+        if (gameObject.GetComponent<DataTransferManager>().MerfishActive()) symbolSelect = xeniumCubeSymb;
         else symbolSelect = sphereSymb;
         // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
         // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
@@ -493,9 +494,8 @@ public class SpotDrawer : MonoBehaviour
             float z;
               
             // reading out the next 3D coordinate from the list
-            if (gameObject.GetComponent<DataTransferManager>().XeniumActive())
+            if (gameObject.GetComponent<DataTransferManager>().XeniumActive() || gameObject.GetComponent<DataTransferManager>().MerfishActive())
             {
-
                  x = xcoords[i] / 10;
                  y = ycoords[i] / 10;
                  z = zcoords[i];
@@ -517,7 +517,7 @@ public class SpotDrawer : MonoBehaviour
             count++;
         }
 
-        if (!gameObject.GetComponent<DataTransferManager>().XeniumActive())
+        if (!gameObject.GetComponent<DataTransferManager>().XeniumActive() || !gameObject.GetComponent<DataTransferManager>().MerfishActive())
         {
             for (int i = 0; i < xcoords.Count; i++)
             {

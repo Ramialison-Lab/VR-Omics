@@ -12,7 +12,7 @@ public class DataTransferManager : MonoBehaviour
     public bool stomics = false;
     public bool tomoseq = false;
     public bool xenium = false;
-
+    public bool merfish = false;
     public bool c18_visium = false;
 
     private int x = 0;
@@ -39,9 +39,10 @@ public class DataTransferManager : MonoBehaviour
         //TBD set visium, tomoseq, stomics bools true or false from pipeline
         // visium = true;
         // c18_visium = true; visium = true;
-         stomics= true;
+        // stomics= true;
         // tomoseq = true;
-       // xenium = true;
+        // xenium = true;
+         merfish = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
        // df = scriptHolderPipeline.GetComponent<DataTransfer>();
@@ -97,9 +98,14 @@ public class DataTransferManager : MonoBehaviour
         else if (stomics)
         {
             startStomics();
-        }else if (xenium)
+        }
+        else if (xenium)
         {
             startXenium();
+        }
+        else if (merfish)
+        {
+            startMerfish();
         }
 
     }
@@ -128,11 +134,14 @@ public class DataTransferManager : MonoBehaviour
     {
         return xenium;
     }
+    public bool MerfishActive()
+    {
+        return merfish;
+    }
 
-    public string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
 
-    public GameObject c18heartObj;
     public List<string> XeniumGeneNames = new List<string>();
+    public List<string> MerfishGeneNames = new List<string>();
 
     private void startXenium()
     {
@@ -178,20 +187,75 @@ public class DataTransferManager : MonoBehaviour
 
     }
 
+    private void startMerfish()
+    {
+        string merfishCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BRainSlide1\\merfish_cell_metadata.csv";
+        string merfishGenelist = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transposed.csv";
+
+        List<float> merfishX = new List<float>();
+        List<float> merfishY = new List<float>();
+        List<float> merfishZ = new List<float>();
+        List<string> merfishCell = new List<string>();
+
+
+        string[] lines = File.ReadAllLines(merfishCoords);
+        lines = lines.Skip(1).ToArray();
+
+        foreach (string line in lines)
+        {
+            List<string> values = new List<string>();
+            values = line.Split(',').ToList();
+
+            merfishX.Add(float.Parse(values[3]));
+            merfishY.Add(float.Parse(values[4]));
+            merfishZ.Add(0);
+            merfishCell.Add(values[0]);
+        }
+
+        string[] linesGn = File.ReadAllLines(merfishGenelist);
+        foreach (string line in linesGn)
+        {
+            List<string> values = new List<string>();
+            values = line.Split(',').ToList();
+
+            MerfishGeneNames.Add(values[0]);
+        }
+
+        List<string> dp = new List<string>();
+
+        GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().setSliceCollider((int)merfishX.Min(), (int)merfishX.Max(), (int)merfishY.Max(), (int)merfishY.Min(), x, "");
+
+        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(merfishX, merfishY, merfishZ, merfishCell, dp);
+
+        // scriptHolder.GetComponent<XeniumDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell);
+
+    }
+
+
+
+
     public List<string> getXeniumGeneNames()
     {
         return XeniumGeneNames;
     }
+    public List<string> getMerfishGeneNames()
+    {
+        return MerfishGeneNames;
+    }
 
     public GameObject c18Sphere;
+
+    //Dataset embedded as Demo
+    public string geneC18 = "Assets/Datasets/C18heart/C18genesTranspose.csv";
+    public string coordsC18 = "Assets/Datasets/C18heart/C18heart.csv";
+    public GameObject c18heartObj;
 
     private void startC18()
     {
         c18heartObj.SetActive(true);
-        string coordsC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18heart.csv";
-
+        Color transp = new Color();
+        transp.a = 0.5f;
         c18Sphere.transform.localScale = new Vector3(30, 30, 30);
-
         List<float> c18x = new List<float>();
         List<float> c18y = new List<float>();
         List<float> c18z = new List<float>();
@@ -210,7 +274,7 @@ public class DataTransferManager : MonoBehaviour
             c18z.Add(float.Parse(values[12]));
             c18spot.Add(values[16]);
         }
-
+        //DEpth corrdinates from C18heart dataset
         int[] c18xHC = { 192,205,230,250,285,289,321,327,353};
         
         for (int i = 0; i < 9; i++)
