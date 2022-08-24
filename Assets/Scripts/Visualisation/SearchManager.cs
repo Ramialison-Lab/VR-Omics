@@ -185,7 +185,7 @@ public class SearchManager : MonoBehaviour
     {
         var genes = gameObject.GetComponent<DataTransferManager>().getMerfishGeneNames();
         int x = genes.IndexOf(searchGene);
-        string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transposed.csv";
+        string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
 
 
         string[] lines = File.ReadAllLines(merfishData);

@@ -190,7 +190,7 @@ public class DataTransferManager : MonoBehaviour
     private void startMerfish()
     {
         string merfishCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BRainSlide1\\merfish_cell_metadata.csv";
-        string merfishGenelist = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transposed.csv";
+        string merfishGenelist = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
 
         List<float> merfishX = new List<float>();
         List<float> merfishY = new List<float>();
