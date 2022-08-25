@@ -361,10 +361,19 @@ public class UIManager : MonoBehaviour
 
     public void nextPipelineStep()
     {
-
+		string[] filterparam = new string[9];
+		filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
+		
         if (GameObject.Find("Step6").GetComponentInChildren<Toggle>().isOn)
         {
             //TBD1 skip all filter steps and just prepare data for VR-Omics = preprocess without filter values
+		    filterparam[1] = "";
+            filterparam[2] = "";
+            filterparam[3] = "";
+            filterparam[4] = "";
+            filterparam[5] = "";
+            filterparam[6] = "";
+
         }
         // Manages the workflow of the pipeline part to guide through the 4 individual steps
         
@@ -381,8 +390,23 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            //TBD1 skip filtetr values and go to steps selected      
+            //TBD1 skip filtetr values and go to steps selected
+			string[] params_out = new string[3];
+			params_out[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
+			if (SVGStep == true) {
+				//TBD1 Sabrina if toggle on, include SVG analysis to filter step
+				params_out[1] = 1.ToString();
+			}
+			params_out[2] = destinationPath;	
+			save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt","/Scripts/Python_exe/exe_scanpy/dist/Visium_upload.exe");
         }
+
+        if (SVGStep == true) {
+            //TBD1 Sabrina if toggle on, include SVG analysis to filter step
+            filterparam[7] = 1.ToString();
+        }
+		
+		save_params_run_step1(filterparam,"/PythonFiles/Filter_param.txt","/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
     }
 
 
@@ -407,10 +431,10 @@ public class UIManager : MonoBehaviour
         StartCoroutine(loadImages());
     }
 
-    public void save_params_run_step1(string[] filterparam)
+    public void save_params_run_step1(string[] filterparam, string outname, string executable)
     {
         // Python integration
-        StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Filter_param.txt", false);
+        StreamWriter writer = new StreamWriter(Application.dataPath +outname, false);
         foreach (string param in filterparam)
         {
             writer.WriteLine(param);
@@ -418,7 +442,7 @@ public class UIManager : MonoBehaviour
         writer.Close();
 
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe";
+        startInfo.FileName = Application.dataPath + executable;
         //startInfo.Arguments = "\"" + wd + "/rcode.r" + " \"";
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = true;
@@ -447,8 +471,8 @@ public class UIManager : MonoBehaviour
 
         //TBD1 if processed return datapath via outputDirectory to UI and successful filtered
         string outputDirectory = "";
-
-        visiumSuccessPanel.SetActive(true);
+		outputDirectory = File.ReadLines(Application.dataPath+"/PythonFiles/outdirectorypaths.txt").Last();
+		visiumSuccessPanel.SetActive(true);
         visiumSuccessPanel.GetComponentInChildren<TMP_Text>().text = "Data successful saved to: " + outputDirectory;
         
     }
@@ -463,18 +487,24 @@ public class UIManager : MonoBehaviour
         gameObject.GetComponent<DataTransfer>().startVisium(outputDirectory);
 
         //TBD1 if processed return datapath to UI
+		outputDirectory = File.ReadLines(Application.dataPath+"/PythonFiles/outdirectorypaths.txt").Last();
+		
     }
 
     public void startPipelineDownloadData()
     {
-        if (svgToggle.isOn) { 
-            
+        string[] filterparam = new string[9];
+
+        if (svgToggle.isOn) {
+
             //TBD1 Sabrina if toggle on, include SVG analysis to filter step
+            filterparam[7] = 1.ToString();
         }
 
         if (plotToggle.isOn)
         {
             //TBD1 create output plots
+            filterparam[8] = 1.ToString();
         }
 
         //Stores db literal and the filter params
@@ -496,16 +526,14 @@ public class UIManager : MonoBehaviour
         {
             // TBD Sabrina: run Step1 Python notebook without filter params
             // @Denis: Please doublecheck these values! Same order as below.
-            string[] filterparam = new string[7];
             filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
 
-            save_params_run_step1(filterparam);
+            save_params_run_step1(filterparam,"/PythonFiles/Filter_param.txt","/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
         }
         else
         {
             //TBD Sabrina: run Step1 Python notebook WITH following filter params
-            string[] filterparam = new string[7];
-
+            
             filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
             filterparam[1] = GameObject.Find("MinCount").GetComponentInChildren<TMP_InputField>().text;
             filterparam[2] = GameObject.Find("MaxCount").GetComponentInChildren<TMP_InputField>().text;
@@ -514,7 +542,7 @@ public class UIManager : MonoBehaviour
             filterparam[5] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
             filterparam[6] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
 
-            save_params_run_step1(filterparam);
+            save_params_run_step1(filterparam,"/PythonFiles/Filter_param.txt","/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
 
         }
     }
@@ -590,19 +618,21 @@ public class UIManager : MonoBehaviour
 
     public void getFilterParamPipeline()
     {
+        // Reading filter parameters for python pipeline
+        string[] filterPipelineParam = new string[9];
+
         if (poltTogglePip.isOn)
         {
-            //TBD1 include plot png download 
+            //TBD1 include plot png download
+            filterPipelineParam[8] = 1.ToString();
         }
 
         if (GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn)
         {
             //TBD1 include SVG step
+            filterPipelineParam[7] = 1.ToString();
         }
 
-
-        // Reading filter parameters for python pipeline
-        string[] filterPipelineParam = new string[7];
 
         filterPipelineParam[0] = GameObject.Find("MinCount").GetComponentInChildren<TMP_InputField>().text;
         filterPipelineParam[1] = GameObject.Find("MaxCount").GetComponentInChildren<TMP_InputField>().text;
@@ -613,7 +643,7 @@ public class UIManager : MonoBehaviour
 
         //TBD Sabrina start pipeline steps based on bools filterStep, coorelationStep, clusteringStep, SVGstep
 
-        save_params_run_step1(filterPipelineParam);
+        save_params_run_step1(filterPipelineParam,"/PythonFiles/Filter_param.txt","/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
         // datapath to file = filepathUpload
 
     }
@@ -762,6 +792,33 @@ public class UIManager : MonoBehaviour
         //TBD1 Sabrina 
         // path for matrix file is xeniumMatrix → use adata = scanpy.read(xeniumMatrix) and output with adata.to_df().to_csv(output) and/ or adata.write_h5ad(output);         
         // return datapath as string
+        // Python integration
+        StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Xenium_path.txt", false);
+        string[] xenium_path_out = new string[2];
+        xenium_path_out[0] = xeniumPAth;
+        xenium_path_out[1] = "";// outputDirectory;
+        foreach (string param in xenium_path_out)
+        {
+            writer.WriteLine(param);
+        }
+        writer.Close();
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_xenium/dist/Load_xenium.exe";
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = true;
+        UnityEngine.Debug.Log("Xenium File load started.");
+
+
+        Process p = new Process
+        {
+            StartInfo = startInfo
+        };
+
+        p.Start();
+        p.WaitForExit();
+        //loadingPanel.SetActive(false);
+
     }
 
     public void processXeniumandRun()
@@ -784,6 +841,32 @@ public class UIManager : MonoBehaviour
     public void processStomics()
     {
         //TBD load file from datapath: stomicsPath to pipeline and transpose the file (see Sharepoint)
+        StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Stomics_path.txt", false);
+        string[] stomics_path_out = new string[2];
+        stomics_path_out[0] = stomicsPath;
+        stomics_path_out[1] = "";// outputDirectory;
+
+        foreach (string param in stomics_path_out)
+        {
+            writer.WriteLine(param);
+        }
+        writer.Close();
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_stomics/dist/Load_stomics.exe";
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = false;
+        UnityEngine.Debug.Log("Xenium File load started.");
+
+
+        Process p = new Process
+        {
+            StartInfo = startInfo
+        };
+
+        p.Start();
+        //p.WaitForExit();
+
     }
 
     public void processAndRunStomics()
