@@ -56,6 +56,8 @@ public class UIManager : MonoBehaviour
     public GameObject tomoLoadPanel;
     public GameObject stomicsLoadPanel;
     public GameObject stomicsProcessPanel;
+    public GameObject merfishProcessPanel;
+    public GameObject merfishLoadPanel;
     public GameObject loadingPanel;
     public Sprite checkmark;
 
@@ -95,6 +97,8 @@ public class UIManager : MonoBehaviour
             tomoLoadPanel.SetActive(false);
             stomicsLoadPanel.SetActive(false);
             stomicsProcessPanel.SetActive(false);
+            merfishLoadPanel.SetActive(false);
+            merfishProcessPanel.SetActive(false);
            
         }
         catch (Exception) { }
@@ -130,10 +134,17 @@ public class UIManager : MonoBehaviour
             case "ProcessStomicsBtn":
                 stomicsProcessPanel.SetActive(true);
                 break;
+            case "LoadMerfishBtn":
+                merfishLoadPanel.SetActive(true);
+                break;
+            case "ProcessMerfishBtn":
+                merfishProcessPanel.SetActive(true);
+                break;
         }
     }
 
     private bool expMenu = false;
+    private bool expMenuMerfish = false;
     private bool expMenuXen = false;
     private bool expMenuTomo = false;
     private bool expMenuStomics = false;
@@ -141,6 +152,7 @@ public class UIManager : MonoBehaviour
     public GameObject mainExpandPanelXenium;
     public GameObject mainExpandPanelTomo;
     public GameObject mainExpandStomics;
+    public GameObject mainExpandMerfish;
     public void toggleExpandMenu()
     {
 
@@ -166,6 +178,19 @@ public class UIManager : MonoBehaviour
             mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
         }
         expMenuXen = !expMenuXen;
+    }
+
+    public void toggleExpandMenuMerfish()
+    {
+        if (!expMenuMerfish)
+        {
+            mainExpandMerfish.transform.localPosition = new Vector2(mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.y);
+        }
+        else
+        {
+            mainExpandMerfish.transform.localPosition = new Vector2(mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.y);
+        }
+        expMenuMerfish = !expMenuMerfish;
     }
 
     public void toggleExpandMenuTomoSeq()
@@ -667,13 +692,20 @@ public class UIManager : MonoBehaviour
 
     public TMP_InputField xeniumFeaturesTMP;
     public TMP_InputField xeniumSpotsTMP;
-    public TMP_InputField xeniumMatPathField;
+    public TMP_InputField xeniumMatPathField;    
+    public TMP_InputField xeniumFeaturesTMPLoad;
+    public TMP_InputField xeniumSpotsTMPLoad;
+    public TMP_InputField xeniumMatPathFieldLoad;
     public TMP_InputField stomicsPathField;
     public TMP_InputField stomicsPathProcessField;
     public TMP_InputField tomoAPfield;
     public TMP_InputField tomoVDfield;
     public TMP_InputField tomoLRfield;
     public TMP_InputField tomoGenefield;
+    public TMP_InputField merfishMatProcessTMP;
+    public TMP_InputField merfishMatLoadTMP;
+    public TMP_InputField merfishMetaProcessTMP;
+    public TMP_InputField merfishMetaLoadTMP;
 
     //Browse for GeneList of Xenium data
     public void selectXeniumFeatures()
@@ -695,6 +727,21 @@ public class UIManager : MonoBehaviour
         StartCoroutine(selectBrowseFile("xeniumHDF", xeniumMatPathField));
     }
 
+    public void selectXeniumSpotLoad()
+    {
+        StartCoroutine(selectBrowseFile("xeniumSpots", xeniumSpotsTMP));
+    }
+    // Browse for Matrix gene expression file
+    public void selectXeniumMatrixLoad()
+    {
+        StartCoroutine(selectBrowseFile("xeniumPAth", xeniumMatPathField));
+    }
+    public void selectXeniumHDFLoad()
+    {
+        StartCoroutine(selectBrowseFile("xeniumHDF", xeniumMatPathField));
+    }
+
+
     public string stomicsPath;
     public string APPath;
     public string VDPath;
@@ -703,6 +750,8 @@ public class UIManager : MonoBehaviour
     public string xeniumPAth;
     public string xeniumGenesPath;
     public string xeniumSpotsPath;
+    public string merfishGenePath;
+    public string merfishMetaPath;
 
     public void selectStomicssFile()
     {
@@ -715,6 +764,33 @@ public class UIManager : MonoBehaviour
     {
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("stomics", stomicsPathProcessField));
+
+    }
+
+    public void selectMerfishMatrixFileProcess()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("merfishMat", merfishMatProcessTMP));
+
+    }    
+    public void selectMerfishMatrixFileLoad()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("merfishMat", merfishMatLoadTMP));
+
+    }
+
+    public void selectMerfishMetaProcess()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("merfishMeta", merfishMetaProcessTMP));
+
+    }   
+    
+    public void selectMerfishMetaLoad()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("merfishMeta", merfishMetaLoadTMP));
 
     }
 

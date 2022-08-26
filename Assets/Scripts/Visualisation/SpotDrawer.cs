@@ -78,7 +78,6 @@ public class SpotDrawer : MonoBehaviour
 
             for (int i = 0; i < batches.Count; i++)
             {
-
                     // draw all spots from the batches list
                     MeshWrapper wrap = batches[i];
                     var mpb = new MaterialPropertyBlock();
