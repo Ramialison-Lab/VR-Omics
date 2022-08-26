@@ -386,12 +386,12 @@ public class UIManager : MonoBehaviour
 
     public void nextPipelineStep()
     {
-		string[] params_out = new string[3];
+		string[] params_out = new string[4];
 		params_out[0] = filepathUpload;
-		params_out[3] = "C:\\Users\\sabri\\Documents\\collection_of_projects\\Spatial-Transcriptomics\\VR-Omics\\Assets\\PythonFiles\\V1_Breast_Cancer_Block_A_Section_1_500______filtered_BGEQ5D\\";	
+		params_out[3] = destinationPath;	
         if (GameObject.Find("Step6").GetComponentInChildren<Toggle>().isOn)
         {
-            //TBD1 skip all filter steps and just prepare data for VR-Omics = preprocess without filter values
+			//TBD1 skip all filter steps and just prepare data for VR-Omics = preprocess without filter values
 			params_out[1] = 1.ToString();
         }
         // Manages the workflow of the pipeline part to guide through the 4 individual steps
@@ -401,23 +401,22 @@ public class UIManager : MonoBehaviour
         //correlationStep = GameObject.Find("Step2").GetComponentInChildren<Toggle>().isOn;
         //clusteringStep = GameObject.Find("Step3").GetComponentInChildren<Toggle>().isOn;
         SVGStep = GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn;
-		UnityEngine.Debug.Log("before else");
-        pipelinestepPanel.SetActive(false);
+		pipelinestepPanel.SetActive(false);
         if (filterStep)
         {
             pipelineParamPanel.SetActive(true);
         }
         else
         {
-			UnityEngine.Debug.Log("else");
-            //TBD1 skip filtetr values and go to steps selected
+		    //TBD1 skip filtetr values and go to steps selected
 
 			if (SVGStep == true) {
+	
 				//TBD1 Sabrina if toggle on, include SVG analysis to filter step
 				params_out[2] = 1.ToString();
 			}
         }
-        UnityEngine.Debug.Log("after else");
+
         if (SVGStep == true) {
             //TBD1 Sabrina if toggle on, include SVG analysis to filter step
             params_out[2] = 1.ToString();
@@ -462,7 +461,7 @@ public class UIManager : MonoBehaviour
         startInfo.FileName = Application.dataPath + executable;
         //startInfo.Arguments = "\"" + wd + "/rcode.r" + " \"";
         startInfo.UseShellExecute = false;
-        startInfo.CreateNoWindow = true;
+        startInfo.CreateNoWindow = false;
         UnityEngine.Debug.Log("exe started");
 
 
