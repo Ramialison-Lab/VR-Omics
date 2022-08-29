@@ -386,13 +386,19 @@ public class UIManager : MonoBehaviour
 
     public void nextPipelineStep()
     {
-		string[] params_out = new string[4];
-		params_out[0] = filepathUpload;
-		params_out[3] = destinationPath;	
+		string[] filterparam = new string[9];
+		filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
+		
         if (GameObject.Find("Step6").GetComponentInChildren<Toggle>().isOn)
         {
-			//TBD1 skip all filter steps and just prepare data for VR-Omics = preprocess without filter values
-			params_out[1] = 1.ToString();
+            //TBD1 skip all filter steps and just prepare data for VR-Omics = preprocess without filter values
+		    filterparam[1] = "";
+            filterparam[2] = "";
+            filterparam[3] = "";
+            filterparam[4] = "";
+            filterparam[5] = "";
+            filterparam[6] = "";
+
         }
         // Manages the workflow of the pipeline part to guide through the 4 individual steps
         
@@ -401,28 +407,31 @@ public class UIManager : MonoBehaviour
         //correlationStep = GameObject.Find("Step2").GetComponentInChildren<Toggle>().isOn;
         //clusteringStep = GameObject.Find("Step3").GetComponentInChildren<Toggle>().isOn;
         SVGStep = GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn;
-		pipelinestepPanel.SetActive(false);
+
+        pipelinestepPanel.SetActive(false);
         if (filterStep)
         {
             pipelineParamPanel.SetActive(true);
         }
         else
         {
-		    //TBD1 skip filtetr values and go to steps selected
-
+            //TBD1 skip filtetr values and go to steps selected
+			string[] params_out = new string[3];
+			params_out[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
 			if (SVGStep == true) {
-	
 				//TBD1 Sabrina if toggle on, include SVG analysis to filter step
-				params_out[2] = 1.ToString();
+				params_out[1] = 1.ToString();
 			}
+			params_out[2] = destinationPath;	
+			save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt","/Scripts/Python_exe/exe_scanpy/dist/Visium_upload.exe");
         }
 
         if (SVGStep == true) {
             //TBD1 Sabrina if toggle on, include SVG analysis to filter step
-            params_out[2] = 1.ToString();
+            filterparam[7] = 1.ToString();
         }
 		
-		save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt","/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
+		save_params_run_step1(filterparam,"/PythonFiles/Filter_param.txt","/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
     }
 
 
@@ -461,7 +470,7 @@ public class UIManager : MonoBehaviour
         startInfo.FileName = Application.dataPath + executable;
         //startInfo.Arguments = "\"" + wd + "/rcode.r" + " \"";
         startInfo.UseShellExecute = false;
-        startInfo.CreateNoWindow = false;
+        startInfo.CreateNoWindow = true;
         UnityEngine.Debug.Log("exe started");
 
 
