@@ -13,6 +13,7 @@ public class DataTransfer : MonoBehaviour
     public bool xenium = false;
     public bool tomoseq = false;
     public bool stomics = false;
+    public bool merfish = false;
     //datapaths
     public string stomicsPath;
     public string APPath;
@@ -23,6 +24,8 @@ public class DataTransfer : MonoBehaviour
     public string xeniumPath;
     public string xeniumGenesPath;
     public string xeniumSpotsPath;
+    public string merfishGenePath;
+    public string merfishMetaPath;
     public List<string> pathList;
     public List<int> rotationValues;
     public List<int> distances;
@@ -37,6 +40,13 @@ public class DataTransfer : MonoBehaviour
     {
         visium = true;
         visiumPath = datapath;
+    }
+
+    public void startMerfish()
+    {
+        merfish = true;
+        merfishGenePath = ui.merfishGenePath;
+        merfishMetaPath = ui.merfishMetaPath;
     }
 
     public void startTomo()

@@ -191,7 +191,7 @@ public class TomoSeqDrawer : MonoBehaviour
         ap_size = 50;
 
         List<float> RipList = new List<float>();
-        string[] lines = File.ReadAllLines("Assets/Datasets/mymatrix.txt");
+        string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish/mymatrix.txt");
         //string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/10ss_3dbitmask.txt");
         foreach(string line in lines)
         {

@@ -404,8 +404,8 @@ public class UIManager : MonoBehaviour
         
         filterStep = GameObject.Find("Step1").GetComponentInChildren<Toggle>().isOn;
         // filter and svg only
-        correlationStep = GameObject.Find("Step2").GetComponentInChildren<Toggle>().isOn;
-        clusteringStep = GameObject.Find("Step3").GetComponentInChildren<Toggle>().isOn;
+        //correlationStep = GameObject.Find("Step2").GetComponentInChildren<Toggle>().isOn;
+        //clusteringStep = GameObject.Find("Step3").GetComponentInChildren<Toggle>().isOn;
         SVGStep = GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn;
 
         pipelinestepPanel.SetActive(false);
@@ -695,7 +695,7 @@ public class UIManager : MonoBehaviour
     public TMP_InputField xeniumMatPathField;    
     public TMP_InputField xeniumFeaturesTMPLoad;
     public TMP_InputField xeniumSpotsTMPLoad;
-    public TMP_InputField xeniumMatPathFieldLoad;
+    public TMP_InputField xeniumHDFFieldLoad;
     public TMP_InputField stomicsPathField;
     public TMP_InputField stomicsPathProcessField;
     public TMP_InputField tomoAPfield;
@@ -707,6 +707,7 @@ public class UIManager : MonoBehaviour
     public TMP_InputField merfishMetaProcessTMP;
     public TMP_InputField merfishMetaLoadTMP;
 
+    //Xenium Process
     //Browse for GeneList of Xenium data
     public void selectXeniumFeatures()
     {
@@ -722,20 +723,24 @@ public class UIManager : MonoBehaviour
     {
         StartCoroutine(selectBrowseFile("xeniumPAth", xeniumMatPathField));
     }
-        public void selectXeniumHDF()
+
+    // Xenium for Load
+    public void selectXeniumHDF()
     {
-        StartCoroutine(selectBrowseFile("xeniumHDF", xeniumMatPathField));
+        StartCoroutine(selectBrowseFile("xeniumHDF", xeniumHDFFieldLoad));
     }
 
     public void selectXeniumSpotLoad()
     {
-        StartCoroutine(selectBrowseFile("xeniumSpots", xeniumSpotsTMP));
+        StartCoroutine(selectBrowseFile("xeniumSpots", xeniumSpotsTMPLoad));
     }
     // Browse for Matrix gene expression file
-    public void selectXeniumMatrixLoad()
+    public void selectXeniumGenenamesLoad()
     {
-        StartCoroutine(selectBrowseFile("xeniumPAth", xeniumMatPathField));
+        StartCoroutine(selectBrowseFile("xenumGene", xeniumFeaturesTMPLoad));
     }
+
+    //delete?
     public void selectXeniumHDFLoad()
     {
         StartCoroutine(selectBrowseFile("xeniumHDF", xeniumMatPathField));
@@ -958,6 +963,28 @@ public class UIManager : MonoBehaviour
         gameObject.GetComponent<DataTransfer>().startStomics();
 
     }
+
+    public void processMerfish()
+    {
+        //TBD1 Sabrian process Stomics via processStomics() function and return datapath to new transposed hdf file
+        processMerfish();
+        merfishMetaPath = "";
+        merfishGenePath = "";
+    }
+
+    public void processAndRunMerfish()
+    {
+        //TBD1 Sabrian process Stomics via processStomics() function and return datapath to new transposed hdf file
+        processMerfish();
+        runMerfish();
+    }
+
+    public void runMerfish()
+    {
+        gameObject.GetComponent<DataTransfer>().startMerfish();
+
+    }
+
 
 
     IEnumerator selectUploadfile()

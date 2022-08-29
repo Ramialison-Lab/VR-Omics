@@ -40,9 +40,9 @@ public class DataTransferManager : MonoBehaviour
         // visium = true;
         // c18_visium = true; visium = true;
         // stomics= true;
-        // tomoseq = true;
+         tomoseq = true;
         // xenium = true;
-         merfish = true;
+        // merfish = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
        // df = scriptHolderPipeline.GetComponent<DataTransfer>();
