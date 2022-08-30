@@ -29,7 +29,7 @@ public class SearchManager : MonoBehaviour
     {
         sh = GameObject.Find("ScriptHolder");
 
-        if (gameObject.GetComponent<DataTransferManager>().C18Data())
+        if (gameObject.GetComponent<DataTransferManager>().c18_visium)
         {
 
             //    string c18path = gameObject.GetComponent<DataTransferManager>().getC18Path();
@@ -50,7 +50,7 @@ public class SearchManager : MonoBehaviour
         }
 
 
-        if (gameObject.GetComponent<DataTransferManager>().VisiumActive())
+        if (gameObject.GetComponent<DataTransferManager>().visium)
         {
             fr = sh.GetComponent<FileReader>();
             datasetPaths = sh.GetComponent<DataTransferManager>().getDatasetpaths();
@@ -65,25 +65,25 @@ public class SearchManager : MonoBehaviour
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
         }
 
-        else if (gameObject.GetComponent<DataTransferManager>().TomoseqActive())
+        else if (gameObject.GetComponent<DataTransferManager>().tomoseq)
         {
             geneNames.AddRange(gameObject.GetComponent<TomoSeqDrawer>().getGeneNames());
             //geneNames = geneNames.Distinct().ToList();
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
         }
 
-        else if (gameObject.GetComponent<DataTransferManager>().StomicsActive())
+        else if (gameObject.GetComponent<DataTransferManager>().stomics)
         {
             geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().getStomicsGeneNames());
             //geneNames = geneNames.Distinct().ToList();
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
         }
-        else if (gameObject.GetComponent<DataTransferManager>().XeniumActive())
+        else if (gameObject.GetComponent<DataTransferManager>().stomics)
         {
             geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().getXeniumGeneNames());
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
         }
-        else if (gameObject.GetComponent<DataTransferManager>().MerfishActive())
+        else if (gameObject.GetComponent<DataTransferManager>().merfish)
         {
             geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().getMerfishGeneNames());
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
@@ -211,10 +211,7 @@ public class SearchManager : MonoBehaviour
 
         int x = genes.IndexOf(searchGene);
 
-        //TBD replace this with data transfered
-        string XeniumData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
-
-        string[] lines = File.ReadAllLines(XeniumData);
+        string[] lines = File.ReadAllLines(gameObject.GetComponent<DataTransferManager>().Xeniumdata);
         lines = lines.Skip(1).ToArray();
 
         List<string> values = new List<string>();

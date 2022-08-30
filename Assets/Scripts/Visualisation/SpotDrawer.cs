@@ -46,8 +46,11 @@ public class SpotDrawer : MonoBehaviour
     public bool visium =false;
     private bool copy = false;
     private bool colourcopy = false;
-    bool highlightIdentifyUsed = false;
-
+    private bool highlightIdentifyUsed = false;
+    public TMP_Dropdown dd;
+    private Camera main;
+    private Transform symbolTransform;
+    private Matrix4x4 matrix;
 
     class MeshWrapper
     {
@@ -65,33 +68,31 @@ public class SpotDrawer : MonoBehaviour
     private void Start()
     {
         sm = gameObject.GetComponent<SearchManager>();
+        main = Camera.main;
     }
+
 
     private void Update()
     {
         // Update: draws the spots each frame
         if (start || visium)
         {
-            var main = Camera.main;
-            var symbolTransform = symbolSelect.transform;
-            Matrix4x4 matrix;
-
-            for (int i = 0; i < batches.Count; i++)
+            int i = 0;
+            foreach(MeshWrapper wrap in batches)
             {
-                    // draw all spots from the batches list
-                    MeshWrapper wrap = batches[i];
-                    var mpb = new MaterialPropertyBlock();
-                    Color rc = Color.clear;
+                // draw all spots from the batches list
+                var mpb = new MaterialPropertyBlock();
+                Color rc = Color.clear;
                 if (firstSelect)
                 {
                     // check if spots are selected with lasso tool
-                   // if (highlightIdentifyUsed)
-                 //   {
+                    if (highlightIdentifyUsed)
+                    {
                         if (highlightIdentifier1.Contains(wrap.uniqueIdentifier)) rc = new Color(255, 0, 0, 1);
                         else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 0, 1);
                         else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 0, 255, 1);
                         else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 255, 1);
-                 //  }
+                   }
                     else
                     {
                         try
@@ -107,20 +108,18 @@ public class SpotDrawer : MonoBehaviour
                 mpb.SetColor("_Color", rc);
                     //draw spots by graphic
                 matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);              
+                Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                i++;
             }
         }
 
         // if side-by-side copy of the slice is active
         if (copy)
         {
-            var main = Camera.main;
-            var symbolTransform = symbolSelect.transform;
-            Matrix4x4 matrix;
-            for (int i = 0; i < batchesCopy.Count; i++)
+            int i = 0;
+            foreach (MeshWrapper wrap in batchesCopy)
             {
                 // draw all spots from the batches list
-                MeshWrapper wrap = batchesCopy[i];
                 var mpb = new MaterialPropertyBlock();
                 Color rc;
                 if (newColoursCopy)
@@ -152,14 +151,14 @@ public class SpotDrawer : MonoBehaviour
                     matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 100 , wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
                     Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
                 }
+                i++;
             }
         }
     }
 
-    public TMP_Dropdown dd;
-
     public void ReadSpecial()
     {
+        // TBD only working for 
         switch (dd.value)
         {
             case 1:
@@ -247,9 +246,6 @@ public class SpotDrawer : MonoBehaviour
             normalised.AddRange(normalise);
             newColours = true;
             colVals.Clear();
-
-            Debug.Log(normalise.Count);
-            Debug.Log(batches.Count);
             if (normalise.Count < batches.Count) batchCounter = batchCounter + normalise.Count;
             else batchCounter = batches.Count;
             for (int i = 0; i < batchCounter; i++)
@@ -343,10 +339,11 @@ public class SpotDrawer : MonoBehaviour
 
     public void mergeSelection(bool merge)
     {
+        var normCount = normalised.Count;
         if (merge)
         {
             List<double> mergeList = new List<double>();
-            for(int i=0; i< normalised.Count; i++)
+            for(int i=0; i< normCount; i++)
             {
                 mergeList.Add((double)Mathf.Abs((float)(normalised[i] - normalisedCopy[i])));
             }
@@ -478,8 +475,8 @@ public class SpotDrawer : MonoBehaviour
     // a combined list of all datasets, that are read will be passed to this function to draw each spot
     public void startSpotDrawer(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
     {
-        if (gameObject.GetComponent<DataTransferManager>().XeniumActive()) symbolSelect = xeniumCubeSymb;
-        if (gameObject.GetComponent<DataTransferManager>().MerfishActive()) symbolSelect = xeniumCubeSymb;
+        if (gameObject.GetComponent<DataTransferManager>().xenium) symbolSelect = xeniumCubeSymb;
+        if (gameObject.GetComponent<DataTransferManager>().merfish) symbolSelect = xeniumCubeSymb;
         else symbolSelect = sphereSymb;
         // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
         // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
@@ -493,7 +490,7 @@ public class SpotDrawer : MonoBehaviour
             float z;
               
             // reading out the next 3D coordinate from the list
-            if (gameObject.GetComponent<DataTransferManager>().XeniumActive() || gameObject.GetComponent<DataTransferManager>().MerfishActive())
+            if (gameObject.GetComponent<DataTransferManager>().xenium || gameObject.GetComponent<DataTransferManager>().merfish)
             {
                  x = xcoords[i] / 10;
                  y = ycoords[i] / 10;
@@ -516,7 +513,7 @@ public class SpotDrawer : MonoBehaviour
             count++;
         }
 
-        if (!gameObject.GetComponent<DataTransferManager>().XeniumActive() || !gameObject.GetComponent<DataTransferManager>().MerfishActive())
+        if (!gameObject.GetComponent<DataTransferManager>().xenium || !gameObject.GetComponent<DataTransferManager>().merfish)
         {
             for (int i = 0; i < xcoords.Count; i++)
             {
@@ -538,6 +535,9 @@ public class SpotDrawer : MonoBehaviour
 
         //indicates that the spots are ready
         start = true;
+        prefillDropdown();
+        symbolTransform = symbolSelect.transform;
+
         createColorGradientMenu();
 
     }
@@ -794,7 +794,7 @@ public class SpotDrawer : MonoBehaviour
             }
 
 
-            if ((gameObject.GetComponent<DataTransferManager>().XeniumActive() || gameObject.GetComponent<DataTransferManager>().C18Data() ||mw.datasetName == dN) && (int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
+            if ((gameObject.GetComponent<DataTransferManager>().xenium || gameObject.GetComponent<DataTransferManager>().c18_visium ||mw.datasetName == dN) && (int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
             {
                 if (MC.GetComponent<MenuCanvas>().getLasso())
                 {
@@ -899,6 +899,8 @@ public class SpotDrawer : MonoBehaviour
     // rotation of all spots and the according collider slide
     public void rotateSlice(int direction, string dN, Vector3 cP, GameObject cube)
     {
+        Transform cubetransform = cube.transform;
+
         //direction= -1 or 1; dN = datasetName to identify which spots need to be rotated, Vector cP is the center of the ColliderSlice which is overlayed with the Spots and cube is the colliderslice 
         foreach (MeshWrapper mw in batches)
         {
@@ -925,19 +927,52 @@ public class SpotDrawer : MonoBehaviour
 
                 //rotating the collider slice
                 currentEulerAngles += new Vector3(0, 0, cube_z) * Time.deltaTime * 0.025f;
-                cube.transform.eulerAngles = currentEulerAngles;
+                cubetransform.eulerAngles = currentEulerAngles;
 
                 mw.origin = mw.location;
 
             }
         }
     }
+    private void prefillDropdown()
+    {
+        List<string> ddValues = new List<string>();
+
+        if (gameObject.GetComponent<DataTransferManager>().visium)
+        {
+            if (!gameObject.GetComponent<DataTransferManager>().c18_visium)
+            {
+                ddValues.Add("Leiden Cluster");
+                ddValues.Add("log1p_n_genes_by_counts");
+                ddValues.Add("log1p_total_counts");
+                ddValues.Add("log1p_total_counts_mt");
+                ddValues.Add("n_counts");
+                ddValues.Add("n_genes_by_counts");
+                ddValues.Add("pct_counts_in_top_100_genes");
+                ddValues.Add("pct_counts_in_top_200_genes");
+                ddValues.Add("pct_counts_in_top_500_genes");
+                ddValues.Add("pct_counts_mt");
+                ddValues.Add("total_counts");
+                ddValues.Add("total_counts_mt");
+
+                dd.AddOptions(ddValues);
+
+            }
+        }
+        else
+        {
+            ddValues.Add("No options available");
+
+            dd.AddOptions(ddValues);
+        }
+    }
+
 
     // set treshold for colour
     public void setMinTresh(float val)
     {
         minTresh = val;
-        if(gameObject.GetComponent<DataTransferManager>().TomoseqActive())
+        if(gameObject.GetComponent<DataTransferManager>().tomoseq)
             gameObject.GetComponent<TomoSeqDrawer>().setMinTresh(val);
     }
     public void setMaxTresh(float val)

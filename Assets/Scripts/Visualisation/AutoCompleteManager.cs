@@ -25,11 +25,11 @@ public class AutoCompleteManager : MonoBehaviour
 
     private void Start()
     {
-       visium = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().VisiumActive();
-       tomoseq = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().TomoseqActive();
-       stomics = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().StomicsActive();
-       xenium = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().XeniumActive();
-       merfish = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().MerfishActive();
+       visium = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().visium;
+       tomoseq = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().tomoseq;
+       stomics = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().stomics;
+       xenium = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().xenium;
+       merfish = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().merfish;
     }
 
     public void textEnter()

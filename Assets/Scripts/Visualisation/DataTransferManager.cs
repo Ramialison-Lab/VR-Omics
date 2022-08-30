@@ -22,6 +22,8 @@ public class DataTransferManager : MonoBehaviour
     public List<float> tempz;
     public List<string> spotnames;
     public List<string> datSetNames;
+    public List<string> XeniumGeneNames = new List<string>();
+    public List<string> MerfishGeneNames = new List<string>();
 
     private long[] allrow;
     private long[] allcol;
@@ -40,15 +42,16 @@ public class DataTransferManager : MonoBehaviour
         // visium = true;
         // c18_visium = true; visium = true;
         // stomics= true;
-         tomoseq = true;
-        // xenium = true;
+        // tomoseq = true;
+         xenium = true;
         // merfish = true;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
-       // df = scriptHolderPipeline.GetComponent<DataTransfer>();
         scriptHolder = GameObject.Find("ScriptHolder");
         sp = scriptHolder.GetComponent<SpotDrawer>();
-
+     
+        // Uncomment for pipeline connection
+        // df = scriptHolderPipeline.GetComponent<DataTransfer>();
         //if (df.visium)
         //{
         //    visium = true;
@@ -83,70 +86,26 @@ public class DataTransferManager : MonoBehaviour
         //    startXenium();
         //}
 
-
         if (visium)
         {
             sp.setVisiumBool(visium);
-
             if (c18_visium) startC18();
             else startVisium();
         }
-        else if (tomoseq)
-        {
-            startTomoSeq();
-        }
-        else if (stomics)
-        {
-            startStomics();
-        }
-        else if (xenium)
-        {
-            startXenium();
-        }
-        else if (merfish)
-        {
-            startMerfish();
-        }
-
+        else if (tomoseq) startTomoSeq();
+        else if (stomics) startStomics();
+        else if (xenium) startXenium();
+        else if (merfish) startMerfish();
     }
-
-    public bool VisiumActive()
-    {
-        return visium;
-    }    
-    
-    public bool C18Data()
-    {
-        return c18_visium;
-    }
-
-    public bool TomoseqActive()
-    {
-        return tomoseq;
-    }    
-    
-    public bool StomicsActive()
-    {
-        return stomics;
-    }
-
-    public bool XeniumActive()
-    {
-        return xenium;
-    }
-    public bool MerfishActive()
-    {
-        return merfish;
-    }
-
-
-    public List<string> XeniumGeneNames = new List<string>();
-    public List<string> MerfishGeneNames = new List<string>();
+   
+    public string Xeniumdata = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
 
     private void startXenium()
     {
         string xeniumCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_info\\cell_info_csv.csv";
         string xeniumGeneList = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_feature_matrix_mtx\\features.tsv";
+
+
 
         List<float> xeniumX = new List<float>();
         List<float> xeniumY = new List<float>();
@@ -227,11 +186,7 @@ public class DataTransferManager : MonoBehaviour
 
         scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(merfishX, merfishY, merfishZ, merfishCell, dp);
 
-        // scriptHolder.GetComponent<XeniumDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell);
-
     }
-
-
 
 
     public List<string> getXeniumGeneNames()
@@ -302,6 +257,9 @@ public class DataTransferManager : MonoBehaviour
 
     private void startVisium()
     {
+        Camera.main.transform.position = new Vector3(30,60,-110);
+        Camera.main.transform.eulerAngles = new Vector3(0,0,0);
+
         addHAndEImg = true;
         List<string> shortList = new List<string>();
 
@@ -401,6 +359,7 @@ public class DataTransferManager : MonoBehaviour
     private void startStomics()
     {
         fr = gameObject.GetComponent<FileReader>();
+        // Old: not transposed file, bad performance
        // string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\1_Include\\L3_b_count_normal_stereoseq.h5ad";
         // Original files paths
         //stomicsSpotId = fr.readH5StringVar(datapath, "obs/_index", stomicsSpotId);
@@ -422,7 +381,6 @@ public class DataTransferManager : MonoBehaviour
 
         List<string> dp = new List<string>();
         scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(stomicsX, stomicsY, stomicsZ, stomicsSpotId, dp);
-
     }
 
     public List<string> getStomicsGeneNames()

@@ -191,7 +191,7 @@ public class TomoSeqDrawer : MonoBehaviour
         ap_size = 50;
 
         List<float> RipList = new List<float>();
-        string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish/mymatrix.txt");
+        string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/mymatrix.txt");
         //string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/10ss_3dbitmask.txt");
         foreach(string line in lines)
         {
@@ -317,6 +317,7 @@ public class TomoSeqDrawer : MonoBehaviour
             var APpos = APgenes.IndexOf(ensembleId);
             var VDpos = VDgenes.IndexOf(ensembleId);
             var LRpos = LRgenes.IndexOf(ensembleId);
+         
             StartCoroutine(searchTomo(APpos, VDpos, LRPos));
 
         }
@@ -385,8 +386,6 @@ public class TomoSeqDrawer : MonoBehaviour
     private List<GameObject> datapoints = new List<GameObject>();
     IEnumerator searchTomo(int APpos, int VDpos, int LRpos)
     {
-
-
         normalisedVal.Clear();
         Vals.Clear();
         foreach (GameObject go in datapoints) Destroy(go);
@@ -397,68 +396,76 @@ public class TomoSeqDrawer : MonoBehaviour
         // AP → y
         // VD → x
 
-        string[] linesAP = File.ReadAllLines(ap_path);
-        AP_Exp = new List<float>();
-        AP_Exp = linesAP[APpos].Remove(0, linesAP[APpos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
-
-        foreach(float x in AP_Exp)
+        if (APpos != -1)
         {
+            string[] linesAP = File.ReadAllLines(ap_path);
+            AP_Exp = new List<float>();
+            AP_Exp = linesAP[APpos].Remove(0, linesAP[APpos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
 
+            foreach (float x in AP_Exp)
+            {
                 GameObject go = Instantiate(Graph_datapoint, AP_Graph_panel.transform);
                 go.transform.GetChild(0).transform.localPosition = new Vector3(0, (int)x * 2, 0);
                 datapoints.Add(go);
-            
-        }  
-
-        string[] linesVD = File.ReadAllLines(vd_path);
-        VD_Exp = new List<float>();
-        VD_Exp = linesVD[VDpos].Remove(0, linesVD[VDpos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
-
-        foreach (float x in VD_Exp)
-        {
-            GameObject go = Instantiate(Graph_datapoint, VD_Graph_panel.transform);
-            go.transform.GetChild(0).transform.localPosition = new Vector3(0, (int)x*2, 0);
-            datapoints.Add(go);
-
-
+            }
         }
-
-        string[] linesLR = File.ReadAllLines(lr_path);
-        LR_Exp = new List<float>();
-        LR_Exp = linesLR[LRPos].Remove(0, linesLR[LRPos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
-
-        foreach (float x in LR_Exp)
+        if (VDpos != -1)
         {
-            GameObject go = Instantiate(Graph_datapoint, LR_Graph_panel.transform);
-            go.transform.GetChild(0).transform.localPosition = new Vector3(0, (int)x*2, 0);
-            datapoints.Add(go);
+            string[] linesVD = File.ReadAllLines(vd_path);
+            VD_Exp = new List<float>();
+            VD_Exp = linesVD[VDpos].Remove(0, linesVD[VDpos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
 
-
-        }
-
-        // mapping values on 3x3 grid
-        for (int z = 0; z < lr_size; z++)
-        {
-            for (int y = 0; y < ap_size; y++)
+            foreach (float x in VD_Exp)
             {
-                for (int x = 0; x < vd_size; x++)
-                {
-                    Vals.Add((VD_Exp[x] + AP_Exp[y] + LR_Exp[z]) / sum);
-                }
+                GameObject go = Instantiate(Graph_datapoint, VD_Graph_panel.transform);
+                go.transform.GetChild(0).transform.localPosition = new Vector3(0, (int)x * 2, 0);
+                datapoints.Add(go);
+            }
+        }
+        if (LRpos != -1)
+        {
+            string[] linesLR = File.ReadAllLines(lr_path);
+            LR_Exp = new List<float>();
+            LR_Exp = linesLR[LRPos].Remove(0, linesLR[LRPos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
+
+            foreach (float x in LR_Exp)
+            {
+                GameObject go = Instantiate(Graph_datapoint, LR_Graph_panel.transform);
+                go.transform.GetChild(0).transform.localPosition = new Vector3(0, (int)x * 2, 0);
+                datapoints.Add(go);
             }
         }
 
-        //normalisation of values 
+        if (APpos == -1 || VDpos == -1 || LRpos == -1)
+        {
+            Debug.Log("At least one file didn't contain the gene");
+        }
+        else
+        {
+            // mapping values on 3x3 grid
+            for (int z = 0; z < lr_size; z++)
+            {
+                for (int y = 0; y < ap_size; y++)
+                {
+                    for (int x = 0; x < vd_size; x++)
+                    {
+                        Vals.Add((VD_Exp[x] + AP_Exp[y] + LR_Exp[z]) / sum);
+                    }
+                }
+            }
 
-        var max = Vals.Max();
-        var min = Vals.Min();
-        var range = (double)(max - min);
+
+            //normalisation of values 
+
+            var max = Vals.Max();
+            var min = Vals.Min();
+            var range = (double)(max - min);
 
 
-        normalisedVal = Vals.Select(i => 1 * (i - min) / range).ToList();
+            normalisedVal = Vals.Select(i => 1 * (i - min) / range).ToList();
 
-        setColors(normalisedVal);
-
+            setColors(normalisedVal);
+        }
         yield return null;
     }
 

@@ -97,7 +97,7 @@ public class MenuCanvas : MonoBehaviour
         Slider sl = slider.GetComponent<Slider>();
         GameObject go;
 
-        if (dfm.TomoseqActive())
+        if (dfm.tomoseq)
         {
             go = GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().getSelectedSymbol();
         }
@@ -212,7 +212,7 @@ public class MenuCanvas : MonoBehaviour
     {
         Debug.Log(symbDrop.options[symbDrop.value].text);
 
-        if (dfm.TomoseqActive())
+        if (dfm.tomoseq)
         {
             GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().setSymbol(symbDrop.options[symbDrop.value].text);
         }
@@ -236,6 +236,22 @@ public class MenuCanvas : MonoBehaviour
         foreach (GameObject obs in hAndEobjs)
         {
             obs.GetComponent<HAndEImageManager>().setAlpha(slider.GetComponent<Slider>().value, transparentMat);
+        }
+    }
+
+    public void resetCamera(GameObject btn)
+    {
+        if(btn.name == "XResetBtn")
+        {
+            Camera.main.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, Camera.main.transform.eulerAngles.z);
+        }
+        else if(btn.name == "YResetBtn")
+        {
+            Camera.main.transform.eulerAngles = new Vector3(Camera.main.transform.eulerAngles.x, 0, Camera.main.transform.eulerAngles.z);
+        }
+        else
+        {
+            Camera.main.transform.eulerAngles = new Vector3(Camera.main.transform.eulerAngles.x, Camera.main.transform.eulerAngles.y, 0);
         }
     }
 }
