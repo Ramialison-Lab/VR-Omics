@@ -116,13 +116,13 @@ public class TomoSeqDrawer : MonoBehaviour
                     if (colVals[i] != Color.clear)
                     {
                         matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, true, true);
                     }
                 }
                 else
                 {
                     matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, true, true);
                 }
             }
         }
@@ -228,12 +228,13 @@ public class TomoSeqDrawer : MonoBehaviour
                                     tempy.Add(y);
                                     tempz.Add(z);
                     }
-
                     count++;
                 }
             }
         }
         startSpotDrawer(tempx, tempy, tempz);
+        gameObject.GetComponent<DataTransferManager>().adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(90,0,0));
+
 
         List<float> nonZero = new List<float>();
 

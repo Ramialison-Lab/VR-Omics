@@ -39,7 +39,7 @@ public class SliceCollider : MonoBehaviour
         Color newColor = cube.GetComponent<Renderer>().material.color;
         newColor.a = 0f;
         cube.GetComponent<Renderer>().material.color = newColor;
-        if (gameObject.GetComponent<DataTransferManager>().addHandEImage())
+        if (gameObject.GetComponent<DataTransferManager>().addHAndEImg)
         {
             GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
             imagePlane.name = "StainImageObject";
@@ -130,7 +130,7 @@ public class SliceCollider : MonoBehaviour
     // detecting rotation of slices
     public void prepareRotation(int direction)
     {
-        List<string> paths = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().getDatasetpaths();
+        List<string> paths = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().hdf5datapaths;
 
         foreach (GameObject x in sliceColliders)
         {

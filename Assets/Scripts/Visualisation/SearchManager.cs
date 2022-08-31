@@ -20,6 +20,7 @@ public class SearchManager : MonoBehaviour
     public List<string> resultDataset;
     public List<string> resultSpotname;
     public List<float> resultExpression;
+    public List<float> expVals;
     public float[] resultExpressionTemp;
 
     public bool visium = true;
@@ -46,14 +47,11 @@ public class SearchManager : MonoBehaviour
 
             //geneNames = geneNames.Distinct().ToList();
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
-
         }
-
-
         if (gameObject.GetComponent<DataTransferManager>().visium)
         {
             fr = sh.GetComponent<FileReader>();
-            datasetPaths = sh.GetComponent<DataTransferManager>().getDatasetpaths();
+            datasetPaths = sh.GetComponent<DataTransferManager>().hdf5datapaths;
             searchEnsembleId(gene);
             foreach (string p in datasetPaths)
             {
@@ -74,25 +72,23 @@ public class SearchManager : MonoBehaviour
 
         else if (gameObject.GetComponent<DataTransferManager>().stomics)
         {
-            geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().getStomicsGeneNames());
+            geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().stomicsGeneNames);
             //geneNames = geneNames.Distinct().ToList();
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
         }
         else if (gameObject.GetComponent<DataTransferManager>().stomics)
         {
-            geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().getXeniumGeneNames());
+            geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().XeniumGeneNames);
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
         }
         else if (gameObject.GetComponent<DataTransferManager>().merfish)
         {
-            geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().getMerfishGeneNames());
+            geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().MerfishGeneNames);
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
 
         }
 
     }
-    public List<float> expVals;
-
     public void readStomicsExpression(string geneName, int pos)
     {
 
@@ -176,14 +172,12 @@ public class SearchManager : MonoBehaviour
             readList = sh.GetComponent<FileReader>().queryFloat(dp, hdfpath);
 
             normaliseAndDraw(readList);
-
         }
-
     }
 
     public void readMerfishExpression(string searchGene)
     {
-        var genes = gameObject.GetComponent<DataTransferManager>().getMerfishGeneNames();
+        var genes = gameObject.GetComponent<DataTransferManager>().MerfishGeneNames;
         int x = genes.IndexOf(searchGene);
         string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
 
@@ -199,15 +193,12 @@ public class SearchManager : MonoBehaviour
         {
             if (i > 0) readList.Add(float.Parse(values[i]));
         }
-
-
         normaliseAndDraw(readList);
-
     }
 
     internal void readXeniumExpression(string searchGene)
     {
-        var genes = gameObject.GetComponent<DataTransferManager>().getXeniumGeneNames();
+        var genes = gameObject.GetComponent<DataTransferManager>().XeniumGeneNames;
 
         int x = genes.IndexOf(searchGene);
 

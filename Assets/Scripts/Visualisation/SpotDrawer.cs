@@ -51,6 +51,7 @@ public class SpotDrawer : MonoBehaviour
     private Camera main;
     private Transform symbolTransform;
     private Matrix4x4 matrix;
+    private MaterialPropertyBlock mpb;
 
     class MeshWrapper
     {
@@ -81,18 +82,18 @@ public class SpotDrawer : MonoBehaviour
             foreach(MeshWrapper wrap in batches)
             {
                 // draw all spots from the batches list
-                var mpb = new MaterialPropertyBlock();
+                mpb = new MaterialPropertyBlock();
                 Color rc = Color.clear;
                 if (firstSelect)
                 {
                     // check if spots are selected with lasso tool
-                    if (highlightIdentifyUsed)
-                    {
+                    //if (highlightIdentifyUsed)
+                    //{
                         if (highlightIdentifier1.Contains(wrap.uniqueIdentifier)) rc = new Color(255, 0, 0, 1);
                         else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 0, 1);
                         else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 0, 255, 1);
                         else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 255, 1);
-                   }
+                  // }
                     else
                     {
                         try
@@ -120,7 +121,7 @@ public class SpotDrawer : MonoBehaviour
             foreach (MeshWrapper wrap in batchesCopy)
             {
                 // draw all spots from the batches list
-                var mpb = new MaterialPropertyBlock();
+                mpb = new MaterialPropertyBlock();
                 Color rc;
                 if (newColoursCopy)
                 {

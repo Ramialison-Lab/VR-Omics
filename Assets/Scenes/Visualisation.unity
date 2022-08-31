@@ -12866,48 +12866,63 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
+        type: 3}
       propertyPath: m_LocalPosition.x
-      value: 308
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 500
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 398
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9825343
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.17324732
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.06687809
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.011792409
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 20
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 7.7880006
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
@@ -12932,52 +12947,52 @@ PrefabInstance:
     - target: {fileID: 1151388028547126963, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -170
+      value: -397
       objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -313
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 114
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.6308413
+      value: -0.610267
       objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.17612524
+      value: -0.35812232
       objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.6585912
+      value: 0.5578543
       objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.37050882
+      value: 0.43372944
       objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -15.415001
+      value: 182.683
       objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -85.80801
+      value: -263.037
       objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: 2e79704cf43497540a5319bf4988c22f,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: -46.515003
+      value: 111.571
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2e79704cf43497540a5319bf4988c22f, type: 3}
@@ -13281,7 +13296,7 @@ MonoBehaviour:
   stomics: 0
   tomoseq: 0
   xenium: 0
-  merfish: 0
+  merfish: 1
   c18_visium: 0
   hdf5datapaths: []
   tempx: []
@@ -13293,16 +13308,16 @@ MonoBehaviour:
   MerfishGeneNames: []
   sel_DropD: {fileID: 562369942}
   df: {fileID: 0}
-  Xeniumdata: C:\Users\Denis.Bienroth\Desktop\ST_technologies\Xenium\Xenium.csv
-  c18Sphere: {fileID: 1796680520}
-  geneC18: C:\Users\Denis.Bienroth\Desktop\ST_technologies\Visium\C18genes.csv
-  coordsC18: Assets/Datasets/C18heart/C18heart.csv
-  c18heartObj: {fileID: 781491928}
   disableBtn:
   - {fileID: 1359217083}
   - {fileID: 599666541}
   - {fileID: 126598705}
   addHAndEImg: 0
+  Xeniumdata: C:\Users\Denis.Bienroth\Desktop\ST_technologies\Xenium\Xenium.csv
+  c18Sphere: {fileID: 1796680520}
+  geneC18: C:\Users\Denis.Bienroth\Desktop\ST_technologies\Visium\C18genes.csv
+  coordsC18: Assets/Datasets/C18heart/C18heart.csv
+  c18heartObj: {fileID: 781491928}
   stomicsSpotId: []
   stomicsGeneNames: []
   stomicsX: []
@@ -13330,10 +13345,10 @@ MonoBehaviour:
   resultDataset: []
   resultSpotname: []
   resultExpression: []
+  expVals: []
   resultExpressionTemp: []
   visium: 1
   tomoseq: 0
-  expVals: []
   cropLimit: 20
 --- !u!114 &1052670665
 MonoBehaviour:
@@ -20398,7 +20413,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: c9bc76c72c37a394da98510ae1328fbf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

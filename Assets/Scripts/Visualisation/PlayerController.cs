@@ -16,9 +16,15 @@ public class PlayerController : MonoBehaviour
     public GameObject menuCanvas;
     public float speed = 1.5f;
     Vector2 mousepos;
+    DataTransferManager dfm;
     private void LateUpdate()
     {
         mousepos = Input.mousePosition;
+    }
+
+    private void Start()
+    {
+        dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
     }
 
     public void Update()
@@ -39,8 +45,8 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Q)) qKey = true;
             if (Input.GetKeyUp(KeyCode.Q)) qKey = false;
 
-            if (Input.GetAxis("Mouse ScrollWheel") > 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 1);
-            if (Input.GetAxis("Mouse ScrollWheel") < 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 1);
+            if (Input.GetAxis("Mouse ScrollWheel") > 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 30 * Time.deltaTime * 100);
+            if (Input.GetAxis("Mouse ScrollWheel") < 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 30 * Time.deltaTime * 100);
 
             if (Input.GetKey(KeyCode.Mouse2))
             {
@@ -68,12 +74,14 @@ public class PlayerController : MonoBehaviour
 
             if (up)
             {
-                transform.position = new Vector3(transform.position.x, transform.position.y + 30 * Time.deltaTime * speed, transform.position.z);
+                if(dfm.tomoseq) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 30 * Time.deltaTime * speed);
+                else transform.position = new Vector3(transform.position.x, transform.position.y + 30 * Time.deltaTime * speed, transform.position.z);
 
             }
             if (down)
             {
-                transform.position = new Vector3(transform.position.x, transform.position.y - 30 * Time.deltaTime * speed, transform.position.z);
+                if (dfm.tomoseq) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 30 * Time.deltaTime * speed);
+                else transform.position = new Vector3(transform.position.x, transform.position.y - 30 * Time.deltaTime * speed, transform.position.z);
 
             }
         }
