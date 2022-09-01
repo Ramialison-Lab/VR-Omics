@@ -316,7 +316,7 @@ public class UIManager : MonoBehaviour
             currentSelection.transform.Rotate(0f, 0f, -1);
             rotationValues[rotPos]++; 
         }
-        catch (Exception) { }
+        catch (Exception) {}
     }
 
     public void rotateImageMinus()
@@ -328,7 +328,7 @@ public class UIManager : MonoBehaviour
             currentSelection.transform.Rotate(0f, 0f, 1);
             rotationValues[rotPos]--;
         }
-        catch (Exception) { }
+        catch (Exception) {}
     }
 
     public Slider slider;
@@ -341,7 +341,7 @@ public class UIManager : MonoBehaviour
 
             slider.value = tempcolor.a;
         }
-        catch (Exception e) { }
+        catch (Exception) {}
     }
 
     public void changeTransperency()
@@ -352,7 +352,7 @@ public class UIManager : MonoBehaviour
             tempcolor.a = slider.value;
             currentSelection.GetComponent<RawImage>().color = tempcolor;
         }
-        catch (Exception e) { }
+        catch (Exception) {}
     }
 
 
@@ -364,12 +364,12 @@ public class UIManager : MonoBehaviour
         {
             if (imag.name == toggle.GetComponentInChildren<Text>().text)
             {
-                if (imag.transform.gameObject.active)
+                if (imag.transform.gameObject.activeSelf)
                 {
                     imag.transform.gameObject.SetActive(false);
 
                 }
-                else if (!imag.transform.gameObject.active)
+                else if (!imag.transform.gameObject.activeSelf)
                 {
                     imag.transform.gameObject.SetActive(true);
 
@@ -600,7 +600,7 @@ public class UIManager : MonoBehaviour
                     slicesList[pos].transform.position = slicesList[pos - 1].transform.position;
                     slicesList[pos - 1].transform.position = temp;
                 }
-                catch (Exception e) { }
+                catch (Exception) {}
             }
         }
         else if (go.name == "ButtonDown")
@@ -623,8 +623,7 @@ public class UIManager : MonoBehaviour
                     slicesList[pos].transform.position = slicesList[pos + 1].transform.position;
                     slicesList[pos + 1].transform.position = temp;
                 }
-                catch (Exception e) { }
-
+                catch (Exception) {}
             }
         }
         else if (go.name == "DeleteBtn")
@@ -1034,7 +1033,8 @@ public class UIManager : MonoBehaviour
             slicesList.Add(slicesStore[i]);
             transferDatapaths.Add(FileBrowser.Result[i]);
             rotationValues.Add(0);
-            try { alignBtn.SetActive(true); } catch (Exception e) { }
+            try { alignBtn.SetActive(true); } catch (Exception) {}
+
 
             string filename = storePathForWarning[i];
             slicesStore[i].GetComponentInChildren<Text>().text = filename.Split('\\').Last();

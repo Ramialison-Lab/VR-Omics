@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class DataTransferManager : MonoBehaviour
 {
-
+    //bools
     public bool visium = false;
     public bool stomics = false;
     public bool tomoseq = false;
@@ -15,30 +15,49 @@ public class DataTransferManager : MonoBehaviour
     public bool merfish = false;
     public bool c18_visium = false;
 
-    private int x = 0;
+    //Access variables
+    private FileReader fr;
+    private GameObject scriptHolderPipeline;
+    private GameObject scriptHolder;    
+    private SpotDrawer sp;
+    public DataTransfer df;
+    public CSVReader csvr;
+    public SliceCollider sc;
+
+    public GameObject[] disableBtn = new GameObject[3];
+
+    //Lists
     public List<string> hdf5datapaths;
     public List<float> tempx;
     public List<float> tempy;
     public List<float> tempz;
     public List<string> spotnames;
     public List<string> datSetNames;
-    public List<string> XeniumGeneNames = new List<string>();
-    public List<string> MerfishGeneNames = new List<string>();
 
-    private long[] allrow;
-    private long[] allcol;
-    private long[] alldepth;
-
-    public TMP_Dropdown sel_DropD;
-
-    private GameObject scriptHolderPipeline;
-    private GameObject scriptHolder;
-    private SpotDrawer sp;
-    public DataTransfer df;
-
-    //sort
-    public GameObject[] disableBtn = new GameObject[3];
+    //Visium
     public bool addHAndEImg = false;
+    private int visiumDepth = 0;
+    public TMP_Dropdown sel_DropD; //Dropdown choosing active Slide in dataset
+
+    //STOmics
+    public List<string> stomicsSpotId = new List<string>();
+    public List<string> stomicsGeneNames = new List<string>();
+    public List<float> stomicsX = new List<float>();
+    public List<float> stomicsY = new List<float>();
+    public List<float> stomicsZ = new List<float>();
+
+    //C18
+    public GameObject c18Sphere;
+    public GameObject c18heartObj;
+    public string geneC18 = "Assets/Datasets/C18heart/C18genesTranspose.csv";
+    public string coordsC18 = "Assets/Datasets/C18heart/C18heart.csv";
+
+    //Xenium
+    public string Xeniumdata = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
+    public List<string> XeniumGeneNames = new List<string>();
+
+    //Merfish
+    public List<string> MerfishGeneNames = new List<string>();
 
     void Start()
     {
@@ -53,42 +72,14 @@ public class DataTransferManager : MonoBehaviour
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
         sp = scriptHolder.GetComponent<SpotDrawer>();
-     
+        fr = scriptHolder.GetComponent<FileReader>();
+        csvr = scriptHolder.GetComponent<CSVReader>();
+        sc = scriptHolder.GetComponent<SliceCollider>();
+
         // Uncomment for pipeline connection
-        // df = scriptHolderPipeline.GetComponent<DataTransfer>();
-        //if (df.visium)
-        //{
-        //    visium = true;
-        //    sp.setVisiumBool(visium);
-        //    startVisium();
-        //}
-        //else if (df.visiumMultiple)
-        //{
-        //    visium = true;
-        //    sp.setVisiumBool(visium);
-        //    startVisium();
-        //}
-        //else if (df.c18)
-        //{
-        //    visium = true;
-        //    sp.setVisiumBool(visium);
-        //    startC18();
-        //}
-        //else if (df.tomoseq)
-        //{
-        //    tomoseq = true;
-        //    startTomoSeq();
-        //}
-        //else if (df.stomics)
-        //{
-        //    stomics = true;
-        //    startStomics();
-        //}
-        //else if (df.xenium)
-        //{
-        //    xenium = true;
-        //    startXenium();
-        //}
+        //pipelineConnected();
+
+        if (c18_visium) visium = true;
 
         if (visium)
         {
@@ -102,13 +93,49 @@ public class DataTransferManager : MonoBehaviour
         else if (merfish) startMerfish();
     }
 
-    //##################################################
-    // Visium
+    private void pipelineConnected()
+    {
+        df = scriptHolderPipeline.GetComponent<DataTransfer>();
+        if (df.visium)
+        {
+            visium = true;
+            sp.setVisiumBool(visium);
+            startVisium();
+        }
+        else if (df.visiumMultiple)
+        {
+            visium = true;
+            sp.setVisiumBool(visium);
+            startVisium();
+        }
+        else if (df.c18)
+        {
+            visium = true;
+            sp.setVisiumBool(visium);
+            startC18();
+        }
+        else if (df.tomoseq)
+        {
+            tomoseq = true;
+            startTomoSeq();
+        }
+        else if (df.stomics)
+        {
+            stomics = true;
+            startStomics();
+        }
+        else if (df.xenium)
+        {
+            xenium = true;
+            startXenium();
+        }
+    }
+
+    /// <summary>
+    /// Visium - This function starts the Visium process, reads all related datapaths and creates the required lists to call the SpotDrawer script
+    /// </summary>
     private void startVisium()
     {
-        addHAndEImg = true;
-        List<string> shortList = new List<string>();
-
         ////TBD! Comment out following lines to transfer data from pipeline
         //List<string> datapaths = scriptHolderPipeline.GetComponent<UIManager>().getDatapathList();
 
@@ -117,86 +144,84 @@ public class DataTransferManager : MonoBehaviour
         //    hdf5datapaths.Add(data + "\\" + data.Split('\\').Last() + "_scanpy.hdf5");
         //}
 
+        //####################################
         //TBD - Testdatasets for Denis local - delete following lines
 
-        // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-
-
+        addHAndEImg = true;
+        List<string> shortList = new List<string>();
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-        // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node2\\V1_Human_Lymph_Node_scanpy.hdf5");
-
-
-        int count = 0;
-
+        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+       
+        //disable copy features for more than one visium slice
         if (hdf5datapaths.Count > 1)
         {
             foreach (GameObject go in disableBtn)
             {
                 go.SetActive(false);
             }
-        }
+        }        
+        int count = 0;
         // Reading datasets and creating merged List for all coordinates
         foreach (string p in hdf5datapaths)
         {
             shortList.Add(p.Split('\\').Last());
-            scriptHolder.GetComponent<FileReader>().calcCoords(p);
-            long[] row = scriptHolder.GetComponent<FileReader>().getRowArray();
+            //reads barcodes and row and col positions and create merged list of coordinates
+            fr.calcCoords(p);
+            long[] row = fr.getRowArray();
             for (int i = 0; i < row.Length; i++)
             {
                 tempx.Add(row[i]);
                 datSetNames.Add(p);
             }
-            long[] col = scriptHolder.GetComponent<FileReader>().getColArray();
+
+            long[] col = fr.getColArray();
             for (int j = 0; j < row.Length; j++)
             {
                 tempy.Add(col[j]);
             }
-
             for (int k = 0; k < row.Length; k++)
             {
-                tempz.Add(x);
+                tempz.Add(visiumDepth);
             }
 
-
-            GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().setSliceCollider((int)col.Min(), (int)col.Max() + 1, (int)row.Max() + 1, (int)row.Min(), x, p);
-
-            string[] sname = scriptHolder.GetComponent<FileReader>().getSpotName();
+            //Adds the collider slice for each dataset that detects user input
+            sc.setSliceCollider((int)col.Min(), (int)col.Max() + 1, (int)row.Max() + 1, (int)row.Min(), visiumDepth, p);
+            //create Spotnames
+            string[] sname = fr.getSpotName();
             for (int l = 0; l < row.Length; l++)
             {
                 spotnames.Add(sname[l]);
             }
 
-            scriptHolder.GetComponent<FileReader>().resetRowCol();
+            //cleanup 
+            fr.resetRowCol();
 
             // TBD - depth automatically increased by 10, needs to be replaced with depth information set in pipeline alignment 
-            x = x + 10;
+            visiumDepth = visiumDepth + 10;
 
-            scriptHolder.GetComponent<CSVReader>().createGeneLists(p, count);
-            scriptHolder.GetComponent<CSVReader>().createSpotList(p, count);
+            csvr.createGeneLists(p);
+            csvr.createSpotList(p);
             count = count + 1;
         }
         adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(0, 0, 0));
-        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(tempx, tempy, tempz, spotnames, datSetNames);
+        sp.startSpotDrawer(tempx, tempy, tempz, spotnames, datSetNames);
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
     }
 
-    //##################################################
-    //Xenium
-    public string Xeniumdata = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
-
+    /// <summary>
+    /// Xenium - This function starts the Xenium process, reads all related datapaths and creates the required lists to call the SpotDrawer script
+    /// </summary>
     private void startXenium()
     {
+        //TBD link paths from pipeline
         string xeniumCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_info\\cell_info_csv.csv";
         string xeniumGeneList = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_feature_matrix_mtx\\features.tsv";
-
-
 
         List<float> xeniumX = new List<float>();
         List<float> xeniumY = new List<float>();
         List<float> xeniumZ = new List<float>();
         List<string> xeniumCell = new List<string>();
-
 
         string[] lines = File.ReadAllLines(xeniumCoords);
         lines = lines.Skip(1).ToArray();
@@ -223,22 +248,21 @@ public class DataTransferManager : MonoBehaviour
 
         List<string> dp = new List<string>();
         
-        GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().setSliceCollider((int)xeniumX.Min(), (int)xeniumX.Max(), (int)xeniumY.Max(), (int)xeniumY.Min(), x, "");
+        sc.setSliceCollider((int)xeniumX.Min(), (int)xeniumX.Max(), (int)xeniumY.Max(), (int)xeniumY.Min(), visiumDepth, "");
 
-        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell, dp);
+        sp.startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell, dp);
 
         adjustCamera(xeniumX.Min()/10, xeniumX.Max()/10, xeniumY.Min()/10, xeniumY.Max()/10, xeniumZ.Min(), new Vector3(0,0,0));
        // scriptHolder.GetComponent<XeniumDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell);
 
     }
 
-    //##################################################
-    //Merfish
+    /// <summary>
+    /// MERFISH - This function starts the Merfish process, reads all related datapaths and creates the required lists to call the SpotDrawer script
+    /// </summary>
     private void startMerfish()
     {
-        Camera.main.transform.position = new Vector3(370, 360, -650);
-        Camera.main.transform.eulerAngles = new Vector3(0, 0, 0);
-
+        //TBD link paths from pipeline
         string merfishCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BRainSlide1\\merfish_cell_metadata.csv";
         string merfishGenelist = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
 
@@ -246,7 +270,6 @@ public class DataTransferManager : MonoBehaviour
         List<float> merfishY = new List<float>();
         List<float> merfishZ = new List<float>();
         List<string> merfishCell = new List<string>();
-
 
         string[] lines = File.ReadAllLines(merfishCoords);
         lines = lines.Skip(1).ToArray();
@@ -273,21 +296,18 @@ public class DataTransferManager : MonoBehaviour
 
         List<string> dp = new List<string>();
 
-        GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().setSliceCollider((int)merfishX.Min(), (int)merfishX.Max(), (int)merfishY.Max(), (int)merfishY.Min(), x, "");
+        sc.setSliceCollider((int)merfishX.Min(), (int)merfishX.Max(), (int)merfishY.Max(), (int)merfishY.Min(), (int)merfishZ.Min(), "");
 
-        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(merfishX, merfishY, merfishZ, merfishCell, dp);
+        sp.startSpotDrawer(merfishX, merfishY, merfishZ, merfishCell, dp);
         adjustCamera(merfishX.Min() / 10, merfishX.Max() / 10, merfishY.Min() / 10, merfishY.Max() / 10, merfishZ.Min(), new Vector3(0, 0, 0));
 
 
     }
 
-    //##################################################
-    //C18 heart using Visum Demo - Dataset embedded
-    public GameObject c18Sphere;
-    public string geneC18 = "Assets/Datasets/C18heart/C18genesTranspose.csv";
-    public string coordsC18 = "Assets/Datasets/C18heart/C18heart.csv";
-    public GameObject c18heartObj;
-
+    /// <summary>
+    /// Visium - C18 heart - This function starts the embedded Demo of the heart data based on the publication Asp et al. https://doi.org/10.1016/j.cell.2019.11.025 There dataset is available under https://github.com/MickanAsp/Developmental_heart
+    /// The heart object was created using Blender based on the github source
+    /// </summary>
     private void startC18()
     {
         c18heartObj.SetActive(true);
@@ -317,7 +337,7 @@ public class DataTransferManager : MonoBehaviour
         
         for (int i = 0; i < 9; i++)
         {
-            GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().setSliceCollider((int)c18x.Min(), (int)c18x.Max(), (int)c18y.Max(), (int)c18y.Min(), c18xHC[i], "");
+            sc.setSliceCollider((int)c18x.Min(), (int)c18x.Max(), (int)c18y.Max(), (int)c18y.Min(), c18xHC[i], "");
         }
         adjustCamera(c18x.Min(), c18x.Max(), c18y.Min(), c18y.Max(), c18z.Min(), new Vector3(115, 30, 110));
 
@@ -325,23 +345,18 @@ public class DataTransferManager : MonoBehaviour
         var y = Math.Abs(c18y.Min()-c18y.Max());
         var z = Math.Abs(c18z.Min() + c18z.Max());
         var zcoord = (c18z.Min() + c18z.Max()) / 2;
-        Debug.Log(x);
-        Debug.Log(c18x.Min());
-        Debug.Log(c18x.Max());
-        Debug.Log(c18heartObj.transform.localScale.x);
+
         //c18heartObj.transform.localScale = new Vector3(x/10, y/10, z/10);
         c18heartObj.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y,zcoord);
         List<string> dp = new List<string>();
-        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(c18x, c18y, c18z, c18spot, dp);
+        sp.startSpotDrawer(c18x, c18y, c18z, c18spot, dp);
     }
 
-    //##################################################
-    //Tomo-seq
+    /// <summary>
+    /// Tomo-Seq - This function reads the required datapaths for the tomo-seq data and generates a grid accordingly, data spots are removed based on their expression value of the 3d reconstructed matrix file
+    /// </summary>
     private void startTomoSeq()
     {
-        Camera.main.transform.position = new Vector3(40, 85, 40);
-        Camera.main.transform.eulerAngles = new Vector3(65, 210, -70);
-
         // transfer from pipeline
         string ap_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_AP.csv";
         string vd_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_VD.csv";
@@ -351,18 +366,11 @@ public class DataTransferManager : MonoBehaviour
         scriptHolder.GetComponent<TomoSeqDrawer>().generateGrid();
     }
 
-    public List<string> stomicsSpotId = new List<string>();
-    public List<string> stomicsGeneNames = new List<string>();
-    public List<float> stomicsX = new List<float>();
-    public List<float> stomicsY = new List<float>();
-    public List<float> stomicsZ = new List<float>();
-    private FileReader fr;
-
-    //##################################################
-    //STOmics
+    /// <summary>
+    /// STOmics - This function starts the STOmics process, reads all related datapaths and creates the required lists to call the SpotDrawer script
+    /// </summary>
     private void startStomics()
     {     
-        fr = gameObject.GetComponent<FileReader>();
         // Old: not transposed file, bad performance
        // string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\1_Include\\L3_b_count_normal_stereoseq.h5ad";
         // Original files paths
@@ -373,32 +381,46 @@ public class DataTransferManager : MonoBehaviour
         //stomicsZ = fr.readH5Float(datapath, "obs/new_z");
 
         //Pipeline transposed paths files:
+        List<string> dp = new List<string>();
         string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad";
         stomicsSpotId = fr.readH5StringVar(datapath, "var/_index", stomicsSpotId);
         stomicsGeneNames = fr.readH5StringVar(datapath, "obs/geneID", stomicsGeneNames);
         stomicsX = fr.readH5Float(datapath, "var/new_x");
         stomicsY = fr.readH5Float(datapath, "var/new_y");
         stomicsZ = fr.readH5Float(datapath, "var/new_z");
-        Debug.Log(stomicsSpotId.Count);
-        adjustCamera(stomicsX.Min(),stomicsX.Max(),stomicsY.Min(),stomicsY.Max(),stomicsZ.Min(), new Vector3(0,0,0));
-        scriptHolder.GetComponent<SpotDrawer>().setStomicsPath(datapath);
 
-        List<string> dp = new List<string>();
-        scriptHolder.GetComponent<SpotDrawer>().startSpotDrawer(stomicsX, stomicsY, stomicsZ, stomicsSpotId, dp);
+        adjustCamera(stomicsX.Min(),stomicsX.Max(),stomicsY.Min(),stomicsY.Max(),stomicsZ.Min(), new Vector3(0,0,0));
+        sp.setStomicsPath(datapath);
+
+        sp.startSpotDrawer(stomicsX, stomicsY, stomicsZ, stomicsSpotId, dp);
     }
 
+    /// <summary>
+    /// Return the id of datasetNameToCheck within the merged list of datasets
+    /// </summary>
+    /// <param name="datasetNameToCheck">The name of the dataset to check it's position</param>
+    /// <returns></returns>
     public int identifyDatasetInt(string datasetNameToCheck)
     {
         return hdf5datapaths.IndexOf(datasetNameToCheck);
     }
 
-    public void adjustCamera(float W_min, float W_max, float H_min, float H_max, float Z, Vector3 rotation)
+    /// <summary>
+    /// Adjusts the camera relative to the dataset visualised
+    /// </summary>
+    /// <param name="W_min">Minimum width anchor point of the visualised dataset</param>
+    /// <param name="W_max">Maximum width anchor point of the visualised dataset</param>
+    /// <param name="H_min">Minimum height anchor point of the visualised dataset</param>
+    /// <param name="H_max">Maximum height anchor point of the visualised dataset</param>
+    /// <param name="depthValue">Minimum depth of the dataset as closest point to the camera</param>
+    /// <param name="rotation">Rotation value to the camera, usual new Vector3(0,0,0)</param>
+    public void adjustCamera(float W_min, float W_max, float H_min, float H_max, float depthValue, Vector3 rotation)
     {
         var x = (W_min + W_max) / 2; 
         var y = (H_min + H_max) / 2;
-        Z = Math.Max((Math.Abs(H_min - H_max)), (Math.Abs(W_min - W_max)));
+        depthValue = Math.Max((Math.Abs(H_min - H_max)), (Math.Abs(W_min - W_max)));
 
-        Camera.main.transform.position = new Vector3(x, y, -Z);
+        Camera.main.transform.position = new Vector3(x, y, -depthValue);
         Camera.main.transform.eulerAngles = rotation;
     }
 }

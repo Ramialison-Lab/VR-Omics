@@ -37,18 +37,18 @@ public class CSVReader : MonoBehaviour
         searchGene(dp, geneNameDictionary[x].IndexOf(gn), gn);
     }
 
-    public void createSpotList(string dp, int x)
+    public void createSpotList(string dp)
     {
         datapath = dp.Replace(dp.Split('\\').Last(), "") + "test2Csv.csv";
-        StartCoroutine(createSpotDic(datapath, x));
+        StartCoroutine(createSpotDic(datapath));
     }
 
-    public void createGeneLists(string dp, int count)
+    public void createGeneLists(string dp)
     {
         datapath = dp.Replace(dp.Split('\\').Last(), "") + "Original.csv";
-        StartCoroutine(createGeneDic(datapath, count));
+        StartCoroutine(createGeneDic(datapath));
     }
-    IEnumerator createSpotDic(string dp, int count)
+    IEnumerator createSpotDic(string dp)
     {
         string[] lines = File.ReadAllLines(dp);
         lines = lines.Skip(1).ToArray();
@@ -66,7 +66,7 @@ public class CSVReader : MonoBehaviour
         return SpotNameDictionary;
     }
 
-    IEnumerator createGeneDic(string dp, int count)
+    IEnumerator createGeneDic(string dp)
     {
         StreamReader sr = new StreamReader(dp);
         geneNameDictionary.Add(sr.ReadLine().Split(',').ToList<string>());

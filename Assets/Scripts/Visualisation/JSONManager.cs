@@ -18,10 +18,7 @@ public class JSONManager : MonoBehaviour
             string end = ", \"fiducial";
             scaleFactor = float.Parse(jsonString.Substring(jsonString.IndexOf(target) + target.Length, jsonString.IndexOf(end) - (jsonString.IndexOf("tissue_hires_scalef\": ") + target.Length)));
         }
-        catch (Exception e)
-        {
-
-        }
+        catch (Exception) {}
         return scaleFactor;
 
     }

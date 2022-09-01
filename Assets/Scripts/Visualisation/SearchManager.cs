@@ -76,7 +76,7 @@ public class SearchManager : MonoBehaviour
             //geneNames = geneNames.Distinct().ToList();
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
         }
-        else if (gameObject.GetComponent<DataTransferManager>().stomics)
+        else if (gameObject.GetComponent<DataTransferManager>().xenium)
         {
             geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().XeniumGeneNames);
             sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);

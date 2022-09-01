@@ -77,7 +77,7 @@ public class TomoSeqDrawer : MonoBehaviour
 
         foreach (GameObject go in deactivePanels)
         {
-            try { go.SetActive(false); } catch(Exception e) { }
+            try { go.SetActive(false); } catch (Exception) {}
         }
     }
 
@@ -86,7 +86,7 @@ public class TomoSeqDrawer : MonoBehaviour
         if (start)
         {
             var symbolTransform = symbolSelect.transform;
-            
+
             Matrix4x4 matrix;
             var main = Camera.main;
             for (int i = 0; i < batches.Count; i++)
@@ -102,7 +102,7 @@ public class TomoSeqDrawer : MonoBehaviour
                         // evaluate expression value with colorgradient
                         rc = colVals[i];
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         rc = Color.clear;
                     };
@@ -115,6 +115,7 @@ public class TomoSeqDrawer : MonoBehaviour
 
                     if (colVals[i] != Color.clear)
                     {
+
                         matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
                         Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, true, true);
                     }
@@ -129,6 +130,7 @@ public class TomoSeqDrawer : MonoBehaviour
 
         if (minTresh != minTreshRef)
         {
+
             setColors(normalisedVal);
         }
     }
@@ -235,7 +237,6 @@ public class TomoSeqDrawer : MonoBehaviour
         startSpotDrawer(tempx, tempy, tempz);
         gameObject.GetComponent<DataTransferManager>().adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(90,0,0));
 
-
         List<float> nonZero = new List<float>();
 
         foreach (float x in RipList)
@@ -252,7 +253,6 @@ public class TomoSeqDrawer : MonoBehaviour
         var range = (double)(max - min);
 
         normalisedVal = nonZero.Select(i => 1 * (i - min) / range).ToList();
-
         setColors(normalisedVal);
 
     }
@@ -322,7 +322,7 @@ public class TomoSeqDrawer : MonoBehaviour
             StartCoroutine(searchTomo(APpos, VDpos, LRPos));
 
         }
-        catch (Exception e)
+        catch (Exception)
         {
             Debug.Log("At least one of the data files does not contain searched gene");
             return;

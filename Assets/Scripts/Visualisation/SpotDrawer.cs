@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Linq;
 
 public class SpotDrawer : MonoBehaviour
 {
@@ -78,12 +79,12 @@ public class SpotDrawer : MonoBehaviour
         // Update: draws the spots each frame
         if (start || visium)
         {
+            Color rc = new Color();
             int i = 0;
             foreach(MeshWrapper wrap in batches)
             {
                 // draw all spots from the batches list
                 mpb = new MaterialPropertyBlock();
-                Color rc = Color.clear;
                 if (firstSelect)
                 {
                     // check if spots are selected with lasso tool
@@ -102,15 +103,19 @@ public class SpotDrawer : MonoBehaviour
                             rc = colVals[i];
                             wrap.expVal = (float)normalised[i];
                         }
-                        catch (Exception e) { rc = Color.clear; };
+                        catch (Exception) { rc = Color.clear; };
                     }
                 }
 
-                mpb.SetColor("_Color", rc);
+                if (wrap.expVal > minTresh){
+                    mpb.SetColor("_Color", rc);
                     //draw spots by graphic
-                matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                    matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+                }                 
+                
                 i++;
+
             }
         }
 
@@ -134,7 +139,7 @@ public class SpotDrawer : MonoBehaviour
                             rc = colValsCopy[i];
                             wrap.expVal = (float)normalisedCopy[i];
                         }
-                        catch (Exception e) {rc = Color.clear; };
+                        catch (Exception) {rc = Color.clear; };
                     }
                     // if spot not found
                     else { rc = Color.clear; }
@@ -146,7 +151,6 @@ public class SpotDrawer : MonoBehaviour
                     else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier - batches.Count)) rc = new Color(0, 255, 255, 1);
 
                     mpb.SetColor("_Color", rc);
-
                 }
                 {
                     matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 100 , wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
@@ -236,14 +240,21 @@ public class SpotDrawer : MonoBehaviour
     {
         batchCounter = 0;
     }
+
+    private bool showGenesExpressed= false;
+    
+    public void toggleShowGenesExpressed()
+    {
+        showGenesExpressed = !showGenesExpressed;
+    }
+
     // set new List of expression values
     public void setColors(List<double> normalise)
     {
         firstSelect = true;
-
+        Debug.Log(normalise.Max());
         if (!colourcopy)
-        {
-            
+        { 
             normalised.AddRange(normalise);
             newColours = true;
             colVals.Clear();
@@ -272,6 +283,11 @@ public class SpotDrawer : MonoBehaviour
     // calculate color based on expression value
     private Color colorGradient(int i, List<double> normValues)
     {
+        if (showGenesExpressed)
+        {
+            if (normValues[i] > minTresh) return Color.green;
+            else return Color.clear;
+        }
 
         if ((float)normValues[i] < minTresh)
         {
@@ -322,7 +338,6 @@ public class SpotDrawer : MonoBehaviour
             return gradient.Evaluate((float)normValues[i]);
         }
     }
-
 
     public void sideBySide()
     {
@@ -508,13 +523,12 @@ public class SpotDrawer : MonoBehaviour
             string sname = spotBarcodes[i];
             string datasetn = stomicsPath;
             try { datasetn = dataSet[i]; }
-            catch(Exception e) { }
-
+            catch (Exception) {}
             batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x,y).ToString() ,spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
             count++;
         }
 
-        if (!gameObject.GetComponent<DataTransferManager>().xenium || !gameObject.GetComponent<DataTransferManager>().merfish)
+        if (!gameObject.GetComponent<DataTransferManager>().xenium || !gameObject.GetComponent<DataTransferManager>().merfish || !gameObject.GetComponent<DataTransferManager>().stomics)
         {
             for (int i = 0; i < xcoords.Count; i++)
             {
@@ -527,7 +541,7 @@ public class SpotDrawer : MonoBehaviour
                 string sname = spotBarcodes[i];
                 string datasetn = stomicsPath;
                 try { datasetn = dataSet[i]; }
-                catch (Exception e) { }
+                catch (Exception) {}
 
                 batchesCopy.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
                 count++;
@@ -614,12 +628,12 @@ public class SpotDrawer : MonoBehaviour
             if(colorScheme[offset+4] == "Please choose")
             {
                 try { ngck[i].color = new Color(int.Parse(colorScheme[offset + 1]), int.Parse(colorScheme[offset + 2]) / rgb, int.Parse(colorScheme[offset + 3]) / rgb); }
-                catch(Exception e) {
+                catch(Exception) {
                     try
                     {
                         ngck[i].color = ngck[i - 1].color;
                     }
-                    catch (Exception de)
+                    catch (Exception)
                     {
                         ngck[i].color = Color.white;
                     }
@@ -737,7 +751,8 @@ public class SpotDrawer : MonoBehaviour
                             highlightIdentifier2.Remove(mw.uniqueIdentifier);
                             highlightIdentifier3.Remove(mw.uniqueIdentifier);
                             highlightIdentifier4.Remove(mw.uniqueIdentifier);
-                        }catch(Exception e) { }
+                        }
+                        catch (Exception) {}
                         switch (active) {
                             case 0:
                                 if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
@@ -790,7 +805,7 @@ public class SpotDrawer : MonoBehaviour
                     {
                         GameObject.Find("SideMenu").GetComponent<SideMenuManager>().setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location, mw.expVal);
                     }
-                    catch (Exception e) { };
+                    catch (Exception) {}
                 }
             }
 
@@ -808,7 +823,7 @@ public class SpotDrawer : MonoBehaviour
                             highlightIdentifier3.Remove(mw.uniqueIdentifier);
                             highlightIdentifier4.Remove(mw.uniqueIdentifier);
                         }
-                        catch (Exception e) { }
+                        catch (Exception) {}
                     }
 
                     else if(addToggle)
@@ -849,7 +864,7 @@ public class SpotDrawer : MonoBehaviour
                 {
                     GameObject.Find("SideMenu").GetComponent<SideMenuManager>().setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location, mw.expVal);
                 }
-                catch (Exception e) { };
+                catch (Exception) {}
             }
         }
     }

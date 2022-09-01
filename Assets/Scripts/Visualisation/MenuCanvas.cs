@@ -83,6 +83,7 @@ public class MenuCanvas : MonoBehaviour
     public void setColorMinTreshold(GameObject slider)
     {
         sd.setMinTresh(slider.GetComponent<Slider>().value);
+        GameObject.Find("TresholdText").GetComponent<TMP_Text>().text = "Min: " + slider.GetComponent<Slider>().value.ToString("0.00") + "%";
 
     }
 
@@ -91,12 +92,15 @@ public class MenuCanvas : MonoBehaviour
         sd.setMaxTresh(slider.GetComponent<Slider>().value);
     }
 
-    public GameObject sp;
+    public GameObject sp;        
+    Vector3 initSize = new Vector3(0,0,0);
+
+    private bool symbolInstance = false;
     public void setSphereSize(GameObject slider)
     {
+
         Slider sl = slider.GetComponent<Slider>();
         GameObject go;
-
         if (dfm.tomoseq)
         {
             go = GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().getSelectedSymbol();
@@ -105,7 +109,14 @@ public class MenuCanvas : MonoBehaviour
         {
             go = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().getSelectedSymbol();
         }
-        go.transform.localScale = new Vector3(sl.value * 10, sl.value * 10, sl.value * 10);
+        Debug.Log(go.name);
+
+        if (!symbolInstance)
+        {
+            initSize = go.transform.localScale;
+            symbolInstance = true;
+        }
+        go.transform.localScale = new Vector3(sl.value * initSize.x, sl.value * initSize.y, sl.value * initSize.z) ;
     }
 
     public void expandDataset(GameObject slider)
@@ -196,7 +207,7 @@ public class MenuCanvas : MonoBehaviour
 
     public void switchSymbolMenu()
     {
-        if (colourPanel.active) { 
+        if (colourPanel.activeSelf) { 
             colourPanel.SetActive(false);
             symbolPanel.SetActive(true);
         }
