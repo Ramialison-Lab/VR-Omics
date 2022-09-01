@@ -28,21 +28,14 @@ public class SpotDrawer : MonoBehaviour
     public GameObject cubeSymb;
     public GameObject diamondSymb;
     public GameObject MC;
-    private FileReader filereader;
     private int count = 0;
     private int delta = 0;
     private bool firstSelect = false;
     private bool start = false;
-    private bool newColours = true;
     private bool newColoursCopy = false;
-    private bool slicesMoved = false;
-    private string datasetMove;
     public float minTresh = 0f;
     public float maxTresh = 0f;    
     public float clickoffset = 0.25f;
-    private float xoffsetMove;
-    private float yoffsetMove;
-    private float zoffsetMove;
     private float cube_z;
     public bool visium =false;
     private bool copy = false;
@@ -87,15 +80,7 @@ public class SpotDrawer : MonoBehaviour
                 mpb = new MaterialPropertyBlock();
                 if (firstSelect)
                 {
-                    // check if spots are selected with lasso tool
-                    //if (highlightIdentifyUsed)
-                    //{
-                        if (highlightIdentifier1.Contains(wrap.uniqueIdentifier)) rc = new Color(255, 0, 0, 1);
-                        else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 0, 1);
-                        else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 0, 255, 1);
-                        else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 255, 1);
-                  // }
-                    else
+
                     {
                         try
                         {
@@ -105,9 +90,26 @@ public class SpotDrawer : MonoBehaviour
                         }
                         catch (Exception) { rc = Color.clear; };
                     }
+
+                    // check if spots are selected with lasso tool
+                    if (highlightIdentifyUsed)
+                    {
+                        if (highlightIdentifier1.Contains(wrap.uniqueIdentifier)) { rc = new Color(255, 0, 0, 1); }
+                        else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 0, 1);
+                        else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 0, 255, 1);
+                        else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 255, 1);
+                    }
+                }
+                else
+                {
+                    rc = Color.grey;
+                    mpb.SetColor("_Color", rc);
+                    //draw spots by graphic
+                    matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
                 }
 
-                if (wrap.expVal > minTresh){
+                if (wrap.expVal >= minTresh){
                     mpb.SetColor("_Color", rc);
                     //draw spots by graphic
                     matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
@@ -252,11 +254,9 @@ public class SpotDrawer : MonoBehaviour
     public void setColors(List<double> normalise)
     {
         firstSelect = true;
-        Debug.Log(normalise.Max());
         if (!colourcopy)
         { 
             normalised.AddRange(normalise);
-            newColours = true;
             colVals.Clear();
             if (normalise.Count < batches.Count) batchCounter = batchCounter + normalise.Count;
             else batchCounter = batches.Count;
@@ -519,6 +519,7 @@ public class SpotDrawer : MonoBehaviour
                  z = zcoords[i];
             }
 
+            colVals.Add(Color.grey);
             //reading out the next spotname and datasetname
             string sname = spotBarcodes[i];
             string datasetn = stomicsPath;
@@ -757,45 +758,26 @@ public class SpotDrawer : MonoBehaviour
                             case 0:
                                 if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
                                 {
-                                    newColours = true;
                                     highlightIdentifier1.Add(mw.uniqueIdentifier);
-                                }
-                                else
-                                {
-                                    newColours = true;
                                 }
                                 break;                            
                             case 1:
                                 if (!highlightIdentifier2.Contains(mw.uniqueIdentifier))
                                 {
-                                    newColours = true;
                                     highlightIdentifier2.Add(mw.uniqueIdentifier);
                                 }
-                                else
-                                {
-                                    newColours = true;
-                                }
+
                                 break;                          
                             case 2:
                                 if (!highlightIdentifier3.Contains(mw.uniqueIdentifier))
                                 {
-                                    newColours = true;
                                     highlightIdentifier3.Add(mw.uniqueIdentifier);
-                                }
-                                else
-                                {
-                                    newColours = true;
                                 }
                                 break;                           
                             case 3:
                                 if (!highlightIdentifier4.Contains(mw.uniqueIdentifier))
                                 {
-                                    newColours = true;
-                                    highlightIdentifier4.Add(mw.uniqueIdentifier);
-                                }
-                                else
-                                {
-                                    newColours = true;
+                                    highlightIdentifier4.Add(mw.uniqueIdentifier); 
                                 }
                                 break;
                         }
@@ -828,33 +810,37 @@ public class SpotDrawer : MonoBehaviour
 
                     else if(addToggle)
                     {
-                        newColours = true;
-                        highlightIdentifyUsed = true;
-
                         switch (active)
                         {
                             case 0:
                                 if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
                                 {
                                     highlightIdentifier1.Add(mw.uniqueIdentifier);
+                                    highlightIdentifyUsed = true;
                                 }
                                 break;
                             case 1:
                                 if (!highlightIdentifier2.Contains(mw.uniqueIdentifier))
                                 {
                                     highlightIdentifier2.Add(mw.uniqueIdentifier);
+                                    highlightIdentifyUsed = true;
+
                                 }
                                 break;
                             case 2:
                                 if (!highlightIdentifier3.Contains(mw.uniqueIdentifier))
                                 {
                                     highlightIdentifier3.Add(mw.uniqueIdentifier);
+                                    highlightIdentifyUsed = true;
+
                                 }
                                 break;
                             case 3:
                                 if (!highlightIdentifier4.Contains(mw.uniqueIdentifier))
                                 {
                                     highlightIdentifier4.Add(mw.uniqueIdentifier);
+                                    highlightIdentifyUsed = true;
+
                                 }
                                 break;
                         }
@@ -896,12 +882,6 @@ public class SpotDrawer : MonoBehaviour
     // moving slices based on the movement of the colider slice
     public void moveSlice(float xoffset, float yoffset, float zoffset, string dN, float z)
     {
-        slicesMoved = true;
-        xoffsetMove = xoffset;
-        yoffsetMove = yoffset;
-        zoffsetMove = zoffset;
-        datasetMove = dN;
-
         foreach (MeshWrapper mw in batches)
         {
             if (mw.datasetName == dN && mw.location.z == z)

@@ -12,6 +12,7 @@ public class MenuCanvas : MonoBehaviour
     private SpotDrawer sd;
     public bool locked = true;
     public bool lasso = false;
+    private bool darkmode = false;
     public GameObject sidemenu;
     private void Start()
     {
@@ -20,6 +21,7 @@ public class MenuCanvas : MonoBehaviour
         dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
         sd.setMinTresh(0f);
         sd.setMaxTresh(1f);
+        darkMode();
     }
 
     public void unlockRotation()
@@ -37,7 +39,6 @@ public class MenuCanvas : MonoBehaviour
 
     }
 
-    private bool darkmode = false;
     public void darkMode()
     {
         if (!darkmode)

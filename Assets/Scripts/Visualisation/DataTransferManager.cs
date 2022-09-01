@@ -138,19 +138,15 @@ public class DataTransferManager : MonoBehaviour
     {
         ////TBD! Comment out following lines to transfer data from pipeline
         //List<string> datapaths = scriptHolderPipeline.GetComponent<UIManager>().getDatapathList();
-
         //foreach (string data in datapaths)
         //{
         //    hdf5datapaths.Add(data + "\\" + data.Split('\\').Last() + "_scanpy.hdf5");
         //}
-
-        //####################################
-        //TBD - Testdatasets for Denis local - delete following lines
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
 
         addHAndEImg = true;
         List<string> shortList = new List<string>();
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
        
         //disable copy features for more than one visium slice
         if (hdf5datapaths.Count > 1)
