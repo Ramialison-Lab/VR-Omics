@@ -83,7 +83,7 @@ public class DataTransferManager : MonoBehaviour
 
         if (visium)
         {
-            sp.setVisiumBool(visium);
+            sp.visium = visium;
             if (c18_visium) startC18();
             else startVisium();
         }
@@ -99,19 +99,19 @@ public class DataTransferManager : MonoBehaviour
         if (df.visium)
         {
             visium = true;
-            sp.setVisiumBool(visium);
+            sp.visium = visium;
             startVisium();
         }
         else if (df.visiumMultiple)
         {
             visium = true;
-            sp.setVisiumBool(visium);
+            sp.visium = visium;
             startVisium();
         }
         else if (df.c18)
         {
             visium = true;
-            sp.setVisiumBool(visium);
+            sp.visium = visium;
             startC18();
         }
         else if (df.tomoseq)
@@ -128,6 +128,11 @@ public class DataTransferManager : MonoBehaviour
         {
             xenium = true;
             startXenium();
+        }
+        else if (df.merfish)
+        {
+            merfish = true;
+            startMerfish();
         }
     }
 
@@ -386,7 +391,7 @@ public class DataTransferManager : MonoBehaviour
         stomicsZ = fr.readH5Float(datapath, "var/new_z");
 
         adjustCamera(stomicsX.Min(),stomicsX.Max(),stomicsY.Min(),stomicsY.Max(),stomicsZ.Min(), new Vector3(0,0,0));
-        sp.setStomicsPath(datapath);
+        sp.stomicsPath = datapath;
 
         sp.startSpotDrawer(stomicsX, stomicsY, stomicsZ, stomicsSpotId, dp);
     }

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
-using System.Linq;
+using UnityEngine;
 
 public class SpotDrawer : MonoBehaviour
 {
@@ -12,7 +10,7 @@ public class SpotDrawer : MonoBehaviour
     public List<double> normalisedCopy;
     public List<Color> colVals = new List<Color>();
     public List<Color> colValsCopy = new List<Color>();
-    
+
     //batches
     private List<MeshWrapper> batches = new List<MeshWrapper>();
     private List<MeshWrapper> batchesCopy = new List<MeshWrapper>();
@@ -23,7 +21,7 @@ public class SpotDrawer : MonoBehaviour
 
     //MeshDrawer components
     public Material matUsed;
-    
+
     //Access variables
     private SearchManager sm;
     public TMP_Dropdown dd;
@@ -39,6 +37,7 @@ public class SpotDrawer : MonoBehaviour
     public GameObject cubeSymb;
     public GameObject diamondSymb;
     public GameObject MainMenuPanel;
+    public GameObject mergePanel;
 
     //Rotation variables
     Vector3 currentEulerAngles;
@@ -75,18 +74,21 @@ public class SpotDrawer : MonoBehaviour
 
     //Other
     public float minTresh = 0f;
-    public float maxTresh = 0f;    
+    public float maxTresh = 0f;
     public float clickoffset = 0.25f;
-    public bool visium =false;
+    public bool visium = false;
     private bool showGenesExpressed = false;
     private string lastGene;
     private string lastGeneCopy;
     public string stomicsPath = "";
     public List<GameObject> activepanels = new List<GameObject>(4);
 
+
+    /// <summary>
+    /// structure for each cube → spot, storing its mesh, the location read from the hdf5, it original location, the unique spotname, which dataset it comes from for the depth information, and a unique ID
+    /// </summary>
     class MeshWrapper
     {
-        //structure for each cube → spot, storing its mesh, the location read from the hdf5, it original location, the unique spotname, which dataset it comes from for the depth information, and a unique ID
         public Mesh mesh;
         public Vector3 location;
         public Vector3 origin;
@@ -109,18 +111,17 @@ public class SpotDrawer : MonoBehaviour
 
     private void Update()
     {
-        // Update: draws the spots each frame
+        // Update: draws the spots/cells stored in batches
         if (start || visium)
         {
             Color rc = new Color();
             int i = 0;
-            foreach(MeshWrapper wrap in batches)
+            foreach (MeshWrapper wrap in batches)
             {
                 // draw all spots from the batches list
                 mpb = new MaterialPropertyBlock();
-                if (firstSelect||highlightIdentifyUsed)
+                if (firstSelect || highlightIdentifyUsed)
                 {
-
                     {
                         try
                         {
@@ -133,13 +134,12 @@ public class SpotDrawer : MonoBehaviour
 
                     // check if spots are selected with lasso tool
                     if (highlightIdentifyUsed)
-                    {                        
-                        if(!firstSelect) rc = Color.grey;
+                    {
+                        if (!firstSelect) rc = Color.grey;
                         if (highlightIdentifier1.Contains(wrap.uniqueIdentifier)) { rc = new Color(255, 0, 0, 1); }
                         else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 0, 1);
                         else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 0, 255, 1);
                         else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 255, 1);
-
                     }
                 }
                 else
@@ -150,14 +150,13 @@ public class SpotDrawer : MonoBehaviour
                     matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
                     Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
                 }
-
-                if (wrap.expVal >= minTresh){
+                if (wrap.expVal >= minTresh)
+                {
                     mpb.SetColor("_Color", rc);
                     //draw spots by graphic
                     matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
                     Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                }                 
-                
+                }
                 i++;
 
             }
@@ -183,7 +182,7 @@ public class SpotDrawer : MonoBehaviour
                             rc = colValsCopy[i];
                             wrap.expVal = (float)normalisedCopy[i];
                         }
-                        catch (Exception) {rc = Color.clear; };
+                        catch (Exception) { rc = Color.clear; };
                     }
                     // if spot not found
                     else { rc = Color.clear; }
@@ -197,7 +196,7 @@ public class SpotDrawer : MonoBehaviour
                     mpb.SetColor("_Color", rc);
                 }
                 {
-                    matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 100 , wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+                    matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 100, wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
                     Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
                 }
                 i++;
@@ -205,115 +204,91 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
-    public void ReadSpecial()
+
+    /// <summary>
+    /// Initalise the SpotDrawer script, creating batches according to technique and read out information
+    /// </summary>
+    /// <param name="xcoords">List of X coordinates</param>
+    /// <param name="ycoords">List of Y coordinates</param>
+    /// <param name="zcoords">List of Z coordinates</param>
+    /// <param name="spotBarcodes">List of all barcode names</param>
+    /// <param name="dataSet">List of dataset names</param>
+    public void startSpotDrawer(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
     {
-        // TBD only working for 
-        switch (dd.value)
+        //Default selection of cube for better performance
+        if (dfm.xenium) symbolSelect = cubeSymb;
+        else if (dfm.merfish) symbolSelect = cubeSymb;
+        else if (dfm.stomics) symbolSelect = cubeSymb;
+        else symbolSelect = sphereSymb;
+        // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
+        // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
+        // dataset is the name of the dataset dor ech slice
+        // for each coordinate passed
+        for (int i = 0; i < xcoords.Count; i++)
         {
-            case 1:
-                normalised.Clear();
-                sm.querySbyte("obs/clusters");
-                break;
-            case 2: 
-                normalised.Clear();
-                sm.query64bitFloat("obs/log1p_n_genes_by_counts");
-                break;
-            case 3: 
-                normalised.Clear();
-                sm.query32bitFloat("obs/log1p_total_counts");
-                break;            
-            case 4: 
-                normalised.Clear();
-                sm.query32bitFloat("obs/log1p_total_counts_mt");
-                break;            
-            case 5: 
-                normalised.Clear();
-                sm.query32bitFloat("obs/n_counts");
-                break;            
-            case 6: 
-                normalised.Clear();
-                sm.queryInt("obs/n_genes_by_counts");
-                break;
-            case 7:
-                normalised.Clear();
-                sm.query64bitFloat("obs/pct_counts_in_top_100_genes");
-                break;            
-            case 8:
-                normalised.Clear();
-                sm.query64bitFloat("obs/pct_counts_in_top_200_genes");
-                break;
-            case 9:
-                normalised.Clear();
-                sm.query64bitFloat("obs/pct_counts_in_top_500_genes");
-                break;
-            case 10:
-                normalised.Clear();
-                sm.query64bitFloat("obs/pct_counts_in_top_50_genes");
-                break;
-            case 11:
-                normalised.Clear();
-                sm.query32bitFloat("obs/pct_counts_mt");
-                break;
-            case 12:
-                normalised.Clear();
-                sm.query64bitFloat("obs/total_counts");
-                break;
-            case 13:
-                normalised.Clear();
-                sm.query64bitFloat("obs/total_counts_mt");
-                break;
-        }
-    }
+            float x;
+            float y;
+            float z;
 
-    public void lastGeneName(string gn)
-    {
-        if (!colourcopy) { lastGene = gn; }
-        else { lastGeneCopy = gn; }
-
-        if(!colourcopy) geneSelection.text = "Original: " + lastGene;
-        else geneSelection.text = "Original: " + lastGene + ",\n Clone: " + lastGeneCopy;
-    }
-
-    public void clearBatchcounter()
-    {
-        batchCounter = 0;
-    }
-    
-    public void toggleShowGenesExpressed()
-    {
-        showGenesExpressed = !showGenesExpressed;
-    }
-
-    // set new List of expression values
-    public void setColors(List<double> normalise)
-    {
-        firstSelect = true;
-        if (!colourcopy)
-        { 
-            normalised.AddRange(normalise);
-            colVals.Clear();
-            if (normalise.Count < batches.Count) batchCounter = batchCounter + normalise.Count;
-            else batchCounter = batches.Count;
-            for (int i = 0; i < batchCounter; i++)
+            // reading out the next 3D coordinate from the list
+            if (dfm.xenium || dfm.merfish)
             {
-                colVals.Add(colorGradient(i, normalised));
+                x = xcoords[i] / 10;
+                y = ycoords[i] / 10;
+                z = zcoords[i];
+            }
+            else
+            {
+                x = xcoords[i];
+                y = ycoords[i];
+                z = zcoords[i];
+            }
+
+            //reading out the next spotname and datasetname
+            string sname = spotBarcodes[i];
+            string datasetn = stomicsPath;
+            try { datasetn = dataSet[i]; }
+            catch (Exception) { }
+            batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount });
+            startSpotdrawerCount++;
+        }
+
+        if (!dfm.xenium || !dfm.merfish || !dfm.stomics)
+        {
+            for (int i = 0; i < xcoords.Count; i++)
+            {
+                // reading out the next 3D coordinate from the list
+                float x = xcoords[i];
+                float y = ycoords[i];
+                float z = zcoords[i];
+
+                //reading out the next spotname and datasetname
+                string sname = spotBarcodes[i];
+                string datasetn = stomicsPath;
+                try { datasetn = dataSet[i]; }
+                catch (Exception) { }
+
+                batchesCopy.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount });
+                startSpotdrawerCount++;
             }
         }
-        else if(copy && colourcopy)
-        {
-            normalisedCopy.Clear();
-            normalisedCopy.AddRange(normalise);
-            newColoursCopy = true;
-            colValsCopy.Clear();
 
-            for (int i = 0; i < batches.Count; i++)
-            {
-                colValsCopy.Add(colorGradient(i, normalisedCopy));
-            }
-        }
+        //indicates that the spots are ready
+        start = true;
+        prefillDropdown();
+        symbolTransform = symbolSelect.transform;
+        createColorGradientMenu();
     }
+    //###################################################################################################################
+    //Colour gradient functions
+    //→ Customise Color tool currently disabled
 
-    // calculate color based on expression value
+    /// <summary>
+    /// Translates normlaised expression values into a colour gradient
+    /// </summary>
+    /// <param name="i">Integer to indicate position in the normalised list</param>
+    /// <param name="normValues">List of all normalised Values</param>
+    /// <returns></returns>
     private Color colorGradient(int i, List<double> normValues)
     {
         if (showGenesExpressed)
@@ -372,218 +347,44 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
-    public void sideBySide()
+    /// <summary>
+    /// Navigates normalised values for the original or side-by-side copy to the color gradient evaluation
+    /// </summary>
+    /// <param name="normalise"></param>
+    public void setColors(List<double> normalise)
     {
-        copy = !copy;
-        if (!copy && newColoursCopy)
+        firstSelect = true;
+        if (!colourcopy)
         {
-            mergeContext();
-        }
-    }
-    public GameObject mergePanel;
-    private void mergeContext()
-    {
-        mergePanel.SetActive(true);
-    }
-
-    public void mergeSelection(bool merge)
-    {
-        var normCount = normalised.Count;
-        if (merge)
-        {
-            List<double> mergeList = new List<double>();
-            for(int i=0; i< normCount; i++)
+            normalised.AddRange(normalise);
+            colVals.Clear();
+            if (normalise.Count < batches.Count) batchCounter = batchCounter + normalise.Count;
+            else batchCounter = batches.Count;
+            for (int i = 0; i < batchCounter; i++)
             {
-                mergeList.Add((double)Mathf.Abs((float)(normalised[i] - normalisedCopy[i])));
-            }
-            colourcopy = false;
-            setColors(mergeList);
-            mergePanel.SetActive(false);
-            geneSelection.text = "Merged: " + lastGene + "\nwith " + lastGeneCopy;
-            colourcopy = true;
-        }
-        else mergePanel.SetActive(false);
-    }
-
-    public void colorMode()
-    {
-        colourcopy = !colourcopy;
-    }
-
-    public void setVisiumBool(bool visBool)
-    {
-        visium = visBool;
-    }
-
-    public void callDataForExport()
-    {
-        List<string> dataEntry = new List<string>();
-        List<MeshWrapper> group1 = new List<MeshWrapper>();
-        List<MeshWrapper> group2 = new List<MeshWrapper>();
-        List<MeshWrapper> group3 = new List<MeshWrapper>();
-        List<MeshWrapper> group4 = new List<MeshWrapper>();
-
-        foreach(MeshWrapper mw in batches)
-        {
-            if (highlightIdentifier1.Contains(mw.uniqueIdentifier)) group1.Add(mw);
-            if (highlightIdentifier2.Contains(mw.uniqueIdentifier)) group2.Add(mw);
-            if (highlightIdentifier3.Contains(mw.uniqueIdentifier)) group3.Add(mw);
-            if (highlightIdentifier4.Contains(mw.uniqueIdentifier)) group4.Add(mw);
-
-        }
-
-        foreach(MeshWrapper mw in group1)
-        {
-            dataEntry.Add(mw.spotname);
-            dataEntry.Add(mw.expVal.ToString());
-            dataEntry.Add(mw.loc);
-            dataEntry.Add(mw.datasetName);
-            dataEntry.Add(mw.uniqueIdentifier.ToString());
-
-            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
-            dataEntry.Clear();
-        }
-
-        this.gameObject.GetComponent<ExportManager>().newLine();
-
-        foreach(MeshWrapper mw in group2)
-        {
-            dataEntry.Add(mw.spotname);
-            dataEntry.Add(mw.expVal.ToString());
-            dataEntry.Add(mw.loc);
-            dataEntry.Add(mw.datasetName);
-            dataEntry.Add(mw.uniqueIdentifier.ToString());
-
-            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
-            dataEntry.Clear();
-        }
-
-        this.gameObject.GetComponent<ExportManager>().newLine();
-
-        foreach (MeshWrapper mw in group3)
-        {
-            dataEntry.Add(mw.spotname);
-            dataEntry.Add(mw.expVal.ToString());
-            dataEntry.Add(mw.loc);
-            dataEntry.Add(mw.datasetName);
-            dataEntry.Add(mw.uniqueIdentifier.ToString());
-
-            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
-            dataEntry.Clear();
-        }
-
-        this.gameObject.GetComponent<ExportManager>().newLine();
-
-        foreach (MeshWrapper mw in group4)
-        {
-            dataEntry.Add(mw.spotname);
-            dataEntry.Add(mw.expVal.ToString());
-            dataEntry.Add(mw.loc);
-            dataEntry.Add(mw.datasetName);
-            dataEntry.Add(mw.uniqueIdentifier.ToString());
-
-            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
-            dataEntry.Clear();
-        }
-
-        this.gameObject.GetComponent<ExportManager>().newLine();
-
-    }
-
-    public void setSymbol(string symbol)
-    {
-        switch (symbol)
-        {
-            case "Sphere": symbolSelect = sphereSymb;
-                            break;
-            case "Cube": symbolSelect = cubeSymb; 
-                break;
-            case "Diamond": symbolSelect = diamondSymb; 
-                break;
-        }
-
-        foreach(MeshWrapper mw in batches)
-        {
-            mw.mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
-        }
-    }
-
-    public void setStomicsPath(string stomPath)
-    {
-        stomicsPath = stomPath;
-    }
-
-    // a combined list of all datasets, that are read will be passed to this function to draw each spot
-    public void startSpotDrawer(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
-    {
-        //Default selection of cube for better performance
-        if (dfm.xenium) symbolSelect = cubeSymb;
-        else if (dfm.merfish) symbolSelect = cubeSymb;
-        else if (dfm.stomics) symbolSelect = cubeSymb;
-        else symbolSelect = sphereSymb;
-        // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
-        // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
-        // dataset is the name of the dataset dor ech slice
-        // for each coordinate passed
-        for (int i = 0; i < xcoords.Count; i++)
-        {
-            float x;
-            float y;
-            float z;
-              
-            // reading out the next 3D coordinate from the list
-            if (dfm.xenium || dfm.merfish)
-            {
-                 x = xcoords[i] / 10;
-                 y = ycoords[i] / 10;
-                 z = zcoords[i];
-            }
-            else
-            {
-                 x = xcoords[i];
-                 y = ycoords[i];
-                 z = zcoords[i];
-            }
-
-            //reading out the next spotname and datasetname
-            string sname = spotBarcodes[i];
-            string datasetn = stomicsPath;
-            try { datasetn = dataSet[i]; }
-            catch (Exception) {}
-            batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x,y).ToString() ,spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount });
-            startSpotdrawerCount++;
-        }
-
-        if (!dfm.xenium || !dfm.merfish || !dfm.stomics)
-        {
-            for (int i = 0; i < xcoords.Count; i++)
-            {
-                // reading out the next 3D coordinate from the list
-                float x = xcoords[i];
-                float y = ycoords[i];
-                float z = zcoords[i];
-
-                //reading out the next spotname and datasetname
-                string sname = spotBarcodes[i];
-                string datasetn = stomicsPath;
-                try { datasetn = dataSet[i]; }
-                catch (Exception) {}
-
-                batchesCopy.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount });
-                startSpotdrawerCount++;
+                colVals.Add(colorGradient(i, normalised));
             }
         }
+        else if (copy && colourcopy)
+        {
+            normalisedCopy.Clear();
+            normalisedCopy.AddRange(normalise);
+            newColoursCopy = true;
+            colValsCopy.Clear();
 
-        //indicates that the spots are ready
-        start = true;
-        prefillDropdown();
-        symbolTransform = symbolSelect.transform;
-        createColorGradientMenu();
+            for (int i = 0; i < batches.Count; i++)
+            {
+                colValsCopy.Add(colorGradient(i, normalisedCopy));
+            }
+        }
     }
 
+    /// <summary>
+    /// Creates the colour gradient for the heatmap gene expression 
+    /// </summary>
     public void createColorGradientMenu()
     {
-        foreach(GameObject go in colGradChilds)
+        foreach (GameObject go in colGradChilds)
         {
             Destroy(go);
         }
@@ -630,11 +431,19 @@ public class SpotDrawer : MonoBehaviour
             //}
         }
     }
+
+    /// <summary>
+    /// Change the customColour attribute to use the default colour pallets 
+    /// </summary>
     public void defaultColour()
     {
         customColour = false;
     }
-    
+
+    /// <summary>
+    /// Customise color scheme via settings page
+    /// </summary>
+    /// <param name="colorScheme"></param>
     public void setColourScheme(List<string> colorScheme)
     {
         int numberInt = colorScheme.Count / 5;
@@ -642,12 +451,13 @@ public class SpotDrawer : MonoBehaviour
         ngck = new GradientColorKey[numberInt];
         int offset = 0;
         float rgb = 255;
-        for (int i=0; i<numberInt; i++)
+        for (int i = 0; i < numberInt; i++)
         {
-            if(colorScheme[offset+4] == "Please choose")
+            if (colorScheme[offset + 4] == "Please choose")
             {
                 try { ngck[i].color = new Color(int.Parse(colorScheme[offset + 1]), int.Parse(colorScheme[offset + 2]) / rgb, int.Parse(colorScheme[offset + 3]) / rgb); }
-                catch(Exception) {
+                catch (Exception)
+                {
                     try
                     {
                         ngck[i].color = ngck[i - 1].color;
@@ -662,7 +472,7 @@ public class SpotDrawer : MonoBehaviour
             {
                 switch (colorScheme[offset + 4])
                 {
-                    case "Black": 
+                    case "Black":
                         ngck[i].color = Color.black;
                         break;
                     case "Blue":
@@ -703,14 +513,24 @@ public class SpotDrawer : MonoBehaviour
         createColorGradientMenu();
     }
 
-    // reset expressionValues for new search
+    /// <summary>
+    /// Resets the list of normalised expression values.
+    /// </summary>
     public void resetNormalisedValues()
     {
-        if(!colourcopy)
-        normalised.Clear();
+        if (!colourcopy)
+            normalised.Clear();
     }
 
-    // Spot identification and lasso -tool function
+    /// <summary>
+    /// toggles colormode for the side-byside feature
+    /// </summary>
+    public void colorMode()
+    {
+        colourcopy = !colourcopy;
+    }
+    //###################################################################################################################
+    //Spot identification and lasso tool function
 
     /// <summary>
     /// Turns the passThrough mode on or off that allows selecting spots that can be identified by the same coordinates in other datasets visualised
@@ -726,7 +546,7 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="go">The button of the group that needs to be activated. Uses it's name "0","1","2" ... to activate</param>
     public void setGroupActive(GameObject go)
     {
-        foreach(GameObject g in activepanels)
+        foreach (GameObject g in activepanels)
         {
             if (g.activeSelf) g.SetActive(false);
         }
@@ -874,7 +694,7 @@ public class SpotDrawer : MonoBehaviour
                     }
                 }
             }
-        }   
+        }
     }
 
     /// <summary>
@@ -941,6 +761,110 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
+    //###################################################################################################################
+    //Side-by-Side feature (Creating duplicate of the current slice to show different gene expression patterns next to each other
+
+    /// <summary>
+    /// Toogles the side-by-side feature
+    /// </summary>
+    public void sideBySide()
+    {
+        copy = !copy;
+        if (!copy && newColoursCopy)
+        {
+            mergePanel.SetActive(true);
+        }
+    }
+
+    /// <summary>
+    /// Function that merges the gene expression values of each slice in the side-by-side feature and tries to genearte a vector based difference value for each of the spots/cells
+    /// </summary>
+    /// <param name="merge"></param>
+    public void mergeSelection(bool merge)
+    {
+        var normCount = normalised.Count;
+        if (merge)
+        {
+            List<double> mergeList = new List<double>();
+            for (int i = 0; i < normCount; i++)
+            {
+                mergeList.Add((double)Mathf.Abs((float)(normalised[i] - normalisedCopy[i])));
+            }
+            colourcopy = false;
+            setColors(mergeList);
+            mergePanel.SetActive(false);
+            geneSelection.text = "Merged: " + lastGene + "\nwith " + lastGeneCopy;
+            colourcopy = true;
+        }
+        else mergePanel.SetActive(false);
+    }
+
+    //###################################################################################################################
+    //Special Read functions
+
+    /// <summary>
+    /// Used to read the special values from the hdf file
+    /// </summary>
+    public void ReadSpecial()
+    {
+        // TBD only working for 
+        switch (dd.value)
+        {
+            case 1:
+                normalised.Clear();
+                sm.querySbyte("obs/clusters");
+                break;
+            case 2:
+                normalised.Clear();
+                sm.query64bitFloat("obs/log1p_n_genes_by_counts");
+                break;
+            case 3:
+                normalised.Clear();
+                sm.query32bitFloat("obs/log1p_total_counts");
+                break;
+            case 4:
+                normalised.Clear();
+                sm.query32bitFloat("obs/log1p_total_counts_mt");
+                break;
+            case 5:
+                normalised.Clear();
+                sm.query32bitFloat("obs/n_counts");
+                break;
+            case 6:
+                normalised.Clear();
+                sm.queryInt("obs/n_genes_by_counts");
+                break;
+            case 7:
+                normalised.Clear();
+                sm.query64bitFloat("obs/pct_counts_in_top_100_genes");
+                break;
+            case 8:
+                normalised.Clear();
+                sm.query64bitFloat("obs/pct_counts_in_top_200_genes");
+                break;
+            case 9:
+                normalised.Clear();
+                sm.query64bitFloat("obs/pct_counts_in_top_500_genes");
+                break;
+            case 10:
+                normalised.Clear();
+                sm.query64bitFloat("obs/pct_counts_in_top_50_genes");
+                break;
+            case 11:
+                normalised.Clear();
+                sm.query32bitFloat("obs/pct_counts_mt");
+                break;
+            case 12:
+                normalised.Clear();
+                sm.query64bitFloat("obs/total_counts");
+                break;
+            case 13:
+                normalised.Clear();
+                sm.query64bitFloat("obs/total_counts_mt");
+                break;
+        }
+    }
+
     /// <summary>
     /// This function will fill the Dropdown menu with all available values readable from the hdf file based on the selected technology
     /// </summary>
@@ -966,18 +890,97 @@ public class SpotDrawer : MonoBehaviour
                 ddValues.Add("total_counts_mt");
 
                 dd.AddOptions(ddValues);
-
             }
         }
         else
         {
             dd.gameObject.SetActive(false);
-            //ddValues.Add("No options available");
-
-            //dd.AddOptions(ddValues);
         }
     }
+    //###################################################################################################################
+    //Export Feature
 
+    /// <summary>
+    /// Export function TBD
+    /// </summary>
+    public void callDataForExport()
+    {
+        List<string> dataEntry = new List<string>();
+        List<MeshWrapper> group1 = new List<MeshWrapper>();
+        List<MeshWrapper> group2 = new List<MeshWrapper>();
+        List<MeshWrapper> group3 = new List<MeshWrapper>();
+        List<MeshWrapper> group4 = new List<MeshWrapper>();
+
+        foreach (MeshWrapper mw in batches)
+        {
+            if (highlightIdentifier1.Contains(mw.uniqueIdentifier)) group1.Add(mw);
+            if (highlightIdentifier2.Contains(mw.uniqueIdentifier)) group2.Add(mw);
+            if (highlightIdentifier3.Contains(mw.uniqueIdentifier)) group3.Add(mw);
+            if (highlightIdentifier4.Contains(mw.uniqueIdentifier)) group4.Add(mw);
+
+        }
+
+        foreach (MeshWrapper mw in group1)
+        {
+            dataEntry.Add(mw.spotname);
+            dataEntry.Add(mw.expVal.ToString());
+            dataEntry.Add(mw.loc);
+            dataEntry.Add(mw.datasetName);
+            dataEntry.Add(mw.uniqueIdentifier.ToString());
+
+            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
+            dataEntry.Clear();
+        }
+
+        this.gameObject.GetComponent<ExportManager>().newLine();
+
+        foreach (MeshWrapper mw in group2)
+        {
+            dataEntry.Add(mw.spotname);
+            dataEntry.Add(mw.expVal.ToString());
+            dataEntry.Add(mw.loc);
+            dataEntry.Add(mw.datasetName);
+            dataEntry.Add(mw.uniqueIdentifier.ToString());
+
+            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
+            dataEntry.Clear();
+        }
+
+        this.gameObject.GetComponent<ExportManager>().newLine();
+
+        foreach (MeshWrapper mw in group3)
+        {
+            dataEntry.Add(mw.spotname);
+            dataEntry.Add(mw.expVal.ToString());
+            dataEntry.Add(mw.loc);
+            dataEntry.Add(mw.datasetName);
+            dataEntry.Add(mw.uniqueIdentifier.ToString());
+
+            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
+            dataEntry.Clear();
+        }
+
+        this.gameObject.GetComponent<ExportManager>().newLine();
+
+        foreach (MeshWrapper mw in group4)
+        {
+            dataEntry.Add(mw.spotname);
+            dataEntry.Add(mw.expVal.ToString());
+            dataEntry.Add(mw.loc);
+            dataEntry.Add(mw.datasetName);
+            dataEntry.Add(mw.uniqueIdentifier.ToString());
+
+            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
+            dataEntry.Clear();
+        }
+
+        this.gameObject.GetComponent<ExportManager>().newLine();
+
+    }
+
+
+    //###################################################################################################################
+    //Set Methods and Other
 
     /// <summary>
     /// Set min.treshold for gene expressionvalues that should be visualised. Passes on informaiton to tomo-seq technique if used
@@ -986,7 +989,61 @@ public class SpotDrawer : MonoBehaviour
     public void setMinTresh(float minTreshVal)
     {
         minTresh = minTreshVal;
-        if(gameObject.GetComponent<DataTransferManager>().tomoseq)
+        if (gameObject.GetComponent<DataTransferManager>().tomoseq)
             gameObject.GetComponent<TomoSeqDrawer>().setMinTresh(minTreshVal);
+    }
+
+    /// <summary>
+    /// Change the symbol that is used to visualise the spots/cells 
+    /// </summary>
+    /// <param name="symbol">string that refers to the used symbol, will exchange the mesh</param>
+    public void setSymbol(string symbol)
+    {
+        switch (symbol)
+        {
+            case "Sphere":
+                symbolSelect = sphereSymb;
+                break;
+            case "Cube":
+                symbolSelect = cubeSymb;
+                break;
+            case "Diamond":
+                symbolSelect = diamondSymb;
+                break;
+        }
+
+        foreach (MeshWrapper mw in batches)
+        {
+            mw.mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
+        }
+    }
+
+    /// <summary>
+    /// Forwards the selected gene names to the UI to showcase them in the textfield
+    /// </summary>
+    /// <param name="gn"></param>
+    public void lastGeneName(string gn)
+    {
+        if (!colourcopy) { lastGene = gn; }
+        else { lastGeneCopy = gn; }
+
+        if (!colourcopy) geneSelection.text = "Original: " + lastGene;
+        else geneSelection.text = "Original: " + lastGene + ",\n Clone: " + lastGeneCopy;
+    }
+
+    /// <summary>
+    /// Clear the counter of the total number of batches of all datapoints
+    /// </summary>
+    public void clearBatchcounter()
+    {
+        batchCounter = 0;
+    }
+
+    /// <summary>
+    /// Toggle from heatmap gene expression visualisation to gene expressed at all
+    /// </summary>
+    public void toggleShowGenesExpressed()
+    {
+        showGenesExpressed = !showGenesExpressed;
     }
 }

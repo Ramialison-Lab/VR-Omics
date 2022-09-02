@@ -13371,10 +13371,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65f91acdc97124a4b8f75371d6aa166e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visium: 0
+  visium: 1
   stomics: 0
   tomoseq: 0
-  xenium: 1
+  xenium: 0
   merfish: 0
   c18_visium: 0
   df: {fileID: 0}
@@ -19460,7 +19460,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1696277801}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1052670660}
+        m_MethodName: setGroupActive
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1696277798}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1696277801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24810,7 +24821,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -385}
+  m_AnchoredPosition: {x: 50, y: -450}
   m_SizeDelta: {x: 100, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2107087481
