@@ -7,45 +7,82 @@ using System.Linq;
 
 public class SpotDrawer : MonoBehaviour
 {
+    // Lists
     public List<double> normalised;
     public List<double> normalisedCopy;
+    public List<Color> colVals = new List<Color>();
+    public List<Color> colValsCopy = new List<Color>();
+    
+    //batches
+    private List<MeshWrapper> batches = new List<MeshWrapper>();
+    private List<MeshWrapper> batchesCopy = new List<MeshWrapper>();
+    private Transform symbolTransform;
+    private Matrix4x4 matrix;
+    private MaterialPropertyBlock mpb;
+    private int batchCounter = 0;
+
+    //MeshDrawer components
+    public Material matUsed;
+    
+    //Access variables
+    private SearchManager sm;
+    public TMP_Dropdown dd;
+    private Camera main;
+    public TMP_Text geneSelection;
+    private DataTransferManager dfm;
+    private SideMenuManager smm;
+    private MenuCanvas mc;
+
+    //Gameobjects
+    public GameObject symbolSelect;
+    public GameObject sphereSymb;
+    public GameObject cubeSymb;
+    public GameObject diamondSymb;
+    public GameObject MainMenuPanel;
+
+    //Rotation variables
+    Vector3 currentEulerAngles;
+    private int delta = 0;
+    private float cube_z;
+
+
+    //Initialise variables
+    private int startSpotdrawerCount = 0;
+    private bool firstSelect = false;
+    private bool start = false;
+
+    //Colorgradient
+    public GameObject colourGradientObject;
+    public List<GameObject> colGradChilds;
+    private GradientColorKey[] ngck;
+    private bool customColour = false;
+    public Gradient gd;
+
+    //Highlightidentifier - Lasso tool
     public List<int> highlightIdentifier1;
     public List<int> highlightIdentifier2;
     public List<int> highlightIdentifier3;
     public List<int> highlightIdentifier4;
-    public List<Color> colVals = new List<Color>();
-    public List<Color> colValsCopy = new List<Color>();
-    private List<MeshWrapper> batches = new List<MeshWrapper>();
-    private List<MeshWrapper> batchesCopy = new List<MeshWrapper>();
-    private SearchManager sm;
-    Vector3 currentEulerAngles;
+    private bool highlightIdentifyUsed = false;
+    private bool addToggle = true;
+    public int active = 0;
+    public bool passThrough = false;
 
-    public Material matUsed;
-    public Material transparentMaterial;
-    public GameObject symbolSelect;
-    public GameObject sphereSymb;
-    public GameObject xeniumCubeSymb;
-    public GameObject cubeSymb;
-    public GameObject diamondSymb;
-    public GameObject MC;
-    private int count = 0;
-    private int delta = 0;
-    private bool firstSelect = false;
-    private bool start = false;
+    //Side-byside - copy feature 
     private bool newColoursCopy = false;
+    private bool copy = false;
+    private bool colourcopy = false;
+
+    //Other
     public float minTresh = 0f;
     public float maxTresh = 0f;    
     public float clickoffset = 0.25f;
-    private float cube_z;
     public bool visium =false;
-    private bool copy = false;
-    private bool colourcopy = false;
-    private bool highlightIdentifyUsed = false;
-    public TMP_Dropdown dd;
-    private Camera main;
-    private Transform symbolTransform;
-    private Matrix4x4 matrix;
-    private MaterialPropertyBlock mpb;
+    private bool showGenesExpressed = false;
+    private string lastGene;
+    private string lastGeneCopy;
+    public string stomicsPath = "";
+    public List<GameObject> activepanels = new List<GameObject>(4);
 
     class MeshWrapper
     {
@@ -63,7 +100,10 @@ public class SpotDrawer : MonoBehaviour
     private void Start()
     {
         sm = gameObject.GetComponent<SearchManager>();
+        dfm = gameObject.GetComponent<DataTransferManager>();
         main = Camera.main;
+        smm = GameObject.Find("SideMenu").GetComponent<SideMenuManager>();
+        mc = MainMenuPanel.GetComponent<MenuCanvas>();
     }
 
 
@@ -78,7 +118,7 @@ public class SpotDrawer : MonoBehaviour
             {
                 // draw all spots from the batches list
                 mpb = new MaterialPropertyBlock();
-                if (firstSelect)
+                if (firstSelect||highlightIdentifyUsed)
                 {
 
                     {
@@ -93,11 +133,13 @@ public class SpotDrawer : MonoBehaviour
 
                     // check if spots are selected with lasso tool
                     if (highlightIdentifyUsed)
-                    {
+                    {                        
+                        if(!firstSelect) rc = Color.grey;
                         if (highlightIdentifier1.Contains(wrap.uniqueIdentifier)) { rc = new Color(255, 0, 0, 1); }
                         else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 0, 1);
                         else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 0, 255, 1);
                         else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 255, 1);
+
                     }
                 }
                 else
@@ -223,10 +265,6 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
-    private string lastGene;
-    private string lastGeneCopy;
-    public TMP_Text geneSelection;
-
     public void lastGeneName(string gn)
     {
         if (!colourcopy) { lastGene = gn; }
@@ -236,14 +274,10 @@ public class SpotDrawer : MonoBehaviour
         else geneSelection.text = "Original: " + lastGene + ",\n Clone: " + lastGeneCopy;
     }
 
-    private int batchCounter = 0;
-
     public void clearBatchcounter()
     {
         batchCounter = 0;
     }
-
-    private bool showGenesExpressed= false;
     
     public void toggleShowGenesExpressed()
     {
@@ -278,7 +312,6 @@ public class SpotDrawer : MonoBehaviour
             }
         }
     }
-    public Gradient gd;
 
     // calculate color based on expression value
     private Color colorGradient(int i, List<double> normValues)
@@ -372,8 +405,6 @@ public class SpotDrawer : MonoBehaviour
         else mergePanel.SetActive(false);
     }
 
-
-
     public void colorMode()
     {
         colourcopy = !colourcopy;
@@ -458,7 +489,6 @@ public class SpotDrawer : MonoBehaviour
         this.gameObject.GetComponent<ExportManager>().newLine();
 
     }
-    public string stomicsPath = "";
 
     public void setSymbol(string symbol)
     {
@@ -478,11 +508,6 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
-    public GameObject getSelectedSymbol()
-    {
-        return symbolSelect;
-    }
-
     public void setStomicsPath(string stomPath)
     {
         stomicsPath = stomPath;
@@ -491,13 +516,14 @@ public class SpotDrawer : MonoBehaviour
     // a combined list of all datasets, that are read will be passed to this function to draw each spot
     public void startSpotDrawer(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
     {
-        if (gameObject.GetComponent<DataTransferManager>().xenium) symbolSelect = xeniumCubeSymb;
-        if (gameObject.GetComponent<DataTransferManager>().merfish) symbolSelect = xeniumCubeSymb;
+        //Default selection of cube for better performance
+        if (dfm.xenium) symbolSelect = cubeSymb;
+        else if (dfm.merfish) symbolSelect = cubeSymb;
+        else if (dfm.stomics) symbolSelect = cubeSymb;
         else symbolSelect = sphereSymb;
         // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
         // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
         // dataset is the name of the dataset dor ech slice
-
         // for each coordinate passed
         for (int i = 0; i < xcoords.Count; i++)
         {
@@ -506,7 +532,7 @@ public class SpotDrawer : MonoBehaviour
             float z;
               
             // reading out the next 3D coordinate from the list
-            if (gameObject.GetComponent<DataTransferManager>().xenium || gameObject.GetComponent<DataTransferManager>().merfish)
+            if (dfm.xenium || dfm.merfish)
             {
                  x = xcoords[i] / 10;
                  y = ycoords[i] / 10;
@@ -519,17 +545,16 @@ public class SpotDrawer : MonoBehaviour
                  z = zcoords[i];
             }
 
-            colVals.Add(Color.grey);
             //reading out the next spotname and datasetname
             string sname = spotBarcodes[i];
             string datasetn = stomicsPath;
             try { datasetn = dataSet[i]; }
             catch (Exception) {}
-            batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x,y).ToString() ,spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
-            count++;
+            batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x,y).ToString() ,spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount });
+            startSpotdrawerCount++;
         }
 
-        if (!gameObject.GetComponent<DataTransferManager>().xenium || !gameObject.GetComponent<DataTransferManager>().merfish || !gameObject.GetComponent<DataTransferManager>().stomics)
+        if (!dfm.xenium || !dfm.merfish || !dfm.stomics)
         {
             for (int i = 0; i < xcoords.Count; i++)
             {
@@ -544,8 +569,8 @@ public class SpotDrawer : MonoBehaviour
                 try { datasetn = dataSet[i]; }
                 catch (Exception) {}
 
-                batchesCopy.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = count });
-                count++;
+                batchesCopy.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount });
+                startSpotdrawerCount++;
             }
         }
 
@@ -553,16 +578,9 @@ public class SpotDrawer : MonoBehaviour
         start = true;
         prefillDropdown();
         symbolTransform = symbolSelect.transform;
-
         createColorGradientMenu();
-
     }
 
-    private bool customColour = false;
-    private GradientColorKey[] ngck;
-
-    public GameObject colourGradientObject;
-    public List<GameObject> colGradChilds;
     public void createColorGradientMenu()
     {
         foreach(GameObject go in colGradChilds)
@@ -692,33 +710,41 @@ public class SpotDrawer : MonoBehaviour
         normalised.Clear();
     }
 
-    public bool passThrough = false;
+    // Spot identification and lasso -tool function
+
+    /// <summary>
+    /// Turns the passThrough mode on or off that allows selecting spots that can be identified by the same coordinates in other datasets visualised
+    /// </summary>
     public void togglePassThrough()
     {
         passThrough = !passThrough;
     }
 
-    public List<GameObject> activepanels = new List<GameObject>(4);
-    public int active = 0;
+    /// <summary>
+    /// Is used to set the group of the lasso tool active for which the next spots should be collected
+    /// </summary>
+    /// <param name="go">The button of the group that needs to be activated. Uses it's name "0","1","2" ... to activate</param>
     public void setGroupActive(GameObject go)
     {
         foreach(GameObject g in activepanels)
         {
             if (g.activeSelf) g.SetActive(false);
-            
         }
-
         activepanels[int.Parse(go.name)].SetActive(true);
         active = int.Parse(go.name);
-
     }
 
-    private bool addToggle = true;
+    /// <summary>
+    /// Turns the lasso tool feature on or off
+    /// </summary>
     public void LassoToggle()
     {
         addToggle = !addToggle;
     }
 
+    /// <summary>
+    /// Clears all groups that have been selected with the lasso tool
+    /// </summary>
     public void unselectAll()
     {
         // Unselects all spots form Lassotool
@@ -731,7 +757,12 @@ public class SpotDrawer : MonoBehaviour
 
     }
 
-    // Identification of a spot if clicked on or lasso tool used
+    /// <summary>
+    /// Function to identify which spot was clicked and uses highlight method for lasso tool
+    /// </summary>
+    /// <param name="x_cl">X coordinate of the spot that needs to be identified</param>
+    /// <param name="y_cl">Y coordinate of the spot that needs to be identified</param>
+    /// <param name="dN">Datasetname coordinate of the spot that needs to be identified</param>
     public void identifySpot(float x_cl, float y_cl, string dN)
     {
         // if lasso tool selected
@@ -740,11 +771,11 @@ public class SpotDrawer : MonoBehaviour
 
         foreach (MeshWrapper mw in batches)
         {
-            if (passThrough)
+            if ((dfm.xenium || dfm.c18_visium || mw.datasetName == dN) && (int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
             {
-                if ((int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
+                if (mc.lasso)
                 {
-                    if (MC.GetComponent<MenuCanvas>().getLasso())
+                    if (!addToggle)
                     {
                         try
                         {
@@ -753,62 +784,9 @@ public class SpotDrawer : MonoBehaviour
                             highlightIdentifier3.Remove(mw.uniqueIdentifier);
                             highlightIdentifier4.Remove(mw.uniqueIdentifier);
                         }
-                        catch (Exception) {}
-                        switch (active) {
-                            case 0:
-                                if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
-                                {
-                                    highlightIdentifier1.Add(mw.uniqueIdentifier);
-                                }
-                                break;                            
-                            case 1:
-                                if (!highlightIdentifier2.Contains(mw.uniqueIdentifier))
-                                {
-                                    highlightIdentifier2.Add(mw.uniqueIdentifier);
-                                }
-
-                                break;                          
-                            case 2:
-                                if (!highlightIdentifier3.Contains(mw.uniqueIdentifier))
-                                {
-                                    highlightIdentifier3.Add(mw.uniqueIdentifier);
-                                }
-                                break;                           
-                            case 3:
-                                if (!highlightIdentifier4.Contains(mw.uniqueIdentifier))
-                                {
-                                    highlightIdentifier4.Add(mw.uniqueIdentifier); 
-                                }
-                                break;
-                        }
-
+                        catch (Exception) { }
                     }
-                    try
-                    {
-                        GameObject.Find("SideMenu").GetComponent<SideMenuManager>().setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location, mw.expVal);
-                    }
-                    catch (Exception) {}
-                }
-            }
-
-
-            if ((gameObject.GetComponent<DataTransferManager>().xenium || gameObject.GetComponent<DataTransferManager>().c18_visium ||mw.datasetName == dN) && (int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
-            {
-                if (MC.GetComponent<MenuCanvas>().getLasso())
-                {
-                    if(!addToggle)
-                    { 
-                        try
-                        {
-                            highlightIdentifier1.Remove(mw.uniqueIdentifier);
-                            highlightIdentifier2.Remove(mw.uniqueIdentifier);
-                            highlightIdentifier3.Remove(mw.uniqueIdentifier);
-                            highlightIdentifier4.Remove(mw.uniqueIdentifier);
-                        }
-                        catch (Exception) {}
-                    }
-
-                    else if(addToggle)
+                    else if (addToggle)
                     {
                         switch (active)
                         {
@@ -824,7 +802,6 @@ public class SpotDrawer : MonoBehaviour
                                 {
                                     highlightIdentifier2.Add(mw.uniqueIdentifier);
                                     highlightIdentifyUsed = true;
-
                                 }
                                 break;
                             case 2:
@@ -832,7 +809,6 @@ public class SpotDrawer : MonoBehaviour
                                 {
                                     highlightIdentifier3.Add(mw.uniqueIdentifier);
                                     highlightIdentifyUsed = true;
-
                                 }
                                 break;
                             case 3:
@@ -840,7 +816,6 @@ public class SpotDrawer : MonoBehaviour
                                 {
                                     highlightIdentifier4.Add(mw.uniqueIdentifier);
                                     highlightIdentifyUsed = true;
-
                                 }
                                 break;
                         }
@@ -848,38 +823,68 @@ public class SpotDrawer : MonoBehaviour
                 }
                 try
                 {
-                    GameObject.Find("SideMenu").GetComponent<SideMenuManager>().setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location, mw.expVal);
+                    smm.setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location, mw.expVal);
                 }
-                catch (Exception) {}
+                catch (Exception) { }
+
+                if (passThrough)
+                {
+                    if ((int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
+                    {
+                        if (mc.lasso)
+                        {
+                            //not removing spots
+                            //try
+                            //{
+                            //    highlightIdentifier1.Remove(mw.uniqueIdentifier);
+                            //    highlightIdentifier2.Remove(mw.uniqueIdentifier);
+                            //    highlightIdentifier3.Remove(mw.uniqueIdentifier);
+                            //    highlightIdentifier4.Remove(mw.uniqueIdentifier);
+                            //}
+                            //catch (Exception) {}
+                            switch (active)
+                            {
+                                case 0:
+                                    if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
+                                    {
+                                        highlightIdentifier1.Add(mw.uniqueIdentifier);
+                                    }
+                                    break;
+                                case 1:
+                                    if (!highlightIdentifier2.Contains(mw.uniqueIdentifier))
+                                    {
+                                        highlightIdentifier2.Add(mw.uniqueIdentifier);
+                                    }
+
+                                    break;
+                                case 2:
+                                    if (!highlightIdentifier3.Contains(mw.uniqueIdentifier))
+                                    {
+                                        highlightIdentifier3.Add(mw.uniqueIdentifier);
+                                    }
+                                    break;
+                                case 3:
+                                    if (!highlightIdentifier4.Contains(mw.uniqueIdentifier))
+                                    {
+                                        highlightIdentifier4.Add(mw.uniqueIdentifier);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }
             }
-        }
+        }   
     }
 
-    public void expandDataset(float expandValue)
-    {
-        GameObject cube = GameObject.Find("Cube");
-
-        float width = cube.transform.localScale.x;
-        float heigth = cube.transform.localScale.y;
-
-        float cp_x = cube.transform.localPosition.x;
-        float cp_y = cube.transform.localPosition.y;
-
-        foreach (MeshWrapper mw in batches)
-        {
-            float distance = ((float)Math.Sqrt((float)Math.Pow(cp_x - mw.location.x, 2) + (float)Math.Pow(cp_y - mw.location.y, 2)));
-            float norm_x = mw.location.x / distance;
-            float norm_y = mw.location.y / distance;
-
-
-            if(mw.location.x>cp_x && mw.location.y > cp_y) mw.location = new Vector3(mw.origin.x + (expandValue * norm_x), mw.origin.y + (expandValue * norm_y), mw.origin.z);
-            if(mw.location.x>cp_x && mw.location.y < cp_y) mw.location = new Vector3(mw.origin.x + (expandValue * norm_x), mw.origin.y - (expandValue * norm_y), mw.origin.z);
-            if(mw.location.x<cp_x && mw.location.y > cp_y) mw.location = new Vector3(mw.origin.x - (expandValue * norm_x), mw.origin.y + (expandValue * norm_y), mw.origin.z);
-            if(mw.location.x<cp_x && mw.location.y < cp_y) mw.location = new Vector3(mw.origin.x - (expandValue * norm_x), mw.origin.y - (expandValue * norm_y), mw.origin.z);
-        }
-    }
-
-    // moving slices based on the movement of the colider slice
+    /// <summary>
+    /// Moving slices accordingly to mouse movement
+    /// </summary>
+    /// <param name="xoffset">Movement in x direction</param>
+    /// <param name="yoffset">Movement in y direction</param>
+    /// <param name="zoffset">Movmeent in z direction(in 2D not used)</param>
+    /// <param name="dN">Datasetname of the slice that should be moved</param>
+    /// <param name="z">The depth location of the slice</param>
     public void moveSlice(float xoffset, float yoffset, float zoffset, string dN, float z)
     {
         foreach (MeshWrapper mw in batches)
@@ -892,12 +897,17 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
-    // rotation of all spots and the according collider slide
+
+    /// <summary>
+    /// Rotates whole slices by calculating spots rotation around center point
+    /// </summary>
+    /// <param name="direction">Indicates roation 0 = left and 1 = right</param>
+    /// <param name="dN">Datasetname of the slice that should be rotated</param>
+    /// <param name="cP">Centerpoint as Vector3 around the slice should rotate</param>
+    /// <param name="cube">The slicecollider of the slice as gameobject</param>
     public void rotateSlice(int direction, string dN, Vector3 cP, GameObject cube)
     {
         Transform cubetransform = cube.transform;
-
-        //direction= -1 or 1; dN = datasetName to identify which spots need to be rotated, Vector cP is the center of the ColliderSlice which is overlayed with the Spots and cube is the colliderslice 
         foreach (MeshWrapper mw in batches)
         {
             if (mw.datasetName == dN)
@@ -930,13 +940,17 @@ public class SpotDrawer : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// This function will fill the Dropdown menu with all available values readable from the hdf file based on the selected technology
+    /// </summary>
     private void prefillDropdown()
     {
         List<string> ddValues = new List<string>();
 
-        if (gameObject.GetComponent<DataTransferManager>().visium)
+        if (dfm.visium)
         {
-            if (!gameObject.GetComponent<DataTransferManager>().c18_visium)
+            if (!dfm.c18_visium)
             {
                 ddValues.Add("Leiden Cluster");
                 ddValues.Add("log1p_n_genes_by_counts");
@@ -957,27 +971,22 @@ public class SpotDrawer : MonoBehaviour
         }
         else
         {
-            ddValues.Add("No options available");
+            dd.gameObject.SetActive(false);
+            //ddValues.Add("No options available");
 
-            dd.AddOptions(ddValues);
+            //dd.AddOptions(ddValues);
         }
     }
 
 
-    // set treshold for colour
-    public void setMinTresh(float val)
+    /// <summary>
+    /// Set min.treshold for gene expressionvalues that should be visualised. Passes on informaiton to tomo-seq technique if used
+    /// </summary>
+    /// <param name="minTreshVal">float value of min. treshold from 0 - 1</param>
+    public void setMinTresh(float minTreshVal)
     {
-        minTresh = val;
+        minTresh = minTreshVal;
         if(gameObject.GetComponent<DataTransferManager>().tomoseq)
-            gameObject.GetComponent<TomoSeqDrawer>().setMinTresh(val);
-    }
-    public void setMaxTresh(float val)
-    {
-        maxTresh = val;
-    }
-
-    public float getMinTresh()
-    {
-        return minTresh;
+            gameObject.GetComponent<TomoSeqDrawer>().setMinTresh(minTreshVal);
     }
 }

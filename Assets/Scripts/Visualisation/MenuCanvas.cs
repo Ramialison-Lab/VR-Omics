@@ -20,7 +20,7 @@ public class MenuCanvas : MonoBehaviour
         backupCol = Camera.main.backgroundColor;
         dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
         sd.setMinTresh(0f);
-        sd.setMaxTresh(1f);
+        sd.maxTresh = 1f;
         darkMode();
     }
 
@@ -90,7 +90,7 @@ public class MenuCanvas : MonoBehaviour
 
     public void setColorMaxTreshold(GameObject slider)
     {
-        sd.setMaxTresh(slider.GetComponent<Slider>().value);
+        sd.maxTresh = slider.GetComponent<Slider>().value;
     }
 
     public GameObject sp;        
@@ -108,7 +108,7 @@ public class MenuCanvas : MonoBehaviour
         }
         else
         {
-            go = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().getSelectedSymbol();
+            go = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().symbolSelect;
         }
         Debug.Log(go.name);
 
@@ -118,15 +118,6 @@ public class MenuCanvas : MonoBehaviour
             symbolInstance = true;
         }
         go.transform.localScale = new Vector3(sl.value * initSize.x, sl.value * initSize.y, sl.value * initSize.z) ;
-    }
-
-    public void expandDataset(GameObject slider)
-    {
-        // get slider value
-        Slider sl = slider.GetComponent<Slider>();
-        sd.expandDataset(sl.value);
-        //tbd increase sphere size
-        //sp.transform.localScale = new Vector3(sl.value * 10, sl.value * 10, sl.value * 10);
     }
 
     public GameObject contextMenuSelection;

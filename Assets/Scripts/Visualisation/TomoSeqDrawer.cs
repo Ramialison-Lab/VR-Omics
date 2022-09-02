@@ -488,7 +488,7 @@ public class TomoSeqDrawer : MonoBehaviour
     private float minTresh;
     private Color colorGradient(int i)
     {
-        minTresh = gameObject.GetComponent<SpotDrawer>().getMinTresh();
+        minTresh = gameObject.GetComponent<SpotDrawer>().minTresh;
 
         
 

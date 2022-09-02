@@ -22,6 +22,8 @@ public class SearchManager : MonoBehaviour
     public List<float> resultExpression;
     public List<float> expVals;
     public float[] resultExpressionTemp;
+    public string geneNamesC18 = "Assets/Datasets/C18heart/C18_genelist.csv";
+
 
     public bool visium = true;
     public bool tomoseq = false;
@@ -32,11 +34,8 @@ public class SearchManager : MonoBehaviour
 
         if (gameObject.GetComponent<DataTransferManager>().c18_visium)
         {
-
-            //    string c18path = gameObject.GetComponent<DataTransferManager>().getC18Path();
-            string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
-            string[] lines = File.ReadAllLines(geneC18);
-            lines = lines.Skip(1).ToArray();
+            //string c18path = gameObject.GetComponent<DataTransferManager>().getC18Path();
+            string[] lines = File.ReadAllLines(geneNamesC18);
 
             foreach(string line in lines)
             {

@@ -79,7 +79,7 @@ public class DataTransferManager : MonoBehaviour
         // Uncomment for pipeline connection
         //pipelineConnected();
 
-        if (c18_visium) visium = true;
+        if (c18_visium) { visium = true; }
 
         if (visium)
         {
@@ -142,6 +142,7 @@ public class DataTransferManager : MonoBehaviour
         //{
         //    hdf5datapaths.Add(data + "\\" + data.Split('\\').Last() + "_scanpy.hdf5");
         //}
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
         //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
 
@@ -335,8 +336,7 @@ public class DataTransferManager : MonoBehaviour
         {
             sc.setSliceCollider((int)c18x.Min(), (int)c18x.Max(), (int)c18y.Max(), (int)c18y.Min(), c18xHC[i], "");
         }
-        adjustCamera(c18x.Min(), c18x.Max(), c18y.Min(), c18y.Max(), c18z.Min(), new Vector3(115, 30, 110));
-
+        adjustCamera(c18x.Min(), c18x.Max(), c18y.Min(), c18y.Max(), c18z.Min(), new Vector3(0,0,0));
         var x = Math.Abs(c18x.Min()-c18x.Max());
         var y = Math.Abs(c18y.Min()-c18y.Max());
         var z = Math.Abs(c18z.Min() + c18z.Max());

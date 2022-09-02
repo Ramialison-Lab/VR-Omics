@@ -115,8 +115,6 @@ public class SliceCollider : MonoBehaviour
 
         RaycastHit hit = new RaycastHit();
 
-
-
         if (Physics.Raycast(ray, out hit))
         {
             //TBD not using name cube here
