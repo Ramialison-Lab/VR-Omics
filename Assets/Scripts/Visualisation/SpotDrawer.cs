@@ -58,11 +58,6 @@ public class SpotDrawer : MonoBehaviour
     public Gradient gd;
 
     //Highlightidentifier - Lasso tool
-    public List<int> highlightIdentifier1;
-    public List<int> highlightIdentifier2;
-    public List<int> highlightIdentifier3;
-    public List<int> highlightIdentifier4;
-    private bool highlightIdentifyUsed = false;
     private bool addToggle = true;
     public int active = 0;
     public bool passThrough = false;
@@ -97,6 +92,7 @@ public class SpotDrawer : MonoBehaviour
         internal string datasetName;
         public int uniqueIdentifier;
         public float expVal;
+        public int highlightgroup;
     }
 
     private void Start()
@@ -120,7 +116,7 @@ public class SpotDrawer : MonoBehaviour
             {
                 // draw all spots from the batches list
                 mpb = new MaterialPropertyBlock();
-                if (firstSelect || highlightIdentifyUsed)
+                if (firstSelect)
                 {
                     {
                         try
@@ -132,14 +128,12 @@ public class SpotDrawer : MonoBehaviour
                         catch (Exception) { rc = Color.clear; };
                     }
 
-                    // check if spots are selected with lasso tool
-                    if (highlightIdentifyUsed)
+                    if(wrap.highlightgroup != -1)
                     {
-                        if (!firstSelect) rc = Color.grey;
-                        if (highlightIdentifier1.Contains(wrap.uniqueIdentifier)) { rc = new Color(255, 0, 0, 1); }
-                        else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 0, 1);
-                        else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 0, 255, 1);
-                        else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier)) rc = new Color(0, 255, 255, 1);
+                            if (wrap.highlightgroup == 0) { rc = new Color(255, 0, 0, 1); }
+                            else if (wrap.highlightgroup == 1) rc = new Color(0, 255, 0, 1);
+                            else if (wrap.highlightgroup == 2) rc = new Color(0, 0, 255, 1);
+                            else if (wrap.highlightgroup == 3) rc = new Color(0, 255, 255, 1);
                     }
                 }
                 else
@@ -187,11 +181,13 @@ public class SpotDrawer : MonoBehaviour
                     // if spot not found
                     else { rc = Color.clear; }
 
-                    //search if original slice spot is selected by lasso and colours spot in copy
-                    if (highlightIdentifier1.Contains(wrap.uniqueIdentifier - batches.Count)) rc = new Color(255, 0, 0, 1);
-                    else if (highlightIdentifier2.Contains(wrap.uniqueIdentifier - batches.Count)) rc = new Color(0, 255, 0, 1);
-                    else if (highlightIdentifier3.Contains(wrap.uniqueIdentifier - batches.Count)) rc = new Color(0, 0, 255, 1);
-                    else if (highlightIdentifier4.Contains(wrap.uniqueIdentifier - batches.Count)) rc = new Color(0, 255, 255, 1);
+                    if (wrap.highlightgroup != -1)
+                    {
+                        if (wrap.highlightgroup == 0) { rc = new Color(255, 0, 0, 1); }
+                        else if (wrap.highlightgroup == 1) rc = new Color(0, 255, 0, 1);
+                        else if (wrap.highlightgroup == 2) rc = new Color(0, 0, 255, 1);
+                        else if (wrap.highlightgroup == 3) rc = new Color(0, 255, 255, 1);
+                    }
 
                     mpb.SetColor("_Color", rc);
                 }
@@ -249,7 +245,7 @@ public class SpotDrawer : MonoBehaviour
             string datasetn = stomicsPath;
             try { datasetn = dataSet[i]; }
             catch (Exception) { }
-            batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount });
+            batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount, highlightgroup = -1});
             startSpotdrawerCount++;
         }
 
@@ -268,7 +264,7 @@ public class SpotDrawer : MonoBehaviour
                 try { datasetn = dataSet[i]; }
                 catch (Exception) { }
 
-                batchesCopy.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount });
+                batchesCopy.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount, highlightgroup = -1 });
                 startSpotdrawerCount++;
             }
         }
@@ -567,14 +563,14 @@ public class SpotDrawer : MonoBehaviour
     /// </summary>
     public void unselectAll()
     {
-        // Unselects all spots form Lassotool
-        highlightIdentifier1.Clear();
-        highlightIdentifier2.Clear();
-        highlightIdentifier3.Clear();
-        highlightIdentifier4.Clear();
-
-        highlightIdentifyUsed = false;
-
+        foreach(MeshWrapper mw in batches)
+        {
+            mw.highlightgroup = -1;
+        }
+        foreach (MeshWrapper mw in batchesCopy)
+        {
+            mw.highlightgroup = -1;
+        }
     }
 
     /// <summary>
@@ -588,7 +584,7 @@ public class SpotDrawer : MonoBehaviour
         // if lasso tool selected
         var x_click = x_cl + clickoffset;
         var y_click = y_cl + clickoffset;
-
+        int i = 0;
         foreach (MeshWrapper mw in batches)
         {
             if ((dfm.xenium || dfm.c18_visium || mw.datasetName == dN) && (int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
@@ -597,47 +593,16 @@ public class SpotDrawer : MonoBehaviour
                 {
                     if (!addToggle)
                     {
-                        try
-                        {
-                            highlightIdentifier1.Remove(mw.uniqueIdentifier);
-                            highlightIdentifier2.Remove(mw.uniqueIdentifier);
-                            highlightIdentifier3.Remove(mw.uniqueIdentifier);
-                            highlightIdentifier4.Remove(mw.uniqueIdentifier);
-                        }
-                        catch (Exception) { }
+                        mw.highlightgroup = -1;
+                        batchesCopy[i].highlightgroup = -1;
                     }
                     else if (addToggle)
                     {
-                        switch (active)
+                        if(mw.highlightgroup != active)
                         {
-                            case 0:
-                                if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
-                                {
-                                    highlightIdentifier1.Add(mw.uniqueIdentifier);
-                                    highlightIdentifyUsed = true;
-                                }
-                                break;
-                            case 1:
-                                if (!highlightIdentifier2.Contains(mw.uniqueIdentifier))
-                                {
-                                    highlightIdentifier2.Add(mw.uniqueIdentifier);
-                                    highlightIdentifyUsed = true;
-                                }
-                                break;
-                            case 2:
-                                if (!highlightIdentifier3.Contains(mw.uniqueIdentifier))
-                                {
-                                    highlightIdentifier3.Add(mw.uniqueIdentifier);
-                                    highlightIdentifyUsed = true;
-                                }
-                                break;
-                            case 3:
-                                if (!highlightIdentifier4.Contains(mw.uniqueIdentifier))
-                                {
-                                    highlightIdentifier4.Add(mw.uniqueIdentifier);
-                                    highlightIdentifyUsed = true;
-                                }
-                                break;
+                            mw.highlightgroup = active;
+                            batchesCopy[i].highlightgroup = active;
+
                         }
                     }
                 }
@@ -653,47 +618,15 @@ public class SpotDrawer : MonoBehaviour
                     {
                         if (mc.lasso)
                         {
-                            //not removing spots
-                            //try
-                            //{
-                            //    highlightIdentifier1.Remove(mw.uniqueIdentifier);
-                            //    highlightIdentifier2.Remove(mw.uniqueIdentifier);
-                            //    highlightIdentifier3.Remove(mw.uniqueIdentifier);
-                            //    highlightIdentifier4.Remove(mw.uniqueIdentifier);
-                            //}
-                            //catch (Exception) {}
-                            switch (active)
+                            if (mw.highlightgroup != active)
                             {
-                                case 0:
-                                    if (!highlightIdentifier1.Contains(mw.uniqueIdentifier))
-                                    {
-                                        highlightIdentifier1.Add(mw.uniqueIdentifier);
-                                    }
-                                    break;
-                                case 1:
-                                    if (!highlightIdentifier2.Contains(mw.uniqueIdentifier))
-                                    {
-                                        highlightIdentifier2.Add(mw.uniqueIdentifier);
-                                    }
-
-                                    break;
-                                case 2:
-                                    if (!highlightIdentifier3.Contains(mw.uniqueIdentifier))
-                                    {
-                                        highlightIdentifier3.Add(mw.uniqueIdentifier);
-                                    }
-                                    break;
-                                case 3:
-                                    if (!highlightIdentifier4.Contains(mw.uniqueIdentifier))
-                                    {
-                                        highlightIdentifier4.Add(mw.uniqueIdentifier);
-                                    }
-                                    break;
+                                mw.highlightgroup = active;
                             }
                         }
                     }
                 }
             }
+            i++;
         }
     }
 
@@ -913,10 +846,10 @@ public class SpotDrawer : MonoBehaviour
 
         foreach (MeshWrapper mw in batches)
         {
-            if (highlightIdentifier1.Contains(mw.uniqueIdentifier)) group1.Add(mw);
-            if (highlightIdentifier2.Contains(mw.uniqueIdentifier)) group2.Add(mw);
-            if (highlightIdentifier3.Contains(mw.uniqueIdentifier)) group3.Add(mw);
-            if (highlightIdentifier4.Contains(mw.uniqueIdentifier)) group4.Add(mw);
+            //if (highlightIdentifier1.Contains(mw.uniqueIdentifier)) group1.Add(mw);
+            //if (highlightIdentifier2.Contains(mw.uniqueIdentifier)) group2.Add(mw);
+            //if (highlightIdentifier3.Contains(mw.uniqueIdentifier)) group3.Add(mw);
+            //if (highlightIdentifier4.Contains(mw.uniqueIdentifier)) group4.Add(mw);
 
         }
 
