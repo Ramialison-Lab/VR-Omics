@@ -58,6 +58,7 @@ public class UIManager : MonoBehaviour
     public GameObject stomicsProcessPanel;
     public GameObject merfishProcessPanel;
     public GameObject merfishLoadPanel;
+    public GameObject otherLoadPanel;
     public GameObject loadingPanel;
     public Sprite checkmark;
 
@@ -99,6 +100,7 @@ public class UIManager : MonoBehaviour
             stomicsProcessPanel.SetActive(false);
             merfishLoadPanel.SetActive(false);
             merfishProcessPanel.SetActive(false);
+            otherLoadPanel.SetActive(false);
            
         }
         catch (Exception) { }
@@ -139,6 +141,9 @@ public class UIManager : MonoBehaviour
                 break;
             case "ProcessMerfishBtn":
                 merfishProcessPanel.SetActive(true);
+                break;            
+            case "LoadOtherBtn":
+                otherLoadPanel.SetActive(true);
                 break;
         }
     }
@@ -148,10 +153,12 @@ public class UIManager : MonoBehaviour
     private bool expMenuXen = false;
     private bool expMenuTomo = false;
     private bool expMenuStomics = false;
+    private bool expMenuOther = false;
     public GameObject mainExpandPanelVis;
     public GameObject mainExpandPanelXenium;
     public GameObject mainExpandPanelTomo;
     public GameObject mainExpandStomics;
+    public GameObject mainExpandOther;
     public GameObject mainExpandMerfish;
     public void toggleExpandMenu()
     {
@@ -218,6 +225,20 @@ public class UIManager : MonoBehaviour
         }
         expMenuStomics = !expMenuStomics;
     }
+
+    public void toggleExpandMenuOther()
+    {
+        if (!expMenuOther)
+        {
+            mainExpandOther.transform.localPosition = new Vector2(mainExpandOther.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandOther.GetComponent<RectTransform>().transform.localPosition.y);
+        }
+        else
+        {
+            mainExpandOther.transform.localPosition = new Vector2(mainExpandOther.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandOther.GetComponent<RectTransform>().transform.localPosition.y);
+        }
+        expMenuOther = !expMenuOther;
+    }
+
 
 
 
@@ -708,6 +729,8 @@ public class UIManager : MonoBehaviour
     public TMP_InputField merfishMatLoadTMP;
     public TMP_InputField merfishMetaProcessTMP;
     public TMP_InputField merfishMetaLoadTMP;
+    public TMP_InputField otherMatLoadTMP;
+    public TMP_InputField otherMetaLoadTMP;
 
     //Xenium Process
     //Browse for GeneList of Xenium data
@@ -757,6 +780,8 @@ public class UIManager : MonoBehaviour
     public string xeniumPAth;
     public string xeniumGenesPath;
     public string xeniumSpotsPath;
+    public string otherMatrixPath;
+    public string otherMetaPath;
     public string merfishGenePath;
     public string merfishMetaPath;
 
@@ -798,6 +823,20 @@ public class UIManager : MonoBehaviour
     {
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("merfishMeta", merfishMetaLoadTMP));
+
+    }
+
+    public void selectOtherMatFile()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("otherMat", otherMatLoadTMP));
+
+    }    
+    
+    public void selectOtherMetaFile()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("otherMeta", otherMetaLoadTMP));
 
     }
 
@@ -863,6 +902,18 @@ public class UIManager : MonoBehaviour
                     break;
                 case "xeniumHDF":
                     xeniumPAth = res;
+                    break;                
+                case "otherMat":
+                    otherMatrixPath = res;
+                    break;
+                case "otherMeta":
+                    otherMetaPath = res;
+                    break;
+                case "merfishMeta":
+                    merfishMetaPath = res;
+                    break;
+                case "merfishMat":
+                    merfishGenePath = res;
                     break;
                     //case "stomics": stomicsPath = res;
                     //    break;
@@ -985,8 +1036,19 @@ public class UIManager : MonoBehaviour
     {
         gameObject.GetComponent<DataTransfer>().startMerfish();
 
-    }
+    }   
+    
+    public void runOther()
+    {
+        if(other2Dslider.value == 1)
+        {
+            other2D = true;
+        }
+        gameObject.GetComponent<DataTransfer>().startOther();
 
+    }
+    public Slider other2Dslider;
+    public bool other2D = false;
 
 
     IEnumerator selectUploadfile()

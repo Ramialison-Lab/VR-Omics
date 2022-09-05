@@ -14,6 +14,7 @@ public class DataTransferManager : MonoBehaviour
     public bool xenium = false;
     public bool merfish = false;
     public bool c18_visium = false;
+    public bool other = false;
 
     //Access variables
     private FileReader fr;
@@ -91,6 +92,7 @@ public class DataTransferManager : MonoBehaviour
         else if (stomics) startStomics();
         else if (xenium) startXenium();
         else if (merfish) startMerfish();
+        else if (other) startOther();
     }
 
     private void pipelineConnected()
@@ -133,6 +135,11 @@ public class DataTransferManager : MonoBehaviour
         {
             merfish = true;
             startMerfish();
+        }        
+        else if (df.other)
+        {
+            other = true;
+            startOther();
         }
     }
 
@@ -395,6 +402,52 @@ public class DataTransferManager : MonoBehaviour
 
         sp.startSpotDrawer(stomicsX, stomicsY, stomicsZ, stomicsSpotId, dp);
     }
+
+    private void startOther() { 
+
+        List<float> otherX = new List<float>();
+        List<float> otherY = new List<float>();
+        List<float> otherZ = new List<float>();
+
+        if (df.other2D)
+        {
+            //all z = 0
+        }
+
+        //TBD
+
+        //string[] lines = File.ReadAllLines(coordsC18);
+        //lines = lines.Skip(1).ToArray();
+
+        //foreach (string line in lines)
+        //{
+        //    List<string> values = new List<string>();
+        //    values = line.Split(',').ToList();
+
+        //    c18x.Add(float.Parse(values[10]));
+        //    c18y.Add(float.Parse(values[11]));
+        //    c18z.Add(float.Parse(values[12]));
+        //    c18spot.Add(values[16]);
+        //}
+        ////Depth corrdinates from C18heart dataset
+        //int[] c18xHC = { 192, 205, 230, 250, 285, 289, 321, 327, 353 };
+
+        //for (int i = 0; i < 9; i++)
+        //{
+        //    sc.setSliceCollider((int)c18x.Min(), (int)c18x.Max(), (int)c18y.Max(), (int)c18y.Min(), c18xHC[i], "");
+        //}
+        //adjustCamera(c18x.Min(), c18x.Max(), c18y.Min(), c18y.Max(), c18z.Min(), new Vector3(0, 0, 0));
+        //var x = Math.Abs(c18x.Min() - c18x.Max());
+        //var y = Math.Abs(c18y.Min() - c18y.Max());
+        //var z = Math.Abs(c18z.Min() + c18z.Max());
+        //var zcoord = (c18z.Min() + c18z.Max()) / 2;
+
+        ////c18heartObj.transform.localScale = new Vector3(x/10, y/10, z/10);
+        //c18heartObj.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, zcoord);
+        //List<string> dp = new List<string>();
+        //sp.startSpotDrawer(c18x, c18y, c18z, c18spot, dp);
+    }
+
 
     /// <summary>
     /// Return the id of datasetNameToCheck within the merged list of datasets

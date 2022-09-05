@@ -10,6 +10,7 @@ public class DataTransfer : MonoBehaviour
     public bool visium =false;
     public bool visiumMultiple =false;
     public bool c18 = false;
+    public bool other = false;
     public bool xenium = false;
     public bool tomoseq = false;
     public bool stomics = false;
@@ -26,9 +27,13 @@ public class DataTransfer : MonoBehaviour
     public string xeniumSpotsPath;
     public string merfishGenePath;
     public string merfishMetaPath;
+    public string otherMatrixPath;
+    public string otherMetaPath;
     public List<string> pathList;
     public List<int> rotationValues;
     public List<int> distances;
+
+    public bool other2D = false;
 
     // This script stores the datapaths and all values that need to be transfered to the Visualisation scene
     private void Start()
@@ -63,6 +68,14 @@ public class DataTransfer : MonoBehaviour
     public void startC18()
     {
         c18 = true;
+        startVisualisationScene();
+    }   
+    public void startOther()
+    {
+        other2D = ui.other2D;
+        other = true;
+        otherMatrixPath = ui.otherMatrixPath;
+        otherMetaPath = ui.otherMetaPath;
         startVisualisationScene();
     }
 
