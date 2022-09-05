@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -8,97 +6,99 @@ using UnityEngine;
 public class SearchManager : MonoBehaviour
 {
     public string gene = "";
+    public string ensembleId;
+
+    //Lists
     public List<string> datasetPaths;
     public List<string> geneNameList;
     public List<string> geneNames;
     public List<string> ensembleIds;
-    private GameObject sh;
-    public string ensembleId;
-    public string datasetFound;
-    private FileReader fr;
-
     public List<string> resultDataset;
     public List<string> resultSpotname;
     public List<float> resultExpression;
     public List<float> expVals;
-    public float[] resultExpressionTemp;
+
+    //Access variables
+    private FileReader fr;
+    private DataTransferManager dfm;
+    private AutoCompleteManager acm;
+    private TomoSeqDrawer tmd;
+    private SpotDrawer sd;
+    private CSVReader csvr;
+
+    //TBD path to be deleted
     public string geneNamesC18 = "Assets/Datasets/C18heart/C18_genelist.csv";
-
-
-    public bool visium = true;
-    public bool tomoseq = false;
 
     private void Start()
     {
-        sh = GameObject.Find("ScriptHolder");
+        //Access variables
+        dfm = gameObject.GetComponent<DataTransferManager>();
+        acm = gameObject.GetComponent<AutoCompleteManager>();
+        fr = gameObject.GetComponent<FileReader>();
+        tmd = gameObject.GetComponent<TomoSeqDrawer>();
+        sd = gameObject.GetComponent<SpotDrawer>();
+        csvr = gameObject.GetComponent<CSVReader>();
 
-        if (gameObject.GetComponent<DataTransferManager>().c18_visium)
+        // Creating list of genes for search bar
+        if (dfm.c18_visium)
         {
-            //string c18path = gameObject.GetComponent<DataTransferManager>().getC18Path();
             string[] lines = File.ReadAllLines(geneNamesC18);
-
             foreach(string line in lines)
             {
                 List<string> values = new List<string>();
                 values = line.Split(',').ToList();
                 geneNames.Add(values[0]);
             }
-
-            //geneNames = geneNames.Distinct().ToList();
-            sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
+            acm.setGeneNameList(geneNames);
         }
-        if (gameObject.GetComponent<DataTransferManager>().visium)
+        else if (dfm.visium)
         {
-            fr = sh.GetComponent<FileReader>();
-            datasetPaths = sh.GetComponent<DataTransferManager>().hdf5datapaths;
-            searchEnsembleId(gene);
+            datasetPaths = dfm.hdf5datapaths;
+            //searchEnsembleId(gene);
             foreach (string p in datasetPaths)
             {
                 fr.readGeneNames(p);
                 geneNames.AddRange(fr.getGeneNameList());
                 geneNames = geneNames.Distinct().ToList();
             }
-
-            sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
+            acm.setGeneNameList(geneNames);
         }
-
-        else if (gameObject.GetComponent<DataTransferManager>().tomoseq)
+        else if (dfm.tomoseq)
         {
-            geneNames.AddRange(gameObject.GetComponent<TomoSeqDrawer>().getGeneNames());
-            //geneNames = geneNames.Distinct().ToList();
-            sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
+            geneNames.AddRange(tmd.getGeneNames());
+            acm.setGeneNameList(geneNames);
         }
-
-        else if (gameObject.GetComponent<DataTransferManager>().stomics)
+        else if (dfm.stomics)
         {
-            geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().stomicsGeneNames);
-            //geneNames = geneNames.Distinct().ToList();
-            sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
+            geneNames.AddRange(dfm.stomicsGeneNames);
+            acm.setGeneNameList(geneNames);
         }
-        else if (gameObject.GetComponent<DataTransferManager>().xenium)
+        else if (dfm.xenium)
         {
-            geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().XeniumGeneNames);
-            sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
+            geneNames.AddRange(dfm.XeniumGeneNames);
+            acm.setGeneNameList(geneNames);
         }
-        else if (gameObject.GetComponent<DataTransferManager>().merfish)
+        else if (dfm.merfish)
         {
-            geneNames.AddRange(gameObject.GetComponent<DataTransferManager>().MerfishGeneNames);
-            sh.GetComponent<AutoCompleteManager>().setGeneNameList(geneNames);
-
+            geneNames.AddRange(dfm.MerfishGeneNames);
+            acm.setGeneNameList(geneNames);
         }
-
     }
+
+    /// <summary>
+    /// Read Stomics data for gene at position in list
+    /// </summary>
+    /// <param name="geneName">The genename as passed from searchbar</param>
+    /// <param name="pos">The position of the gene in the list of genes. Refers to position in the list it is stored</param>
     public void readStomicsExpression(string geneName, int pos)
     {
-
-        var Xdata = gameObject.GetComponent<FileReader>().readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/data");
-        var indices = gameObject.GetComponent<FileReader>().query32BitInttoIntArray("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/indices");
-        int[] indptr = gameObject.GetComponent<FileReader>().query32BitInttoIntArray("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/indptr");
-
+        var Xdata = fr.readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/data");
+        var indices = fr.query32BitInttoIntArray("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/indices");
+        int[] indptr = fr.query32BitInttoIntArray("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/indptr");
 
         int start = indptr[pos];
         int end = indptr[pos + 1];
-        int cubesCount = gameObject.GetComponent<DataTransferManager>().stomicsSpotId.Count;
+        int cubesCount = dfm.stomicsSpotId.Count;
         
         List<int> indicesInterest = indices.Skip(start).Take(end - start).ToList();
         expVals = new List<float>();
@@ -124,59 +124,17 @@ public class SearchManager : MonoBehaviour
             = expVals.Select(i => 1 * (i - min) / range)
                 .ToList();
 
-        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
-        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().lastGeneName(geneName);
-
+        sd.setColors(normalised);
+        sd.lastGeneName(geneName);
     }
 
-    //public void queryH5Cluster()
-    //{
-    //    List<float> readList;
-    //    foreach (string dp in datasetPaths) {
-    //        readList = sh.GetComponent<FileReader>().readSbytetoFloat(dp);
-
-    //        var max = readList.Max();
-    //        var min = readList.Min();
-    //        var range = (double)(max - min);
-
-
-    //        var normalised
-    //            = readList.Select(i => 1 * (i - min) / range)
-    //                .ToList();
-
-    //        gameObject.GetComponent<SpotDrawer>().clearBatchcounter();
-    //        gameObject.GetComponent<SpotDrawer>().setColors(normalised);
-    //    }
-
-    //}
-
-    public void querySbyte(string hdfpath)
-    {
-        List<float> readList;
-        foreach (string dp in datasetPaths)
-        {
-            readList = sh.GetComponent<FileReader>().querySbytetoFloat(dp, hdfpath);
-
-            normaliseAndDraw(readList);
-
-        }
-
-    }
-
-    public void query64bitFloat(string hdfpath)
-    {
-        List<float> readList;
-        foreach (string dp in datasetPaths)
-        {
-            readList = sh.GetComponent<FileReader>().queryFloat(dp, hdfpath);
-
-            normaliseAndDraw(readList);
-        }
-    }
-
+    /// <summary>
+    /// Reads gene of merfish data.
+    /// </summary>
+    /// <param name="searchGene">the gene to be read</param>
     public void readMerfishExpression(string searchGene)
     {
-        var genes = gameObject.GetComponent<DataTransferManager>().MerfishGeneNames;
+        var genes = dfm.MerfishGeneNames;
         int x = genes.IndexOf(searchGene);
         string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
 
@@ -195,13 +153,17 @@ public class SearchManager : MonoBehaviour
         normaliseAndDraw(readList);
     }
 
+    /// <summary>
+    /// Reads gene from STOmics data 
+    /// </summary>
+    /// <param name="searchGene">The gene to be read.</param>
     internal void readXeniumExpression(string searchGene)
     {
-        var genes = gameObject.GetComponent<DataTransferManager>().XeniumGeneNames;
+        var genes = dfm.XeniumGeneNames;
 
         int x = genes.IndexOf(searchGene);
 
-        string[] lines = File.ReadAllLines(gameObject.GetComponent<DataTransferManager>().Xeniumdata);
+        string[] lines = File.ReadAllLines(dfm.Xeniumdata);
         lines = lines.Skip(1).ToArray();
 
         List<string> values = new List<string>();
@@ -212,90 +174,13 @@ public class SearchManager : MonoBehaviour
         {
             if (i > 0) readList.Add(float.Parse(values[i]));
         }
-
-
-
         normaliseAndDraw(readList);
-
-
-    }
-    private bool skipTopVal = false;
-
-    public void toggleCropValues()
-    {
-        skipTopVal = !skipTopVal;
     }
 
-    public void query32bitFloat(string hdfpath)
-    {
-        List<float> readList;
-        foreach (string dp in datasetPaths)
-        {
-            readList = sh.GetComponent<FileReader>().querf32Float(dp, hdfpath);
-            normaliseAndDraw(readList);
-
-        }
-
-    }
-
-    public void queryInt(string hdfpath)
-    {
-        List<float> readList;
-        foreach (string dp in datasetPaths)
-        {
-            readList = sh.GetComponent<FileReader>().query32BitInt(dp, hdfpath);
-            normaliseAndDraw(readList);
-        }
-
-    }
-
-    public int cropLimit = 50;
-
-    private void normaliseAndDraw(List<float> readList)
-    {
-        var max = readList.Max();
-        var min = readList.Min();
-        //var min = readList
-        //      .Where(item => item > 0) // Only positive numbers
-        //      .Min();
-
-        var range = (double)(max - min);
-
-       //if (true)
-       //     {
-       //     for (int i = 0; i < cropLimit; i++)
-       //         {
-       //              Debug.Log(readList.Max());
-       //             readList[readList.IndexOf(readList.Max())] = 0;
-       //         }
-       //     }
-
-        var normalised
-            = readList.Select(i => 1 * (i - min) / range)
-                .ToList();
-        //TBD remove only for data check
-
-     
-
-        //Debug.Log("Min: " + min);
-        //Debug.Log("Max: " + max);
-        //Debug.Log("Average: " + readList.Sum()/readList.Count);
-
-        //readList.Sort();
-
-        //Debug.Log("Median: " + readList[readList.Count / 2]);
-
-        //Debug.Log("Before: " + readList.Count);
-
-        //for (int i = 0; i < readList.Count; i++)
-        //{
-        //    if (readList[i] == 0) readList.Remove(readList[i]);
-        //}
-        //Debug.Log("After: " + readList.Count);
-        gameObject.GetComponent<SpotDrawer>().clearBatchcounter();
-        gameObject.GetComponent<SpotDrawer>().setColors(normalised);
-    }
-
+    /// <summary>
+    /// Reads gene from C18 heart databasae demo embedded.
+    /// </summary>
+    /// <param name="geneName">The string to be read. (ENSEMBLEID)</param>
     public void readC18Expression(string geneName)
     {
         int pos = geneNames.IndexOf(geneName);
@@ -312,24 +197,46 @@ public class SearchManager : MonoBehaviour
             = resultExpression.Select(i => 1 * (i - min) / range)
                 .ToList();
 
-        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
-
-
+        sd.setColors(normalised);
     }
 
-    // checking the datasets of all slides for the position of the gene 
+    /// <summary>
+    /// Normalisation of the list of expression values and passing it to SpotDrawer script to visualise onto model
+    /// </summary>
+    /// <param name="readList">List of read expression values in float (unormalised)</param>
+    private void normaliseAndDraw(List<float> readList)
+    {
+        var max = readList.Max();
+        var min = readList.Min();
+        var range = (double)(max - min);
+        var normalised
+            = readList.Select(i => 1 * (i - min) / range)
+                .ToList();
+
+        sd.clearBatchcounter();
+        sd.setColors(normalised);
+    }
+
+    /// <summary>
+    /// checking the datasets of all slides for the position of the gene (VISIUM)
+    /// </summary>
+    /// <param name="geneName"></param>
     public void readExpressionList(string geneName)
     {
         int x = 0;
-        gameObject.GetComponent<SpotDrawer>().clearBatchcounter();
+        sd.clearBatchcounter();
         //for each dataset selected
         foreach (string p in datasetPaths)
         {
-                sh.GetComponent<CSVReader>().searchForGene(p, geneName, x);
+                csvr.searchForGene(p, geneName, x);
                 x++; 
         }
     }
 
+    /// <summary>
+    /// REading ENSEMBLE IDs from visium hdf file. Currently not used.
+    /// </summary>
+    /// <param name="geneName"></param>
     public void searchEnsembleId(string geneName)
     {
         foreach (string p in datasetPaths)
@@ -351,25 +258,65 @@ public class SearchManager : MonoBehaviour
         }
     }
 
-    IEnumerator calculateExpresssionValues(List<int> indicesTemps, List<int> indPtrs, float[] resultExpressionTemp, int posInGeneList)
+
+    //########################################################################################################################
+    // H5 Query functions
+
+    /// <summary>
+    /// Reads sbyte data from h5 datafile
+    /// </summary>
+    /// <param name="hdfpath">filepath in hdf file e.g. "X/data"</param>
+    public void querySbyte(string hdfpath)
     {
-
-        for (int x = 0; x < indPtrs.Count; x++)
+        List<float> readList;
+        foreach (string dp in datasetPaths)
         {
-            if (indicesTemps.Contains(posInGeneList))
-            {
-                resultExpression.Add(resultExpressionTemp[indicesTemps.IndexOf(posInGeneList)]);
-            }
-            else
-            {
-                resultExpression.Add(0);
-            }
+            readList = fr.querySbytetoFloat(dp, hdfpath);
 
-            posInGeneList = posInGeneList + indPtrs[x];
-
+            normaliseAndDraw(readList);
         }
-
-        yield return null;
     }
 
+    /// <summary>
+    /// Reads 64Float data from h5 datafile
+    /// </summary>
+    /// <param name="hdfpath">filepath in hdf file e.g. "X/data"</param>
+    public void query64bitFloat(string hdfpath)
+    {
+        List<float> readList;
+        foreach (string dp in datasetPaths)
+        {
+            readList = fr.queryFloat(dp, hdfpath);
+
+            normaliseAndDraw(readList);
+        }
+    }
+
+    /// <summary>
+    /// Reads 32bit float data from h5 datafile
+    /// </summary>
+    /// <param name="hdfpath">filepath in hdf file e.g. "X/data"</param>
+    public void query32bitFloat(string hdfpath)
+    {
+        List<float> readList;
+        foreach (string dp in datasetPaths)
+        {
+            readList = fr.querf32Float(dp, hdfpath);
+            normaliseAndDraw(readList);
+        }
+    }
+
+    /// <summary>
+    /// Reads Int data from h5 datafile
+    /// </summary>
+    /// <param name="hdfpath">filepath in hdf file e.g. "X/data"</param>
+    public void queryInt(string hdfpath)
+    {
+        List<float> readList;
+        foreach (string dp in datasetPaths)
+        {
+            readList = fr.query32BitInt(dp, hdfpath);
+            normaliseAndDraw(readList);
+        }
+    }
 }

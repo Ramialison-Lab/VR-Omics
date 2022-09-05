@@ -234,6 +234,8 @@ public class TomoSeqDrawer : MonoBehaviour
                 }
             }
         }
+        symbolSelect = cubeSymb;
+
         startSpotDrawer(tempx, tempy, tempz);
         gameObject.GetComponent<DataTransferManager>().adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(90,0,0));
 
@@ -304,7 +306,7 @@ public class TomoSeqDrawer : MonoBehaviour
             float y = ycoords[i];
             float z = zcoords[i];
 
-            batches.Add(new MeshWrapper { mesh = sphere.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z)});
+            batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z)});
         }
 
         start = true;

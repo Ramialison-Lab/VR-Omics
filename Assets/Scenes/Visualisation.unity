@@ -13250,6 +13250,7 @@ MonoBehaviour:
   cubeSymb: {fileID: 97734267}
   diamondSymb: {fileID: 1355762986}
   MainMenuPanel: {fileID: 1202353247}
+  mergePanel: {fileID: 1142214284}
   colourGradientObject: {fileID: 1336465869}
   colGradChilds: []
   gd:
@@ -13281,10 +13282,6 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
-  highlightIdentifier1: 
-  highlightIdentifier2: 
-  highlightIdentifier3: 
-  highlightIdentifier4: 
   active: 0
   passThrough: 0
   minTresh: 0
@@ -13297,7 +13294,6 @@ MonoBehaviour:
   - {fileID: 1954772186}
   - {fileID: 2013484048}
   - {fileID: 1034406866}
-  mergePanel: {fileID: 1142214284}
 --- !u!114 &1052670661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13338,7 +13334,7 @@ MonoBehaviour:
   LRgenes: []
   symbolSelect: {fileID: 0}
   sphereSymb: {fileID: 1796680520}
-  cubeSymb: {fileID: 0}
+  cubeSymb: {fileID: 97734267}
   diamondSymb: {fileID: 1355762986}
   AP_Exp: []
   VD_Exp: []
@@ -13376,7 +13372,8 @@ MonoBehaviour:
   tomoseq: 0
   xenium: 0
   merfish: 0
-  c18_visium: 0
+  c18_visium: 1
+  other: 0
   df: {fileID: 0}
   csvr: {fileID: 0}
   sc: {fileID: 0}
@@ -13429,9 +13426,6 @@ MonoBehaviour:
   expVals: []
   resultExpressionTemp: []
   geneNamesC18: Assets/Datasets/C18heart/C18_genelist.csv
-  visium: 1
-  tomoseq: 0
-  cropLimit: 20
 --- !u!114 &1052670665
 MonoBehaviour:
   m_ObjectHideFlags: 0
