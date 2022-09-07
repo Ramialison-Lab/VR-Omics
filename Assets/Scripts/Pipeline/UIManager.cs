@@ -15,38 +15,21 @@ public class UIManager : MonoBehaviour
 {
     //UI buttons
     public Button downloadbtn;
-    public TMP_Dropdown dropdown_list; //added by SJ 
+    public TMP_Dropdown dropdown_list; 
     public Button uploadbtn;
     public Button pipelinebtn;
     public Button vrbtn;
+
     //UI panels
     public GameObject downloadpanel;
     public GameObject uploadpanel;
     public GameObject pipelinepanel;
     public GameObject vrpanel;
-    public RawImage expandImage;
-
-    public RawImage imagetest;
-    public Image test;
-    public GameObject sliceRawImage;
-    public GameObject slicePanel;
     public GameObject filterPanel;
     public GameObject warningPanel;
     public GameObject expandPanel;
     public GameObject pipelinestepPanel;
-
-    public String destinationPath;
-    public String filepathUpload;
-
-    public List<GameObject> storedSlices;
-    public GameObject sliceContainerPrefab;
     public GameObject contentPanel;
-
-    public List<GameObject> slicesList;
-    public List<String> datapaths;
-    public List<String> filePaths;
-    public List<String> transferDatapaths;
-    public GameObject alignBtn;
     public GameObject alignmentPanel;
     public GameObject pipelineParamPanel;
     public GameObject alignmentTogglePanel;
@@ -60,22 +43,104 @@ public class UIManager : MonoBehaviour
     public GameObject merfishLoadPanel;
     public GameObject otherLoadPanel;
     public GameObject loadingPanel;
+
+    //H&E stain backgorund slice and Container
+    public GameObject sliceRawImage;
+    public RawImage expandImage;
+    public GameObject sliceContainerPrefab;
+    public List<GameObject> slicesList;
+    public GameObject alignBtn;
     public Sprite checkmark;
 
+    //Lists 
+    public List<String> filePaths;
+    public List<String> transferDatapaths;
     public List<String> storePathForWarning;
-    private int[] storePos;
-    public String infotext;
-    private bool skipFilter = false;
-    private bool btnPressed = false;
+    private List<String> m_DropOptions; 
 
+    //bools
+    private bool skipFilter = false;
     private bool filterStep = false;
-    private bool correlationStep = false;
-    private bool clusteringStep = false;
     private bool SVGStep = false;
 
-    Texture2D myTexture;
+    //strings
+    public String destinationPath;
+    public String filepathUpload;
+    public String infotext;
 
-    private List<String> m_DropOptions; //added by SJ 
+    //Sidebar expand menu variables
+    private bool expMenuVisium = false;
+    private bool expMenuMerfish = false;
+    private bool expMenuXen = false;
+    private bool expMenuTomo = false;
+    private bool expMenuStomics = false;
+    private bool expMenuOther = false;
+
+    public GameObject mainExpandPanelVisium;
+    public GameObject mainExpandPanelXenium;
+    public GameObject mainExpandPanelTomo;
+    public GameObject mainExpandStomics;
+    public GameObject mainExpandOther;
+    public GameObject mainExpandMerfish;
+
+    public GameObject expandBtnActivePanelVisium;
+    public GameObject expandBtnActivePanelXenium;
+    public GameObject expandBtnActivePanelTomo;
+    public GameObject expandBtnActivePanelStomics;
+    public GameObject expandBtnActivePanelMerfish;
+    public GameObject expandBtnActivePanelOther;
+
+    //Rotation slice
+    public List<int> rotationValues;
+    private int rotPos = 0;
+    private GameObject currentSelection;
+
+    //alignment
+    public Dropdown dropd;
+    public List<RawImage> images;
+    public Slider slider;
+
+    //Pipeline toggles
+    public Toggle poltTogglePip;
+    public Toggle svgToggle;
+    public Toggle plotToggle;
+    
+    //GameObjects
+    public GameObject visiumSuccessPanel;
+
+    // TMP_Inputfield for datapaths
+    public TMP_InputField xeniumFeaturesTMP;
+    public TMP_InputField xeniumSpotsTMP;
+    public TMP_InputField xeniumMatPathField;
+    public TMP_InputField xeniumFeaturesTMPLoad;
+    public TMP_InputField xeniumSpotsTMPLoad;
+    public TMP_InputField xeniumHDFFieldLoad;
+    public TMP_InputField stomicsPathField;
+    public TMP_InputField stomicsPathProcessField;
+    public TMP_InputField tomoAPfield;
+    public TMP_InputField tomoVDfield;
+    public TMP_InputField tomoLRfield;
+    public TMP_InputField tomoGenefield;
+    public TMP_InputField merfishMatProcessTMP;
+    public TMP_InputField merfishMatLoadTMP;
+    public TMP_InputField merfishMetaProcessTMP;
+    public TMP_InputField merfishMetaLoadTMP;
+    public TMP_InputField otherMatLoadTMP;
+    public TMP_InputField otherMetaLoadTMP;
+
+    //strings to store datapaths
+    public string stomicsPath;
+    public string APPath;
+    public string VDPath;
+    public string LRPath;
+    public string tomoGenePath;
+    public string xeniumPAth;
+    public string xeniumGenesPath;
+    public string xeniumSpotsPath;
+    public string otherMatrixPath;
+    public string otherMetaPath;
+    public string merfishGenePath;
+    public string merfishMetaPath;
 
     private void Start()
     {
@@ -83,6 +148,9 @@ public class UIManager : MonoBehaviour
         filePaths = new List<string>();
     }
 
+    /// <summary>
+    /// UI Panel management, controlls which Panel is active.
+    /// </summary>
     public void switchPanel()
     {
         // Manages which panel at UI is currently active
@@ -148,41 +216,88 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private bool expMenu = false;
-    private bool expMenuMerfish = false;
-    private bool expMenuXen = false;
-    private bool expMenuTomo = false;
-    private bool expMenuStomics = false;
-    private bool expMenuOther = false;
-    public GameObject mainExpandPanelVis;
-    public GameObject mainExpandPanelXenium;
-    public GameObject mainExpandPanelTomo;
-    public GameObject mainExpandStomics;
-    public GameObject mainExpandOther;
-    public GameObject mainExpandMerfish;
+    /// <summary>
+    /// Expands the transfered panel into visible view and collapses all other panels out of view.
+    /// </summary>
+    /// <param name="panelToMove">The panel to be expanded</param>
+    private void expandPanelOut(GameObject panelToMove)
+    {
+        disableAllExpandBTnPanels();
+
+        if (expMenuVisium)
+        {
+            mainExpandPanelVisium.transform.localPosition = new Vector2(mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.y);
+            expMenuVisium = !expMenuVisium;
+        }
+        if (expMenuMerfish)
+        {
+            mainExpandMerfish.transform.localPosition = new Vector2(mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.y);
+            expMenuMerfish = !expMenuMerfish;
+        }       
+        if (expMenuXen)
+        {
+            mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
+            expMenuXen = !expMenuXen;
+        }
+        if (expMenuTomo)
+        {
+            mainExpandPanelTomo.transform.localPosition = new Vector2(mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.y);
+            expMenuTomo = !expMenuTomo;
+        }        
+        if (expMenuStomics)
+        {
+            mainExpandStomics.transform.localPosition = new Vector2(mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.y);
+            expMenuStomics = !expMenuStomics;
+        }        
+        if (expMenuOther)
+        {
+            mainExpandOther.transform.localPosition = new Vector2(mainExpandOther.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandOther.GetComponent<RectTransform>().transform.localPosition.y);
+            expMenuOther = !expMenuOther;
+        }
+
+        panelToMove.transform.localPosition = new Vector2(panelToMove.GetComponent<RectTransform>().transform.localPosition.x + 200, panelToMove.GetComponent<RectTransform>().transform.localPosition.y);
+    }
+
+    /// <summary>
+    /// Disables the background panels of the Buttons that are indicating that the button is pressed.
+    /// </summary>
+    private void disableAllExpandBTnPanels()
+    {
+        expandBtnActivePanelVisium.SetActive(false);
+        expandBtnActivePanelXenium.SetActive(false);
+        expandBtnActivePanelTomo.SetActive(false);
+        expandBtnActivePanelStomics.SetActive(false);
+        expandBtnActivePanelMerfish.SetActive(false);
+        expandBtnActivePanelOther.SetActive(false);
+    }
+
+    //##################################### Toggle ExpandMenus from sidebar according to button pressed
     public void toggleExpandMenu()
     {
-
-        if (!expMenu)
+        if (!expMenuVisium)
         {
-            mainExpandPanelVis.transform.localPosition =  new Vector2(mainExpandPanelVis.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandPanelVis.GetComponent<RectTransform>().transform.localPosition.y);
+            expandPanelOut(mainExpandPanelVisium);
+            expandBtnActivePanelVisium.SetActive(true);
         }
         else
         {
-            mainExpandPanelVis.transform.localPosition =  new Vector2(mainExpandPanelVis.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelVis.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandPanelVisium.transform.localPosition =  new Vector2(mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.y);
+            expandBtnActivePanelVisium.SetActive(false);
         }
-        expMenu = !expMenu;
+        expMenuVisium = !expMenuVisium;
     }
 
     public void toggleExpandMenuXenium()
     {
         if (!expMenuXen)
         {
-            mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
+            expandPanelOut(mainExpandPanelXenium);
+            expandBtnActivePanelXenium.SetActive(true);
         }
         else
         {
             mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
+            expandBtnActivePanelXenium.SetActive(false);
         }
         expMenuXen = !expMenuXen;
     }
@@ -191,11 +306,13 @@ public class UIManager : MonoBehaviour
     {
         if (!expMenuMerfish)
         {
-            mainExpandMerfish.transform.localPosition = new Vector2(mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.y);
+            expandPanelOut(mainExpandMerfish);
+            expandBtnActivePanelMerfish.SetActive(true);
         }
         else
         {
             mainExpandMerfish.transform.localPosition = new Vector2(mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.y);
+            expandBtnActivePanelMerfish.SetActive(false);
         }
         expMenuMerfish = !expMenuMerfish;
     }
@@ -204,11 +321,13 @@ public class UIManager : MonoBehaviour
     {
         if (!expMenuTomo)
         {
-            mainExpandPanelTomo.transform.localPosition = new Vector2(mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.y);
+            expandPanelOut(mainExpandPanelTomo);
+            expandBtnActivePanelTomo.SetActive(true);
         }
         else
         {
             mainExpandPanelTomo.transform.localPosition = new Vector2(mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.y);
+            expandBtnActivePanelTomo.SetActive(false);
         }
         expMenuTomo = !expMenuTomo;
     }
@@ -217,11 +336,14 @@ public class UIManager : MonoBehaviour
     {
         if (!expMenuStomics)
         {
-            mainExpandStomics.transform.localPosition = new Vector2(mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.y);
+            expandPanelOut(mainExpandStomics);
+            expandBtnActivePanelStomics.SetActive(true);
         }
         else
         {
             mainExpandStomics.transform.localPosition = new Vector2(mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.y);
+            expandBtnActivePanelStomics.SetActive(false);
+
         }
         expMenuStomics = !expMenuStomics;
     }
@@ -230,17 +352,16 @@ public class UIManager : MonoBehaviour
     {
         if (!expMenuOther)
         {
-            mainExpandOther.transform.localPosition = new Vector2(mainExpandOther.GetComponent<RectTransform>().transform.localPosition.x + 200, mainExpandOther.GetComponent<RectTransform>().transform.localPosition.y);
+            expandPanelOut(mainExpandOther);
+            expandBtnActivePanelOther.SetActive(true);
         }
         else
         {
             mainExpandOther.transform.localPosition = new Vector2(mainExpandOther.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandOther.GetComponent<RectTransform>().transform.localPosition.y);
+            expandBtnActivePanelOther.SetActive(false);
         }
         expMenuOther = !expMenuOther;
     }
-
-
-
 
     public void adjust_download_list()
     {
@@ -264,8 +385,6 @@ public class UIManager : MonoBehaviour
         dropdown_list.AddOptions(m_DropOptions);
 
     }
-
-    private GameObject currentSelection;
 
     public void alignment()
     {
@@ -319,8 +438,6 @@ public class UIManager : MonoBehaviour
 
     }
 
-    private int rotPos = 0;
-
     public void selectForRotation()
     {
         currentSelection = GameObject.Find(dropd.options[dropd.value].text.ToString());
@@ -352,7 +469,6 @@ public class UIManager : MonoBehaviour
         catch (Exception) {}
     }
 
-    public Slider slider;
 
     private void setTransperencyLevel(GameObject selObj)
     {
@@ -400,11 +516,6 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public List<RawImage> images;
-    public Dropdown dropd;
-
-
-
     public void nextPipelineStep()
     {
 		string[] params_out = new string[4];
@@ -416,11 +527,6 @@ public class UIManager : MonoBehaviour
 			//TBD1 skip all filter steps and just prepare data for VR-Omics = preprocess without filter values
 			params_out[1] = 1.ToString();
 								
-								
-								
-								
-								
-
         }
         // Manages the workflow of the pipeline part to guide through the 4 individual steps
         
@@ -438,15 +544,13 @@ public class UIManager : MonoBehaviour
         else
         {
 		    //TBD1 skip filtetr values and go to steps selected
-
-																																												   
+																																									   
 			if (SVGStep == true) {
 	
 				//TBD1 Sabrina if toggle on, include SVG analysis to filter step
 				params_out[2] = 1.ToString();
 			}
-									
-																																	 
+																																							 
         }
 
         if (SVGStep == true) {
@@ -456,8 +560,6 @@ public class UIManager : MonoBehaviour
 		
 		save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt","/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
     }
-
-
 
     public void skipFilterStep()
     {
@@ -509,10 +611,6 @@ public class UIManager : MonoBehaviour
         //loadingPanel.SetActive(false);
     }
 
-    public Toggle svgToggle;
-    public Toggle plotToggle;
-
-    public GameObject visiumSuccessPanel;
     public void processOnlyVisium()
     {
         // this function only processes the data and doesn't start the visualisation scene
@@ -662,8 +760,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public Toggle poltTogglePip;
-
     public void getFilterParamPipeline()
     {
         // Reading filter parameters for python pipeline
@@ -713,25 +809,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public TMP_InputField xeniumFeaturesTMP;
-    public TMP_InputField xeniumSpotsTMP;
-    public TMP_InputField xeniumMatPathField;    
-    public TMP_InputField xeniumFeaturesTMPLoad;
-    public TMP_InputField xeniumSpotsTMPLoad;
-    public TMP_InputField xeniumHDFFieldLoad;
-    public TMP_InputField stomicsPathField;
-    public TMP_InputField stomicsPathProcessField;
-    public TMP_InputField tomoAPfield;
-    public TMP_InputField tomoVDfield;
-    public TMP_InputField tomoLRfield;
-    public TMP_InputField tomoGenefield;
-    public TMP_InputField merfishMatProcessTMP;
-    public TMP_InputField merfishMatLoadTMP;
-    public TMP_InputField merfishMetaProcessTMP;
-    public TMP_InputField merfishMetaLoadTMP;
-    public TMP_InputField otherMatLoadTMP;
-    public TMP_InputField otherMetaLoadTMP;
-
     //Xenium Process
     //Browse for GeneList of Xenium data
     public void selectXeniumFeatures()
@@ -770,20 +847,6 @@ public class UIManager : MonoBehaviour
     {
         StartCoroutine(selectBrowseFile("xeniumHDF", xeniumMatPathField));
     }
-
-
-    public string stomicsPath;
-    public string APPath;
-    public string VDPath;
-    public string LRPath;
-    public string tomoGenePath;
-    public string xeniumPAth;
-    public string xeniumGenesPath;
-    public string xeniumSpotsPath;
-    public string otherMatrixPath;
-    public string otherMetaPath;
-    public string merfishGenePath;
-    public string merfishMetaPath;
 
     public void selectStomicssFile()
     {
@@ -970,8 +1033,6 @@ public class UIManager : MonoBehaviour
     }
 
 
-
-
     public void processStomics()
     {
         //TBD load file from datapath: stomicsPath to pipeline and transpose the file (see Sharepoint)
@@ -1014,7 +1075,6 @@ public class UIManager : MonoBehaviour
     public void runStomics()
     {
         gameObject.GetComponent<DataTransfer>().startStomics();
-
     }
 
     public void processMerfish()
@@ -1068,8 +1128,6 @@ public class UIManager : MonoBehaviour
     {
         warningPanel.SetActive(false);
     }
-
-    public List<int> rotationValues;
 
     public void confirmDuplicate()
     {
@@ -1200,7 +1258,6 @@ public class UIManager : MonoBehaviour
                     });
                 }
             }
-
         }
     }
 

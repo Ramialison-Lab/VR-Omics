@@ -20,7 +20,6 @@ public class TomoSeqDrawer : MonoBehaviour
     private List<MeshWrapper> batches = new List<MeshWrapper>();
     private List<Color> spotColours = new List<Color>();
 
-    public GameObject sphere;
     private int count = 0;
     private bool start = false;
     private bool newColours = false;

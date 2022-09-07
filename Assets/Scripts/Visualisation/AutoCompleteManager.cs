@@ -5,33 +5,45 @@ using UnityEngine.UI;
 
 public class AutoCompleteManager : MonoBehaviour
 {
-    public GameObject InputGameObject;
     public List<string> geneNames;
+
+    //Gameobjects
+    public GameObject InputGameObject;
     public GameObject btnPrefab;
     public GameObject scrollView;
+    public GameObject InputContainsToggle;
     public List<GameObject> tempBtns;
-    public GameObject toggle;
-    public bool visium = false;
-    public bool tomoseq = false;
-    public bool stomics = false;
-    public bool xenium = false;
-    public bool merfish = false;
 
-    public void setGeneNameList(List<string> geneNames)
-    {
-       // this.geneNames = new HashSet<string>(geneNames);
-        this.geneNames = geneNames;
-    }
+    // Access variables
+    private DataTransferManager dfm;
+    private SearchManager sm;
+    private TomoSeqDrawer tsd;
+    private SpotDrawer sd;
+    private TMP_InputField tmp_input;
+    public GameObject viewPortGo;
+
 
     private void Start()
     {
-       visium = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().visium;
-       tomoseq = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().tomoseq;
-       stomics = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().stomics;
-       xenium = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().xenium;
-       merfish = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().merfish;
+       dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
+       sm = GameObject.Find("ScriptHolder").GetComponent<SearchManager>();
+       tsd = GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>();
+       sd = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>();
+       tmp_input = InputGameObject.GetComponent<TMP_InputField>();
     }
 
+    /// <summary>
+    /// Set geneName list 
+    /// </summary>
+    /// <param name="geneNames">List of gene names in the current dataset</param>
+    public void setGeneNameList(List<string> geneNames)
+    {
+        this.geneNames = geneNames;
+    }
+
+    /// <summary>
+    /// On Value change method, reads input and compares to genelist, find ind results matching the input. Creates a list of buttons with matching values.
+    /// </summary>
     public void textEnter()
     {
         int i = 0;
@@ -44,87 +56,80 @@ public class AutoCompleteManager : MonoBehaviour
         foreach (string x in geneNames)
         {
             // toogle if genenames contain the input or if gene starts with input
-            if (!toggle.GetComponent<Toggle>().isOn)
+            if (!InputContainsToggle.GetComponent<Toggle>().isOn)
             {
-                if (x.ToLower().Contains(InputGameObject.GetComponent<TMP_InputField>().text.ToLower()))
+                if (x.ToLower().Contains(tmp_input.text.ToLower()))
                 {
-                    if (i < 15)
                     {
-                        //create Button for each entry
-                        // addListener with function to it and transfer button as GO
-                        GameObject btn = Instantiate(btnPrefab);
-                        btn.transform.SetParent(scrollView.transform);
-                        btn.transform.localPosition = new Vector3(0, 0, 0);
-                        btn.GetComponentInChildren<TMP_Text>().fontSize = 16;
-                        btn.GetComponentInChildren<TMP_Text>().text = x;
-                        tempBtns.Add(btn);
-                        btn.GetComponent<Button>().onClick.AddListener(delegate
-                        {
-
-                            selectGene(btn);
-                        });
+                        populateResultBtns(x);
                         i++;
-                    }
-                    else
-                    {
-                        break;
+                        viewPortGo.GetComponent<RectTransform>().sizeDelta = new Vector2(viewPortGo.GetComponent<RectTransform>().rect.width, (i * 30f));
+
                     }
                 }
             }
-            else if (toggle.GetComponent<Toggle>().isOn)
+            else if (InputContainsToggle.GetComponent<Toggle>().isOn)
             {
                 if (x.ToLower().StartsWith(InputGameObject.GetComponent<TMP_InputField>().text.ToLower()))
                 {
-                    if (i < 10)
                     {
-                        //create Button for each entry
-                        // addListener with function to it and transfer button as GO
-                        GameObject btn = Instantiate(btnPrefab);
-                        btn.transform.SetParent(scrollView.transform);
-                        btn.transform.localPosition = new Vector3(0, 0, 0);
-                        btn.GetComponentInChildren<TMP_Text>().fontSize = 14;
-                        btn.GetComponentInChildren<TMP_Text>().text = x;
-                        tempBtns.Add(btn);
-                        btn.GetComponent<Button>().onClick.AddListener(delegate
-                        {
-
-                            selectGene(btn);
-                        });
+                        populateResultBtns(x);
                         i++;
-                    }
-                    else
-                    {
-                        break;
+                        viewPortGo.GetComponent<RectTransform>().sizeDelta = new Vector2(viewPortGo.GetComponent<RectTransform>().rect.width, (i * 30f));
+
                     }
                 }
             }
         }
     }
 
-    // Pass gene to SearchManager to read expression values
+    /// <summary>
+    /// Adds resultbutton with description geneName
+    /// </summary>
+    /// <param name="x">the name of the gene to be shown as button description</param>
+    private void populateResultBtns(string geneName)
+    {
+        GameObject btn = Instantiate(btnPrefab);
+        btn.transform.SetParent(scrollView.transform);
+        btn.transform.localPosition = new Vector3(0, 0, 0);
+        btn.GetComponentInChildren<TMP_Text>().fontSize = 14;
+        btn.GetComponentInChildren<TMP_Text>().text = geneName;
+        tempBtns.Add(btn);
+        btn.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            selectGene(btn);
+        });
+    }
+
+    /// <summary>
+    /// Passes the selected gene to the respective method to read out the corrseponding expression value matrix
+    /// </summary>
+    /// <param name="btn"></param>
     private void selectGene(GameObject btn)
     {
-
-        InputGameObject.GetComponent<TMP_InputField>().text = btn.GetComponentInChildren<TMP_Text>().text;
+        TMP_Text tmp_txt = btn.GetComponentInChildren<TMP_Text>();
+        InputGameObject.GetComponent<TMP_InputField>().text = tmp_txt.text;
 
         //TBD indexof genenames transfer to read hdf
 
-            GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().resetNormalisedValues();
+        sd.resetNormalisedValues();
 
-        if (GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().c18_visium) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readC18Expression(btn.GetComponentInChildren<TMP_Text>().text);
-        else if (visium) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readExpressionList(btn.GetComponentInChildren<TMP_Text>().text);
-        else if (tomoseq) GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().runSearchTomo(btn.GetComponentInChildren<TMP_Text>().text);
-        else if (stomics)
+        if (dfm.c18_visium) sm.readC18Expression(tmp_txt.text);
+        else if (dfm.visium) sm.readExpressionList(tmp_txt.text);
+        else if (dfm.tomoseq) tsd.runSearchTomo(tmp_txt.text);
+        else if (dfm.stomics)
         {
-            int pos = geneNames.IndexOf(btn.GetComponentInChildren<TMP_Text>().text);
-            GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readStomicsExpression(btn.GetComponentInChildren<TMP_Text>().text, pos);
-            
+            int pos = geneNames.IndexOf(tmp_txt.text);
+            sm.readStomicsExpression(tmp_txt.text, pos);   
         }
-        else if (xenium) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readXeniumExpression(btn.GetComponentInChildren<TMP_Text>().text);
-        else if (merfish) GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readMerfishExpression(btn.GetComponentInChildren<TMP_Text>().text);
+        else if (dfm.xenium) sm.readXeniumExpression(tmp_txt.text);
+        else if (dfm.merfish) sm.readMerfishExpression(tmp_txt.text);
     }
 
-    //check if Inoutfield is focused
+    /// <summary>
+    /// Check if Inputfield for gene input is focused to avoid movement to be entered into search bar
+    /// </summary>
+    /// <returns></returns>
     public bool InputFocused()
     {
         return InputGameObject.GetComponent<TMP_InputField>().isFocused;

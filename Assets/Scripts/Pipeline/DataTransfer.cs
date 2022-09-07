@@ -43,6 +43,7 @@ public class DataTransfer : MonoBehaviour
 
     public void startVisium(string datapath)
     {
+        // TBD collect rotation values of alignment 
         visium = true;
         visiumPath = datapath;
     }
