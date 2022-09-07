@@ -55,6 +55,7 @@ public class AutoCompleteManager : MonoBehaviour
         if (InputGameObject.GetComponent<TMP_InputField>().text == "") { return; }
         foreach (string x in geneNames)
         {
+            if (i > 100) break;
             // toogle if genenames contain the input or if gene starts with input
             if (!InputContainsToggle.GetComponent<Toggle>().isOn)
             {

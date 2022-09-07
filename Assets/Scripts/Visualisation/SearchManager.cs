@@ -47,8 +47,10 @@ public class SearchManager : MonoBehaviour
             {
                 List<string> values = new List<string>();
                 values = line.Split(',').ToList();
-                geneNames.Add(values[0]);
+                if (values[1] != "") geneNames.Add(values[1].Substring(1));
+                else geneNames.Add(values[0].ToString());
             }
+
             acm.setGeneNameList(geneNames);
         }
         else if (dfm.visium)
@@ -319,4 +321,47 @@ public class SearchManager : MonoBehaviour
             normaliseAndDraw(readList);
         }
     }
+
+    //private void sortFunctionEnsemble()
+    //{
+    //    var ensemle = new List<string>();
+    //    var genename = new List<string>();
+    //    var result_gen = new List<string>();
+
+    //    foreach (string x in geneNames)
+    //    {
+    //        result_gen.Add("");
+    //    }
+
+    //    string[] newlines = File.ReadAllLines("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\c18_ensemble_csv.csv");
+    //    foreach (string line in newlines)
+    //    {
+    //        List<string> values = new List<string>();
+    //        values = line.Split(',').ToList();
+    //        ensemle.Add(values[0].TrimStart('"'));
+    //        genename.Add(values[1].TrimEnd('"'));
+    //    }
+
+
+
+    //    string filepath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\test.csv";
+    //    StreamWriter writer = new StreamWriter(filepath);
+
+    //    for (int i = 0; i < geneNames.Count; i++)
+    //    {
+
+    //        string temp = "";
+    //        if (ensemle.Contains(geneNames[i].ToString()))
+    //        {
+    //            int index = ensemle.IndexOf(geneNames[i].ToString());
+    //            result_gen[i] = genename[index];
+    //        }
+    //    }
+
+    //    for (int i = 0; i < geneNames.Count; i++)
+    //    {
+    //        writer.WriteLine(geneNames[i] + " , " + result_gen[i]);
+    //    }
+    //}
+
 }

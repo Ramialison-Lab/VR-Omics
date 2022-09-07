@@ -336,8 +336,8 @@ public class DataTransferManager : MonoBehaviour
             List<string> values = new List<string>();
             values = line.Split(',').ToList();
 
-            c18x.Add(float.Parse(values[10]));
-            c18y.Add(float.Parse(values[11]));
+            c18x.Add(-float.Parse(values[10]));
+            c18y.Add(-float.Parse(values[11]));
             c18z.Add(float.Parse(values[12]));
             c18spot.Add(values[16]);
         }
@@ -355,7 +355,6 @@ public class DataTransferManager : MonoBehaviour
         var zcoord = (c18z.Min() + c18z.Max()) / 2;
 
         //c18heartObj.transform.localScale = new Vector3(x/10, y/10, z/10);
-        c18heartObj.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y,zcoord);
         List<string> dp = new List<string>();
         sp.startSpotDrawer(c18x, c18y, c18z, c18spot, dp);
     }

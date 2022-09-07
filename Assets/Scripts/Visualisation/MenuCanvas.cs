@@ -36,7 +36,6 @@ public class MenuCanvas : MonoBehaviour
         locked = true;
         ulockBtn.SetActive(true);
         lockBtn.SetActive(false);
-
     }
 
     public void darkMode()
