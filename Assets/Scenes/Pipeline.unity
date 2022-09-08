@@ -14774,7 +14774,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Max count - Filter spotsby gene count
+  m_text: Max count - Filter spots by gene count
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -18275,7 +18275,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Filter spots by percantage of MT count (minimum)
+  m_text: Filter spots by percentage of MT count (minimum)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -26462,13 +26462,14 @@ MonoBehaviour:
   expandBtnActivePanelStomics: {fileID: 515002322}
   expandBtnActivePanelMerfish: {fileID: 1067623857}
   expandBtnActivePanelOther: {fileID: 81172097}
-  slider: {fileID: 426928015}
-  images: []
+  rotationValues: 
   dropd: {fileID: 1197309768}
+  images: []
+  slider: {fileID: 426928015}
+  poltTogglePip: {fileID: 0}
   svgToggle: {fileID: 363953661}
   plotToggle: {fileID: 1715588983}
   visiumSuccessPanel: {fileID: 1755970802}
-  poltTogglePip: {fileID: 0}
   xeniumFeaturesTMP: {fileID: 1802668409}
   xeniumSpotsTMP: {fileID: 736833854}
   xeniumMatPathField: {fileID: 188053400}
@@ -26501,7 +26502,6 @@ MonoBehaviour:
   merfishMetaPath: 
   other2Dslider: {fileID: 736922855}
   other2D: 0
-  rotationValues: 
 --- !u!114 &994948023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36446,7 +36446,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Min count - Filter spotsby gene count
+  m_text: Min count - Filter spots by gene count
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -51659,7 +51659,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Filter genes that are detectec in less than the number of cells detected
+  m_text: Filter genes that are detected in less than the number of cells detected
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -51925,7 +51925,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Filter spots by percantage of MT count (maximum)
+  m_text: Filter spots by percentage of MT count (maximum)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
