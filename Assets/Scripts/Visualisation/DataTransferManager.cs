@@ -24,8 +24,13 @@ public class DataTransferManager : MonoBehaviour
     public DataTransfer df;
     public CSVReader csvr;
     public SliceCollider sc;
-
     public GameObject[] disableBtn = new GameObject[3];
+
+    //Universal lists
+    public List<float> x_coordList;
+    public List<float> y_coordList;
+    public List<float> z_coordList;
+    public List<string> spotNameList;
 
     //Lists
     public List<string> hdf5datapaths;
@@ -50,6 +55,7 @@ public class DataTransferManager : MonoBehaviour
     //C18
     public GameObject c18Sphere;
     public GameObject c18heartObj;
+    public GameObject heartTranspSlider;
     public string geneC18 = "Assets/Datasets/C18heart/C18genesTranspose.csv";
     public string coordsC18 = "Assets/Datasets/C18heart/C18heart.csv";
 
@@ -59,6 +65,11 @@ public class DataTransferManager : MonoBehaviour
 
     //Merfish
     public List<string> MerfishGeneNames = new List<string>();
+
+    //Other
+    public string otherMatrixPath ;
+    public string otherMetaPath;
+    public int[]  otherCSVCols;
 
     void Start()
     {
@@ -70,41 +81,44 @@ public class DataTransferManager : MonoBehaviour
         // xenium = true;
         // merfish = true;
 
+        visium = false;
+        c18_visium = false;
+        stomics = false;
+        tomoseq = false;
+        xenium = false;
+        merfish = false;
+        other = false;
+
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
         sp = scriptHolder.GetComponent<SpotDrawer>();
         fr = scriptHolder.GetComponent<FileReader>();
         csvr = scriptHolder.GetComponent<CSVReader>();
         sc = scriptHolder.GetComponent<SliceCollider>();
+        df = scriptHolderPipeline.GetComponent<DataTransfer>();
 
         // Uncomment for pipeline connection
-        //pipelineConnected();
+        pipelineConnected();
 
-        if (c18_visium) { visium = true; }
+        //if (c18_visium) { visium = true; }
 
-        if (visium)
-        {
-            sp.visium = visium;
-            if (c18_visium) startC18();
-            else startVisium();
-        }
-        else if (tomoseq) startTomoSeq();
-        else if (stomics) startStomics();
-        else if (xenium) startXenium();
-        else if (merfish) startMerfish();
-        else if (other) startOther();
+        //if (visium)
+        //{
+        //    sp.visium = visium;
+        //    if (c18_visium) startC18();
+        //    else startVisium();
+        //}
+        //else if (tomoseq) startTomoSeq();
+        //else if (stomics) startStomics();
+        //else if (xenium) startXenium();
+        //else if (merfish) startMerfish();
+        //else if (other) startOther();
     }
 
     private void pipelineConnected()
     {
         df = scriptHolderPipeline.GetComponent<DataTransfer>();
-        if (df.visium)
-        {
-            visium = true;
-            sp.visium = visium;
-            startVisium();
-        }
-        else if (df.visiumMultiple)
+        if (df.visium || df.visiumMultiple)
         {
             visium = true;
             sp.visium = visium;
@@ -154,9 +168,16 @@ public class DataTransferManager : MonoBehaviour
         //{
         //    hdf5datapaths.Add(data + "\\" + data.Split('\\').Last() + "_scanpy.hdf5");
         //}
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-       // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
         //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+        // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+
+        foreach(string x in df.pathList) {
+
+            string[] files = System.IO.Directory.GetFiles(x, "*.hdf5");
+
+            hdf5datapaths.AddRange(files);
+        }
 
         addHAndEImg = true;
         List<string> shortList = new List<string>();
@@ -212,6 +233,11 @@ public class DataTransferManager : MonoBehaviour
             csvr.createSpotList(p);
             count = count + 1;
         }
+        Debug.Log(tempx.Min());
+        Debug.Log(tempx.Max());
+        Debug.Log(tempy.Min());
+        Debug.Log(tempy.Max());
+        Debug.Log(tempz.Min());
         adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(0, 0, 0));
         sp.startSpotDrawer(tempx, tempy, tempz, spotnames, datSetNames);
         sel_DropD.ClearOptions();
@@ -320,6 +346,7 @@ public class DataTransferManager : MonoBehaviour
     private void startC18()
     {
         c18heartObj.SetActive(true);
+        heartTranspSlider.SetActive(true);
         Color transp = new Color();
         transp.a = 0.5f;
         c18Sphere.transform.localScale = new Vector3(50, 50, 50);
@@ -402,51 +429,46 @@ public class DataTransferManager : MonoBehaviour
         sp.startSpotDrawer(stomicsX, stomicsY, stomicsZ, stomicsSpotId, dp);
     }
 
-    private void startOther() { 
+    private void startOther() {
+
+        otherMatrixPath = df.otherMatrixPath;
+        otherMetaPath = df.otherMetaPath;
+        otherCSVCols = df.otherCSVCols;
+
+        //otherCSVCols 0 → X, 1 → Y, 2 → Z, 3 → Spot/Cell ID,
 
         List<float> otherX = new List<float>();
         List<float> otherY = new List<float>();
         List<float> otherZ = new List<float>();
+        List<string> otherSpots = new List<string>();
 
         if (df.other2D)
         {
             //all z = 0
         }
 
-        //TBD
+        string[] lines = File.ReadAllLines(otherMetaPath);
 
-        //string[] lines = File.ReadAllLines(coordsC18);
-        //lines = lines.Skip(1).ToArray();
+        if (otherCSVCols[4] == 1)
+        {
+            lines = lines.Skip(1).ToArray();
+        }
 
-        //foreach (string line in lines)
-        //{
-        //    List<string> values = new List<string>();
-        //    values = line.Split(',').ToList();
+        foreach (string line in lines)
+        {
+                List<string> values = new List<string>();
+                values = line.Split(',').ToList();
+                otherX.Add(float.Parse(values[otherCSVCols[0]]));
+                otherY.Add(float.Parse(values[otherCSVCols[1]]));
+                otherZ.Add(float.Parse(values[otherCSVCols[2]]));
+                otherSpots.Add(values[otherCSVCols[3]]);
+        }
 
-        //    c18x.Add(float.Parse(values[10]));
-        //    c18y.Add(float.Parse(values[11]));
-        //    c18z.Add(float.Parse(values[12]));
-        //    c18spot.Add(values[16]);
-        //}
-        ////Depth corrdinates from C18heart dataset
-        //int[] c18xHC = { 192, 205, 230, 250, 285, 289, 321, 327, 353 };
 
-        //for (int i = 0; i < 9; i++)
-        //{
-        //    sc.setSliceCollider((int)c18x.Min(), (int)c18x.Max(), (int)c18y.Max(), (int)c18y.Min(), c18xHC[i], "");
-        //}
-        //adjustCamera(c18x.Min(), c18x.Max(), c18y.Min(), c18y.Max(), c18z.Min(), new Vector3(0, 0, 0));
-        //var x = Math.Abs(c18x.Min() - c18x.Max());
-        //var y = Math.Abs(c18y.Min() - c18y.Max());
-        //var z = Math.Abs(c18z.Min() + c18z.Max());
-        //var zcoord = (c18z.Min() + c18z.Max()) / 2;
-
-        ////c18heartObj.transform.localScale = new Vector3(x/10, y/10, z/10);
-        //c18heartObj.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, zcoord);
-        //List<string> dp = new List<string>();
-        //sp.startSpotDrawer(c18x, c18y, c18z, c18spot, dp);
+        adjustCamera(otherX.Min(), otherX.Max(), otherY.Min(), otherY.Max(), otherZ.Min(), new Vector3(0, 0, 0));
+        List<string> dp = new List<string>();
+        sp.startSpotDrawer(otherX, otherY, otherZ, otherSpots, dp);
     }
-
 
     /// <summary>
     /// Return the id of datasetNameToCheck within the merged list of datasets

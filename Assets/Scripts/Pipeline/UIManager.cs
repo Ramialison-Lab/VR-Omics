@@ -127,6 +127,7 @@ public class UIManager : MonoBehaviour
     public TMP_InputField merfishMetaLoadTMP;
     public TMP_InputField otherMatLoadTMP;
     public TMP_InputField otherMetaLoadTMP;
+    public TMP_InputField[] otherCSVInfo = new TMP_InputField[4];
 
     //strings to store datapaths
     public string stomicsPath;
@@ -142,10 +143,18 @@ public class UIManager : MonoBehaviour
     public string merfishGenePath;
     public string merfishMetaPath;
 
+    //Info other custom function
+    public Slider other2Dslider;
+    public bool other2D = false;
+    public int[] otherCSVColumns;
+    public Toggle otherHeader;
+
+
     private void Start()
     {
         DontDestroyOnLoad(transform.gameObject);
         filePaths = new List<string>();
+        otherCSVColumns = new int[5];
     }
 
     /// <summary>
@@ -1100,16 +1109,22 @@ public class UIManager : MonoBehaviour
     
     public void runOther()
     {
-        if(other2Dslider.value == 1)
+        for(int i=0; i < 4; i++)
+        {
+            if (otherCSVInfo[i].text != "") otherCSVColumns[i] = int.Parse(otherCSVInfo[i].text);
+            else otherCSVColumns[i] = -1;
+        }
+
+        if (otherHeader.isOn) otherCSVColumns[4] = 1; else otherCSVColumns[4] = 0;
+
+        if (other2Dslider.value == 1)
         {
             other2D = true;
         }
+
         gameObject.GetComponent<DataTransfer>().startOther();
 
     }
-    public Slider other2Dslider;
-    public bool other2D = false;
-
 
     IEnumerator selectUploadfile()
     {

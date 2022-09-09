@@ -85,6 +85,22 @@ public class SearchManager : MonoBehaviour
             geneNames.AddRange(dfm.MerfishGeneNames);
             acm.setGeneNameList(geneNames);
         }
+        else if (dfm.other)
+        {
+            string[] lines = File.ReadAllLines(dfm.otherMetaPath);
+
+            if(dfm.otherCSVCols[4] == 1)
+            {
+                lines = lines.Skip(1).ToArray();
+            }
+
+            foreach (string line in lines)
+            {
+                List<string> values = new List<string>();
+                values = line.Split(',').ToList();
+                geneNames.Add(values[0]);
+            }
+        }
     }
 
     /// <summary>

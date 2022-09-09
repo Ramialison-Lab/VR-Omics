@@ -34,6 +34,7 @@ public class DataTransfer : MonoBehaviour
     public List<int> distances;
 
     public bool other2D = false;
+    public int[] otherCSVCols = new int[4];
 
     // This script stores the datapaths and all values that need to be transfered to the Visualisation scene
     private void Start()
@@ -76,6 +77,7 @@ public class DataTransfer : MonoBehaviour
         other = true;
         otherMatrixPath = ui.otherMatrixPath;
         otherMetaPath = ui.otherMetaPath;
+        otherCSVCols = ui.otherCSVColumns;
         startVisualisationScene();
     }
 

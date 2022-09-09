@@ -132,6 +132,12 @@ public class MenuCanvas : MonoBehaviour
 
     }
 
+    public GameObject c18heart;
+    public void setC18heartObjTransp(GameObject slider)
+    {
+        //TBD set c18heart.transparency
+    }
+
     public bool getLasso()
     {
         return lasso;

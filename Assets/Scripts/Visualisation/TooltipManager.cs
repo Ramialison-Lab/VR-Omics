@@ -70,6 +70,9 @@ public class TooltipManager : MonoBehaviour
                 break;            
             case "CopySlider":
                 x = "Apply selection to the copy slice";
+                break;             
+            case "C18HeartSlider":
+                x = "Set the transparency of the heart object";
                 break;            
             case "SelectionDropdown":
                 x = "Choose active dataset";
@@ -110,10 +113,7 @@ public class TooltipManager : MonoBehaviour
             case "UnselectLassoBtn":
                 x = "Undo all selections";
                 break;                
-
         }
-
-
         return x;
     }
 

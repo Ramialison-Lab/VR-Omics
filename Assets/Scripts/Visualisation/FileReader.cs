@@ -228,6 +228,7 @@ public class FileReader : MonoBehaviour
     //Reads ints from HDF5 dataset
     IEnumerator readInt(string path)
     {
+        Debug.Log(path);
         col = H5Loader.LoadDataset<long>(path, "/obs/array_col");
         row = H5Loader.LoadDataset<long>(path, "/obs/array_row");
 
