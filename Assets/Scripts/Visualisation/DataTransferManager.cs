@@ -22,7 +22,6 @@ public class DataTransferManager : MonoBehaviour
     private GameObject scriptHolder;    
     private SpotDrawer sp;
     public DataTransfer df;
-    public CSVReader csvr;
     public SliceCollider sc;
     public GameObject[] disableBtn = new GameObject[3];
 
@@ -34,12 +33,13 @@ public class DataTransferManager : MonoBehaviour
 
     //Lists
     public List<string> hdf5datapaths;
+    public List<string> csvGeneExpPaths;
+    public List<string> dataSetNames;
     public List<float> tempx;
     public List<float> tempy;
     public List<float> tempz;
     public List<string> spotnames;
     public List<string> geneNamesDistinct;
-    public List<string> datSetNames;
     public List<List<string>> SpotNameDictionary = new List<List<string>>();
     public List<List<string>> geneNameDictionary = new List<List<string>>();
 
@@ -49,6 +49,7 @@ public class DataTransferManager : MonoBehaviour
     public TMP_Dropdown sel_DropD; //Dropdown choosing active Slide in dataset
 
     //STOmics
+    public string stomicsDataPath;
     public List<string> stomicsSpotId = new List<string>();
     public List<string> stomicsGeneNames = new List<string>();
     public List<float> stomicsX = new List<float>();
@@ -96,7 +97,6 @@ public class DataTransferManager : MonoBehaviour
         scriptHolder = GameObject.Find("ScriptHolder");
         sp = scriptHolder.GetComponent<SpotDrawer>();
         fr = scriptHolder.GetComponent<FileReader>();
-        csvr = scriptHolder.GetComponent<CSVReader>();
         sc = scriptHolder.GetComponent<SliceCollider>();
         try { df = scriptHolderPipeline.GetComponent<DataTransfer>(); } catch (Exception) { }
 
@@ -167,22 +167,20 @@ public class DataTransferManager : MonoBehaviour
     {
 
         ////TBD! Comment out following lines to transfer data from pipeline
-        //List<string> datapaths = scriptHolderPipeline.GetComponent<UIManager>().getDatapathList();
-        //foreach (string data in datapaths)
-        //{
-        //    hdf5datapaths.Add(data + "\\" + data.Split('\\').Last() + "_scanpy.hdf5");
-        //}
+
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+        csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");        
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-        // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+        csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");
 
         //foreach (string x in df.pathList)
         //{
 
         //    string[] files = System.IO.Directory.GetFiles(x, "*.h5");
-            
+        //    string[] csvfiles = System.IO.Directory.GetFiles(x, "*.csv");
+
         //    hdf5datapaths.AddRange(files);
+        //    csvGeneExpPaths.AddRange(csvfiles);
         //}
 
         addHAndEImg = true;
@@ -209,7 +207,7 @@ public class DataTransferManager : MonoBehaviour
                 tempx.Add(fr.row[i]);
                 tempy.Add(fr.col[i]);
                 tempz.Add(visiumDepth);
-                datSetNames.Add(p);
+                dataSetNames.Add(p);
             }
 
             //Adds the collider slice for each dataset that detects user input
@@ -238,7 +236,7 @@ public class DataTransferManager : MonoBehaviour
         }
 
         adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(0, 0, 0));
-        sp.startSpotDrawer(tempx, tempy, tempz, spotnames, datSetNames);
+        sp.startSpotDrawer(tempx, tempy, tempz, spotnames, dataSetNames);
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
     }
@@ -415,15 +413,17 @@ public class DataTransferManager : MonoBehaviour
 
         //Pipeline transposed paths files:
         List<string> dp = new List<string>();
-        string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad";
-        stomicsSpotId = fr.readH5StringVar(datapath, "var/_index", stomicsSpotId);
-        stomicsGeneNames = fr.readH5StringVar(datapath, "obs/geneID", stomicsGeneNames);
-        stomicsX = fr.readH5Float(datapath, "var/new_x");
-        stomicsY = fr.readH5Float(datapath, "var/new_y");
-        stomicsZ = fr.readH5Float(datapath, "var/new_z");
+        
+        //stomicsDataPath = df.stomicsPath;
+        stomicsDataPath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad";
+        stomicsSpotId = fr.readH5StringVar(stomicsDataPath, "var/_index", stomicsSpotId);
+        stomicsGeneNames = fr.readH5StringVar(stomicsDataPath, "obs/geneID", stomicsGeneNames);
+        stomicsX = fr.readH5Float(stomicsDataPath, "var/new_x");
+        stomicsY = fr.readH5Float(stomicsDataPath, "var/new_y");
+        stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
 
         adjustCamera(stomicsX.Min(),stomicsX.Max(),stomicsY.Min(),stomicsY.Max(),stomicsZ.Min(), new Vector3(0,0,0));
-        sp.stomicsPath = datapath;
+        sp.stomicsPath = stomicsDataPath;
 
         sp.startSpotDrawer(stomicsX, stomicsY, stomicsZ, stomicsSpotId, dp);
     }

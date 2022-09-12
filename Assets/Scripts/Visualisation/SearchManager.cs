@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -16,6 +17,7 @@ public class SearchManager : MonoBehaviour
     public List<string> resultSpotname;
     public List<float> resultExpression;
     public List<float> expVals;
+    public List<double> normalised;
 
     //Access variables
     private FileReader fr;
@@ -23,7 +25,6 @@ public class SearchManager : MonoBehaviour
     private AutoCompleteManager acm;
     private TomoSeqDrawer tmd;
     private SpotDrawer sd;
-    private CSVReader csvr;
 
     //TBD path to be deleted
     public string geneNamesC18 = "Assets/Datasets/C18heart/C18_genelist.csv";
@@ -36,7 +37,6 @@ public class SearchManager : MonoBehaviour
         fr = gameObject.GetComponent<FileReader>();
         tmd = gameObject.GetComponent<TomoSeqDrawer>();
         sd = gameObject.GetComponent<SpotDrawer>();
-        csvr = gameObject.GetComponent<CSVReader>();
 
         // Creating list of genes for search bar
         if (dfm.c18_visium)
@@ -101,9 +101,10 @@ public class SearchManager : MonoBehaviour
     /// <param name="pos">The position of the gene in the list of genes. Refers to position in the list it is stored</param>
     public void readStomicsExpression(string geneName, int pos)
     {
-        var Xdata = fr.readH5Float("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/data");
-        var indices = fr.query32BitInttoIntArray("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/indices");
-        int[] indptr = fr.query32BitInttoIntArray("C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad", "X/indptr");
+        //LINKPATH
+        var Xdata = fr.readH5Float(dfm.stomicsDataPath, "X/data");
+        var indices = fr.query32BitInttoIntArray(dfm.stomicsDataPath, "X/indices");
+        int[] indptr = fr.query32BitInttoIntArray(dfm.stomicsDataPath, "X/indptr");
 
         int start = indptr[pos];
         int end = indptr[pos + 1];
@@ -145,6 +146,7 @@ public class SearchManager : MonoBehaviour
     {
         var genes = dfm.MerfishGeneNames;
         int x = genes.IndexOf(searchGene);
+        //LINKPATH
         string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
 
 
@@ -235,15 +237,15 @@ public class SearchManager : MonoBehaviour
         int x = 0;
         sd.clearBatchcounter();
         //for each dataset selected
-        foreach (string datapath in dfm.hdf5datapaths)
+        foreach (string datapath in dfm.csvGeneExpPaths)
         {
-                csvr.searchForGene(datapath, geneName, x);
-                x++; 
+            searchGene(datapath, GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().geneNameDictionary[x].IndexOf(geneName), geneName);
+            x++; 
         }
     }
 
     /// <summary>
-    /// REading ENSEMBLE IDs from visium hdf file. Currently not used.
+    /// Reading ENSEMBLE IDs from visium hdf file. Currently not used.
     /// </summary>
     /// <param name="geneName"></param>
     public void searchEnsembleId(string geneName)
@@ -266,7 +268,6 @@ public class SearchManager : MonoBehaviour
             fr.clearGeneNames();
         }
     }
-
 
     //########################################################################################################################
     // H5 Query functions
@@ -327,6 +328,30 @@ public class SearchManager : MonoBehaviour
             readList = fr.query32BitInt(dp, hdfpath);
             normaliseAndDraw(readList);
         }
+    }
+
+    IEnumerator search(string dp, int pos, string gn)
+    {
+
+        string[] lines = File.ReadAllLines(dp);
+        // Removing the string with the genename from the CSV list before parsing each entry into a int value for the list
+        resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
+
+        var max = resultExpression.Max();
+        var min = resultExpression.Min();
+        var range = (double)(max - min);
+        normalised
+            = resultExpression.Select(i => 1 * (i - min) / range)
+                .ToList();
+
+        yield return null;
+    }
+
+    public void searchGene(string datapath, int pos, string gn)
+    {
+        StartCoroutine(search(datapath, pos, gn));
+        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
+        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().lastGeneName(gn);
     }
 
     //private void sortFunctionEnsemble()
