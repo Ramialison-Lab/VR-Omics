@@ -605,7 +605,7 @@ public class UIManager : MonoBehaviour
         startInfo.FileName = Application.dataPath + executable;
         //startInfo.Arguments = "\"" + wd + "/rcode.r" + " \"";
         startInfo.UseShellExecute = false;
-        startInfo.CreateNoWindow = true;
+        startInfo.CreateNoWindow = false;
         UnityEngine.Debug.Log("exe started");
 
 
@@ -615,8 +615,7 @@ public class UIManager : MonoBehaviour
         };
 
         p.Start();
-        p.WaitForExit();
-        UnityEngine.Debug.Log("exe finished");
+        //p.WaitForExit();
         //loadingPanel.SetActive(false);
     }
 
@@ -1012,7 +1011,7 @@ public class UIManager : MonoBehaviour
         ProcessStartInfo startInfo = new ProcessStartInfo();
         startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_xenium/dist/Load_xenium.exe";
         startInfo.UseShellExecute = false;
-        startInfo.CreateNoWindow = true;
+        startInfo.CreateNoWindow = false;
         UnityEngine.Debug.Log("Xenium File load started.");
 
 
@@ -1022,7 +1021,7 @@ public class UIManager : MonoBehaviour
         };
 
         p.Start();
-        p.WaitForExit();
+        //p.WaitForExit();
         //loadingPanel.SetActive(false);
 
     }
