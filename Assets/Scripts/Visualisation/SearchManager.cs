@@ -9,7 +9,6 @@ public class SearchManager : MonoBehaviour
     public string ensembleId;
 
     //Lists
-    public List<string> datasetPaths;
     public List<string> geneNameList;
     public List<string> geneNames;
     public List<string> ensembleIds;
@@ -55,15 +54,7 @@ public class SearchManager : MonoBehaviour
         }
         else if (dfm.visium)
         {
-            datasetPaths = dfm.hdf5datapaths;
-            //searchEnsembleId(gene);
-            foreach (string p in datasetPaths)
-            {
-                fr.readGeneNames(p);
-                geneNames.AddRange(fr.getGeneNameList());
-                geneNames = geneNames.Distinct().ToList();
-            }
-            acm.setGeneNameList(geneNames);
+            acm.setGeneNameList(dfm.geneNamesDistinct);
         }
         else if (dfm.tomoseq)
         {
@@ -244,9 +235,9 @@ public class SearchManager : MonoBehaviour
         int x = 0;
         sd.clearBatchcounter();
         //for each dataset selected
-        foreach (string p in datasetPaths)
+        foreach (string datapath in dfm.hdf5datapaths)
         {
-                csvr.searchForGene(p, geneName, x);
+                csvr.searchForGene(datapath, geneName, x);
                 x++; 
         }
     }
@@ -257,7 +248,7 @@ public class SearchManager : MonoBehaviour
     /// <param name="geneName"></param>
     public void searchEnsembleId(string geneName)
     {
-        foreach (string p in datasetPaths)
+        foreach (string p in dfm.hdf5datapaths)
         {
             fr.readGeneNames(p);
             geneNameList = fr.getGeneNameList();
@@ -287,7 +278,7 @@ public class SearchManager : MonoBehaviour
     public void querySbyte(string hdfpath)
     {
         List<float> readList;
-        foreach (string dp in datasetPaths)
+        foreach (string dp in dfm.hdf5datapaths)
         {
             readList = fr.querySbytetoFloat(dp, hdfpath);
 
@@ -302,7 +293,7 @@ public class SearchManager : MonoBehaviour
     public void query64bitFloat(string hdfpath)
     {
         List<float> readList;
-        foreach (string dp in datasetPaths)
+        foreach (string dp in dfm.hdf5datapaths)
         {
             readList = fr.queryFloat(dp, hdfpath);
 
@@ -317,7 +308,7 @@ public class SearchManager : MonoBehaviour
     public void query32bitFloat(string hdfpath)
     {
         List<float> readList;
-        foreach (string dp in datasetPaths)
+        foreach (string dp in dfm.hdf5datapaths)
         {
             readList = fr.querf32Float(dp, hdfpath);
             normaliseAndDraw(readList);
@@ -331,7 +322,7 @@ public class SearchManager : MonoBehaviour
     public void queryInt(string hdfpath)
     {
         List<float> readList;
-        foreach (string dp in datasetPaths)
+        foreach (string dp in dfm.hdf5datapaths)
         {
             readList = fr.query32BitInt(dp, hdfpath);
             normaliseAndDraw(readList);

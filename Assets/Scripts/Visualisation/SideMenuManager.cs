@@ -24,7 +24,7 @@ public class SideMenuManager : MonoBehaviour
         texts[2].text = "Expressionvalue: " + expVal.ToString() ;
         texts[3].text = "Location: " + loc.ToString();
 
-        SpotNameDictionary = GameObject.Find("ScriptHolder").GetComponent<CSVReader>().getSpotList();
+        SpotNameDictionary = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().SpotNameDictionary;
         int pos = SpotNameDictionary[datasetId].IndexOf(SpotName);
         readSpotInfo(pos, Dataset);
 

@@ -19,8 +19,8 @@ public class CSVReader : MonoBehaviour
     public List<float> ev;
     public List<float> resultExpression;
     public List<double> normalised;
-    public List<List<string>> geneNameDictionary = new List<List<string>>();
-    public List<List<string>> SpotNameDictionary = new List<List<string>>();
+  //  public List<List<string>> geneNameDictionary = new List<List<string>>();
+  //  public List<List<string>> SpotNameDictionary = new List<List<string>>();
 
     // search Function for gene
     public void searchGene(string datapath, int pos, string gn)
@@ -34,44 +34,21 @@ public class CSVReader : MonoBehaviour
 
     public void searchForGene(string dp, string gn, int x)
     {        
-        searchGene(dp, geneNameDictionary[x].IndexOf(gn), gn);
+        searchGene(dp, GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().geneNameDictionary[x].IndexOf(gn), gn);
     }
 
-    public void createSpotList(string dp)
-    {
-        datapath = dp.Replace(dp.Split('\\').Last(), "") + "test2Csv.csv";
-        StartCoroutine(createSpotDic(datapath));
-    }
+    //public void createGeneLists(string dp)
+    //{
+    //    datapath = dp.Replace(dp.Split('\\').Last(), "") + "Original.csv";
+    //    StartCoroutine(createGeneDic(datapath));
+    //}
 
-    public void createGeneLists(string dp)
-    {
-        datapath = dp.Replace(dp.Split('\\').Last(), "") + "Original.csv";
-        StartCoroutine(createGeneDic(datapath));
-    }
-    IEnumerator createSpotDic(string dp)
-    {
-        string[] lines = File.ReadAllLines(dp);
-        lines = lines.Skip(1).ToArray();
-        List<string> values = new List<string>();
-        foreach( string x in lines)
-        {
-            values.Add(x.Split(',').First());
-        }
-        SpotNameDictionary.Add(values);
-        yield return null;
-    }
-
-    public List<List<string>> getSpotList()
-    {
-        return SpotNameDictionary;
-    }
-
-    IEnumerator createGeneDic(string dp)
-    {
-        StreamReader sr = new StreamReader(dp);
-        geneNameDictionary.Add(sr.ReadLine().Split(',').ToList<string>());
-        yield return null;
-    }
+    //IEnumerator createGeneDic(string dp)
+    //{
+    //    StreamReader sr = new StreamReader(dp);
+    //    geneNameDictionary.Add(sr.ReadLine().Split(',').ToList<string>());
+    //    yield return null;
+    //}
 
     IEnumerator search(string dp, int pos, string gn)
     {
@@ -95,47 +72,10 @@ public class CSVReader : MonoBehaviour
         return input.text.ToString();
     }
 
-    public void searchGeneExpressionAsync()
-    {
-        string genename = getName();
-        var temp = Time.time;
-        var ind = Array.IndexOf(header, genename);
-        if (ind == -1) Debug.Log("Gene not found...");
-
-        searchExpressionBased(ind);
-    }
-
-    public void setDatapath()
-    {
-        datapath = "Assets/Datasets/tissue_positions_list.csv";
-    }
-
     private void readHeader(string path)
     {
         header = File.ReadAllLines(path).First<string>().Split(',');
     }
-
-    private void searchExpressionBased(int ind)
-    {
-        string[] lines = File.ReadAllLines("Assets/Datasets/var.csv");
-        foreach (string line in lines)
-        {
-            List<string> values = new List<string>();
-            values = line.Split(',').ToList();
-
-            if (values[ind] != "0")
-            {
-                try
-                {
-                    GameObject temp = GameObject.Find(values[0]);
-                    temp.GetComponent<MeshRenderer>().material = Material1;
-                }
-                catch (Exception) { }
-            }
-
-        }
-    }
-
 
     IEnumerator readGeneExpressionLevel()
     {

@@ -16,7 +16,7 @@ public class FileReader : MonoBehaviour
     string filePath = "Assets/Datasets/";
     string H5FileName = "testhdf.hdf5";
 
-    List<string> geneNames = new List<string>();
+    public List<string> geneNames = new List<string>();
     List<string> ensembleIds = new List<string>();
     List<string> spotBarcodes = new List<string>();
     public string[] spotNames;
@@ -34,6 +34,7 @@ public class FileReader : MonoBehaviour
     /// <param name="path"></param>
     public void readGeneNames(string path)
     {
+        geneNames.Clear();
         StartCoroutine(readVarLengthString(path, "var/_index", geneNames));
     }
 
@@ -228,7 +229,6 @@ public class FileReader : MonoBehaviour
     //Reads ints from HDF5 dataset
     IEnumerator readInt(string path)
     {
-        Debug.Log(path);
         col = H5Loader.LoadDataset<long>(path, "/obs/array_col");
         row = H5Loader.LoadDataset<long>(path, "/obs/array_row");
 

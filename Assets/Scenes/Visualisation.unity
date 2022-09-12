@@ -13619,12 +13619,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65f91acdc97124a4b8f75371d6aa166e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visium: 0
+  visium: 1
   stomics: 0
   tomoseq: 0
   xenium: 0
   merfish: 0
-  c18_visium: 1
+  c18_visium: 0
   other: 0
   df: {fileID: 0}
   csvr: {fileID: 0}
@@ -13633,6 +13633,10 @@ MonoBehaviour:
   - {fileID: 1359217083}
   - {fileID: 599666541}
   - {fileID: 126598705}
+  x_coordList: []
+  y_coordList: []
+  z_coordList: []
+  spotNameList: []
   hdf5datapaths: []
   tempx: []
   tempy: []
@@ -13654,6 +13658,9 @@ MonoBehaviour:
   Xeniumdata: C:\Users\Denis.Bienroth\Desktop\ST_technologies\Xenium\Xenium.csv
   XeniumGeneNames: []
   MerfishGeneNames: []
+  otherMatrixPath: 
+  otherMetaPath: 
+  otherCSVCols: 
 --- !u!114 &1052670664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13668,7 +13675,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gene: 
   ensembleId: 
-  datasetPaths: []
   geneNameList: []
   geneNames: []
   ensembleIds: []

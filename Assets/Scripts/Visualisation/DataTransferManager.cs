@@ -38,7 +38,10 @@ public class DataTransferManager : MonoBehaviour
     public List<float> tempy;
     public List<float> tempz;
     public List<string> spotnames;
+    public List<string> geneNamesDistinct;
     public List<string> datSetNames;
+    public List<List<string>> SpotNameDictionary = new List<List<string>>();
+    public List<List<string>> geneNameDictionary = new List<List<string>>();
 
     //Visium
     public bool addHAndEImg = false;
@@ -81,13 +84,13 @@ public class DataTransferManager : MonoBehaviour
         // xenium = true;
         // merfish = true;
 
-        visium = false;
-        c18_visium = false;
-        stomics = false;
-        tomoseq = false;
-        xenium = false;
-        merfish = false;
-        other = false;
+        //visium = false;
+        //c18_visium = false;
+        //stomics = false;
+        //tomoseq = false;
+        //xenium = false;
+        //merfish = false;
+        //other = false;
 
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
@@ -95,24 +98,24 @@ public class DataTransferManager : MonoBehaviour
         fr = scriptHolder.GetComponent<FileReader>();
         csvr = scriptHolder.GetComponent<CSVReader>();
         sc = scriptHolder.GetComponent<SliceCollider>();
-        df = scriptHolderPipeline.GetComponent<DataTransfer>();
+        try { df = scriptHolderPipeline.GetComponent<DataTransfer>(); } catch (Exception) { }
 
         // Uncomment for pipeline connection
-        pipelineConnected();
+        //pipelineConnected();
 
         //if (c18_visium) { visium = true; }
 
-        //if (visium)
-        //{
-        //    sp.visium = visium;
-        //    if (c18_visium) startC18();
-        //    else startVisium();
-        //}
-        //else if (tomoseq) startTomoSeq();
-        //else if (stomics) startStomics();
-        //else if (xenium) startXenium();
-        //else if (merfish) startMerfish();
-        //else if (other) startOther();
+        if (visium)
+        {
+            sp.visium = visium;
+            if (c18_visium) startC18();
+            else startVisium();
+        }
+        else if (tomoseq) startTomoSeq();
+        else if (stomics) startStomics();
+        else if (xenium) startXenium();
+        else if (merfish) startMerfish();
+        else if (other) startOther();
     }
 
     private void pipelineConnected()
@@ -162,22 +165,25 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startVisium()
     {
+
         ////TBD! Comment out following lines to transfer data from pipeline
         //List<string> datapaths = scriptHolderPipeline.GetComponent<UIManager>().getDatapathList();
         //foreach (string data in datapaths)
         //{
         //    hdf5datapaths.Add(data + "\\" + data.Split('\\').Last() + "_scanpy.hdf5");
         //}
-        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
         // hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
         //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
 
-        foreach(string x in df.pathList) {
+        //foreach (string x in df.pathList)
+        //{
 
-            string[] files = System.IO.Directory.GetFiles(x, "*.hdf5");
-
-            hdf5datapaths.AddRange(files);
-        }
+        //    string[] files = System.IO.Directory.GetFiles(x, "*.h5");
+            
+        //    hdf5datapaths.AddRange(files);
+        //}
 
         addHAndEImg = true;
         List<string> shortList = new List<string>();
@@ -197,30 +203,22 @@ public class DataTransferManager : MonoBehaviour
             shortList.Add(p.Split('\\').Last());
             //reads barcodes and row and col positions and create merged list of coordinates
             fr.calcCoords(p);
-            long[] row = fr.getRowArray();
-            for (int i = 0; i < row.Length; i++)
+
+            for (int i = 0; i < fr.row.Length; i++)
             {
-                tempx.Add(row[i]);
+                tempx.Add(fr.row[i]);
+                tempy.Add(fr.col[i]);
+                tempz.Add(visiumDepth);
                 datSetNames.Add(p);
             }
 
-            long[] col = fr.getColArray();
-            for (int j = 0; j < row.Length; j++)
-            {
-                tempy.Add(col[j]);
-            }
-            for (int k = 0; k < row.Length; k++)
-            {
-                tempz.Add(visiumDepth);
-            }
-
             //Adds the collider slice for each dataset that detects user input
-            sc.setSliceCollider((int)col.Min(), (int)col.Max() + 1, (int)row.Max() + 1, (int)row.Min(), visiumDepth, p);
+            sc.setSliceCollider((int)fr.col.Min(), (int)fr.col.Max() + 1, (int)fr.row.Max() + 1, (int)fr.row.Min(), visiumDepth, p);
             //create Spotnames
-            string[] sname = fr.getSpotName();
-            for (int l = 0; l < row.Length; l++)
+
+            for (int l = 0; l < fr.row.Length; l++)
             {
-                spotnames.Add(sname[l]);
+                spotnames.Add(fr.spotNames[l]);
             }
 
             //cleanup 
@@ -229,15 +227,16 @@ public class DataTransferManager : MonoBehaviour
             // TBD - depth automatically increased by 10, needs to be replaced with depth information set in pipeline alignment 
             visiumDepth = visiumDepth + 10;
 
-            csvr.createGeneLists(p);
-            csvr.createSpotList(p);
-            count = count + 1;
+            //csvr.createGeneLists(p);
+            SpotNameDictionary.Add(spotnames);
+            fr.readGeneNames(p);
+            geneNameDictionary.Add(fr.geneNames);
+            geneNamesDistinct.AddRange(fr.geneNames);
+            geneNamesDistinct = geneNamesDistinct.Distinct().ToList();
+
+            count = count + 1;           
         }
-        Debug.Log(tempx.Min());
-        Debug.Log(tempx.Max());
-        Debug.Log(tempy.Min());
-        Debug.Log(tempy.Max());
-        Debug.Log(tempz.Min());
+
         adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(0, 0, 0));
         sp.startSpotDrawer(tempx, tempy, tempz, spotnames, datSetNames);
         sel_DropD.ClearOptions();
