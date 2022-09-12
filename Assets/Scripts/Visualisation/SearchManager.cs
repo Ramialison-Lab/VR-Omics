@@ -128,7 +128,6 @@ public class SearchManager : MonoBehaviour
         var max = expVals.Max();
         var min = expVals.Min();
 
-        Debug.Log(max);
         var range = (double)(max - min);
         var normalised
             = expVals.Select(i => 1 * (i - min) / range)

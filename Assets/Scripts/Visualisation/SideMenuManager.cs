@@ -8,30 +8,31 @@ public class SideMenuManager : MonoBehaviour
 {
     TMP_Text[] texts;
     public List<List<string>> SpotNameDictionary = new List<List<string>>();
+    private DataTransferManager dfm;
 
     private void Start()
     {
         texts = this.gameObject.GetComponentsInChildren<TMP_Text>();
-
+        dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
     }
 
     public void setSpotInfo(string SpotName, string Dataset, int id, Vector3 loc, float expVal)
     {
-        int datasetId = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().identifyDatasetInt(Dataset);
+        int datasetId = dfm.hdf5datapaths.IndexOf(Dataset);
         foreach (TMP_Text tt in texts) tt.text = "";
         texts[0].text = SpotName;
         texts[1].text = "Dataset: " + Dataset.Split('\\').Last();
-        texts[2].text = "Expressionvalue: " + expVal.ToString() ;
+        texts[2].text = "Expressionvalue: " + expVal.ToString();
         texts[3].text = "Location: " + loc.ToString();
 
-        SpotNameDictionary = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().SpotNameDictionary;
-        int pos = SpotNameDictionary[datasetId].IndexOf(SpotName);
+        int pos = dfm.SpotNameDictionary[datasetId].IndexOf(SpotName);
         readSpotInfo(pos, Dataset);
 
     }
 
     private void readSpotInfo(int pos, string dataset)
     {
+        //TBD LINKPATH
         string[] lines = File.ReadAllLines(dataset.Replace(dataset.Split('\\').Last(), "") + "test2Csv.csv");
 
             List<string> values = new List<string>();

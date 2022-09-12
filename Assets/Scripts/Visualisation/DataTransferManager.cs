@@ -167,7 +167,7 @@ public class DataTransferManager : MonoBehaviour
     {
 
         ////TBD! Comment out following lines to transfer data from pipeline
-
+        //TBD LINKPATH
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
         csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");        
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
@@ -246,7 +246,7 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startXenium()
     {
-        //TBD link paths from pipeline
+        //TBD LINKPATH
         string xeniumCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_info\\cell_info_csv.csv";
         string xeniumGeneList = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_feature_matrix_mtx\\features.tsv";
 
@@ -294,7 +294,7 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startMerfish()
     {
-        //TBD link paths from pipeline
+        //TBD LINKPATH
         string merfishCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BRainSlide1\\merfish_cell_metadata.csv";
         string merfishGenelist = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
 
@@ -389,6 +389,7 @@ public class DataTransferManager : MonoBehaviour
     private void startTomoSeq()
     {
         // transfer from pipeline
+        // TBD LINKPATH
         string ap_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_AP.csv";
         string vd_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_VD.csv";
         string lr_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_LR.csv";
@@ -423,7 +424,6 @@ public class DataTransferManager : MonoBehaviour
         stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
 
         adjustCamera(stomicsX.Min(),stomicsX.Max(),stomicsY.Min(),stomicsY.Max(),stomicsZ.Min(), new Vector3(0,0,0));
-        sp.stomicsPath = stomicsDataPath;
 
         sp.startSpotDrawer(stomicsX, stomicsY, stomicsZ, stomicsSpotId, dp);
     }
@@ -467,16 +467,6 @@ public class DataTransferManager : MonoBehaviour
         adjustCamera(otherX.Min(), otherX.Max(), otherY.Min(), otherY.Max(), otherZ.Min(), new Vector3(0, 0, 0));
         List<string> dp = new List<string>();
         sp.startSpotDrawer(otherX, otherY, otherZ, otherSpots, dp);
-    }
-
-    /// <summary>
-    /// Return the id of datasetNameToCheck within the merged list of datasets
-    /// </summary>
-    /// <param name="datasetNameToCheck">The name of the dataset to check it's position</param>
-    /// <returns></returns>
-    public int identifyDatasetInt(string datasetNameToCheck)
-    {
-        return hdf5datapaths.IndexOf(datasetNameToCheck);
     }
 
     /// <summary>

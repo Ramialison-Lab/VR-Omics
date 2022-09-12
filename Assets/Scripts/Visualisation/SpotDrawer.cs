@@ -75,7 +75,6 @@ public class SpotDrawer : MonoBehaviour
     private bool showGenesExpressed = false;
     private string lastGene;
     private string lastGeneCopy;
-    public string stomicsPath = "";
     public List<GameObject> activepanels = new List<GameObject>(4);
 
 
@@ -242,9 +241,10 @@ public class SpotDrawer : MonoBehaviour
 
             //reading out the next spotname and datasetname
             string sname = spotBarcodes[i];
-            string datasetn = stomicsPath;
+            string datasetn = "";
             try { datasetn = dataSet[i]; }
             catch (Exception) { }
+            if (dfm.stomics) datasetn = dfm.stomicsDataPath;
             batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount, highlightgroup = -1});
             startSpotdrawerCount++;
         }
@@ -260,7 +260,7 @@ public class SpotDrawer : MonoBehaviour
 
                 //reading out the next spotname and datasetname
                 string sname = spotBarcodes[i];
-                string datasetn = stomicsPath;
+                string datasetn = "";
                 try { datasetn = dataSet[i]; }
                 catch (Exception) { }
 

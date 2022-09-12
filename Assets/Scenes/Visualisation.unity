@@ -13541,7 +13541,6 @@ MonoBehaviour:
   maxTresh: 0
   clickoffset: 0.2
   visium: 0
-  stomicsPath: 
   activepanels:
   - {fileID: 947920379}
   - {fileID: 1954772186}
@@ -13619,15 +13618,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65f91acdc97124a4b8f75371d6aa166e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visium: 1
-  stomics: 0
+  visium: 0
+  stomics: 1
   tomoseq: 0
   xenium: 0
   merfish: 0
   c18_visium: 0
   other: 0
   df: {fileID: 0}
-  csvr: {fileID: 0}
   sc: {fileID: 0}
   disableBtn:
   - {fileID: 1359217083}
@@ -13638,13 +13636,16 @@ MonoBehaviour:
   z_coordList: []
   spotNameList: []
   hdf5datapaths: []
+  csvGeneExpPaths: []
+  dataSetNames: []
   tempx: []
   tempy: []
   tempz: []
   spotnames: []
-  datSetNames: []
+  geneNamesDistinct: []
   addHAndEImg: 0
   sel_DropD: {fileID: 562369942}
+  stomicsDataPath: 
   stomicsSpotId: []
   stomicsGeneNames: []
   stomicsX: []
@@ -13682,6 +13683,7 @@ MonoBehaviour:
   resultSpotname: []
   resultExpression: []
   expVals: []
+  normalised: []
   geneNamesC18: Assets/Datasets/C18heart/C18_genelist.csv
 --- !u!114 &1052670665
 MonoBehaviour:
@@ -13695,6 +13697,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c06d5ebe9562d7c428e6d7d9b1e4b154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  geneNames: []
   spotNames: []
   row: 
   col: 
@@ -13728,9 +13731,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33f2b0ad8a1645c4796ea11d39f8ff64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  datapath: 
   datapointPrefab: {fileID: 0}
   parent: {fileID: 0}
   header: []
+  tempObj: {fileID: 0}
   Material1: {fileID: 0}
   input: {fileID: 0}
   ev: []
