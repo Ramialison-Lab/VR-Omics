@@ -222,6 +222,9 @@ public class UIManager : MonoBehaviour
             case "LoadOtherBtn":
                 otherLoadPanel.SetActive(true);
                 break;
+            case "VisiumC18Btn":
+                runC18();
+                break;
         }
     }
 
@@ -1041,7 +1044,10 @@ public class UIManager : MonoBehaviour
         gameObject.GetComponent<DataTransfer>().startXenium();
     }
 
-
+    public void runC18()
+    {
+        gameObject.GetComponent<DataTransfer>().startC18();
+    }
     public void processStomics()
     {
         //TBD load file from datapath: stomicsPath to pipeline and transpose the file (see Sharepoint)

@@ -343,6 +343,34 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
+    public void setAllZeroColour(List<double> normalise)
+    {
+        firstSelect = true;
+        if (!colourcopy)
+        {
+            normalised.AddRange(normalise);
+            colVals.Clear();
+            if (normalise.Count < batches.Count) batchCounter = batchCounter + normalise.Count;
+            else batchCounter = batches.Count;
+            for (int i = 0; i < batchCounter; i++)
+            {
+                colVals.Add(Color.clear);
+            }
+        }
+        else if (copy && colourcopy)
+        {
+            normalisedCopy.Clear();
+            normalisedCopy.AddRange(normalise);
+            newColoursCopy = true;
+            colValsCopy.Clear();
+
+            for (int i = 0; i < batches.Count; i++)
+            {
+                colValsCopy.Add(Color.clear);
+            }
+        }
+    }
+
     /// <summary>
     /// Navigates normalised values for the original or side-by-side copy to the color gradient evaluation
     /// </summary>

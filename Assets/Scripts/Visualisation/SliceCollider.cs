@@ -52,14 +52,15 @@ public class SliceCollider : MonoBehaviour
             imagePlane.transform.localPosition = new Vector3(0, 0, -2);
             imagePlane.GetComponent<Renderer>().material = transparentMat;
 
+            //TBD LINKPATH
             string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
-            byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
+            byte[] byteArray = File.ReadAllBytes(imagepath + "\\figures\\show_spatial_all_hires.svg");
             Texture2D sampleTexture = new Texture2D(2, 2);
             bool isLoaded = sampleTexture.LoadImage(byteArray);
             calculateImageSize(datasetName);
             imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
             imagePlane.AddComponent<HAndEImageManager>();
-            imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\spatial\\tissue_hires_image.png");
+            imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\figures\\show_spatial_all_hires.png");
             imagePlane.AddComponent<BoxCollider>();
             //imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
             HandEobjs.Add(imagePlane);

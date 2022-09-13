@@ -135,7 +135,9 @@ public class MenuCanvas : MonoBehaviour
     public GameObject c18heart;
     public void setC18heartObjTransp(GameObject slider)
     {
-        //TBD set c18heart.transparency
+        Color col = c18heart.transform.GetComponent<Renderer>().material.color;
+        col.a = slider.GetComponent<Slider>().value;
+        c18heart.transform.GetComponent<Renderer>().material.color = col;
     }
 
     public bool getLasso()

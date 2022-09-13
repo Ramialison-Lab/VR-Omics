@@ -2474,10 +2474,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 424809525}
   m_HandleRect: {fileID: 528134178}
   m_Direction: 0
-  m_MinValue: 0.5
-  m_MaxValue: 2
+  m_MinValue: 0
+  m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 1
+  m_Value: 0.5
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -13618,8 +13618,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65f91acdc97124a4b8f75371d6aa166e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visium: 0
-  stomics: 1
+  visium: 1
+  stomics: 0
   tomoseq: 0
   xenium: 0
   merfish: 0
@@ -13631,6 +13631,7 @@ MonoBehaviour:
   - {fileID: 1359217083}
   - {fileID: 599666541}
   - {fileID: 126598705}
+  sm: {fileID: 0}
   x_coordList: []
   y_coordList: []
   z_coordList: []
@@ -13731,16 +13732,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33f2b0ad8a1645c4796ea11d39f8ff64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  datapath: 
-  datapointPrefab: {fileID: 0}
-  parent: {fileID: 0}
-  header: []
-  tempObj: {fileID: 0}
-  Material1: {fileID: 0}
-  input: {fileID: 0}
-  ev: []
-  resultExpression: []
-  normalised: []
 --- !u!114 &1052670668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14983,7 +14974,7 @@ MonoBehaviour:
   sp: {fileID: 1796680520}
   contextMenuSelection: {fileID: 2107087479}
   activationPanel: {fileID: 1371379695}
-  c18heart: {fileID: 919132148981115591}
+  c18heart: {fileID: 8164078558273753630}
   settingsMenu: {fileID: 833543632}
   ResizeActivationPanel: {fileID: 1543763211}
   HAndEResize: 0

@@ -24,6 +24,7 @@ public class DataTransferManager : MonoBehaviour
     public DataTransfer df;
     public SliceCollider sc;
     public GameObject[] disableBtn = new GameObject[3];
+    public SearchManager sm;
 
     //Universal lists
     public List<float> x_coordList;
@@ -98,12 +99,14 @@ public class DataTransferManager : MonoBehaviour
         sp = scriptHolder.GetComponent<SpotDrawer>();
         fr = scriptHolder.GetComponent<FileReader>();
         sc = scriptHolder.GetComponent<SliceCollider>();
+        sm = scriptHolder.GetComponent<SearchManager>();
         try { df = scriptHolderPipeline.GetComponent<DataTransfer>(); } catch (Exception) { }
 
+        sm.startSearchManager();
         // Uncomment for pipeline connection
         //pipelineConnected();
 
-        //if (c18_visium) { visium = true; }
+        if (c18_visium) { visium = true; }
 
         if (visium)
         {
@@ -121,17 +124,19 @@ public class DataTransferManager : MonoBehaviour
     private void pipelineConnected()
     {
         df = scriptHolderPipeline.GetComponent<DataTransfer>();
-        if (df.visium || df.visiumMultiple)
-        {
-            visium = true;
-            sp.visium = visium;
-            startVisium();
-        }
-        else if (df.c18)
+
+        if (df.c18)
         {
             visium = true;
             sp.visium = visium;
             startC18();
+        }
+        else if ((df.visium || df.visiumMultiple) && !df.c18)
+        {
+            visium = true;
+            c18_visium = true;
+            sp.visium = visium;
+            startVisium();
         }
         else if (df.tomoseq)
         {
@@ -165,13 +170,13 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startVisium()
     {
-
-        ////TBD! Comment out following lines to transfer data from pipeline
         //TBD LINKPATH
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-        csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");        
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-        csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");
+        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+        //csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");        
+        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
+        //csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");       
+        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered.h5");
+        csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered_transposed.csv");
 
         //foreach (string x in df.pathList)
         //{

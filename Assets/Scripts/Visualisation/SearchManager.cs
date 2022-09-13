@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,13 +26,16 @@ public class SearchManager : MonoBehaviour
     private AutoCompleteManager acm;
     private TomoSeqDrawer tmd;
     private SpotDrawer sd;
+    private DataTransfer df;
 
-    //TBD path to be deleted
+    //TBD LINKPATH
     public string geneNamesC18 = "Assets/Datasets/C18heart/C18_genelist.csv";
 
-    private void Start()
+    public void startSearchManager()
     {
         //Access variables
+        try { df = GameObject.Find("ScriptHolderPipeline").GetComponent<DataTransfer>(); } catch (Exception) { }
+
         dfm = gameObject.GetComponent<DataTransferManager>();
         acm = gameObject.GetComponent<AutoCompleteManager>();
         fr = gameObject.GetComponent<FileReader>();
@@ -194,6 +198,7 @@ public class SearchManager : MonoBehaviour
     public void readC18Expression(string geneName)
     {
         int pos = geneNames.IndexOf(geneName);
+        // TBD LINKPATH
         string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
         string[] lines = File.ReadAllLines(geneC18);
         List<double> normalised = new List<double>();
@@ -331,10 +336,15 @@ public class SearchManager : MonoBehaviour
 
     IEnumerator search(string dp, int pos, string gn)
     {
-
         string[] lines = File.ReadAllLines(dp);
+        lines = lines.Skip(1).ToArray();
+
         // Removing the string with the genename from the CSV list before parsing each entry into a int value for the list
-        resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
+        //resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length).Split(',').ToList().Select(float.Parse).ToList();
+        // var str = lines[pos-1].Remove(0, lines[pos-1].Split(',').First().Length); 
+        var x = lines[pos].Split(',').ToList();
+        x.RemoveAt(0);
+        resultExpression = x.Select(float.Parse).ToList(); 
 
         var max = resultExpression.Max();
         var min = resultExpression.Min();
@@ -349,7 +359,15 @@ public class SearchManager : MonoBehaviour
     public void searchGene(string datapath, int pos, string gn)
     {
         StartCoroutine(search(datapath, pos, gn));
-        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
+        if (resultExpression.Max() == 0)
+        {
+            GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setAllZeroColour(normalised);
+        }
+        else
+        {
+            GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
+        }
+
         GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().lastGeneName(gn);
     }
 
