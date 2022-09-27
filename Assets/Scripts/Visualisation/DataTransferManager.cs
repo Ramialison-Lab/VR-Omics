@@ -61,8 +61,10 @@ public class DataTransferManager : MonoBehaviour
     public GameObject c18Sphere;
     public GameObject c18heartObj;
     public GameObject heartTranspSlider;
-    public string geneC18 = "Assets/Datasets/C18heart/C18genesTranspose.csv";
-    public string coordsC18 = "Assets/Datasets/C18heart/C18heart.csv";
+    //public string geneC18 = "Assets/Datasets/C18heart/C18genesTranspose.csv";
+    public string geneC18 = System.IO.Directory.GetCurrentDirectory() + "/Datasets/C18heart/C18genesTranspose.csv";
+    //public string coordsC18 = "Assets/Datasets/C18heart/C18heart.csv";
+    public string coordsC18 = System.IO.Directory.GetCurrentDirectory() + "/Datasets/C18heart/C18heart.csv";
 
     //Xenium
     public string Xeniumdata = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
@@ -101,24 +103,23 @@ public class DataTransferManager : MonoBehaviour
         sc = scriptHolder.GetComponent<SliceCollider>();
         sm = scriptHolder.GetComponent<SearchManager>();
         try { df = scriptHolderPipeline.GetComponent<DataTransfer>(); } catch (Exception) { }
-
-        sm.startSearchManager();
+       
         // Uncomment for pipeline connection
-        //pipelineConnected();
+        pipelineConnected();
 
-        if (c18_visium) { visium = true; }
+        //if (c18_visium) { visium = true; }
 
-        if (visium)
-        {
-            sp.visium = visium;
-            if (c18_visium) startC18();
-            else startVisium();
-        }
-        else if (tomoseq) startTomoSeq();
-        else if (stomics) startStomics();
-        else if (xenium) startXenium();
-        else if (merfish) startMerfish();
-        else if (other) startOther();
+        //if (visium)
+        //{
+        //    sp.visium = visium;
+        //    if (c18_visium) startC18();
+        //    else startVisium();
+        //}
+        //else if (tomoseq) startTomoSeq();
+        //else if (stomics) startStomics();
+        //else if (xenium) startXenium();
+        //else if (merfish) startMerfish();
+        //else if (other) startOther();
     }
 
     private void pipelineConnected()
@@ -174,19 +175,21 @@ public class DataTransferManager : MonoBehaviour
         //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
         //csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");        
         //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-        //csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");       
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered.h5");
-        csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered_transposed.csv");
+        //csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");
 
-        //foreach (string x in df.pathList)
-        //{
+        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered.h5");
+        //csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered_transposed.csv");
 
-        //    string[] files = System.IO.Directory.GetFiles(x, "*.h5");
-        //    string[] csvfiles = System.IO.Directory.GetFiles(x, "*.csv");
 
-        //    hdf5datapaths.AddRange(files);
-        //    csvGeneExpPaths.AddRange(csvfiles);
-        //}
+        foreach (string x in df.pathList)
+        {
+
+            string[] files = System.IO.Directory.GetFiles(x, "*.h5");
+            string[] csvfiles = System.IO.Directory.GetFiles(x, "*.csv");
+
+            hdf5datapaths.AddRange(files);
+            csvGeneExpPaths.AddRange(csvfiles);
+        }
 
         addHAndEImg = true;
         List<string> shortList = new List<string>();

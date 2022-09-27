@@ -24,7 +24,6 @@ public class UIManager : MonoBehaviour
     public GameObject downloadpanel;
     public GameObject uploadpanel;
     public GameObject pipelinepanel;
-    public GameObject vrpanel;
     public GameObject filterPanel;
     public GameObject warningPanel;
     public GameObject expandPanel;
@@ -127,6 +126,7 @@ public class UIManager : MonoBehaviour
     public TMP_InputField merfishMetaLoadTMP;
     public TMP_InputField otherMatLoadTMP;
     public TMP_InputField otherMetaLoadTMP;
+    public TMP_InputField object3DTMP;
     public TMP_InputField[] otherCSVInfo = new TMP_InputField[4];
 
     //strings to store datapaths
@@ -165,20 +165,7 @@ public class UIManager : MonoBehaviour
         // Manages which panel at UI is currently active
         try
         {
-            downloadpanel.SetActive(false);
-            uploadpanel.SetActive(false);
-            pipelinepanel.SetActive(false);
-            vrpanel.SetActive(false);
-            alignmentPanel.SetActive(false);
-            xeniumProcessPanel.SetActive(false);
-            xeniumLoadPanel.SetActive(false);
-            tomoLoadPanel.SetActive(false);
-            stomicsLoadPanel.SetActive(false);
-            stomicsProcessPanel.SetActive(false);
-            merfishLoadPanel.SetActive(false);
-            merfishProcessPanel.SetActive(false);
-            otherLoadPanel.SetActive(false);
-           
+            unselectAllPanels();  
         }
         catch (Exception) { }
 
@@ -228,6 +215,23 @@ public class UIManager : MonoBehaviour
         }
     }
 
+
+    public void unselectAllPanels()
+    {
+        downloadpanel.SetActive(false);
+        uploadpanel.SetActive(false);
+        pipelinepanel.SetActive(false);
+        pipelineParamPanel.SetActive(false);
+        alignmentPanel.SetActive(false);
+        xeniumProcessPanel.SetActive(false);
+        xeniumLoadPanel.SetActive(false);
+        tomoLoadPanel.SetActive(false);
+        stomicsLoadPanel.SetActive(false);
+        stomicsProcessPanel.SetActive(false);
+        merfishLoadPanel.SetActive(false);
+        merfishProcessPanel.SetActive(false);
+        otherLoadPanel.SetActive(false);
+    }
     /// <summary>
     /// Expands the transfered panel into visible view and collapses all other panels out of view.
     /// </summary>
@@ -935,6 +939,11 @@ public class UIManager : MonoBehaviour
 
     }
 
+    public void select3DObject()
+    {
+        StartCoroutine(selectBrowseFile("3dobject", object3DTMP));
+
+    }
     // Browse local machine for Xenium datapaths
     IEnumerator selectBrowseFile(string target, TMP_InputField tmpinputfield)
     {

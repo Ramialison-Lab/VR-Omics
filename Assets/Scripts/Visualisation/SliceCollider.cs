@@ -53,18 +53,19 @@ public class SliceCollider : MonoBehaviour
             imagePlane.GetComponent<Renderer>().material = transparentMat;
 
             //TBD LINKPATH
-            string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
-            byte[] byteArray = File.ReadAllBytes(imagepath + "\\figures\\show_spatial_all_hires.svg");
-            Texture2D sampleTexture = new Texture2D(2, 2);
-            bool isLoaded = sampleTexture.LoadImage(byteArray);
-            calculateImageSize(datasetName);
-            imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
-            imagePlane.AddComponent<HAndEImageManager>();
-            imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\figures\\show_spatial_all_hires.png");
-            imagePlane.AddComponent<BoxCollider>();
-            //imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
-            HandEobjs.Add(imagePlane);
-            imagePlane.SetActive(false);
+            //string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
+            //byte[] byteArray = File.ReadAllBytes(imagepath + "\\figures\\show_spatial_all_hires.svg");
+            ////byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
+            //Texture2D sampleTexture = new Texture2D(2, 2);
+            //bool isLoaded = sampleTexture.LoadImage(byteArray);
+            //calculateImageSize(datasetName);
+            //imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
+            //imagePlane.AddComponent<HAndEImageManager>();
+            //imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\spatial\\tissue_hires_image.png");
+            //imagePlane.AddComponent<BoxCollider>();
+            ////imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
+            //HandEobjs.Add(imagePlane);
+            //imagePlane.SetActive(false);
             //GameObject newCanvas = new GameObject("Canvas");
             //Canvas c = newCanvas.AddComponent<Canvas>();
             //c.renderMode = RenderMode.ScreenSpaceOverlay;

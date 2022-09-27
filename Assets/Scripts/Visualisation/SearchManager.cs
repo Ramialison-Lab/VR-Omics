@@ -31,8 +31,7 @@ public class SearchManager : MonoBehaviour
     //TBD LINKPATH
     public string geneNamesC18 = "Assets/Datasets/C18heart/C18_genelist.csv";
 
-    public void startSearchManager()
-    {
+    private void Start(){   
         //Access variables
         try { df = GameObject.Find("ScriptHolderPipeline").GetComponent<DataTransfer>(); } catch (Exception) { }
 

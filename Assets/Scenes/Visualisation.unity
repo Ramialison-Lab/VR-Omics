@@ -13618,7 +13618,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65f91acdc97124a4b8f75371d6aa166e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visium: 1
+  visium: 0
   stomics: 0
   tomoseq: 0
   xenium: 0
