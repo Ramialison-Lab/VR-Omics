@@ -64,3 +64,11 @@ crashlytics-build.properties
 
 # Directory python executables
 Assets/Scripts/Python_exe/
+Assets/PythonFiles/Filter_param.txt
+Assets/PythonFiles/outdirectorypaths.txt.meta
+Assets/PythonFiles/outdirectorypaths.txt
+Assets/PythonFiles/Filter_param_upload.txt.meta
+Assets/PythonFiles/Filter_param_upload.txt
+Assets/PythonFiles/Filter_param.txt
+Assets/PythonFiles/Filter_param.txt
+Assets/PythonFiles/Filter_param.txt
