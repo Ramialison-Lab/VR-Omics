@@ -43,27 +43,28 @@ public class SliceCollider : MonoBehaviour
         {
             GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
             imagePlane.name = "StainImageObject";
+            imagePlane.AddComponent<ImageAdjustment>();
         //  imagePlane.transform.SetParent(cube.transform);
         //  imagePlane.transform.localScale = new Vector3(0.1f, 1, 0.1f);
             imagePlane.transform.localScale = new Vector3(cube.transform.localScale.x *1.544f, 0.1f, cube.transform.localScale.z * 1.361f);
             imagePlane.transform.SetParent(cube.transform);
 
             imagePlane.transform.Rotate(new Vector3(-270, -90, 90));
-            imagePlane.transform.localPosition = new Vector3(0, 0, -2);
+            imagePlane.transform.localPosition = Vector3.zero;
             imagePlane.GetComponent<Renderer>().material = transparentMat;
 
             //TBD LINKPATH
-            //string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
+            string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
             //byte[] byteArray = File.ReadAllBytes(imagepath + "\\figures\\show_spatial_all_hires.svg");
-            ////byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
-            //Texture2D sampleTexture = new Texture2D(2, 2);
-            //bool isLoaded = sampleTexture.LoadImage(byteArray);
-            //calculateImageSize(datasetName);
-            //imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
-            //imagePlane.AddComponent<HAndEImageManager>();
-            //imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\spatial\\tissue_hires_image.png");
-            //imagePlane.AddComponent<BoxCollider>();
-            ////imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
+            byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
+            Texture2D sampleTexture = new Texture2D(2, 2);
+            bool isLoaded = sampleTexture.LoadImage(byteArray);
+            calculateImageSize(datasetName);
+            imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
+            imagePlane.AddComponent<HAndEImageManager>();
+            imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\spatial\\tissue_hires_image.png");
+            imagePlane.AddComponent<BoxCollider>();
+            //imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
             //HandEobjs.Add(imagePlane);
             //imagePlane.SetActive(false);
             //GameObject newCanvas = new GameObject("Canvas");
@@ -98,9 +99,6 @@ public class SliceCollider : MonoBehaviour
         float scalef = GameObject.Find("ScriptHolder").GetComponent<JSONManager>().readScaleFactor(dnLoc);
 
         float originalDim = 2000 / scalef;
-        // hires 2000x2000 px size
-
-
     }
     public List<GameObject> getHandEObjs()
     {

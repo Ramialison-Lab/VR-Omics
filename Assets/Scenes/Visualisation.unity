@@ -13596,7 +13596,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 1118143220}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   AP_Graph_panel: {fileID: 1452227930}
@@ -13618,7 +13618,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65f91acdc97124a4b8f75371d6aa166e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visium: 0
+  visium: 1
   stomics: 0
   tomoseq: 0
   xenium: 0
