@@ -56,10 +56,10 @@ public class TooltipManager : MonoBehaviour
             case "LightBtn":
                 x = "Disable background for better contrast";
                 break;            
-            case "UnlockBtn":
+            case "LockedBtn":
                 x = "Unlock slice rotation";
                 break;            
-            case "LockBtn":
+            case "UnlockedBtn":
                 x = "Lock slice rotation";
                 break;            
             case "SearchWithToggle":

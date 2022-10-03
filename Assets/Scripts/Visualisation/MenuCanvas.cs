@@ -21,7 +21,15 @@ public class MenuCanvas : MonoBehaviour
         dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
         sd.setMinTresh(0f);
         sd.maxTresh = 1f;
-        darkMode();
+        Camera.main.backgroundColor = Color.black;
+
+    }
+
+    public void lockRotation()
+    {
+        locked = true;
+        lockBtn.SetActive(false);
+        ulockBtn.SetActive(true);
     }
 
     public void unlockRotation()
@@ -31,15 +39,11 @@ public class MenuCanvas : MonoBehaviour
         ulockBtn.SetActive(false);
     }
 
-    public void lockRotation()
-    {
-        locked = true;
-        ulockBtn.SetActive(true);
-        lockBtn.SetActive(false);
-    }
 
-    public void darkMode()
+    public void darkMode(GameObject panel)
     {
+        if (panel.activeSelf) panel.SetActive(false);
+        else panel.SetActive(true);
         if (!darkmode)
         {
             darkmode = true;
@@ -62,23 +66,16 @@ public class MenuCanvas : MonoBehaviour
         if (activationPanelHandE.activeSelf) activationPanelHandE.SetActive(false);
         else activationPanelHandE.SetActive(true);
 
-        //  List<string> paths = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().getDatasetpaths();
-
-        // List<GameObject> sc = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().getSliceColliders();
-
         List<GameObject> hAndEobjs = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().getHandEObjs();
+        Debug.Log(dd.options[dd.value].text);
 
         foreach(GameObject obs in hAndEobjs)
         {
+            Debug.Log(obs.GetComponent<HAndEImageManager>().imagePath);
             if (obs.activeSelf) obs.SetActive(false);
             else obs.SetActive(true);
         }
-
-        // paths[dd.value]
     }
-
-    public List<GameObject> hAndEObjects;
-
 
     public void setColorMinTreshold(GameObject slider)
     {
@@ -120,14 +117,13 @@ public class MenuCanvas : MonoBehaviour
     }
 
     public GameObject contextMenuSelection;
-    public GameObject activationPanel;
-    public void toggleLasso()
+    public void toggleLasso(GameObject panel)
     {
         if (contextMenuSelection.activeSelf) contextMenuSelection.SetActive(false);
         else contextMenuSelection.SetActive(true);
         lasso = !lasso;
-        if (lasso) activationPanel.SetActive(true);
-        else activationPanel.SetActive(false);
+        if (lasso) panel.SetActive(true);
+        else panel.SetActive(false);
 
 
     }
@@ -164,42 +160,18 @@ public class MenuCanvas : MonoBehaviour
         else settingsMenu.SetActive(true);
         settingsActive = !settingsActive;
     }
-    
-    public GameObject ResizeActivationPanel;
-    public bool HAndEResize = false;
 
-    public void toggleHAndEResize()
-    {
-        if (HAndEResize) HAndEResize = false;
-        else HAndEResize = true;
-        if (ResizeActivationPanel.activeSelf) ResizeActivationPanel.SetActive(false);
-        else ResizeActivationPanel.SetActive(true);
-    }
 
-    public GameObject DragActivationPanel;
-    public bool HAndEDrag = false;
-    public void toggleHAndEDrag()
-    {
-        if (HAndEDrag) HAndEDrag = false;
-        else HAndEDrag = true;
-        if (DragActivationPanel.activeSelf) DragActivationPanel.SetActive(false);
-        else DragActivationPanel.SetActive(true);
-    }
-
-    public GameObject ExportPanel;
     public bool export = false;
-    public void toggleExport()
+    public void toggleExport(GameObject panel)
     {
+        if (panel.activeSelf) panel.SetActive(false);
+        else panel.SetActive(true);
         if (export) export = false;
         else export = true;
-        if (ExportPanel.activeSelf) ExportPanel.SetActive(false);
-        else ExportPanel.SetActive(true);
+
     }
 
-    public bool dragActive()
-    {
-        return HAndEDrag;
-    }
 
     public GameObject colourPanel;
     public GameObject symbolPanel;
@@ -232,10 +204,6 @@ public class MenuCanvas : MonoBehaviour
         }
     }
 
-    public bool resizeActive()
-    {
-        return HAndEResize;
-    }
 
     public Material transparentMat;
 

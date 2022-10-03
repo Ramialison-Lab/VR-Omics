@@ -43,9 +43,7 @@ public class SliceCollider : MonoBehaviour
         {
             GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
             imagePlane.name = "StainImageObject";
-            imagePlane.AddComponent<ImageAdjustment>();
-        //  imagePlane.transform.SetParent(cube.transform);
-        //  imagePlane.transform.localScale = new Vector3(0.1f, 1, 0.1f);
+
             imagePlane.transform.localScale = new Vector3(cube.transform.localScale.x *1.544f, 0.1f, cube.transform.localScale.z * 1.361f);
             imagePlane.transform.SetParent(cube.transform);
 
@@ -64,7 +62,6 @@ public class SliceCollider : MonoBehaviour
             imagePlane.AddComponent<HAndEImageManager>();
             imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\spatial\\tissue_hires_image.png");
             imagePlane.AddComponent<BoxCollider>();
-            imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
             HandEobjs.Add(imagePlane);
             imagePlane.SetActive(false);
 

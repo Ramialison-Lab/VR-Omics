@@ -269,6 +269,7 @@ public class SpotDrawer : MonoBehaviour
             }
         }
 
+        GameObject.Find("SpotNumberTxt").GetComponent<TMP_Text>().text = batches.Count + " Spots/Cells";
         //indicates that the spots are ready
         start = true;
         prefillDropdown();
@@ -559,8 +560,10 @@ public class SpotDrawer : MonoBehaviour
     /// <summary>
     /// Turns the passThrough mode on or off that allows selecting spots that can be identified by the same coordinates in other datasets visualised
     /// </summary>
-    public void togglePassThrough()
+    public void togglePassThrough(GameObject panel)
     {
+        if (panel.activeSelf) panel.SetActive(false);
+        else panel.SetActive(true);
         passThrough = !passThrough;
     }
 
@@ -728,8 +731,10 @@ public class SpotDrawer : MonoBehaviour
     /// <summary>
     /// Toogles the side-by-side feature
     /// </summary>
-    public void sideBySide()
+    public void sideBySide(GameObject panel)
     {
+        if (panel.activeSelf) panel.SetActive(false);
+        else panel.SetActive(true);
         copy = !copy;
         if (!copy && newColoursCopy)
         {

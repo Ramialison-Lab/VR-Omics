@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -308,6 +309,7 @@ public class TomoSeqDrawer : MonoBehaviour
 
             batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z)});
         }
+        GameObject.Find("SpotNumberTxt").GetComponent<TMP_Text>().text = batches.Count + " Spots/Cells";
 
         start = true;
         if (tomoGraphCanvas.activeSelf == false) tomoGraphCanvas.SetActive(true);
