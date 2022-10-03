@@ -64,25 +64,10 @@ public class SliceCollider : MonoBehaviour
             imagePlane.AddComponent<HAndEImageManager>();
             imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\spatial\\tissue_hires_image.png");
             imagePlane.AddComponent<BoxCollider>();
-            //imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
-            //HandEobjs.Add(imagePlane);
-            //imagePlane.SetActive(false);
-            //GameObject newCanvas = new GameObject("Canvas");
-            //Canvas c = newCanvas.AddComponent<Canvas>();
-            //c.renderMode = RenderMode.ScreenSpaceOverlay;
-            //newCanvas.AddComponent<CanvasScaler>();
-            //newCanvas.AddComponent<GraphicRaycaster>();
-            //GameObject panel = new GameObject("Panel");
-            //panel.AddComponent<CanvasRenderer>();
-            //RawImage i = panel.AddComponent<RawImage>();
-            //panel.transform.SetParent(newCanvas.transform, false);
-            //newCanvas.transform.position = new Vector3(0, 0, 0);
-            //newCanvas.transform.SetParent(cube.transform);
+            imagePlane.GetComponent<HAndEImageManager>().createDragObjects();
+            HandEobjs.Add(imagePlane);
+            imagePlane.SetActive(false);
 
-            //if (isLoaded)
-            //{
-            //    i.texture = sampleTexture;
-            //}
         }
     }
     private void Update()
