@@ -81,7 +81,6 @@ public class MenuCanvas : MonoBehaviour
     {
         sd.setMinTresh(slider.GetComponent<Slider>().value);
         GameObject.Find("TresholdText").GetComponent<TMP_Text>().text = "Min: " + slider.GetComponent<Slider>().value.ToString("0.00") + "%";
-
     }
 
     public void setColorMaxTreshold(GameObject slider)
@@ -95,7 +94,6 @@ public class MenuCanvas : MonoBehaviour
     private bool symbolInstance = false;
     public void setSphereSize(GameObject slider)
     {
-
         Slider sl = slider.GetComponent<Slider>();
         GameObject go;
         if (dfm.tomoseq)

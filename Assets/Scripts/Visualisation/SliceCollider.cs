@@ -57,7 +57,6 @@ public class SliceCollider : MonoBehaviour
             byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
             Texture2D sampleTexture = new Texture2D(2, 2);
             bool isLoaded = sampleTexture.LoadImage(byteArray);
-            calculateImageSize(datasetName);
             imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
             imagePlane.AddComponent<HAndEImageManager>();
             imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\spatial\\tissue_hires_image.png");
@@ -74,14 +73,7 @@ public class SliceCollider : MonoBehaviour
             clicked();
         }
     }
-    private void calculateImageSize(string dn)
-    {
-        string dnLoc = dn.Substring(0, dn.Length - dn.Split('\\').Last().Length);
-        //get Scalefactor → HDF5 reader "uns/spatial/V1_Breast_Cancer_Block_A_Section_1/scalefactors/tissue_hires_scalef"
-        float scalef = GameObject.Find("ScriptHolder").GetComponent<JSONManager>().readScaleFactor(dnLoc);
 
-        float originalDim = 2000 / scalef;
-    }
     public List<GameObject> getHandEObjs()
     {
         return HandEobjs;
