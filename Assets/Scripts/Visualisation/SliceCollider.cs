@@ -16,6 +16,8 @@ public class SliceCollider : MonoBehaviour
     public TMP_Dropdown dd;
     public List<GameObject> HandEobjs;
     public Material transparentMat;
+    public GameObject object3d;
+    public bool objectUsed = false;
 
     // Adding a collider slice to each of the Visium slices to detect user input
     public void setSliceCollider(int btmslice, int topslice, int rslice, int lslice, int d, string datasetName)
@@ -72,7 +74,57 @@ public class SliceCollider : MonoBehaviour
         {
             clicked();
         }
+
+        if (!objectUsed)
+        {
+            if (Input.GetKey(KeyCode.G))
+            {
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    object3d.transform.localScale += new Vector3(0, 0, 0.1f);
+                }
+                else
+                {
+                    object3d.transform.Translate(Vector3.forward * 10 * Time.deltaTime);
+                }
+            }
+            if (Input.GetKey(KeyCode.T))
+            {
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    object3d.transform.localScale -= new Vector3(0, 0, 0.1f);
+                }
+                else
+                {
+                    object3d.transform.Translate(Vector3.up * 10 * Time.deltaTime, Space.World);
+                }
+            }
+            if (Input.GetKey(KeyCode.F))
+            {
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    object3d.transform.localScale -= new Vector3(0.1f, 0, 0);
+                    object3d.transform.localScale -= new Vector3(0.1f, 0, 0);
+                }
+                else
+                {
+                    object3d.transform.Translate(Vector3.left * 10 * Time.deltaTime, Camera.main.transform);
+                }
+            }
+            if (Input.GetKey(KeyCode.H))
+            {
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    object3d.transform.localScale += new Vector3(0.1f, 0, 0);
+                }
+                else
+                {
+                    object3d.transform.Translate(Vector3.right * 10 * Time.deltaTime, Camera.main.transform);
+                }
+            }
+        }
     }
+
 
     public List<GameObject> getHandEObjs()
     {
@@ -113,8 +165,11 @@ public class SliceCollider : MonoBehaviour
         }
     }
 
-    public List<GameObject> getSliceColliders()
+    public void toggleObjectMovement(GameObject panel)
     {
-        return sliceColliders;
+        if (panel.activeSelf) panel.SetActive(false);
+        else panel.SetActive(true);
+        objectUsed = !objectUsed;
     }
+
 }

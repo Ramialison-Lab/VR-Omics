@@ -4872,12 +4872,12 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1202353252}
-        m_MethodName: toggleSettingsMenu
-        m_Mode: 1
+      - m_Target: {fileID: 1052670669}
+        m_MethodName: toggleObjectMovement
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 1868414821}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -13895,14 +13895,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65f91acdc97124a4b8f75371d6aa166e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visium: 0
+  visium: 1
   stomics: 0
   tomoseq: 0
   xenium: 0
   merfish: 0
   c18_visium: 1
   other: 0
-  objectUsed: 0
   df: {fileID: 0}
   sc: {fileID: 0}
   disableBtn:
@@ -14047,6 +14046,8 @@ MonoBehaviour:
   dd: {fileID: 562369942}
   HandEobjs: []
   transparentMat: {fileID: 2100000, guid: 40e9cc00e6949ab4996621be974ddf61, type: 2}
+  object3d: {fileID: 0}
+  objectUsed: 0
 --- !u!1 &1068165109
 GameObject:
   m_ObjectHideFlags: 0

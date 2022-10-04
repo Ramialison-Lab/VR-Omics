@@ -55,7 +55,8 @@ public class UIManager : MonoBehaviour
     public List<String> filePaths;
     public List<String> transferDatapaths;
     public List<String> storePathForWarning;
-    private List<String> m_DropOptions; 
+    private List<String> m_DropOptions;
+    public List<TMP_InputField> objectIfs = new List<TMP_InputField>(7);
 
     //bools
     private bool skipFilter = false;

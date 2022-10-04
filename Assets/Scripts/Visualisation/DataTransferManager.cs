@@ -15,7 +15,6 @@ public class DataTransferManager : MonoBehaviour
     public bool merfish = false;
     public bool c18_visium = false;
     public bool other = false;
-    public bool objectUsed = false;
 
     //Access variables
     private FileReader fr;
@@ -116,7 +115,7 @@ public class DataTransferManager : MonoBehaviour
         {
             visium = true;
             sp.visium = visium;
-            objectUsed = true;
+            sc.objectUsed = true;
             startC18();
         }
         else if ((df.visium || df.visiumMultiple) && !df.c18)
@@ -339,6 +338,8 @@ public class DataTransferManager : MonoBehaviour
     private void startC18()
     {
         c18heartObj.SetActive(true);
+        sc.object3d = c18heartObj;
+        sc.objectUsed = true;
         heartTranspSlider.SetActive(true);
         Color transp = new Color();
         transp.a = 0.5f;
