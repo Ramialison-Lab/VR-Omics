@@ -15,6 +15,7 @@ public class DataTransfer : MonoBehaviour
     public bool tomoseq = false;
     public bool stomics = false;
     public bool merfish = false;
+    public bool objectUsed = false;
     //datapaths
     public string stomicsPath;
     public string APPath;
@@ -32,6 +33,7 @@ public class DataTransfer : MonoBehaviour
     public List<string> pathList;
     public List<int> rotationValues;
     public List<int> distances;
+    public List<string> objData;
 
     public bool other2D = false;
     public int[] otherCSVCols = new int[4];
@@ -108,5 +110,18 @@ public class DataTransfer : MonoBehaviour
     private void startVisualisationScene()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
+    public void uploadObject(List<string> objData)
+    {
+        this.objData = objData;
+        objectUsed = true;
+        startVisualisationScene();
+    }
+
+    public void clearObject()
+    {
+        objectUsed = false;
+        objData.Clear();
     }
 }

@@ -42,6 +42,7 @@ public class UIManager : MonoBehaviour
     public GameObject merfishLoadPanel;
     public GameObject otherLoadPanel;
     public GameObject loadingPanel;
+    public GameObject objectLoadPanel;
 
     //H&E stain backgorund slice and Container
     public GameObject sliceRawImage;
@@ -143,6 +144,7 @@ public class UIManager : MonoBehaviour
     public string otherMetaPath;
     public string merfishGenePath;
     public string merfishMetaPath;
+    public string objectPath;
 
     //Info other custom function
     public Slider other2Dslider;
@@ -212,6 +214,9 @@ public class UIManager : MonoBehaviour
                 break;
             case "VisiumC18Btn":
                 runC18();
+                break;            
+            case "Load3DobjectBtn":
+                objectLoadPanel.SetActive(true);
                 break;
         }
     }
@@ -232,6 +237,7 @@ public class UIManager : MonoBehaviour
         merfishLoadPanel.SetActive(false);
         merfishProcessPanel.SetActive(false);
         otherLoadPanel.SetActive(false);
+        objectLoadPanel.SetActive(false);
     }
     /// <summary>
     /// Expands the transfered panel into visible view and collapses all other panels out of view.
@@ -910,8 +916,15 @@ public class UIManager : MonoBehaviour
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("otherMat", otherMatLoadTMP));
 
-    }    
-    
+    }
+
+    public void select3DObject()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("object", object3DTMP));
+
+    }
+
     public void selectOtherMetaFile()
     {
         //File has been processed ready to load VR
@@ -940,11 +953,7 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void select3DObject()
-    {
-        StartCoroutine(selectBrowseFile("3dobject", object3DTMP));
 
-    }
     // Browse local machine for Xenium datapaths
     IEnumerator selectBrowseFile(string target, TMP_InputField tmpinputfield)
     {
@@ -998,6 +1007,9 @@ public class UIManager : MonoBehaviour
                     break;
                 case "merfishMat":
                     merfishGenePath = res;
+                    break;                
+                case "object":
+                    objectPath = res;
                     break;
                     //case "stomics": stomicsPath = res;
                     //    break;
@@ -1138,6 +1150,32 @@ public class UIManager : MonoBehaviour
         }
 
         gameObject.GetComponent<DataTransfer>().startOther();
+
+    }
+
+
+    public void clearObjectData()
+    {
+        foreach (TMP_InputField t in objectIfs)
+        {
+            t.text = "";
+        }
+        gameObject.GetComponent<DataTransfer>().clearObject();
+
+    }
+
+    public void load3Dobject(GameObject panel)
+    {
+        List<string> objData = new List<string>();
+
+        foreach(TMP_InputField t in objectIfs)
+        {
+            if (t.text != "") objData.Add(t.text);
+            else objData.Add("0");
+        }
+
+        gameObject.GetComponent<DataTransfer>().uploadObject(objData);
+        panel.SetActive(false);
 
     }
 

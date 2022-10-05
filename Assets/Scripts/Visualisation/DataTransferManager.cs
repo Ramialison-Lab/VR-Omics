@@ -4,6 +4,9 @@ using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+//library to load obj during runtime
+using Dummiesman;
+
 
 public class DataTransferManager : MonoBehaviour
 {
@@ -88,12 +91,12 @@ public class DataTransferManager : MonoBehaviour
         sc = scriptHolder.GetComponent<SliceCollider>();
         sm = scriptHolder.GetComponent<SearchManager>();
         try { df = scriptHolderPipeline.GetComponent<DataTransfer>(); } catch (Exception) { }
-       
+
         // Uncomment for pipeline connection
-     //   pipelineConnected();
+        //   pipelineConnected();
 
         //if (c18_visium) { visium = true; }
-
+        loadObject();
         if (visium)
         {
             sp.visium = visium;
@@ -110,6 +113,11 @@ public class DataTransferManager : MonoBehaviour
     private void pipelineConnected()
     {
         df = scriptHolderPipeline.GetComponent<DataTransfer>();
+
+        if (df.objectUsed)
+        {
+            loadObject();
+        }
 
         if (df.c18)
         {
@@ -483,5 +491,16 @@ public class DataTransferManager : MonoBehaviour
 
         Camera.main.transform.position = new Vector3(x, y, -depthValue);
         Camera.main.transform.eulerAngles = rotation;
+    }
+
+    private void loadObject()
+    {
+        string path = df.objData[0];
+
+        GameObject loadedObject = new OBJLoader().Load(path);
+        loadedObject.transform.position = new Vector3(int.Parse(df.objData[1]), int.Parse(df.objData[2]), int.Parse(df.objData[3]));
+        loadedObject.transform.eulerAngles = new Vector3(int.Parse(df.objData[4]), int.Parse(df.objData[5]), int.Parse(df.objData[6]));
+
+
     }
 }
