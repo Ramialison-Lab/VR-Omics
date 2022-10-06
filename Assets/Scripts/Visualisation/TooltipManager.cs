@@ -112,7 +112,10 @@ public class TooltipManager : MonoBehaviour
                 break;              
             case "UnselectLassoBtn":
                 x = "Undo all selections";
-                break;                
+                break;
+            case "SVGBtn":
+                x = "Show spatially variable genes list";
+                break;
         }
         return x;
     }

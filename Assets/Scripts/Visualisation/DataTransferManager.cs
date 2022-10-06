@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 //library to load obj during runtime
 using Dummiesman;
-
+using UnityEngine.UI;
 
 public class DataTransferManager : MonoBehaviour
 {
@@ -22,12 +22,16 @@ public class DataTransferManager : MonoBehaviour
     //Access variables
     private FileReader fr;
     private GameObject scriptHolderPipeline;
-    private GameObject scriptHolder;    
+    private GameObject scriptHolder;
+    public GameObject svgBtn;
+    public GameObject svgContentPanel;
+    public GameObject btnPrefab;
     private SpotDrawer sp;
     public DataTransfer df;
     public SliceCollider sc;
     public GameObject[] disableBtn = new GameObject[3];
     public SearchManager sm;
+    public AutoCompleteManager acm;
 
     //Universal lists
     public List<float> x_coordList;
@@ -90,13 +94,13 @@ public class DataTransferManager : MonoBehaviour
         fr = scriptHolder.GetComponent<FileReader>();
         sc = scriptHolder.GetComponent<SliceCollider>();
         sm = scriptHolder.GetComponent<SearchManager>();
+        acm = scriptHolder.GetComponent<AutoCompleteManager>();
         try { df = scriptHolderPipeline.GetComponent<DataTransfer>(); } catch (Exception) { }
 
         // Uncomment for pipeline connection
         //   pipelineConnected();
 
         //if (c18_visium) { visium = true; }
-        loadObject();
         if (visium)
         {
             sp.visium = visium;
@@ -113,11 +117,6 @@ public class DataTransferManager : MonoBehaviour
     private void pipelineConnected()
     {
         df = scriptHolderPipeline.GetComponent<DataTransfer>();
-
-        if (df.objectUsed)
-        {
-            loadObject();
-        }
 
         if (df.c18)
         {
@@ -158,6 +157,11 @@ public class DataTransferManager : MonoBehaviour
             other = true;
             startOther();
         }
+
+        if (df.objectUsed)
+        {
+            loadObject();
+        }
     }
 
     /// <summary>
@@ -173,9 +177,8 @@ public class DataTransferManager : MonoBehaviour
 
         hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered.h5");
         csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered_transposed.csv");
-      //  hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V2_Mouse_Kidney_10000______filtered_S93MOE\\V2_Mouse_Kidney_10000______filtered.h5");
-       // csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V2_Mouse_Kidney_10000______filtered_S93MOE\\V2_Mouse_Kidney_10000______filtered_transposed.csv");
-
+        //  hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V2_Mouse_Kidney_10000______filtered_S93MOE\\V2_Mouse_Kidney_10000______filtered.h5");
+        // csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V2_Mouse_Kidney_10000______filtered_S93MOE\\V2_Mouse_Kidney_10000______filtered_transposed.csv");
         //foreach (string x in df.pathList)
         //{
 
@@ -237,7 +240,7 @@ public class DataTransferManager : MonoBehaviour
 
             count = count + 1;           
         }
-
+        checkForSVGData();
         adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(0, 0, 0));
         sp.startSpotDrawer(tempx, tempy, tempz, spotnames, dataSetNames);
         sel_DropD.ClearOptions();
@@ -501,6 +504,61 @@ public class DataTransferManager : MonoBehaviour
         loadedObject.transform.position = new Vector3(int.Parse(df.objData[1]), int.Parse(df.objData[2]), int.Parse(df.objData[3]));
         loadedObject.transform.eulerAngles = new Vector3(int.Parse(df.objData[4]), int.Parse(df.objData[5]), int.Parse(df.objData[6]));
 
+        sc.object3d = loadedObject;
+        sc.objectUsed = true;
+    }
 
+    private void checkForSVGData()
+    {
+       // string svgpath = "C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\";
+        string svgpath = "C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\";
+        string[] csvfiles;
+        try
+        {
+            csvfiles = System.IO.Directory.GetFiles(svgpath, "*svgtoggle.csv");
+        }catch(Exception e)
+        {
+            svgBtn.SetActive(false);
+            return;
+        }
+
+        svgBtn.SetActive(true);
+        List<string> svgStrings = new List<string>();
+        string[] lines = File.ReadAllLines(csvfiles[0]);
+        lines = lines.Skip(1).ToArray();
+        svgStrings.Add("Genename \t \t pVal \t \t qVal");
+        foreach (string line in lines)
+        {
+            List<string> values = new List<string>();
+            values = line.Split(',').ToList();
+            svgStrings.Add(values[0] +"\t \t \t" + values[17] + "\t \t \t" + values[18]); 
+        }
+
+
+        string outputString ="";
+      //  foreach (string str in svgStrings)
+        for(int i =0; i<100;i++)
+        {
+
+            outputString = outputString + "\n" + svgStrings[i];
+
+        }
+
+        svgContentPanel.GetComponentInChildren<TMP_Text>().text = outputString;
+
+        //If Buttons
+        //foreach (string str in svgStrings)
+        //{
+
+        //    GameObject btn = Instantiate(btnPrefab);
+        //    btn.transform.SetParent(svgContentPanel.transform);
+        //    btn.transform.localPosition = new Vector3(0, 0, 0);
+        //    btn.GetComponentInChildren<TMP_Text>().fontSize = 14;
+        //    btn.GetComponentInChildren<TMP_Text>().text = str;
+        //    btn.GetComponent<Button>().onClick.AddListener(delegate
+        //    {
+        //        acm.selectGene(btn);
+        //    });
+        //}
     }
 }

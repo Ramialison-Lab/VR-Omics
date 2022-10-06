@@ -230,4 +230,22 @@ public class MenuCanvas : MonoBehaviour
             Camera.main.transform.eulerAngles = new Vector3(Camera.main.transform.eulerAngles.x, Camera.main.transform.eulerAngles.y, 0);
         }
     }
+
+    private bool svgShown = false;
+    public GameObject svgPanel;
+
+    public void showSVG(GameObject panel)
+    {
+        if (svgShown)
+        {
+            panel.SetActive(false);
+            svgPanel.SetActive(false);
+        }
+        else
+        {
+            panel.SetActive(true);
+            svgPanel.SetActive(true);
+        }
+        svgShown = !svgShown;
+    }
 }

@@ -17,7 +17,13 @@ public class SliceCollider : MonoBehaviour
     public List<GameObject> HandEobjs;
     public Material transparentMat;
     public GameObject object3d;
+    public List<GameObject> BtnPanels = new List<GameObject>(3);
+    public GameObject btngroup;
+
     public bool objectUsed = false;
+    public bool objectResize = false;
+    public bool objectMove = false;
+    public bool objectRotate = false;
 
     // Adding a collider slice to each of the Visium slices to detect user input
     public void setSliceCollider(int btmslice, int topslice, int rslice, int lslice, int d, string datasetName)
@@ -70,61 +76,54 @@ public class SliceCollider : MonoBehaviour
     }
     private void Update()
     {
+        //Movement of 3d object
         if (Input.GetMouseButton(0))
         {
             clicked();
         }
-
-        if (!objectUsed)
+        
+        if(Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.M))
         {
-            if (Input.GetKey(KeyCode.G))
-            {
-                if (Input.GetKey(KeyCode.LeftShift))
-                {
-                    object3d.transform.localScale += new Vector3(0, 0, 0.1f);
-                }
-                else
-                {
-                    object3d.transform.Translate(Vector3.forward * 10 * Time.deltaTime);
-                }
-            }
-            if (Input.GetKey(KeyCode.T))
-            {
-                if (Input.GetKey(KeyCode.LeftShift))
-                {
-                    object3d.transform.localScale -= new Vector3(0, 0, 0.1f);
-                }
-                else
-                {
-                    object3d.transform.Translate(Vector3.up * 10 * Time.deltaTime, Space.World);
-                }
-            }
-            if (Input.GetKey(KeyCode.F))
-            {
-                if (Input.GetKey(KeyCode.LeftShift))
-                {
-                    object3d.transform.localScale -= new Vector3(0.1f, 0, 0);
-                    object3d.transform.localScale -= new Vector3(0.1f, 0, 0);
-                }
-                else
-                {
-                    object3d.transform.Translate(Vector3.left * 10 * Time.deltaTime, Camera.main.transform);
-                }
-            }
-            if (Input.GetKey(KeyCode.H))
-            {
-                if (Input.GetKey(KeyCode.LeftShift))
-                {
-                    object3d.transform.localScale += new Vector3(0.1f, 0, 0);
-                }
-                else
-                {
-                    object3d.transform.Translate(Vector3.right * 10 * Time.deltaTime, Camera.main.transform);
-                }
-            }
+            deactivateModes();
+            BtnPanels[0].SetActive(true);
+            objectMove = true;
         }
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.R))
+        {
+            //switch Rotate mode
+            deactivateModes();
+            BtnPanels[1].SetActive(true);
+            objectRotate = true;
+        }
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.L))
+        {
+            //switch Resize mode
+            deactivateModes();
+            BtnPanels[2].SetActive(true);
+            objectResize = true;
+        }
+
+        if (objectUsed)
+        {
+            if (objectMove) { moveObject(); }
+            if (objectResize) resizeObject();
+            if (objectRotate) rotateObject();
+        }
+
+
     }
 
+    private void deactivateModes()
+    {
+        btngroup.SetActive(true);
+        objectResize = false;
+        objectMove = false;
+        objectRotate = false;
+        foreach(GameObject go in BtnPanels)
+        {
+            go.SetActive(false);
+        }
+    }
 
     public List<GameObject> getHandEObjs()
     {
@@ -167,9 +166,166 @@ public class SliceCollider : MonoBehaviour
 
     public void toggleObjectMovement(GameObject panel)
     {
+        objectResize = false;
+        objectRotate = false;
+        BtnPanels[1].SetActive(false);
+        BtnPanels[2].SetActive(false);
         if (panel.activeSelf) panel.SetActive(false);
         else panel.SetActive(true);
-        objectUsed = !objectUsed;
+        objectMove = !objectMove;
+    }
+    
+    public void toggleObjectRotate(GameObject panel)
+    {
+        objectMove = false;
+        objectResize = false;
+        BtnPanels[0].SetActive(false);
+        BtnPanels[2].SetActive(false);
+        if (panel.activeSelf) panel.SetActive(false);
+        else panel.SetActive(true);
+        objectRotate = !objectRotate;
+    }
+
+    public void toggleObjectResize(GameObject panel)
+    {
+
+        objectMove = false;
+        objectRotate = false;        
+        BtnPanels[0].SetActive(false);
+        BtnPanels[1].SetActive(false);
+        if (panel.activeSelf) panel.SetActive(false);
+        else panel.SetActive(true);
+        objectResize = !objectResize;
+    }    
+    /// <summary>
+    /// Move  3D Object
+    /// </summary>
+    private void moveObject()
+    {
+        //KEYBINDING
+        if (Input.GetKey(KeyCode.G))
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                object3d.transform.Translate(Vector3.back * 10 * Time.deltaTime);
+
+            }
+            else
+            {
+
+                object3d.transform.Translate(Vector3.down * 10 * Time.deltaTime);
+            }
+        }
+        if (Input.GetKey(KeyCode.T))
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                object3d.transform.Translate(Vector3.forward * 10 * Time.deltaTime);
+
+            }
+            else
+            {
+                object3d.transform.Translate(Vector3.up * 10 * Time.deltaTime, Space.World);
+            }
+        }
+        if (Input.GetKey(KeyCode.F))
+        {
+
+            
+                object3d.transform.Translate(Vector3.left * 10 * Time.deltaTime, Camera.main.transform);
+            
+        }
+        if (Input.GetKey(KeyCode.H))
+        {
+
+                object3d.transform.Translate(Vector3.right * 10 * Time.deltaTime, Camera.main.transform);
+            
+        }
+    }
+
+    /// <summary>
+    /// Resize feature of 3d object
+    /// </summary>
+    private void resizeObject()
+    {
+
+        //KEYBINDING
+        if (Input.GetKey(KeyCode.G))
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                object3d.transform.localScale -= new Vector3(0, 0, 0.1f);
+            }
+            else
+            {
+                object3d.transform.localScale -= new Vector3(0, 0.1f, 0);
+            }
+        }
+        if (Input.GetKey(KeyCode.T))
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                object3d.transform.localScale += new Vector3(0, 0, 0.1f);
+            }
+            else
+            {
+                object3d.transform.localScale += new Vector3(0, 0.1f, 0);
+            }
+        }
+        if (Input.GetKey(KeyCode.F))
+        {
+
+            object3d.transform.localScale += new Vector3(0.1f, 0, 0);
+
+        }
+        if (Input.GetKey(KeyCode.H))
+        {
+            object3d.transform.localScale -= new Vector3(0.1f, 0, 0);
+        }
+    }
+
+    private void rotateObject()
+    {
+
+        //KEYBINDING
+        if (Input.GetKey(KeyCode.H))
+        {
+           object3d.transform.eulerAngles -= new Vector3(0, 0.1f, 0);           
+        }
+        if (Input.GetKey(KeyCode.F))
+        {
+            object3d.transform.eulerAngles += new Vector3(0, 0.1f, 0);
+        }
+        if (Input.GetKey(KeyCode.T))
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                object3d.transform.eulerAngles += new Vector3(0, 0, 0.1f);
+            }
+            else
+            {
+                object3d.transform.eulerAngles += new Vector3(0.1f, 0, 0);
+            }
+        }
+        if (Input.GetKey(KeyCode.G))
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                object3d.transform.eulerAngles -= new Vector3(0, 0, 0.1f);
+            }
+            else
+            {
+                object3d.transform.eulerAngles -= new Vector3(0.1f, 0, 0);
+            }
+        }
+    }
+
+    public void objectGroupExpand(GameObject panel)
+    {
+        if (panel.activeSelf) panel.SetActive(false);
+        else panel.SetActive(true);
+        if (btngroup.activeSelf) btngroup.SetActive(false);
+        else btngroup.SetActive(true);
     }
 
 }

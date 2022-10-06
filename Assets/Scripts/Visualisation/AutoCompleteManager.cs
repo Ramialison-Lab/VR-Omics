@@ -106,7 +106,7 @@ public class AutoCompleteManager : MonoBehaviour
     /// Passes the selected gene to the respective method to read out the corrseponding expression value matrix
     /// </summary>
     /// <param name="btn"></param>
-    private void selectGene(GameObject btn)
+    public void selectGene(GameObject btn)
     {
         TMP_Text tmp_txt = btn.GetComponentInChildren<TMP_Text>();
         InputGameObject.GetComponent<TMP_InputField>().text = tmp_txt.text;
