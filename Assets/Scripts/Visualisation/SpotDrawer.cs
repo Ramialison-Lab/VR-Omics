@@ -103,7 +103,6 @@ public class SpotDrawer : MonoBehaviour
         mc = MainMenuPanel.GetComponent<MenuCanvas>();
     }
 
-
     private void Update()
     {
         // Update: draws the spots/cells stored in batches
@@ -129,10 +128,10 @@ public class SpotDrawer : MonoBehaviour
 
                     if(wrap.highlightgroup != -1)
                     {
-                            if (wrap.highlightgroup == 0) { rc = new Color(255, 0, 0, 1); }
-                            else if (wrap.highlightgroup == 1) rc = new Color(0, 255, 0, 1);
-                            else if (wrap.highlightgroup == 2) rc = new Color(0, 0, 255, 1);
-                            else if (wrap.highlightgroup == 3) rc = new Color(0, 255, 255, 1);
+                        if (wrap.highlightgroup == 0) { rc = new Color(255, 0, 0, 1); }
+                        else if (wrap.highlightgroup == 1) rc = new Color(0, 255, 0, 1);
+                        else if (wrap.highlightgroup == 2) rc = new Color(0, 0, 255, 1);
+                        else if (wrap.highlightgroup == 3) rc = new Color(0, 255, 255, 1);
                     }
                 }
                 else
@@ -151,7 +150,6 @@ public class SpotDrawer : MonoBehaviour
                     Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
                 }
                 i++;
-
             }
         }
 
@@ -400,6 +398,51 @@ public class SpotDrawer : MonoBehaviour
             for (int i = 0; i < batches.Count; i++)
             {
                 colValsCopy.Add(colorGradient(i, normalisedCopy));
+            }
+        }
+    }
+
+    public void setC18ClusterColor(List<string> clusterList)
+    {
+        firstSelect = true;
+        colVals.Clear();
+        normalised.Clear();
+
+        foreach (string s in clusterList)
+        {
+            Debug.Log(s.Substring(1, s.Length - 2));
+            switch (s.Substring(1, s.Length - 2))
+            {
+                case ("NA"):
+                    break;
+                case ("#fd8d3c"):
+                    colVals.Add(new Color(99, 55, 24));
+                    break;
+                case ("#41b6c4"):
+                    colVals.Add(new Color(25, 71, 77));
+                    break;
+                case ("#225ea8"):
+                    colVals.Add(new Color(13, 37, 66));
+                    break;
+                case ("#d3d3d3"):
+                    colVals.Add(new Color(83, 83, 83));
+                    break;
+                case ("#9e9ac8"):
+                    colVals.Add(new Color(62, 60, 78));
+                    break;
+                case ("#e31a1c"):
+                    colVals.Add(new Color(99, 55, 24));
+                    break;
+                case ("#c2e699"):
+                    colVals.Add(new Color(89, 10, 11));
+                    break;
+                case ("#238443"):
+                    colVals.Add(new Color(14, 52, 26));
+                    break;
+                case ("#ffffb2"):
+                    colVals.Add(new Color(100, 100, 70));
+                    break;
+
             }
         }
     }
@@ -872,22 +915,12 @@ public class SpotDrawer : MonoBehaviour
     public void callDataForExport()
     {
         List<string> dataEntry = new List<string>();
-        List<MeshWrapper> group1 = new List<MeshWrapper>();
-        List<MeshWrapper> group2 = new List<MeshWrapper>();
-        List<MeshWrapper> group3 = new List<MeshWrapper>();
-        List<MeshWrapper> group4 = new List<MeshWrapper>();
 
         foreach (MeshWrapper mw in batches)
         {
-            //if (highlightIdentifier1.Contains(mw.uniqueIdentifier)) group1.Add(mw);
-            //if (highlightIdentifier2.Contains(mw.uniqueIdentifier)) group2.Add(mw);
-            //if (highlightIdentifier3.Contains(mw.uniqueIdentifier)) group3.Add(mw);
-            //if (highlightIdentifier4.Contains(mw.uniqueIdentifier)) group4.Add(mw);
-
-        }
-
-        foreach (MeshWrapper mw in group1)
-        {
+            string group = "N/A";
+            if (mw.highlightgroup != -1) group = mw.highlightgroup.ToString();
+            dataEntry.Add(group);
             dataEntry.Add(mw.spotname);
             dataEntry.Add(mw.expVal.ToString());
             dataEntry.Add(mw.loc);
@@ -897,50 +930,6 @@ public class SpotDrawer : MonoBehaviour
             this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
             dataEntry.Clear();
         }
-
-        this.gameObject.GetComponent<ExportManager>().newLine();
-
-        foreach (MeshWrapper mw in group2)
-        {
-            dataEntry.Add(mw.spotname);
-            dataEntry.Add(mw.expVal.ToString());
-            dataEntry.Add(mw.loc);
-            dataEntry.Add(mw.datasetName);
-            dataEntry.Add(mw.uniqueIdentifier.ToString());
-
-            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
-            dataEntry.Clear();
-        }
-
-        this.gameObject.GetComponent<ExportManager>().newLine();
-
-        foreach (MeshWrapper mw in group3)
-        {
-            dataEntry.Add(mw.spotname);
-            dataEntry.Add(mw.expVal.ToString());
-            dataEntry.Add(mw.loc);
-            dataEntry.Add(mw.datasetName);
-            dataEntry.Add(mw.uniqueIdentifier.ToString());
-
-            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
-            dataEntry.Clear();
-        }
-
-        this.gameObject.GetComponent<ExportManager>().newLine();
-
-        foreach (MeshWrapper mw in group4)
-        {
-            dataEntry.Add(mw.spotname);
-            dataEntry.Add(mw.expVal.ToString());
-            dataEntry.Add(mw.loc);
-            dataEntry.Add(mw.datasetName);
-            dataEntry.Add(mw.uniqueIdentifier.ToString());
-
-            this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
-            dataEntry.Clear();
-        }
-
-        this.gameObject.GetComponent<ExportManager>().newLine();
 
     }
 
@@ -1011,5 +1000,20 @@ public class SpotDrawer : MonoBehaviour
     public void toggleShowGenesExpressed()
     {
         showGenesExpressed = !showGenesExpressed;
+    }
+
+
+    public void reloadGroups(List<string> barcodes, List<int> ids)
+    {
+        unselectAll();
+
+        foreach(MeshWrapper mw in batches)
+        {
+            if (barcodes.Contains(mw.spotname))
+            {
+                mw.highlightgroup = ids[barcodes.IndexOf(mw.spotname)];
+            }
+        }
+
     }
 }

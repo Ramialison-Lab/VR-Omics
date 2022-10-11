@@ -116,6 +116,21 @@ public class TooltipManager : MonoBehaviour
             case "SVGBtn":
                 x = "Show spatially variable genes list";
                 break;
+            case "ScreenshotBtn":
+                x = "Export image of current view. CTRL + K";
+                break;
+            case "ObjectGroupBtn":
+                x = "Show 3D object movement options";
+                break;            
+            case "Move-3dObjectBtn":
+                x = "Move 3d object using F,T,G,H keys and Shift, CTRL+M";
+                break;            
+            case "RotateObjectBtn":
+                x = "Rotate 3d object using F,T,G,H keys and Shift, CTRL+R";
+                break;            
+            case "ResizeObjectBtn":
+                x = "Resize 3d object using F,T,G,H keys and Shift, CTRL+L";
+                break;
         }
         return x;
     }

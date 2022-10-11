@@ -1,17 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ExportManager : MonoBehaviour
 {
     private GameObject sh;
     //TBD add right datapath
-    private string filePath = "C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\Outputs\\output.csv";
     StreamWriter writer;
+    public int resWidth = 2550;
+    public int resHeight = 3300;
+    private bool takeHiResShot = true;
+    private Camera camera;
+    private bool makeScreenshot = false;
+    public GameObject geneText;
+    private string filePath;
+
     private void Start()
     {
+        filePath = Application.dataPath;
+        camera = Camera.main;
         sh = GameObject.Find("ScriptHolder");
+        geneText = GameObject.Find("geneNameText");
+
     }
     public void printCSV()
     {
@@ -21,18 +36,92 @@ public class ExportManager : MonoBehaviour
 
     public void printLine(List<string> dataEntry)
     {
-        writer.WriteLine(dataEntry[0] + "," + dataEntry[1] + "," + dataEntry[2] + "," +  dataEntry[3] + "," + dataEntry[4]);
+        writer.WriteLine(dataEntry[0] + "," + dataEntry[1] + "," + dataEntry[2] + "," +  dataEntry[3] + "," + dataEntry[4] + "," + dataEntry[5]);
     }
 
     private void writeHeader()
     {
-        writer = new StreamWriter(filePath);
+        string str = string.Format("{0}/exported_spotlist.csv",
+                             filePath);
 
-        writer.WriteLine("Barcode" + "," + "Expressionvalue" + "," + "Row" + "," + "Col" + "," + "Dataset" + "," + "Unique_ID");
+        writer = new StreamWriter(str);
+
+        writer.WriteLine("Group" +','+ "Barcode" + "," + "Expressionvalue" + "," + "Row" + "," + "Col" + "," + "Dataset" + "," + "Unique_ID");
     }
 
     public void newLine()
     {
         writer.WriteLine();
+    }
+
+    public static string ScreenShotName(string path,int width, int height, string gene)
+    {
+        return string.Format("{0}/screen_{1}x{2}_{3}_{4}.png",
+                             path,
+                             width, height,
+                             System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"),
+                             gene);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.K)) makeScreenshot = true;
+    }
+
+    void LateUpdate()
+    {
+        //TBD link to button and function
+        if (makeScreenshot)
+        {
+            RenderTexture rt = new RenderTexture(resWidth, resHeight, 24);
+            camera.targetTexture = rt;
+            Texture2D screenShot = new Texture2D(resWidth, resHeight, TextureFormat.RGB24, false);
+            camera.Render();
+            RenderTexture.active = rt;
+            screenShot.ReadPixels(new Rect(0, 0, resWidth, resHeight), 0, 0);
+            camera.targetTexture = null;
+            RenderTexture.active = null;
+            Destroy(rt);
+            byte[] bytes = screenShot.EncodeToPNG();
+            string filename = ScreenShotName(filePath, resWidth, resHeight, geneText.GetComponent<TMP_Text>().text);
+            System.IO.File.WriteAllBytes(filename, bytes);
+            takeHiResShot = false;
+            makeScreenshot = false;
+        }
+    }
+
+    public void screenShot(GameObject panel)
+    {
+        panel.SetActive(true);
+        makeScreenshot = true;
+        panel.SetActive(false);
+
+    }
+    
+    public void setOutputPath(string path)
+    {
+        // TBD not currently used
+        filePath = path;
+    }
+
+    public void uploadGroupSelection()
+    {
+        var barcodes = new List<string>();
+        var ids = new List<int>();
+        string[] lines = File.ReadAllLines(Application.dataPath + "/exported_spotlist.csv");
+        lines = lines.Skip(1).ToArray();
+        foreach (string line in lines)
+        {
+            List<string> values = new List<string>();
+            values = line.Split(',').ToList();
+
+            if(values[0] != "N/A")
+            {
+                barcodes.Add(values[1]);
+                ids.Add(int.Parse(values[0]));
+            }
+        }
+
+        sh.GetComponent<SpotDrawer>().reloadGroups(barcodes, ids);
     }
 }

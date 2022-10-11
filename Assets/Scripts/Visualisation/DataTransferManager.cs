@@ -32,6 +32,7 @@ public class DataTransferManager : MonoBehaviour
     public GameObject[] disableBtn = new GameObject[3];
     public SearchManager sm;
     public AutoCompleteManager acm;
+    public ButtonFunctionManager bfm;
 
     //Universal lists
     public List<float> x_coordList;
@@ -69,9 +70,10 @@ public class DataTransferManager : MonoBehaviour
     public GameObject c18heartObj;
     public GameObject heartTranspSlider;
     //public string geneC18 = "Assets/Datasets/C18heart/C18genesTranspose.csv";
-    public string geneC18 = System.IO.Directory.GetCurrentDirectory() + "/Datasets/C18heart/C18genesTranspose.csv";
+    public string geneC18Path = System.IO.Directory.GetCurrentDirectory() + "/Datasets/C18heart/C18genesTranspose.csv";
     //public string coordsC18 = "Assets/Datasets/C18heart/C18heart.csv";
     public string coordsC18 = System.IO.Directory.GetCurrentDirectory() + "/Datasets/C18heart/C18heart.csv";
+    public List<string> c18cluster;
 
     //Xenium
     public string Xeniumdata = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
@@ -95,23 +97,25 @@ public class DataTransferManager : MonoBehaviour
         sc = scriptHolder.GetComponent<SliceCollider>();
         sm = scriptHolder.GetComponent<SearchManager>();
         acm = scriptHolder.GetComponent<AutoCompleteManager>();
+        bfm = scriptHolder.GetComponent<ButtonFunctionManager>();
+     
         try { df = scriptHolderPipeline.GetComponent<DataTransfer>(); } catch (Exception) { }
 
         // Uncomment for pipeline connection
-        //   pipelineConnected();
+           pipelineConnected();
 
         //if (c18_visium) { visium = true; }
-        if (visium)
-        {
-            sp.visium = visium;
-            if (c18_visium) startC18();
-            else startVisium();
-        }
-        else if (tomoseq) startTomoSeq();
-        else if (stomics) startStomics();
-        else if (xenium) startXenium();
-        else if (merfish) startMerfish();
-        else if (other) startOther();
+        //if (visium)
+        //{
+        //    sp.visium = visium;
+        //    if (c18_visium) startC18();
+        //    else startVisium();
+        //}
+        //else if (tomoseq) startTomoSeq();
+        //else if (stomics) startStomics();
+        //else if (xenium) startXenium();
+        //else if (merfish) startMerfish();
+        //else if (other) startOther();
     }
 
     private void pipelineConnected()
@@ -162,6 +166,8 @@ public class DataTransferManager : MonoBehaviour
         {
             loadObject();
         }
+
+        bfm.setFunction(df);
     }
 
     /// <summary>
@@ -175,19 +181,21 @@ public class DataTransferManager : MonoBehaviour
         //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
         //csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");
 
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered.h5");
-        csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered_transposed.csv");
+        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered.h5");
+        //csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered_transposed.csv");
         //  hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V2_Mouse_Kidney_10000______filtered_S93MOE\\V2_Mouse_Kidney_10000______filtered.h5");
         // csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V2_Mouse_Kidney_10000______filtered_S93MOE\\V2_Mouse_Kidney_10000______filtered_transposed.csv");
-        //foreach (string x in df.pathList)
-        //{
 
-        //    string[] files = System.IO.Directory.GetFiles(x, "*.h5");
-        //    string[] csvfiles = System.IO.Directory.GetFiles(x, "*.csv");
 
-        //    hdf5datapaths.AddRange(files);
-        //    csvGeneExpPaths.AddRange(csvfiles);
-        //}
+        foreach (string x in df.pathList)
+        {
+
+            string[] files = System.IO.Directory.GetFiles(x, "*.h5");
+            string[] csvfiles = System.IO.Directory.GetFiles(x, "*.csv");
+
+            hdf5datapaths.AddRange(files);
+            csvGeneExpPaths.AddRange(csvfiles);
+        }
 
         addHAndEImg = true;
         List<string> shortList = new List<string>();
@@ -363,15 +371,27 @@ public class DataTransferManager : MonoBehaviour
         string[] lines = File.ReadAllLines(coordsC18);
         lines = lines.Skip(1).ToArray();
 
+
         foreach (string line in lines)
         {
             List<string> values = new List<string>();
             values = line.Split(',').ToList();
 
+            //c18x.Add((532 - float.Parse(values[10])));
+            //c18y.Add((598 - float.Parse(values[11])));
+            //c18z.Add(float.Parse(values[12]));
+
+            //c18x.Add((float.Parse(values[1])) / 100);
+            //c18y.Add((float.Parse(values[2])) / 100);
+            //c18z.Add(float.Parse(values[12]));
+
             c18x.Add(-float.Parse(values[10]));
             c18y.Add(-float.Parse(values[11]));
             c18z.Add(float.Parse(values[12]));
+
+
             c18spot.Add(values[16]);
+            c18cluster.Add(values[7]);
         }
         //Depth corrdinates from C18heart dataset
         int[] c18xHC = { 192,205,230,250,285,289,321,327,353};
@@ -510,41 +530,41 @@ public class DataTransferManager : MonoBehaviour
 
     private void checkForSVGData()
     {
-       // string svgpath = "C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\";
-        string svgpath = "C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\";
+        
+        //string svgpath = "C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\";
         string[] csvfiles;
         try
         {
-            csvfiles = System.IO.Directory.GetFiles(svgpath, "*svgtoggle.csv");
+            string svgpath = df.pathList[0];
+            csvfiles = System.IO.Directory.GetFiles(svgpath, "*svgtoggle.csv");        
+            svgBtn.SetActive(true);
+            List<string> svgStrings = new List<string>();
+            string[] lines = File.ReadAllLines(csvfiles[0]);
+            lines = lines.Skip(1).ToArray();
+            svgStrings.Add("Genename \t \t pVal \t \t qVal");
+            foreach (string line in lines)
+            {
+                List<string> values = new List<string>();
+                values = line.Split(',').ToList();
+                svgStrings.Add(values[0] +"\t \t \t" + values[17] + "\t \t \t" + values[18]); 
+            }
+
+
+            string outputString ="";
+            //  foreach (string str in svgStrings)
+            for(int i =0; i<100;i++)
+            {
+
+                outputString = outputString + "\n" + svgStrings[i];
+
+            }
+
+            svgContentPanel.GetComponentInChildren<TMP_Text>().text = outputString;
         }catch(Exception e)
         {
             svgBtn.SetActive(false);
             return;
         }
-
-        svgBtn.SetActive(true);
-        List<string> svgStrings = new List<string>();
-        string[] lines = File.ReadAllLines(csvfiles[0]);
-        lines = lines.Skip(1).ToArray();
-        svgStrings.Add("Genename \t \t pVal \t \t qVal");
-        foreach (string line in lines)
-        {
-            List<string> values = new List<string>();
-            values = line.Split(',').ToList();
-            svgStrings.Add(values[0] +"\t \t \t" + values[17] + "\t \t \t" + values[18]); 
-        }
-
-
-        string outputString ="";
-      //  foreach (string str in svgStrings)
-        for(int i =0; i<100;i++)
-        {
-
-            outputString = outputString + "\n" + svgStrings[i];
-
-        }
-
-        svgContentPanel.GetComponentInChildren<TMP_Text>().text = outputString;
 
         //If Buttons
         //foreach (string str in svgStrings)

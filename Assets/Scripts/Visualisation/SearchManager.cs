@@ -198,7 +198,9 @@ public class SearchManager : MonoBehaviour
     {
         int pos = geneNames.IndexOf(geneName);
         // TBD LINKPATH
-        string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
+
+        //string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
+        string geneC18 = System.IO.Directory.GetCurrentDirectory() + "/Datasets/C18heart/C18heart.csv";
         string[] lines = File.ReadAllLines(geneC18);
         List<double> normalised = new List<double>();
 
@@ -212,6 +214,85 @@ public class SearchManager : MonoBehaviour
                 .ToList();
 
         sd.setColors(normalised);
+    }
+
+    public void readC18Cluster()
+    {
+        //Not working
+        //sd.setC18ClusterColor(dfm.c18cluster);
+
+        var cluster = dfm.c18cluster;
+        List<double> normalised = new List<double>();
+
+        foreach (string s in cluster)
+        {
+            Debug.Log(s.Substring(1, s.Length - 2));
+            switch (s.Substring(1, s.Length - 2))
+            {
+
+                //case ("NA"):
+                //    break;
+                //case ("WH"):
+                //    break;
+                //case ("LV"):
+                //    normalised.Add(0);
+                //    break;
+                //case ("RV"):
+                //    normalised.Add(0.15);
+                //    break;
+                //case ("epc"):
+                //    normalised.Add(0.3);
+                //    break;
+                //case ("OT"):
+                //    normalised.Add(0.45);
+                //    break;
+                //case ("LA"):
+                //    normalised.Add(0.6);
+                //    break;
+                //case ("RA"):
+                //    normalised.Add(0.75);
+                //    break;
+                //case ("P"):
+                //    normalised.Add(0.9);
+                //    break;
+                //case ("A"):
+                //    normalised.Add(1);
+                //    break;
+
+                case ("NA"):
+                    break;
+                case ("#fd8d3c"):
+                    normalised.Add(0);
+                    break;
+                case ("#41b6c4"):
+                    normalised.Add(0.125);
+                    break;
+                case ("#225ea8"):
+                    normalised.Add(0.25);
+                    break;
+                case ("#d3d3d3"):
+                    normalised.Add(0.375);
+                    break;
+                case ("#9e9ac8"):
+                    normalised.Add(0.5);
+                    break;
+                case ("#e31a1c"):
+                    normalised.Add(0.625);
+                    break;
+                case ("#c2e699"):
+                    normalised.Add(0.75);
+                    break;
+                case ("#238443"):
+                    normalised.Add(0.875);
+                    break;
+                case ("#ffffb2"):
+                    normalised.Add(1);
+                    break;
+
+            }
+        }
+        sd.setColors(normalised);
+
     }
 
     /// <summary>

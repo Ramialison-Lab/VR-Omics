@@ -26,13 +26,14 @@ public class SideMenuManager : MonoBehaviour
         texts[3].text = "Location: " + loc.ToString();
 
         int pos = dfm.SpotNameDictionary[datasetId].IndexOf(SpotName);
-        readSpotInfo(pos, Dataset);
+       // readSpotInfo(pos, Dataset);
 
     }
 
     private void readSpotInfo(int pos, string dataset)
     {
         //TBD LINKPATH
+        //TBD needs to be added when csv file is added to python pipeline!
         string[] lines = File.ReadAllLines(dataset.Replace(dataset.Split('\\').Last(), "") + "test2Csv.csv");
 
             List<string> values = new List<string>();

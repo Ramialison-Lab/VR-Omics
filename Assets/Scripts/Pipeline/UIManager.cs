@@ -1334,13 +1334,26 @@ public class UIManager : MonoBehaviour
         filterPanel.SetActive(true);
     }
 
+    public GameObject distanceText;
+
     public void startVR()
     {
 
         //TBD get distances by UI input
         List<int> distances = new List<int>();
-        foreach (int x in rotationValues) distances.Add(10);
 
+        string distString = distanceText.GetComponent<Text>().text;
+        try
+        {
+            List<string> split = distString.Split(',').ToList();
+
+            foreach (string str in split)
+            {
+                distances.Add(int.Parse(str));
+            }
+
+        }
+        catch (Exception) { }
 
         List<string> datapathVisium = new List<string>();
         foreach (Dropdown.OptionData option in dropd.options)
