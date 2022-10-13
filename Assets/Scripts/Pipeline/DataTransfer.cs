@@ -48,6 +48,8 @@ public class DataTransfer : MonoBehaviour
     {
         visium = true;
         visiumPath = datapath;
+        startVisualisationScene();
+
     }
 
     public void startMerfish()
@@ -55,6 +57,7 @@ public class DataTransfer : MonoBehaviour
         merfish = true;
         merfishGenePath = ui.merfishGenePath;
         merfishMetaPath = ui.merfishMetaPath;
+        startVisualisationScene();
     }
 
     public void startTomo()

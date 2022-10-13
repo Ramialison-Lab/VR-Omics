@@ -13953,7 +13953,7 @@ MonoBehaviour:
   matUsed: {fileID: 2100000, guid: c9bc76c72c37a394da98510ae1328fbf, type: 2}
   dd: {fileID: 200879416}
   geneSelection: {fileID: 99987406}
-  symbolSelect: {fileID: 0}
+  symbolSelect: {fileID: 1796680520}
   sphereSymb: {fileID: 1796680520}
   cubeSymb: {fileID: 97734267}
   diamondSymb: {fileID: 1355762986}
@@ -14061,12 +14061,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65f91acdc97124a4b8f75371d6aa166e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visium: 1
+  visium: 0
   stomics: 0
   tomoseq: 0
   xenium: 0
-  merfish: 0
-  c18_visium: 1
+  merfish: 1
+  c18_visium: 0
   other: 0
   svgBtn: {fileID: 829294127}
   svgContentPanel: {fileID: 247316451}

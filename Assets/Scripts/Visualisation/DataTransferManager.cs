@@ -102,7 +102,7 @@ public class DataTransferManager : MonoBehaviour
         try { df = scriptHolderPipeline.GetComponent<DataTransfer>(); } catch (Exception) { }
 
         // Uncomment for pipeline connection
-           pipelineConnected();
+        pipelineConnected();
 
         //if (c18_visium) { visium = true; }
         //if (visium)
@@ -309,9 +309,11 @@ public class DataTransferManager : MonoBehaviour
     private void startMerfish()
     {
         //TBD LINKPATH
-        string merfishCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BRainSlide1\\merfish_cell_metadata.csv";
-        string merfishGenelist = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
+        //  string merfishCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BRainSlide1\\merfish_cell_metadata.csv";
+        //  string merfishGenelist = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
 
+        string merfishCoords = df.merfishMetaPath;
+        string merfishGenelist = df.merfishGenePath;
         List<float> merfishX = new List<float>();
         List<float> merfishY = new List<float>();
         List<float> merfishZ = new List<float>();

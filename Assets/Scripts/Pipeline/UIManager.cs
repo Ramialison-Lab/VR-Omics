@@ -653,11 +653,10 @@ public class UIManager : MonoBehaviour
 
         string outputDirectory = "";
 
+		outputDirectory = File.ReadLines(Application.dataPath+"/PythonFiles/outdirectorypaths.txt").Last();
+		        
         gameObject.GetComponent<DataTransfer>().startVisium(outputDirectory);
 
-        //TBD1 if processed return datapath to UI
-		outputDirectory = File.ReadLines(Application.dataPath+"/PythonFiles/outdirectorypaths.txt").Last();
-		
     }
 
     public void startPipelineDownloadData()
