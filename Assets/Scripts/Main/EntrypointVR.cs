@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.UI;
 
 /// <summary>
 /// This represents the entrypoint from the initial Desktop configuration to a VR, interactable reconfiguration.
@@ -99,8 +100,11 @@ public class EntrypointVR : MonoBehaviour
         collider.size = new Vector3(960, 600, 0.05f);
         Rigidbody rigidbody = Canvas.AddComponent<Rigidbody>();
         rigidbody.isKinematic = true;
-        var xrGrabInteractable = Canvas.AddComponent<XRGrabInteractable>(); //already has BoxCollider, Rigidbody on
+        var xrGrabInteractable = Canvas.AddComponent<XRGrabInteractable>();
         xrGrabInteractable.interactionManager = XRInteractionManager.GetComponent<XRInteractionManager>();
+
+        // Tracked UI Raycasts
+        Canvas.AddComponent<TrackedDeviceGraphicRaycaster>(); // XR UI Input Module already as default input system
 
         // Input Action Manager
         InputActionManager = InstantiatePrefab("Input Action Manager");
