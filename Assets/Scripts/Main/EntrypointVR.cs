@@ -12,7 +12,6 @@ public class EntrypointVR : MonoBehaviour
 {
     void Awake()
     {
-        DefaultCamera = InstantiatePrefab("Main Camera");
         gameObject.hideFlags = hideFlags |= HideFlags.HideAndDontSave | HideFlags.HideInHierarchy;
         Canvas = GameObject.Find("Canvas");
         if (!Canvas)
@@ -45,18 +44,45 @@ public class EntrypointVR : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        OnUpdate?.Invoke();
+    }
+
     private IEnumerator Reconfigure()
     {
         // take down default camera
-        Destroy(DefaultCamera);
+        Destroy(GameObject.Find("Main Camera"));
         XROrigin = InstantiatePrefab("XR Origin");
         XRInteractionManager = InstantiatePrefab("XR Interaction Manager");
 
-        //Configure canvas
-        Canvas canvas = Canvas.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
-        canvas.transform.localPosition = new Vector3(0, 2, 2);
-        canvas.transform.localScale = new Vector3(4f / 960, 2.5f / 600, 1);
+        {//Configure canvas
+            Canvas canvas = Canvas.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+            {// grab aggregate height
+                float h = 0;
+                int fw = 60, fc = 60; // use a frame window of 60
+                var maincamera = Camera.main; //cache camera reference
+                void SetCanvasPose()
+                {
+                    if (maincamera.transform.localPosition.y > 0 && fc-- > 0)
+                        h += maincamera.transform.localPosition.y / fw;
+
+                    if (fc == 0)
+                    {
+                        canvas.transform.localPosition = new Vector3(0, h, 2);
+                        // center canvas in front of the VR user
+                        canvas.transform.localEulerAngles = new Vector3(
+                            0,
+                            Mathf.Acos(Vector3.Dot(Vector3.forward, maincamera.transform.forward)) * Mathf.Rad2Deg,
+                            0);
+                        OnUpdate -= SetCanvasPose;
+                    }
+                }
+                OnUpdate += SetCanvasPose;
+            }
+            canvas.transform.localScale = new Vector3(4f / 960, 2.5f / 600, 1);
+        }
 
         //Link XR Interaction Manager
         foreach (Transform t in XROrigin.transform)
@@ -86,9 +112,10 @@ public class EntrypointVR : MonoBehaviour
     }
 
     private static InputDevice HMD;
-    private static GameObject DefaultCamera;
     private static GameObject XROrigin;
     private static GameObject XRInteractionManager;
     private static GameObject Canvas;
     private static GameObject InputActionManager;
+    private delegate void ToExecute();
+    private ToExecute OnUpdate;
 }
