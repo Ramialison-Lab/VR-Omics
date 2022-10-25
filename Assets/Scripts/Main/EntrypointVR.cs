@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.UI;
@@ -14,9 +15,6 @@ public class EntrypointVR : MonoBehaviour
     void Awake()
     {
         gameObject.hideFlags = hideFlags |= HideFlags.HideAndDontSave | HideFlags.HideInHierarchy;
-        Canvas = GameObject.Find("Canvas");
-        if (!Canvas)
-            throw new System.Exception("Could not find Canvas!");
     }
 
     private void Start()
@@ -38,12 +36,19 @@ public class EntrypointVR : MonoBehaviour
                 Debug.Log("Detected a valid HMD:" + hmd.name);
                 HMD = hmd;
                 StartCoroutine(Reconfigure());
+                SceneManager.sceneLoaded += (scene, mode) =>
+                {
+                    if (scene.name != "Visualisation")
+                        return;
+                    StartCoroutine(ReconfigureVisualization());
+                };
                 yield break;
             }
 
             yield return new WaitForEndOfFrame();
         }
     }
+
 
     private void Update()
     {
@@ -57,6 +62,7 @@ public class EntrypointVR : MonoBehaviour
         //XR IM needs to be add first to avoid XR IT automatically adding one
         XRInteractionManager = InstantiatePrefab("XR Interaction Manager");
         XROrigin = InstantiatePrefab("XR Origin");
+        GameObject Canvas = GameObject.Find("Canvas");
 
         {//Configure canvas
             Canvas canvas = Canvas.GetComponent<Canvas>();
@@ -100,8 +106,9 @@ public class EntrypointVR : MonoBehaviour
         collider.size = new Vector3(960, 600, 0.05f);
         Rigidbody rigidbody = Canvas.AddComponent<Rigidbody>();
         rigidbody.isKinematic = true;
-        var xrGrabInteractable = Canvas.AddComponent<XRGrabInteractable>();
-        xrGrabInteractable.interactionManager = XRInteractionManager.GetComponent<XRInteractionManager>();
+        var canvasInteractable = Canvas.AddComponent<XRGrabInteractable>();
+        canvasInteractable.interactionManager = XRInteractionManager.GetComponent<XRInteractionManager>();
+        canvasInteractable.throwOnDetach = false;
 
         // Tracked UI Raycasts
         Canvas.AddComponent<TrackedDeviceGraphicRaycaster>(); // XR UI Input Module already as default input system
@@ -112,18 +119,52 @@ public class EntrypointVR : MonoBehaviour
         yield return null;//TODO test if in one frame
     }
 
-    private GameObject InstantiatePrefab(string name, Transform parent = null)
+    private IEnumerator ReconfigureVisualization()
+    {
+        Destroy(GameObject.Find("Main Camera"));
+
+        var maincamera = XROrigin.transform.GetChild(0).GetChild(0).gameObject;
+        maincamera.tag = "MainCamera";
+        maincamera.layer = 1; //TransparentFX
+        maincamera.GetComponent<CharacterController>().enabled = true;
+        PlayerController pc = maincamera.GetComponent<PlayerController>();
+        pc.enabled = true;
+        pc.IF = GameObject.Find("SearchIF");
+        pc.menuCanvas = GameObject.Find("MainMenuPanel");
+
+        { //Configure Canvas (TODO refactor?)
+            GameObject Canvas = GameObject.Find("PythonBindCanvas");
+            Canvas.transform.localScale = new Vector3(4f / 990, 2.5f / 619, 1);
+            Canvas canvas = Canvas.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+            BoxCollider collider = Canvas.AddComponent<BoxCollider>();
+            collider.size = new Vector3(960, 600, 0.05f);
+            Rigidbody rigidbody = Canvas.AddComponent<Rigidbody>();
+            rigidbody.isKinematic = true;
+            var canvasInteractable = Canvas.AddComponent<XRGrabInteractable>();
+            canvasInteractable.interactionManager = XRInteractionManager.GetComponent<XRInteractionManager>();
+            canvasInteractable.throwOnDetach = false;
+
+            // Tracked UI Raycasts
+            Canvas.AddComponent<TrackedDeviceGraphicRaycaster>(); // XR UI Input Module already as default input system
+        }
+
+        yield return null; // TODO
+    }
+
+    private GameObject InstantiatePrefab(string name, Transform parent = null, bool dontDestroy = true)
     {
         var gobj = Instantiate(Resources.Load(name), parent) as GameObject;
         gobj.SetActive(true);
         gobj.name = name;
+        if (dontDestroy)
+            DontDestroyOnLoad(gobj);
         return gobj;
     }
 
     private static InputDevice HMD;
     private static GameObject XROrigin;
     private static GameObject XRInteractionManager;
-    private static GameObject Canvas;
     private static GameObject InputActionManager;
     private delegate void ToExecute();
     private ToExecute OnUpdate;

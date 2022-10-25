@@ -1191,7 +1191,7 @@ PrefabInstance:
     - target: {fileID: 215732046212096886, guid: 7ec79d858908f6d448f9aed448283f2d,
         type: 3}
       propertyPath: m_Name
-      value: Main Camera
+      value: MainCamera
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ec79d858908f6d448f9aed448283f2d, type: 3}
@@ -1213,6 +1213,44 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 29549723066321936}
   m_PrefabAsset: {fileID: 0}
+--- !u!143 &7858349703949644944
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186499669775855462}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4628207288040680349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186499669775855462}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcc43bb9f23554a449bc58f37cf671e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _controller: {fileID: 7858349703949644944}
+  _speed: 50
+  _rotationSpeed: 180
+  horizontalSpeed: 2
+  verticalSpeed: 2
+  IF: {fileID: 0}
+  menuCanvas: {fileID: 0}
+  speed: 3
 --- !u!114 &7885181617129768799
 MonoBehaviour:
   m_ObjectHideFlags: 0
