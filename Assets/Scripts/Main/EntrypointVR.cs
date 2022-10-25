@@ -53,8 +53,9 @@ public class EntrypointVR : MonoBehaviour
     {
         // take down default camera
         Destroy(GameObject.Find("Main Camera"));
-        XROrigin = InstantiatePrefab("XR Origin");
+        //XR IM needs to be add first to avoid XR IT automatically adding one
         XRInteractionManager = InstantiatePrefab("XR Interaction Manager");
+        XROrigin = InstantiatePrefab("XR Origin");
 
         {//Configure canvas
             Canvas canvas = Canvas.GetComponent<Canvas>();
@@ -94,6 +95,10 @@ public class EntrypointVR : MonoBehaviour
                 xrRayInteractor.lineType = XRRayInteractor.LineType.ProjectileCurve;
             }
         }
+        BoxCollider collider = Canvas.AddComponent<BoxCollider>();
+        collider.size = new Vector3(960, 600, 0.05f);
+        Rigidbody rigidbody = Canvas.AddComponent<Rigidbody>();
+        rigidbody.isKinematic = true;
         var xrGrabInteractable = Canvas.AddComponent<XRGrabInteractable>(); //already has BoxCollider, Rigidbody on
         xrGrabInteractable.interactionManager = XRInteractionManager.GetComponent<XRInteractionManager>();
 
