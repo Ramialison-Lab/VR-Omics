@@ -27,10 +27,10 @@ namespace VROmics.Main
 
         private void Start()
         {
-            StartCoroutine(DetectHMD());
+            //StartCoroutine(DetectHMD());
         }
 
-        private IEnumerator DetectHMD()
+        internal IEnumerator DetectHMD()
         {
             var HMDs = new List<InputDevice>();
             while (true)

@@ -8,8 +8,8 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using VROmics.Main;
 
 public class UIManager : MonoBehaviour
 {
@@ -1374,5 +1374,13 @@ public class UIManager : MonoBehaviour
     public List<String> getDatapathList()
     {
         return transferDatapaths;
+    }
+
+    /// <summary>
+    /// Trigger detection for an HMD manually.
+    /// </summary>
+    public void EnterVR()
+    {
+        StartCoroutine(EntrypointVR.Instance.DetectHMD());
     }
 }
