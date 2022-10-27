@@ -18,6 +18,10 @@ namespace VROmics.Main
                 var maincamera = Camera.main; //cache camera reference
                 void SetCanvasPose()
                 {
+                    if (EntrypointVR.Instance.HMD.TryGetFeatureValue(CommonUsages.userPresence, out var userPresence))
+                        if (!userPresence)
+                            return;
+
                     if (maincamera.transform.localPosition.y > 0 && fc-- > 0)
                         h += maincamera.transform.localPosition.y / fw;
 
