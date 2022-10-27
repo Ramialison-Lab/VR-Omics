@@ -496,7 +496,7 @@ GameObject:
   - component: {fileID: 114000010865040046}
   - component: {fileID: 114000013689746302}
   m_Layer: 5
-  m_Name: SimpleFileBrowserCanvas
+  m_Name: SimpleFileBrowserCanvas (loading instead  from Assets,Resources)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

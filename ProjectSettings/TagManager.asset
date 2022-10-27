@@ -10,6 +10,7 @@ TagManager:
   - Undefined
   - expandTag
   - contentBtn
+  - VR
   layers:
   - Default
   - TransparentFX

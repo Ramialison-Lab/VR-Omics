@@ -953,7 +953,7 @@ public class UIManager : MonoBehaviour
     }
 
 
-    // Browse local machine for Xenium datapaths
+    // Browse local machine for datapaths (except Visium)
     IEnumerator selectBrowseFile(string target, TMP_InputField tmpinputfield)
     {
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
