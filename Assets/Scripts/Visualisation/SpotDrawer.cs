@@ -83,7 +83,7 @@ public class SpotDrawer : MonoBehaviour
     /// </summary>
     class MeshWrapper
     {
-        public Mesh mesh;
+        public Mesh mesh; // Are there different meshes for spots in the same dataset? 
         public Vector3 location;
         public Vector3 origin;
         public string loc;
@@ -94,6 +94,16 @@ public class SpotDrawer : MonoBehaviour
         public int highlightgroup;
     }
 
+    private ComputeBuffer meshPropertiesBuffer;
+    private ComputeBuffer argsBuffer;
+    private Mesh mesh;
+
+    private struct MeshProperties
+    {
+        public Matrix4x4 matrix;
+        public Vector4 color;
+    }
+
     private void Start()
     {
         sm = gameObject.GetComponent<SearchManager>();
@@ -101,102 +111,150 @@ public class SpotDrawer : MonoBehaviour
         main = Camera.main;
         smm = GameObject.Find("SideMenu").GetComponent<SideMenuManager>();
         mc = MainMenuPanel.GetComponent<MenuCanvas>();
+
+        mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
     }
 
+    private bool executeOnce = true; // TODO remove
     private void Update()
     {
         // Update: draws the spots/cells stored in batches
-        if (start || visium)
+        if (start || visium) // TODO remove boolean flags
         {
-            Color rc = new Color();
-            int i = 0;
-            foreach (MeshWrapper wrap in batches)
+
             {
-                // draw all spots from the batches list
-                mpb = new MaterialPropertyBlock();
-                if (firstSelect)
+                Vector3 centroid = Vector3.zero;
+                int count = batches.Count;
+                if (executeOnce)
                 {
+                    uint[] args = new uint[5] { 0, 0, 0, 0, 0}; // Must be at least 20 bytes (5 ints).
+                    args[0] = (uint)mesh.GetIndexCount(0);
+                    args[1] = (uint)count;
+                    args[2] = (uint)mesh.GetIndexStart(0);
+                    args[3] = (uint)mesh.GetBaseVertex(0);
+                    argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
+                    argsBuffer.SetData(args);
+
+                    MeshProperties[] properties = new MeshProperties[count];
+                    int j = 0;
+                    foreach (MeshWrapper wrapper in batches)
                     {
-                        try
-                        {
-                            // read color for expression and expression value as float
-                            rc = colVals[i];
-                            wrap.expVal = (float)normalised[i];
-                        }
-                        catch (Exception) { rc = Color.clear; };
+                        MeshProperties MPs = new MeshProperties();
+                        MPs.matrix = Matrix4x4.TRS(wrapper.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+                        centroid += wrapper.location;
+                        MPs.color = Color.grey;
+                        properties[j++] = MPs;
                     }
 
-                    if(wrap.highlightgroup != -1)
-                    {
-                        if (wrap.highlightgroup == 0) { rc = new Color(255, 0, 0, 1); }
-                        else if (wrap.highlightgroup == 1) rc = new Color(0, 255, 0, 1);
-                        else if (wrap.highlightgroup == 2) rc = new Color(0, 0, 255, 1);
-                        else if (wrap.highlightgroup == 3) rc = new Color(0, 255, 255, 1);
-                    }
+                    meshPropertiesBuffer = new ComputeBuffer(j + 1, sizeof(float) * 4 * 4 + sizeof(float) * 4);
+                    meshPropertiesBuffer.SetData(properties);
+                    matUsed.SetBuffer("_Properties", meshPropertiesBuffer);
+                    executeOnce = false;
                 }
-                else
-                {
-                    rc = Color.grey;
-                    mpb.SetColor("_Color", rc);
-                    //draw spots by graphic
-                    matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                }
-                if (wrap.expVal >= minTresh)
-                {
-                    mpb.SetColor("_Color", rc);
-                    //draw spots by graphic
-                    matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                }
-                i++;
+
+                Graphics.DrawMeshInstancedIndirect(mesh, 0, matUsed, new Bounds(centroid / count, new Vector3(2, 2, 2)), argsBuffer);
             }
+
+            Color rc = new Color();
+            int i = 0;
+            //foreach (MeshWrapper wrap in batches)
+            //{
+            //    // draw all spots from the batches list
+            //    mpb = new MaterialPropertyBlock();
+            //    if (firstSelect)
+            //    {
+            //        {
+            //            try
+            //            {
+            //                // read color for expression and expression value as float
+            //                rc = colVals[i];
+            //                wrap.expVal = (float)normalised[i];
+            //            }
+            //            catch (Exception) { rc = Color.clear; };
+            //        }
+
+            //        if (wrap.highlightgroup != -1)
+            //        {
+            //            if (wrap.highlightgroup == 0) { rc = new Color(255, 0, 0, 1); }
+            //            else if (wrap.highlightgroup == 1) rc = new Color(0, 255, 0, 1);
+            //            else if (wrap.highlightgroup == 2) rc = new Color(0, 0, 255, 1);
+            //            else if (wrap.highlightgroup == 3) rc = new Color(0, 255, 255, 1);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        rc = Color.grey;
+            //        mpb.SetColor("_Color", rc);
+            //        //draw spots by graphic
+            //        matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+            //        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+            //    }
+            //    if (wrap.expVal >= minTresh)
+            //    {
+            //        mpb.SetColor("_Color", rc);
+            //        //draw spots by graphic
+            //        matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+            //        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+            //    }
+            //    i++;
+            //}
         }
 
         // if side-by-side copy of the slice is active
         if (copy)
         {
             int i = 0;
-            foreach (MeshWrapper wrap in batchesCopy)
-            {
-                // draw all spots from the batches list
-                mpb = new MaterialPropertyBlock();
-                Color rc;
-                if (newColoursCopy)
-                {
+            //foreach (MeshWrapper wrap in batchesCopy)
+            //{
+            //    // draw all spots from the batches list
+            //    mpb = new MaterialPropertyBlock();
+            //    Color rc;
+            //    if (newColoursCopy)
+            //    {
 
-                    if (firstSelect)
-                    {
-                        try
-                        {
-                            // evaluate expression value with colorgradient
-                            rc = colValsCopy[i];
-                            wrap.expVal = (float)normalisedCopy[i];
-                        }
-                        catch (Exception) { rc = Color.clear; };
-                    }
-                    // if spot not found
-                    else { rc = Color.clear; }
+            //        if (firstSelect)
+            //        {
+            //            try
+            //            {
+            //                // evaluate expression value with colorgradient
+            //                rc = colValsCopy[i];
+            //                wrap.expVal = (float)normalisedCopy[i];
+            //            }
+            //            catch (Exception) { rc = Color.clear; };
+            //        }
+            //        // if spot not found
+            //        else { rc = Color.clear; }
 
-                    if (wrap.highlightgroup != -1)
-                    {
-                        if (wrap.highlightgroup == 0) { rc = new Color(255, 0, 0, 1); }
-                        else if (wrap.highlightgroup == 1) rc = new Color(0, 255, 0, 1);
-                        else if (wrap.highlightgroup == 2) rc = new Color(0, 0, 255, 1);
-                        else if (wrap.highlightgroup == 3) rc = new Color(0, 255, 255, 1);
-                    }
+            //        if (wrap.highlightgroup != -1)
+            //        {
+            //            if (wrap.highlightgroup == 0) { rc = new Color(255, 0, 0, 1); }
+            //            else if (wrap.highlightgroup == 1) rc = new Color(0, 255, 0, 1);
+            //            else if (wrap.highlightgroup == 2) rc = new Color(0, 0, 255, 1);
+            //            else if (wrap.highlightgroup == 3) rc = new Color(0, 255, 255, 1);
+            //        }
 
-                    mpb.SetColor("_Color", rc);
-                }
-                {
-                    matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 100, wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                    Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-                }
-                i++;
-            }
+            //        mpb.SetColor("_Color", rc);
+            //    }
+            //    {
+            //        matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 100, wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+            //        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
+            //    }
+            //    i++;
+            //}
         }
     }
 
+    private void OnDisable()
+    {
+        if (meshPropertiesBuffer != null)
+            meshPropertiesBuffer.Release();
+
+        if (argsBuffer != null)
+            argsBuffer.Release();
+
+        meshPropertiesBuffer = null;
+        argsBuffer = null;
+    }
 
     /// <summary>
     /// Initalise the SpotDrawer script, creating batches according to technique and read out information
@@ -243,7 +301,7 @@ public class SpotDrawer : MonoBehaviour
             try { datasetn = dataSet[i]; }
             catch (Exception) { }
             if (dfm.stomics) datasetn = dfm.stomicsDataPath;
-            batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount, highlightgroup = -1});
+            batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount, highlightgroup = -1 });
             startSpotdrawerCount++;
         }
 
@@ -637,7 +695,7 @@ public class SpotDrawer : MonoBehaviour
     /// </summary>
     public void unselectAll()
     {
-        foreach(MeshWrapper mw in batches)
+        foreach (MeshWrapper mw in batches)
         {
             mw.highlightgroup = -1;
         }
@@ -672,7 +730,7 @@ public class SpotDrawer : MonoBehaviour
                     }
                     else if (addToggle)
                     {
-                        if(mw.highlightgroup != active)
+                        if (mw.highlightgroup != active)
                         {
                             mw.highlightgroup = active;
                             batchesCopy[i].highlightgroup = active;
@@ -1007,7 +1065,7 @@ public class SpotDrawer : MonoBehaviour
     {
         unselectAll();
 
-        foreach(MeshWrapper mw in batches)
+        foreach (MeshWrapper mw in batches)
         {
             if (barcodes.Contains(mw.spotname))
             {
