@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using VROmics.Main;
 
 public class SpotDrawer : MonoBehaviour
 {
@@ -25,7 +26,6 @@ public class SpotDrawer : MonoBehaviour
     //Access variables
     private SearchManager sm;
     public TMP_Dropdown dd;
-    private Camera main;
     public TMP_Text geneSelection;
     private DataTransferManager dfm;
     private SideMenuManager smm;
@@ -108,7 +108,6 @@ public class SpotDrawer : MonoBehaviour
     {
         sm = gameObject.GetComponent<SearchManager>();
         dfm = gameObject.GetComponent<DataTransferManager>();
-        main = Camera.main;
         smm = GameObject.Find("SideMenu").GetComponent<SideMenuManager>();
         mc = MainMenuPanel.GetComponent<MenuCanvas>();
 
@@ -137,11 +136,17 @@ public class SpotDrawer : MonoBehaviour
 
                     MeshProperties[] properties = new MeshProperties[count];
                     int j = 0;
+                    bool isVR = EntrypointVR.Instance.VR;
+                    float x_w = isVR ? 0.002f : 1f, y_w = isVR ? 0.002f : 1f;
+                    float s_w = isVR ? 0.0002f : 0.1f;
                     foreach (MeshWrapper wrapper in batches)
                     {
                         MeshProperties MPs = new MeshProperties();
-                        MPs.matrix = Matrix4x4.TRS(wrapper.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                        centroid += wrapper.location;
+                        var loc = wrapper.location;
+                        loc.x *= x_w;
+                        loc.y *= y_w;
+                        MPs.matrix = Matrix4x4.TRS(loc, symbolTransform.rotation, symbolTransform.localScale * s_w);
+                        centroid += loc;
                         MPs.color = Color.grey;
                         properties[j++] = MPs;
                     }
@@ -152,7 +157,8 @@ public class SpotDrawer : MonoBehaviour
                     executeOnce = false;
                 }
 
-                Graphics.DrawMeshInstancedIndirect(mesh, 0, matUsed, new Bounds(centroid / count, new Vector3(2, 2, 2)), argsBuffer);
+                Graphics.DrawMeshInstancedIndirect(mesh, 0, matUsed, new Bounds(centroid / count, new Vector3(2, 2, 2)), argsBuffer,
+                    0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false);
             }
 
             Color rc = new Color();
