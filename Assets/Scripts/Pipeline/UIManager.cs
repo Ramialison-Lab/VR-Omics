@@ -8,8 +8,8 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using VROmics.Main;
 
 public class UIManager : MonoBehaviour
 {
@@ -953,7 +953,7 @@ public class UIManager : MonoBehaviour
     }
 
 
-    // Browse local machine for Xenium datapaths
+    // Browse local machine for datapaths (except Visium)
     IEnumerator selectBrowseFile(string target, TMP_InputField tmpinputfield)
     {
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
@@ -1374,5 +1374,13 @@ public class UIManager : MonoBehaviour
     public List<String> getDatapathList()
     {
         return transferDatapaths;
+    }
+
+    /// <summary>
+    /// Trigger detection for an HMD manually.
+    /// </summary>
+    public void EnterVR()
+    {
+        StartCoroutine(EntrypointVR.Instance.DetectHMD());
     }
 }
