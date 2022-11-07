@@ -147,8 +147,9 @@ namespace VROmics.Main
 
             { //Configure Canvas (TODO refactor?)
                 GameObject Canvas = GameObject.Find("PythonBindCanvas");
-                Canvas.transform.localScale = new Vector3(4f / 990, 2.5f / 619, 1);
                 Canvas canvas = Canvas.GetComponent<Canvas>();
+                CanvasUtilities.CenterCanvas(canvas);
+                Canvas.transform.localScale = new Vector3(4f / 1112, 2.5f / 755, 1);
                 canvas.renderMode = RenderMode.WorldSpace;
                 BoxCollider collider = Canvas.AddComponent<BoxCollider>();
                 collider.size = new Vector3(960, 600, 0.05f);
