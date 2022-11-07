@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using VROmics.Main;
 
 public class MenuCanvas : MonoBehaviour
 {
@@ -252,5 +253,13 @@ public class MenuCanvas : MonoBehaviour
     public void showClusterInfoC18()
     {
         GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readC18Cluster();
+    }
+
+    /// <summary>
+    /// Trigger detection for an HMD manually.
+    /// </summary>
+    public void EnterVR()
+    {
+        StartCoroutine(EntrypointVR.Instance.DetectHMD());
     }
 }

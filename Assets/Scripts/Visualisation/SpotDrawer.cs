@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -48,7 +49,6 @@ public class SpotDrawer : MonoBehaviour
     //Initialise variables
     private int startSpotdrawerCount = 0;
     private bool firstSelect = false;
-    private bool start = false;
 
     //Colorgradient
     public GameObject colourGradientObject;
@@ -80,10 +80,8 @@ public class SpotDrawer : MonoBehaviour
     //batches variables
     private ComputeBuffer meshPropertiesBuffer;
     private ComputeBuffer argsBuffer;
-    private Mesh mesh;   
-    private Vector3 centroid = Vector3.zero;
+    private Mesh mesh;
     int count = 0;
-    private List<Color> batchColour = new List<Color>();
     bool colourInit = false;
 
     /// <summary>
@@ -117,9 +115,15 @@ public class SpotDrawer : MonoBehaviour
         mc = MainMenuPanel.GetComponent<MenuCanvas>();
 
         mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
+        // re-set buffers upon VR due to the different scaling factor
+        EntrypointVR.OnActiveVisualisationTransitioningVR += () =>
+        {
+            OnDrawSpots = null;
+            SetMeshBuffers();
+        };
     }
 
-    private void setBatches()
+    private void SetMeshBuffers()
     {
         uint[] args = new uint[5] { 0, 0, 0, 0, 0 }; // Must be at least 20 bytes (5 ints).
         args[0] = (uint)mesh.GetIndexCount(0);
@@ -137,52 +141,34 @@ public class SpotDrawer : MonoBehaviour
         foreach (MeshWrapper wrapper in batches)
         {
             MeshProperties MPs = new MeshProperties();
-            var loc = wrapper.location;
-            loc.x *= x_w;
-            loc.y *= y_w;
-            MPs.matrix = Matrix4x4.TRS(loc, symbolTransform.rotation, symbolTransform.localScale * s_w);
-            centroid += loc;
-            MPs.color = batchColour[j];
+            var location = wrapper.location;
+            location.x *= x_w;
+            location.y *= y_w;
+            MPs.matrix = Matrix4x4.TRS(location, symbolTransform.rotation, symbolTransform.localScale * s_w);
+            MPs.color = colors[j];
             properties[j++] = MPs;
         }
 
         meshPropertiesBuffer = new ComputeBuffer(j + 1, sizeof(float) * 4 * 4 + sizeof(float) * 4);
         meshPropertiesBuffer.SetData(properties);
         matUsed.SetBuffer("_Properties", meshPropertiesBuffer);
+
+        OnDrawSpots = () =>
+        {
+            Graphics.DrawMeshInstancedIndirect(mesh, 0, matUsed, new Bounds(Vector3.zero, new Vector3(100, 100, 100)),
+                argsBuffer, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false);
+        };
     }
 
-    private bool executeOnce = true; // TODO remove
     private void Update()
     {
-        // Update: draws the spots/cells stored in batches
-        if (start || visium) // TODO remove boolean flags
+        OnDrawSpots?.Invoke();
+
+        if (copy) // TODO Do we still need the following?
         {
 
-            {
-                centroid = Vector3.zero;
-                count = batches.Count;
+            // if side-by-side copy of the slice is active
 
-                //TBD @Dimitar feel free to move that somewhere else. First function is startSpotDrawer() quess we can move it there instead
-                if (executeOnce)
-                {
-                    foreach(MeshWrapper mw in batches)
-                    {
-                        batchColour.Add(Color.gray);
-                    }
-                    setBatches();
-                    
-                    executeOnce = false;
-
-                }
-
-                Graphics.DrawMeshInstancedIndirect(mesh, 0, matUsed, new Bounds(centroid / count, new Vector3(2, 2, 2)), argsBuffer,
-                    0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false);
-            }
-        }
-
-        // if side-by-side copy of the slice is active
-        if (copy)
-        {
             int i = 0;
             //foreach (MeshWrapper wrap in batchesCopy)
             //{
@@ -224,43 +210,6 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
-    private void setIdentifierColour()
-    {
-        int i = 0;
-        foreach (MeshWrapper wrap in batches)
-        {
-
-            if (wrap.highlightgroup == 0) { batchColour[i] = new Color(255, 0, 0, 1); }
-            else if (wrap.highlightgroup == 1) batchColour[i] = new Color(0, 255, 0, 1);
-            else if (wrap.highlightgroup == 2) batchColour[i] = new Color(0, 0, 255, 1);
-            else if (wrap.highlightgroup == 3) batchColour[i] = new Color(0, 255, 255, 1);
-            i++;
-        }
-        setBatches();
-    }
-
-    private void setColour()
-    {
-        int i = 0;
-        foreach (MeshWrapper wrap in batches)
-        {
-            if (wrap.highlightgroup == -1)
-            {
-
-                try
-                {
-
-                    batchColour[i] = colVals[i];
-                    wrap.expVal = (float)normalised[i];
-
-                }
-                catch (Exception) { batchColour.Add(Color.clear); }
-            }
-            i++;
-        }
-        setBatches();
-    }
-
     private void OnDisable()
     {
         if (meshPropertiesBuffer != null)
@@ -271,6 +220,40 @@ public class SpotDrawer : MonoBehaviour
 
         meshPropertiesBuffer = null;
         argsBuffer = null;
+    }
+
+    private void setIdentifierColour()
+    {
+        int i = 0;
+        foreach (MeshWrapper wrap in batches)
+        {
+            if (wrap.highlightgroup == 0) { colors[i] = new Color(255, 0, 0, 1); }
+            else if (wrap.highlightgroup == 1) colors[i] = new Color(0, 255, 0, 1);
+            else if (wrap.highlightgroup == 2) colors[i] = new Color(0, 0, 255, 1);
+            else if (wrap.highlightgroup == 3) colors[i] = new Color(0, 255, 255, 1);
+            i++;
+        }
+        SetMeshBuffers();
+    }
+
+    private void setColour()
+    {
+        int i = 0;
+        foreach (MeshWrapper wrap in batches)
+        {
+            if (wrap.highlightgroup == -1)
+            {
+                try
+                {
+                    colors[i] = colVals[i];
+                    wrap.expVal = (float)normalised[i];
+
+                }
+                catch (Exception) { for (int j = 0; j < count; j++) colors[j] = Color.clear; }
+            }
+            i++;
+        }
+        SetMeshBuffers();
     }
 
     /// <summary>
@@ -318,7 +301,17 @@ public class SpotDrawer : MonoBehaviour
             try { datasetn = dataSet[i]; }
             catch (Exception) { }
             if (dfm.stomics) datasetn = dfm.stomicsDataPath;
-            batches.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount, highlightgroup = -1 });
+            batches.Add(new MeshWrapper
+            {
+                mesh = symbolSelect.GetComponent<MeshFilter>().mesh,
+                location = new Vector3(x, y, z),
+                origin = new Vector3(x, y, z),
+                loc = new Vector2(x, y).ToString(),
+                spotname = sname,
+                datasetName = datasetn,
+                uniqueIdentifier = startSpotdrawerCount,
+                highlightgroup = -1
+            });
             startSpotdrawerCount++;
         }
 
@@ -343,11 +336,22 @@ public class SpotDrawer : MonoBehaviour
         }
 
         GameObject.Find("SpotNumberTxt").GetComponent<TMP_Text>().text = batches.Count + " Spots/Cells";
-        //indicates that the spots are ready
-        start = true;
         prefillDropdown();
         symbolTransform = symbolSelect.transform;
         createColorGradientMenu();
+
+        IEnumerator InitializeShaderBuffers()
+        {
+            count = batches.Count;
+            colors = new Color[count];
+            for (int i = 0; i < count; i++)
+                colors[i] = Color.grey;
+            yield return new WaitForEndOfFrame();
+            SetMeshBuffers();
+            yield return null;
+        }
+
+        StartCoroutine(InitializeShaderBuffers());
     }
     //###################################################################################################################
     //Colour gradient functions
@@ -1044,10 +1048,7 @@ public class SpotDrawer : MonoBehaviour
                 break;
         }
 
-        foreach (MeshWrapper mw in batches)
-        {
-            mw.mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
-        }
+        mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
     }
 
     /// <summary>
@@ -1093,4 +1094,7 @@ public class SpotDrawer : MonoBehaviour
         }
 
     }
+
+    private Color[] colors;
+    private Action OnDrawSpots;
 }

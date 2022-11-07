@@ -124,15 +124,13 @@ public class DataTransferManager : MonoBehaviour
 
         if (df.c18)
         {
-            visium = true;
-            sp.visium = visium;
+            sp.visium = true;
             sc.objectUsed = true;
             startC18();
         }
         else if ((df.visium || df.visiumMultiple) && !df.c18)
         {
-            visium = true;
-            sp.visium = visium;
+            sp.visium = true;
             startVisium();
         }
         else if (df.tomoseq)

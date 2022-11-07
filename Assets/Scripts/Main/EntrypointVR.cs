@@ -43,14 +43,29 @@ namespace VROmics.Main
 
                     Debug.Log("Detected a valid HMD:" + hmd.name);
                     HMD = hmd;
-                    StartCoroutine(Reconfigure());
-                    SceneManager.sceneLoaded += (scene, mode) =>
-                    {
-                        if (scene.name != "Visualisation")
-                            return;
-                        StartCoroutine(ReconfigureVisualization());
-                    };
                     VR = true;
+                    string currentScene = SceneManager.GetActiveScene().name;
+                    switch (currentScene)
+                    {
+                        case "Pipeline":
+                            StartCoroutine(InitializeVR(Reconfigure()));
+                            SceneManager.sceneLoaded += (scene, mode) =>
+                            {
+                                if (scene.name != "Visualisation")
+                                    return;
+                                StartCoroutine(ReconfigureVisualization());
+                            };
+                            break;
+                        case "Visualisation":
+                            StartCoroutine(InitializeVR(ReconfigureVisualization(true)));
+                            IEnumerator EventCoroutine()
+                            {
+                                OnActiveVisualisationTransitioningVR?.Invoke();
+                                yield return null;
+                            }
+                            StartCoroutine(EventCoroutine());
+                            break;
+                    }
                     yield break;
                 }
 
@@ -63,13 +78,22 @@ namespace VROmics.Main
             OnUpdate?.Invoke();
         }
 
-        private IEnumerator Reconfigure()
+        private IEnumerator InitializeVR(IEnumerator sceneCoroutine)
         {
             // take down default camera
             Destroy(GameObject.Find("Main Camera"));
             //XR IM needs to be add first to avoid XR IT automatically adding one
             XRInteractionManager = InstantiatePrefab("XR Interaction Manager");
             XROrigin = InstantiatePrefab("XR Origin");
+
+            // Input Action Manager
+            InputActionManager = InstantiatePrefab("Input Action Manager");
+
+            yield return StartCoroutine(sceneCoroutine);
+        }
+
+        private IEnumerator Reconfigure()
+        {
             GameObject Canvas = GameObject.Find("Canvas");
 
             {//Configure canvas
@@ -99,15 +123,18 @@ namespace VROmics.Main
             // Tracked UI Raycasts
             Canvas.AddComponent<TrackedDeviceGraphicRaycaster>(); // XR UI Input Module already as default input system
 
-            // Input Action Manager
-            InputActionManager = InstantiatePrefab("Input Action Manager");
-
             yield return null;//TODO test if in one frame
         }
 
-        private IEnumerator ReconfigureVisualization()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startSceneVR">Is this the scene where VR was first started from?</param>
+        /// <returns></returns>
+        private IEnumerator ReconfigureVisualization(bool startSceneVR = false)
         {
-            Destroy(GameObject.Find("Main Camera"));
+            if (!startSceneVR)
+                Destroy(GameObject.Find("Main Camera"));
 
             var maincamera = XROrigin.transform.GetChild(0).GetChild(0).gameObject;
             maincamera.tag = "MainCamera";
@@ -152,8 +179,9 @@ namespace VROmics.Main
         public GameObject XROrigin { get; private set; }
         public GameObject XRInteractionManager { get; private set; }
         public GameObject InputActionManager { get; private set; }
-        internal delegate void ToExecute();
+        public delegate void ToExecute();
         internal ToExecute OnUpdate;
+        public static ToExecute OnActiveVisualisationTransitioningVR; 
         /// <summary>
         /// Is VR active?
         /// </summary>
