@@ -70,7 +70,7 @@ public class SpotDrawer : MonoBehaviour
     public class SpotWrapper
     {
         public Vector3 Location;
-        public Vector3 Origin; // Do we need origin explicitly?
+        public Vector3 Origin;
         public string Loc; // Do we need loc?
         internal string Spotname;
         internal string DatasetName;

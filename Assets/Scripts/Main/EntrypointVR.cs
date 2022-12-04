@@ -167,34 +167,21 @@ namespace VROmics.Main
                 Canvas.AddComponent<TrackedDeviceGraphicRaycaster>(); // XR UI Input Module already as default input system
 
                 yield return new WaitUntil(() => CanvasRecentered(canvas));
-                //  TODO TODO TODO fix accumulating offset (e.g. move the canvas 5-10 times) TODO TODO TODO
-                // Translate, rotate spots along with canvas
-                (Vector3 pos, Vector3 rot) t0 = (canvas.transform.position, canvas.transform.eulerAngles);
-                Vector3 o_t0 = DataView_Origin;
-                Vector3 o_c = canvas.transform.position;
+                // Translate, rotate spots along with canvas                
                 canvasInteractable.selectExited.AddListener((SelectExitEventArgs args) =>
                 {
-                    (Vector3 pos, Vector3 rot) t1 = (canvas.transform.position, canvas.transform.eulerAngles);
-                    Vector3 o_t1 = DataView_Origin;
-                    Vector3 odelta = new Vector3(o_t1.x - o_t0.x, o_t1.y - o_t0.y, o_t1.z - o_t0.z); //o_t1 - o_t0
-                    Vector3 rotdelta = new Vector3(t1.rot.x - t0.rot.x, t1.rot.y - t0.rot.y, t1.rot.z - t0.rot.z); //t1.rot - t0.rot
                     void DoTRS(SpotDrawer.SpotWrapper[] spots)
                     {
-                        var translateM = Matrix4x4.Translate(odelta);
-                        var rotateM = Matrix4x4.TRS(t1.pos, Quaternion.Euler(rotdelta), Vector3.one)
-                            * Matrix4x4.Translate(-t1.pos);
+                        var o_t1 = DataView_Origin;
+                        var canvasM = Matrix4x4.TRS(o_t1, canvas.transform.rotation, canvas.transform.localScale);
                         foreach (SpotDrawer.SpotWrapper spot in spots)
                         {
                             // align with canvas
-                            spot.Location = rotateM.MultiplyPoint(spot.Location);
-                            spot.Location = translateM.MultiplyPoint(spot.Location);                            
+                            spot.Location = canvasM.MultiplyPoint(spot.Origin);
                         }
                         SpotDrawer.OnTransform -= DoTRS;
                     }
                     SpotDrawer.OnTransform += DoTRS;
-                    // t1 -> t0
-                    t0 = t1;
-                    o_t0 = o_t1;
                 });
             }
 
