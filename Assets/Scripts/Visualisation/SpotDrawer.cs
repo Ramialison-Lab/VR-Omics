@@ -3,8 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 using VROmics.Main;
-
+/// <summary>
+/// Draws data spots for the main camera using a single mesh onto the GPU.
+/// 
+/// Authors: Denis Bienroth, Dimitar Garkov
+/// </summary>
 public class SpotDrawer : MonoBehaviour
 {
     // Lists
@@ -12,17 +17,6 @@ public class SpotDrawer : MonoBehaviour
     public List<double> normalisedCopy;
     public List<Color> colVals = new List<Color>();
     public List<Color> colValsCopy = new List<Color>();
-
-    //batches
-    private List<MeshWrapper> batches = new List<MeshWrapper>();
-    private List<MeshWrapper> batchesCopy = new List<MeshWrapper>();
-    private Transform symbolTransform;
-    private Matrix4x4 matrix;
-    private MaterialPropertyBlock mpb;
-    private int batchCounter = 0;
-
-    //MeshDrawer components
-    public Material matUsed;
 
     //Access variables
     private SearchManager sm;
@@ -40,16 +34,6 @@ public class SpotDrawer : MonoBehaviour
     public GameObject MainMenuPanel;
     public GameObject mergePanel;
 
-    //Rotation variables
-    Vector3 currentEulerAngles;
-    private int delta = 0;
-    private float cube_z;
-
-
-    //Initialise variables
-    private int startSpotdrawerCount = 0;
-    private bool firstSelect = false;
-
     //Colorgradient
     public GameObject colourGradientObject;
     public List<GameObject> colGradChilds;
@@ -60,52 +44,51 @@ public class SpotDrawer : MonoBehaviour
     //Highlightidentifier - Lasso tool
     private bool addToggle = true;
     public int active = 0;
-    public bool passThrough = false;
-
-    //Side-byside - copy feature 
-    private bool newColoursCopy = false;
-    private bool copy = false;
-    private bool colourcopy = false;
+    public bool passThrough;
 
     //Other
     public float minTresh = 0f;
     public float maxTresh = 0f;
     public float clickoffset = 0.25f;
-    public bool visium = false;
-    private bool showGenesExpressed = false;
+    public bool visium;
+    private bool showGenesExpressed;
     private string lastGene;
     private string lastGeneCopy;
     public List<GameObject> activepanels = new List<GameObject>(4);
 
-    //batches variables
-    private ComputeBuffer meshPropertiesBuffer;
-    private ComputeBuffer argsBuffer;
-    private Mesh mesh;
-    int count = 0;
-    bool colourInit = false;
-
     /// <summary>
-    /// structure for each cube → spot, storing its mesh, the location read from the hdf5, it original location, the unique spotname, which dataset it comes from for the depth information, and a unique ID
+    /// structure for each spot, storing: 
+    /// - the location read from the hdf5,
+    /// - it original location,
+    /// - ...
+    /// - the unique spotname,
+    /// - which dataset it comes from for the depth information,
+    /// - and a unique ID
+    /// - ...
+    /// - ...
     /// </summary>
-    class MeshWrapper
+    public class SpotWrapper
     {
-        public Mesh mesh; // Are there different meshes for spots in the same dataset? 
-        public Vector3 location;
-        public Vector3 origin;
-        public string loc;
-        internal string spotname;
-        internal string datasetName;
-        public int uniqueIdentifier;
-        public float expVal;
-        public int highlightgroup;
+        public Vector3 Location;
+        public Vector3 Origin; // Do we need origin explicitly?
+        public string Loc; // Do we need loc?
+        internal string Spotname;
+        internal string DatasetName;
+        public int UniqueIdentifier;
+        public float ExpVal;
+        public int HighlightGroup;
     }
 
+    public delegate void TransformDelegate(SpotWrapper[] spots);
+    /// <summary>
+    /// Subscribe any transformation events. Importantly, unsubscribe as needed.
+    /// </summary>
+    public TransformDelegate OnTransform;
 
-    private struct MeshProperties
-    {
-        public Matrix4x4 matrix;
-        public Vector4 color;
-    }
+    // The min and max X and Y values from the read data,
+    // where minX, minY, maxX, maxY not_in spot_i for i > 2.
+    // Min is bottom left corner, Max is upper right.
+    public Vector2 Min, Max;
 
     private void Start()
     {
@@ -115,61 +98,60 @@ public class SpotDrawer : MonoBehaviour
         mc = MainMenuPanel.GetComponent<MenuCanvas>();
 
         mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
-        // re-set buffers upon VR due to the different scaling factor
-        EntrypointVR.OnActiveVisualisationTransitioningVR += () =>
-        {
-            OnDrawSpots = null;
-            SetMeshBuffers();
-        };
+        material = symbolSelect.GetComponent<MeshRenderer>().material;
     }
 
     private void SetMeshBuffers()
     {
+        ReleaseBuffers();
+
         uint[] args = new uint[5] { 0, 0, 0, 0, 0 }; // Must be at least 20 bytes (5 ints).
-        args[0] = (uint)mesh.GetIndexCount(0);
+        args[0] = mesh.GetIndexCount(0);
         args[1] = (uint)count;
-        args[2] = (uint)mesh.GetIndexStart(0);
-        args[3] = (uint)mesh.GetBaseVertex(0);
+        args[2] = mesh.GetIndexStart(0);
+        args[3] = mesh.GetBaseVertex(0);
         argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
         argsBuffer.SetData(args);
 
         MeshProperties[] properties = new MeshProperties[count];
         int j = 0;
-        bool isVR = EntrypointVR.Instance.VR;
-        float x_w = isVR ? 0.002f : 1f, y_w = isVR ? 0.002f : 1f;
-        float s_w = isVR ? 0.0002f : 0.1f;
-        foreach (MeshWrapper wrapper in batches)
+        float s_w = EntrypointVR.Instance.VR ? 0.0004f : 0.2f;
+        foreach (SpotWrapper spot in spots)
         {
-            MeshProperties MPs = new MeshProperties();
-            var location = wrapper.location;
-            location.x *= x_w;
-            location.y *= y_w;
-            MPs.matrix = Matrix4x4.TRS(location, symbolTransform.rotation, symbolTransform.localScale * s_w);
-            MPs.color = colors[j];
+            MeshProperties MPs = new MeshProperties
+            {
+                matrix = Matrix4x4.TRS(spot.Location, symbolTransform.rotation, symbolTransform.localScale * s_w),
+                color = colors[j]
+            };
             properties[j++] = MPs;
         }
 
         meshPropertiesBuffer = new ComputeBuffer(j + 1, sizeof(float) * 4 * 4 + sizeof(float) * 4);
         meshPropertiesBuffer.SetData(properties);
-        matUsed.SetBuffer("_Properties", meshPropertiesBuffer);
+        material.SetBuffer("_Properties", meshPropertiesBuffer);
 
-        OnDrawSpots = () =>
+        OnDraw = () =>
         {
-            Graphics.DrawMeshInstancedIndirect(mesh, 0, matUsed, new Bounds(Vector3.zero, new Vector3(100, 100, 100)),
+            Graphics.DrawMeshInstancedIndirect(mesh, 0, material, new Bounds(Vector3.zero, new Vector3(100, 100, 100)),
                 argsBuffer, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false);
         };
     }
 
     private void Update()
     {
-        OnDrawSpots?.Invoke();
+        // Are there any transformations?
+        if (OnTransform != null)
+            StartCoroutine(TransformOnNextFrame(spots));
+
+        // Draw spots
+        OnDraw?.Invoke();
 
         if (copy) // TODO Do we still need the following?
         {
 
             // if side-by-side copy of the slice is active
 
-            int i = 0;
+            //int i = 0;
             //foreach (MeshWrapper wrap in batchesCopy)
             //{
             //    // draw all spots from the batches list
@@ -212,6 +194,11 @@ public class SpotDrawer : MonoBehaviour
 
     private void OnDisable()
     {
+        ReleaseBuffers();
+    }
+
+    private void ReleaseBuffers()
+    {
         if (meshPropertiesBuffer != null)
             meshPropertiesBuffer.Release();
 
@@ -222,15 +209,27 @@ public class SpotDrawer : MonoBehaviour
         argsBuffer = null;
     }
 
+    private IEnumerator TransformOnNextFrame(SpotWrapper[] spots)
+    {
+        yield return null;
+
+        if (OnTransform == null)
+            yield break;
+
+        OnDraw = null;
+        OnTransform.Invoke(spots);
+        SetMeshBuffers();
+    }
+
     private void setIdentifierColour()
     {
         int i = 0;
-        foreach (MeshWrapper wrap in batches)
+        foreach (SpotWrapper wrap in spots)
         {
-            if (wrap.highlightgroup == 0) { colors[i] = new Color(255, 0, 0, 1); }
-            else if (wrap.highlightgroup == 1) colors[i] = new Color(0, 255, 0, 1);
-            else if (wrap.highlightgroup == 2) colors[i] = new Color(0, 0, 255, 1);
-            else if (wrap.highlightgroup == 3) colors[i] = new Color(0, 255, 255, 1);
+            if (wrap.HighlightGroup == 0) { colors[i] = new Color(255, 0, 0, 1); }
+            else if (wrap.HighlightGroup == 1) colors[i] = new Color(0, 255, 0, 1);
+            else if (wrap.HighlightGroup == 2) colors[i] = new Color(0, 0, 255, 1);
+            else if (wrap.HighlightGroup == 3) colors[i] = new Color(0, 255, 255, 1);
             i++;
         }
         SetMeshBuffers();
@@ -238,20 +237,18 @@ public class SpotDrawer : MonoBehaviour
 
     private void setColour()
     {
-        int i = 0;
-        foreach (MeshWrapper wrap in batches)
+        for (int i = 0; i <= spots.Length; i++)
         {
-            if (wrap.highlightgroup == -1)
+            if (spots[i].HighlightGroup == -1)
             {
                 try
                 {
                     colors[i] = colVals[i];
-                    wrap.expVal = (float)normalised[i];
+                    spots[i].ExpVal = (float)normalised[i];
 
                 }
                 catch (Exception) { for (int j = 0; j < count; j++) colors[j] = Color.clear; }
             }
-            i++;
         }
         SetMeshBuffers();
     }
@@ -259,13 +256,16 @@ public class SpotDrawer : MonoBehaviour
     /// <summary>
     /// Initalise the SpotDrawer script, creating batches according to technique and read out information
     /// </summary>
-    /// <param name="xcoords">List of X coordinates</param>
-    /// <param name="ycoords">List of Y coordinates</param>
-    /// <param name="zcoords">List of Z coordinates</param>
-    /// <param name="spotBarcodes">List of all barcode names</param>
-    /// <param name="dataSet">List of dataset names</param>
-    public void startSpotDrawer(List<float> xcoords, List<float> ycoords, List<float> zcoords, List<string> spotBarcodes, List<string> dataSet)
+    /// <param name="xcoords">X coordinates</param>
+    /// <param name="ycoords">Y coordinates</param>
+    /// <param name="zcoords">Z coordinates</param>
+    /// <param name="spotBarcodes">all barcode names</param>
+    /// <param name="dataSet">dataset names</param>
+    public void StartDrawer(float[] xcoords, float[] ycoords, float[] zcoords, string[] spotBarcodes, string[] dataSet) // TODO dataset is almost always empty, do we need it?
     {
+        if (Min == Vector2.zero && Min == Max)
+            throw new Exception("Please supply min, max values of the data points beforehand!");
+
         //Default selection of cube for better performance
         if (dfm.xenium) symbolSelect = cubeSymb;
         else if (dfm.merfish) symbolSelect = cubeSymb;
@@ -275,7 +275,8 @@ public class SpotDrawer : MonoBehaviour
         // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
         // dataset is the name of the dataset dor ech slice
         // for each coordinate passed
-        for (int i = 0; i < xcoords.Count; i++)
+        spots = new SpotWrapper[xcoords.Length];
+        for (int i = 0; i < xcoords.Length; i++)
         {
             float x;
             float y;
@@ -301,48 +302,35 @@ public class SpotDrawer : MonoBehaviour
             try { datasetn = dataSet[i]; }
             catch (Exception) { }
             if (dfm.stomics) datasetn = dfm.stomicsDataPath;
-            batches.Add(new MeshWrapper
+            mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
+            spots[i] = new SpotWrapper
             {
-                mesh = symbolSelect.GetComponent<MeshFilter>().mesh,
-                location = new Vector3(x, y, z),
-                origin = new Vector3(x, y, z),
-                loc = new Vector2(x, y).ToString(),
-                spotname = sname,
-                datasetName = datasetn,
-                uniqueIdentifier = startSpotdrawerCount,
-                highlightgroup = -1
-            });
+                Location = new Vector3(x, y, z),
+                Origin = new Vector3(x, y, z),
+                Loc = new Vector2(x, y).ToString(),
+                Spotname = sname,
+                DatasetName = datasetn,
+                UniqueIdentifier = startSpotdrawerCount,
+                HighlightGroup = -1
+            };
             startSpotdrawerCount++;
         }
 
+        spotsCopy = new SpotWrapper[spots.Length];
         if (!dfm.xenium || !dfm.merfish || !dfm.stomics)
         {
-            for (int i = 0; i < xcoords.Count; i++)
-            {
-                // reading out the next 3D coordinate from the list
-                float x = xcoords[i];
-                float y = ycoords[i];
-                float z = zcoords[i];
-
-                //reading out the next spotname and datasetname
-                string sname = spotBarcodes[i];
-                string datasetn = "";
-                try { datasetn = dataSet[i]; }
-                catch (Exception) { }
-
-                batchesCopy.Add(new MeshWrapper { mesh = symbolSelect.GetComponent<MeshFilter>().mesh, location = new Vector3(x, y, z), origin = new Vector3(x, y, z), loc = new Vector2(x, y).ToString(), spotname = sname, datasetName = datasetn, uniqueIdentifier = startSpotdrawerCount, highlightgroup = -1 });
-                startSpotdrawerCount++;
-            }
+            for (int i = 0; i < spots.Length; i++)
+                spotsCopy[i] = spots[i];
         }
 
-        GameObject.Find("SpotNumberTxt").GetComponent<TMP_Text>().text = batches.Count + " Spots/Cells";
+        GameObject.Find("SpotNumberTxt").GetComponent<TMP_Text>().text = spots.Length + " Spots/Cells";
         prefillDropdown();
         symbolTransform = symbolSelect.transform;
         createColorGradientMenu();
 
         IEnumerator InitializeShaderBuffers()
         {
-            count = batches.Count;
+            count = spots.Length;
             colors = new Color[count];
             for (int i = 0; i < count; i++)
                 colors[i] = Color.grey;
@@ -428,8 +416,8 @@ public class SpotDrawer : MonoBehaviour
         {
             normalised.AddRange(normalise);
             colVals.Clear();
-            if (normalise.Count < batches.Count) batchCounter = batchCounter + normalise.Count;
-            else batchCounter = batches.Count;
+            if (normalise.Count < spots.Length) batchCounter = batchCounter + normalise.Count;
+            else batchCounter = spots.Length;
             for (int i = 0; i < batchCounter; i++)
             {
                 colVals.Add(Color.clear);
@@ -442,7 +430,7 @@ public class SpotDrawer : MonoBehaviour
             newColoursCopy = true;
             colValsCopy.Clear();
 
-            for (int i = 0; i < batches.Count; i++)
+            for (int i = 0; i < spots.Length; i++)
             {
                 colValsCopy.Add(Color.clear);
             }
@@ -460,8 +448,8 @@ public class SpotDrawer : MonoBehaviour
         {
             normalised.AddRange(normalise);
             colVals.Clear();
-            if (normalise.Count < batches.Count) batchCounter = batchCounter + normalise.Count;
-            else batchCounter = batches.Count;
+            if (normalise.Count < spots.Length) batchCounter = batchCounter + normalise.Count;
+            else batchCounter = spots.Length;
             for (int i = 0; i < batchCounter; i++)
             {
                 colVals.Add(colorGradient(i, normalised));
@@ -474,7 +462,7 @@ public class SpotDrawer : MonoBehaviour
             newColoursCopy = true;
             colValsCopy.Clear();
 
-            for (int i = 0; i < batches.Count; i++)
+            for (int i = 0; i < spots.Length; i++)
             {
                 colValsCopy.Add(colorGradient(i, normalisedCopy));
             }
@@ -717,13 +705,13 @@ public class SpotDrawer : MonoBehaviour
     /// </summary>
     public void unselectAll()
     {
-        foreach (MeshWrapper mw in batches)
+        foreach (SpotWrapper mw in spots)
         {
-            mw.highlightgroup = -1;
+            mw.HighlightGroup = -1;
         }
-        foreach (MeshWrapper mw in batchesCopy)
+        foreach (SpotWrapper mw in spotsCopy)
         {
-            mw.highlightgroup = -1;
+            mw.HighlightGroup = -1;
         }
     }
 
@@ -739,42 +727,42 @@ public class SpotDrawer : MonoBehaviour
         var x_click = x_cl + clickoffset;
         var y_click = y_cl + clickoffset;
         int i = 0;
-        foreach (MeshWrapper mw in batches)
+        foreach (SpotWrapper mw in spots)
         {
-            if ((dfm.xenium || dfm.c18_visium || mw.datasetName == dN) && (int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
+            if ((dfm.xenium || dfm.c18_visium || mw.DatasetName == dN) && (int)mw.Location.x == (int)x_click && (int)mw.Location.y == (int)y_click)
             {
                 if (mc.lasso)
                 {
                     if (!addToggle)
                     {
-                        mw.highlightgroup = -1;
-                        batchesCopy[i].highlightgroup = -1;
+                        mw.HighlightGroup = -1;
+                        spotsCopy[i].HighlightGroup = -1;
                     }
                     else if (addToggle)
                     {
-                        if (mw.highlightgroup != active)
+                        if (mw.HighlightGroup != active)
                         {
-                            mw.highlightgroup = active;
-                            batchesCopy[i].highlightgroup = active;
+                            mw.HighlightGroup = active;
+                            spotsCopy[i].HighlightGroup = active;
 
                         }
                     }
                 }
                 try
                 {
-                    smm.setSpotInfo(mw.spotname, mw.datasetName, mw.uniqueIdentifier, mw.location, mw.expVal);
+                    smm.setSpotInfo(mw.Spotname, mw.DatasetName, mw.UniqueIdentifier, mw.Location, mw.ExpVal);
                 }
                 catch (Exception) { }
 
                 if (passThrough)
                 {
-                    if ((int)mw.location.x == (int)x_click && (int)mw.location.y == (int)y_click)
+                    if ((int)mw.Location.x == (int)x_click && (int)mw.Location.y == (int)y_click)
                     {
                         if (mc.lasso)
                         {
-                            if (mw.highlightgroup != active)
+                            if (mw.HighlightGroup != active)
                             {
-                                mw.highlightgroup = active;
+                                mw.HighlightGroup = active;
                             }
                         }
                     }
@@ -795,14 +783,9 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="z">The depth location of the slice</param>
     public void moveSlice(float xoffset, float yoffset, float zoffset, string dN, float z)
     {
-        foreach (MeshWrapper mw in batches)
-        {
-            if (mw.datasetName == dN && mw.location.z == z)
-            {
-                mw.location = new Vector3(mw.origin.x - xoffset, mw.origin.y - yoffset, mw.origin.z);
-
-            }
-        }
+        foreach (SpotWrapper s in spots)
+            if (s.DatasetName == dN && s.Location.z == z)
+                s.Location = new Vector3(s.Origin.x - xoffset, s.Origin.y - yoffset, s.Origin.z);
     }
 
 
@@ -816,35 +799,34 @@ public class SpotDrawer : MonoBehaviour
     public void rotateSlice(int direction, string dN, Vector3 cP, GameObject cube)
     {
         Transform cubetransform = cube.transform;
-        foreach (MeshWrapper mw in batches)
+        foreach (SpotWrapper s in spots)
         {
-            if (mw.datasetName == dN)
+            if (s.DatasetName == dN)
             {
-                Vector3 vec = mw.location;
+                Vector3 vec = s.Location;
                 //var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
 
                 //rotating all spots
                 delta = 1 * direction;
 
-                float x0 = ((mw.location.x - cP.x) * (float)Math.Cos((Math.PI / 180) * (delta)));
-                float x1 = ((mw.location.y - cP.y) * (float)Math.Sin((Math.PI / 180) * (delta)));
+                float x0 = ((s.Location.x - cP.x) * (float)Math.Cos((Math.PI / 180) * (delta)));
+                float x1 = ((s.Location.y - cP.y) * (float)Math.Sin((Math.PI / 180) * (delta)));
 
-                float y0 = ((mw.location.x - cP.x) * (float)Math.Sin((Math.PI / 180) * (delta)));
-                float y1 = ((mw.location.y - cP.y) * (float)Math.Cos((Math.PI / 180) * (delta)));
+                float y0 = ((s.Location.x - cP.x) * (float)Math.Sin((Math.PI / 180) * (delta)));
+                float y1 = ((s.Location.y - cP.y) * (float)Math.Cos((Math.PI / 180) * (delta)));
 
                 float x = x0 - x1 + cP.x;
                 float y = y0 + y1 + cP.y;
-                float z = mw.location.z;
+                float z = s.Location.z;
 
-                mw.location = new Vector3(x, y, z);
+                s.Location = new Vector3(x, y, z);
                 cube_z = direction;
 
                 //rotating the collider slice
                 currentEulerAngles += new Vector3(0, 0, cube_z) * Time.deltaTime * 0.025f;
                 cubetransform.eulerAngles = currentEulerAngles;
 
-                mw.origin = mw.location;
-
+                s.Origin = s.Location;
             }
         }
     }
@@ -997,16 +979,16 @@ public class SpotDrawer : MonoBehaviour
     {
         List<string> dataEntry = new List<string>();
 
-        foreach (MeshWrapper mw in batches)
+        foreach (SpotWrapper mw in spots)
         {
             string group = "N/A";
-            if (mw.highlightgroup != -1) group = mw.highlightgroup.ToString();
+            if (mw.HighlightGroup != -1) group = mw.HighlightGroup.ToString();
             dataEntry.Add(group);
-            dataEntry.Add(mw.spotname);
-            dataEntry.Add(mw.expVal.ToString());
-            dataEntry.Add(mw.loc);
-            dataEntry.Add(mw.datasetName);
-            dataEntry.Add(mw.uniqueIdentifier.ToString());
+            dataEntry.Add(mw.Spotname);
+            dataEntry.Add(mw.ExpVal.ToString());
+            dataEntry.Add(mw.Loc);
+            dataEntry.Add(mw.DatasetName);
+            dataEntry.Add(mw.UniqueIdentifier.ToString());
 
             this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
             dataEntry.Clear();
@@ -1085,16 +1067,57 @@ public class SpotDrawer : MonoBehaviour
     {
         unselectAll();
 
-        foreach (MeshWrapper mw in batches)
+        foreach (SpotWrapper mw in spots)
         {
-            if (barcodes.Contains(mw.spotname))
+            if (barcodes.Contains(mw.Spotname))
             {
-                mw.highlightgroup = ids[barcodes.IndexOf(mw.spotname)];
+                mw.HighlightGroup = ids[barcodes.IndexOf(mw.Spotname)];
             }
         }
 
     }
 
+    private SpotWrapper[] spots;
+    private SpotWrapper[] spotsCopy;
+    private Transform symbolTransform;
+    private Matrix4x4 matrix;
+    private MaterialPropertyBlock mpb;
+    private int batchCounter = 0;
+
+    //Rotation variables
+    private Vector3 currentEulerAngles;
+    private int delta = 0;
+    private float cube_z;
+
+    //Initialise variables
+    private int startSpotdrawerCount = 0;
+    private bool firstSelect = false;
+
+    //spots variables
+    private ComputeBuffer meshPropertiesBuffer;
+    private ComputeBuffer argsBuffer;
+    private Mesh mesh;
+    private int count = 0;
+    private bool colourInit;
+
+    //Side-byside - copy feature 
+    private bool newColoursCopy;
+    private bool copy;
+    private bool colourcopy;
+
     private Color[] colors;
-    private Action OnDrawSpots;
+
+    private Material material;
+
+    /// <summary>
+    /// Passed to the shader over our material's compute buffer.
+    /// </summary>
+    private struct MeshProperties
+    {
+        public Matrix4x4 matrix;
+        public Vector4 color;
+    }
+
+    private Action OnDraw;
+
 }

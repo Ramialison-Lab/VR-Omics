@@ -16,7 +16,7 @@ namespace VROmics.Pipeline
             Canvas canvas = GetComponent<Canvas>();
             canvas.renderMode = RenderMode.WorldSpace;
             // only fix pose for VR
-            CanvasUtilities.CenterCanvas(canvas, 1.75f);
+            EntrypointVR.CenterCanvas(canvas, 1.75f);
             canvas.transform.localScale = new Vector3(2f / 960, 1.25f / 600, 1);
         }
     }
