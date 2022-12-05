@@ -20,7 +20,7 @@ public class MenuCanvas : MonoBehaviour
         sd = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>();
         backupCol = Camera.main.backgroundColor;
         dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
-        sd.setMinTresh(0f);
+        sd.SetMinThreshold(0f);
         sd.maxTresh = 1f;
         Camera.main.backgroundColor = Color.black;
     }
@@ -38,7 +38,6 @@ public class MenuCanvas : MonoBehaviour
         lockBtn.SetActive(true);
         ulockBtn.SetActive(false);
     }
-
 
     public void darkMode(GameObject panel)
     {
@@ -77,10 +76,21 @@ public class MenuCanvas : MonoBehaviour
         }
     }
 
-    public void setColorMinTreshold(GameObject slider)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="slider"></param>
+    public void SetColorMinThreshold(Slider slider)
     {
-        sd.setMinTresh(slider.GetComponent<Slider>().value);
-        GameObject.Find("TresholdText").GetComponent<TMP_Text>().text = "Min: " + slider.GetComponent<Slider>().value.ToString("0.00") + "%";
+        sd.SetMinThreshold(slider.value);
+        foreach(Transform t in slider.transform)
+        {
+            if (t.name == "ThresholdText")
+            {
+                t.GetComponent<TMP_Text>().text = "Min: " + (slider.value * 100).ToString("00.0") + "%";
+                break;
+            }
+        }
     }
 
     public void setColorMaxTreshold(GameObject slider)
@@ -89,7 +99,7 @@ public class MenuCanvas : MonoBehaviour
     }
    
     /// <summary>
-    /// 
+    /// Changes the size of each rendered spot, based on the localScale of the common mesh.
     /// </summary>
     /// <param name="slider"></param>
     public void SetSize(Slider slider)
@@ -120,7 +130,7 @@ public class MenuCanvas : MonoBehaviour
         else panel.SetActive(false);
     }
 
-    public GameObject c18heart;
+    public GameObject c18heart; // TODO this is shown for merfish, etc. but is for c18 - do we need it for all?
     public void setC18heartObjTransp(GameObject slider)
     {
         Color col = c18heart.transform.GetComponent<Renderer>().material.color;
@@ -254,7 +264,7 @@ public class MenuCanvas : MonoBehaviour
     }
 
     /// <summary>
-    /// The previous slide value i-1.
+    /// The previous slider value i-1.
     /// </summary>
     private float value_i_minus_one = 1f;
 }

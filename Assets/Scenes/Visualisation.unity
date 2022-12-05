@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 11974912}
   - component: {fileID: 11974911}
   m_Layer: 5
-  m_Name: TresholdText
+  m_Name: ThresholdText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11317,11 +11317,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1202353252}
         m_TargetAssemblyTypeName: MenuCanvas, Assembly-CSharp
-        m_MethodName: setColorMinTreshold
+        m_MethodName: SetColorMinThreshold
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 746890227}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 746890229}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Slider, UnityEngine.UI
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -14298,7 +14298,7 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   active: 0
   passThrough: 0
-  minTresh: 0
+  minThresh: 0
   maxTresh: 0
   clickoffset: 0.2
   visium: 0
@@ -25068,8 +25068,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 269346583}
   m_HandleRect: {fileID: 269346582}
   m_Direction: 2
-  m_Value: 0.9999999
-  m_Size: 0.39999998
+  m_Value: 1
+  m_Size: 0.4
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -47,7 +47,7 @@ public class SpotDrawer : MonoBehaviour
     public bool passThrough;
 
     //Other
-    public float minTresh = 0f;
+    public float minThresh = 0f;
     public float maxTresh = 0f;
     public float clickoffset = 0.25f;
     public bool visium;
@@ -355,11 +355,11 @@ public class SpotDrawer : MonoBehaviour
     {
         if (showGenesExpressed)
         {
-            if (normValues[i] > minTresh) return Color.green;
+            if (normValues[i] > minThresh) return Color.green;
             else return Color.clear;
         }
 
-        if ((float)normValues[i] < minTresh)
+        if ((float)normValues[i] < minThresh)
         {
             return Color.clear;
         }
@@ -1001,14 +1001,14 @@ public class SpotDrawer : MonoBehaviour
     //Set Methods and Other
 
     /// <summary>
-    /// Set min.treshold for gene expressionvalues that should be visualised. Passes on informaiton to tomo-seq technique if used
+    /// Set min.threshold for gene expressionvalues that should be visualised. Passes on information to tomo-seq technique if used
     /// </summary>
-    /// <param name="minTreshVal">float value of min. treshold from 0 - 1</param>
-    public void setMinTresh(float minTreshVal)
+    /// <param name="minThreshVal">float value of min. threshold from 0 - 1</param>
+    public void SetMinThreshold(float minThreshVal)
     {
-        minTresh = minTreshVal;
+        minThresh = minThreshVal;
         if (gameObject.GetComponent<DataTransferManager>().tomoseq)
-            gameObject.GetComponent<TomoSeqDrawer>().setMinTresh(minTreshVal);
+            gameObject.GetComponent<TomoSeqDrawer>().setMinThresh(minThreshVal);
     }
 
     /// <summary>
