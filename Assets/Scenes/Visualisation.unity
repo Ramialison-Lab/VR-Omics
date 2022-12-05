@@ -6931,11 +6931,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1202353252}
         m_TargetAssemblyTypeName: MenuCanvas, Assembly-CSharp
-        m_MethodName: setSphereSize
+        m_MethodName: SetSize
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 498431016}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 498431018}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Slider, UnityEngine.UI
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -15887,7 +15887,6 @@ MonoBehaviour:
   contextMenuHandESelection: {fileID: 350779993}
   activationPanelHandE: {fileID: 2120539177}
   dd: {fileID: 562369942}
-  sp: {fileID: 1796680520}
   contextMenuSelection: {fileID: 2107087479}
   c18heart: {fileID: 8164078558273753630}
   settingsMenu: {fileID: 833543632}
@@ -25069,8 +25068,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 269346583}
   m_HandleRect: {fileID: 269346582}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.4
+  m_Value: 0.9999999
+  m_Size: 0.39999998
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

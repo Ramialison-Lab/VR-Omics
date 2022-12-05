@@ -23,7 +23,6 @@ public class MenuCanvas : MonoBehaviour
         sd.setMinTresh(0f);
         sd.maxTresh = 1f;
         Camera.main.backgroundColor = Color.black;
-
     }
 
     public void lockRotation()
@@ -88,31 +87,27 @@ public class MenuCanvas : MonoBehaviour
     {
         sd.maxTresh = slider.GetComponent<Slider>().value;
     }
-
-    public GameObject sp;        
-    Vector3 initSize = new Vector3(0,0,0);
-
-    private bool symbolInstance = false;
-    public void setSphereSize(GameObject slider)
+   
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="slider"></param>
+    public void SetSize(Slider slider)
     {
-        Slider sl = slider.GetComponent<Slider>();
-        GameObject go;
-        if (dfm.tomoseq)
+        void DoSetSize(SpotDrawer.SpotWrapper[] spots)
         {
-            go = GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().getSelectedSymbol();
-        }
-        else
-        {
-            go = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().symbolSelect;
-        }
-        Debug.Log(go.name);
+            GameObject go;
+            if (dfm.tomoseq)
+                go = GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().getSelectedSymbol();
+            else
+                go = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().symbolSelect;
 
-        if (!symbolInstance)
-        {
-            initSize = go.transform.localScale;
-            symbolInstance = true;
+            go.transform.localScale *= value_i_minus_one * slider.value;
+            value_i_minus_one = 1f / slider.value;
+            sd.OnTransform -= DoSetSize;
         }
-        go.transform.localScale = new Vector3(sl.value * initSize.x, sl.value * initSize.y, sl.value * initSize.z) ;
+
+        sd.OnTransform += DoSetSize;
     }
 
     public GameObject contextMenuSelection;
@@ -123,8 +118,6 @@ public class MenuCanvas : MonoBehaviour
         lasso = !lasso;
         if (lasso) panel.SetActive(true);
         else panel.SetActive(false);
-
-
     }
 
     public GameObject c18heart;
@@ -160,7 +153,6 @@ public class MenuCanvas : MonoBehaviour
         settingsActive = !settingsActive;
     }
 
-
     public bool export = false;
     public void toggleExport(GameObject panel)
     {
@@ -168,9 +160,7 @@ public class MenuCanvas : MonoBehaviour
         else panel.SetActive(true);
         if (export) export = false;
         else export = true;
-
     }
-
 
     public GameObject colourPanel;
     public GameObject symbolPanel;
@@ -262,4 +252,9 @@ public class MenuCanvas : MonoBehaviour
     {
         StartCoroutine(EntrypointVR.Instance.DetectHMD());
     }
+
+    /// <summary>
+    /// The previous slide value i-1.
+    /// </summary>
+    private float value_i_minus_one = 1f;
 }
