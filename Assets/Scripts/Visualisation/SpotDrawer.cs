@@ -237,7 +237,7 @@ public class SpotDrawer : MonoBehaviour
 
     private void setColour()
     {
-        for (int i = 0; i <= spots.Length; i++)
+        for (int i = 0; i < spots.Length; i++)
         {
             if (spots[i].HighlightGroup == -1)
             {
@@ -263,8 +263,8 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="dataSet">dataset names</param>
     public void StartDrawer(float[] xcoords, float[] ycoords, float[] zcoords, string[] spotBarcodes, string[] dataSet) // TODO dataset is almost always empty, do we need it?
     {
-        if (Min == Vector2.zero && Min == Max)
-            throw new Exception("Please supply min, max values of the data points beforehand!");
+        //if (Min == Vector2.zero && Min == Max)
+           // throw new Exception("Please supply min, max values of the data points beforehand!");
 
         //Default selection of cube for better performance
         if (dfm.xenium) symbolSelect = cubeSymb;

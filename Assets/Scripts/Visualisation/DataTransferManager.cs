@@ -108,14 +108,14 @@ public class DataTransferManager : MonoBehaviour
         //if (visium)
         //{
         //    sp.visium = visium;
-        //    if (c18_visium) startC18();
-        //    else startVisium();
+        //    if (c18_visium) startc18();
+        //    else startvisium();
         //}
-        //else if (tomoseq) startTomoSeq();
-        //else if (stomics) startStomics();
-        //else if (xenium) startXenium();
-        //else if (merfish) startMerfish();
-        //else if (other) startOther();
+        //else if (tomoseq) starttomoseq();
+        //else if (stomics) startstomics();
+        //else if (xenium) startxenium();
+        //else if (merfish) startmerfish();
+        //else if (other) startother();
     }
 
     private void pipelineConnected()
@@ -125,12 +125,14 @@ public class DataTransferManager : MonoBehaviour
         if (df.c18)
         {
             sp.visium = true;
+            c18_visium = true;
             sc.objectUsed = true;
             startC18();
         }
         else if ((df.visium || df.visiumMultiple) && !df.c18)
         {
             sp.visium = true;
+            visium = true;
             startVisium();
         }
         else if (df.tomoseq)
@@ -178,8 +180,8 @@ public class DataTransferManager : MonoBehaviour
         //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
         //csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");
 
-        hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered.h5");
-        csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered_transposed.csv");
+        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered.h5");
+        //svGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered_transposed.csv");
         //  hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V2_Mouse_Kidney_10000______filtered_S93MOE\\V2_Mouse_Kidney_10000______filtered.h5");
         // csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V2_Mouse_Kidney_10000______filtered_S93MOE\\V2_Mouse_Kidney_10000______filtered_transposed.csv");
 
@@ -188,7 +190,7 @@ public class DataTransferManager : MonoBehaviour
         {
 
             string[] files = Directory.GetFiles(x, "*.h5");
-            string[] csvfiles = Directory.GetFiles(x, "*.csv");
+            string[] csvfiles = Directory.GetFiles(x, "*filtered.csv");
 
             hdf5datapaths.AddRange(files);
             csvGeneExpPaths.AddRange(csvfiles);

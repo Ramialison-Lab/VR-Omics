@@ -34,7 +34,6 @@ public class SearchManager : MonoBehaviour
     private void Start(){   
         //Access variables
         try { df = GameObject.Find("ScriptHolderPipeline").GetComponent<DataTransfer>(); } catch (Exception) { }
-
         dfm = gameObject.GetComponent<DataTransferManager>();
         acm = gameObject.GetComponent<AutoCompleteManager>();
         fr = gameObject.GetComponent<FileReader>();
@@ -200,8 +199,9 @@ public class SearchManager : MonoBehaviour
         // TBD LINKPATH
 
         //string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
-        string geneC18 = System.IO.Directory.GetCurrentDirectory() + "/Datasets/C18heart/C18heart.csv";
+        string geneC18 = System.IO.Directory.GetCurrentDirectory() + "/Assets/Datasets/C18heart/C18genesTranspose.csv";
         string[] lines = File.ReadAllLines(geneC18);
+        lines = lines.Skip(1).ToArray();
         List<double> normalised = new List<double>();
 
         List<float> resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
@@ -226,7 +226,6 @@ public class SearchManager : MonoBehaviour
 
         foreach (string s in cluster)
         {
-            Debug.Log(s.Substring(1, s.Length - 2));
             switch (s.Substring(1, s.Length - 2))
             {
 
@@ -320,6 +319,7 @@ public class SearchManager : MonoBehaviour
     {
         int x = 0;
         sd.clearBatchcounter();
+
         //for each dataset selected
         foreach (string datapath in dfm.csvGeneExpPaths)
         {
