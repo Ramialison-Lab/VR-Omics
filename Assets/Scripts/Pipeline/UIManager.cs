@@ -1286,8 +1286,15 @@ public class UIManager : MonoBehaviour
                     slices[i].transform.position = new Vector2(slices[i].transform.position.x, slices[i].transform.position.y + GameObject.FindGameObjectsWithTag("sliceContainer").Length * -300);
                     slices[i].transform.SetParent(contentPanel.transform);
 
+                    //TODO: spatial folder location has been changed to ../data/datasetname/spatial/...
+                    byte[] byteArray = File.ReadAllBytes(System.IO.Directory.GetCurrentDirectory() + "/Assets/Images/Error_Images/spatial_file_not_found.png");
                     //Read png image
-                    byte[] byteArray = File.ReadAllBytes(@FileBrowser.Result[i] + "\\spatial\\tissue_hires_image.png");
+                    try
+                    {
+                        byteArray = File.ReadAllBytes(@FileBrowser.Result[i] + "\\spatial\\tissue_hires_image.png");
+                    }
+                    catch (Exception) { }
+
                     Texture2D sampleTexture = new Texture2D(2, 2);
                     bool isLoaded = sampleTexture.LoadImage(byteArray);
 
