@@ -727,50 +727,50 @@ public class SpotDrawer : MonoBehaviour
         var x_click = x_cl + clickoffset;
         var y_click = y_cl + clickoffset;
         int i = 0;
-        foreach (SpotWrapper mw in spots)
-        {
-            if ((dfm.xenium || dfm.c18_visium || mw.DatasetName == dN) && (int)mw.Location.x == (int)x_click && (int)mw.Location.y == (int)y_click)
-            {
-                if (mc.lasso)
-                {
-                    if (!addToggle)
-                    {
-                        mw.HighlightGroup = -1;
-                        spotsCopy[i].HighlightGroup = -1;
-                    }
-                    else if (addToggle)
-                    {
-                        if (mw.HighlightGroup != active)
-                        {
-                            mw.HighlightGroup = active;
-                            spotsCopy[i].HighlightGroup = active;
+        //foreach (SpotWrapper mw in spots)
+        //{
+        //    if ((dfm.xenium || dfm.c18_visium || mw.DatasetName == dN) && (int)mw.Location.x == (int)x_click && (int)mw.Location.y == (int)y_click)
+        //    {
+        //        if (mc.lasso)
+        //        {
+        //            if (!addToggle)
+        //            {
+        //                mw.HighlightGroup = -1;
+        //                spotsCopy[i].HighlightGroup = -1;
+        //            }
+        //            else if (addToggle)
+        //            {
+        //                if (mw.HighlightGroup != active)
+        //                {
+        //                    mw.HighlightGroup = active;
+        //                    spotsCopy[i].HighlightGroup = active;
 
-                        }
-                    }
-                }
-                try
-                {
-                    smm.setSpotInfo(mw.Spotname, mw.DatasetName, mw.UniqueIdentifier, mw.Location, mw.ExpVal);
-                }
-                catch (Exception) { }
+        //                }
+        //            }
+        //        }
+        //        try
+        //        {
+        //            smm.setSpotInfo(mw.Spotname, mw.DatasetName, mw.UniqueIdentifier, mw.Location, mw.ExpVal);
+        //        }
+        //        catch (Exception) { }
 
-                if (passThrough)
-                {
-                    if ((int)mw.Location.x == (int)x_click && (int)mw.Location.y == (int)y_click)
-                    {
-                        if (mc.lasso)
-                        {
-                            if (mw.HighlightGroup != active)
-                            {
-                                mw.HighlightGroup = active;
-                            }
-                        }
-                    }
-                }
-            }
-            i++;
-        }
-        setIdentifierColour();
+        //        if (passThrough)
+        //        {
+        //            if ((int)mw.Location.x == (int)x_click && (int)mw.Location.y == (int)y_click)
+        //            {
+        //                if (mc.lasso)
+        //                {
+        //                    if (mw.HighlightGroup != active)
+        //                    {
+        //                        mw.HighlightGroup = active;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    i++;
+        //}
+        //setIdentifierColour();
     }
 
     /// <summary>

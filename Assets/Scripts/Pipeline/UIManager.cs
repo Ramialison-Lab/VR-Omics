@@ -646,18 +646,20 @@ public class UIManager : MonoBehaviour
         
     }
 
-    public void processAndRunVisium()
-    {
-        // this function processes the data [filter + SVG only] and starts the Visualisation
-        startPipelineDownloadData();
+    
+  // Disabled due to long waiting times, only Process used
+  // public void processAndRunVisium()
+  //  {
+  //      // this function processes the data [filter + SVG only] and starts the Visualisation
+  //      startPipelineDownloadData();
 
-        string outputDirectory = "";
+  //      string outputDirectory = "";
 
-		outputDirectory = File.ReadLines(Application.dataPath+"/PythonFiles/outdirectorypaths.txt").Last();
+		//outputDirectory = File.ReadLines(Application.dataPath+"/PythonFiles/outdirectorypaths.txt").Last();
 		        
-        gameObject.GetComponent<DataTransfer>().startVisium(outputDirectory);
+  //      gameObject.GetComponent<DataTransfer>().startVisium(outputDirectory);
 
-    }
+  //  }
 
     public void startPipelineDownloadData()
     {
@@ -860,7 +862,7 @@ public class UIManager : MonoBehaviour
     // Browse for Matrix gene expression file
     public void selectXeniumGenenamesLoad()
     {
-        StartCoroutine(selectBrowseFile("xenumGene", xeniumFeaturesTMPLoad));
+        StartCoroutine(selectBrowseFile("xeniumGene", xeniumFeaturesTMPLoad));
     }
 
     //delete?
@@ -1050,14 +1052,15 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void processXeniumandRun()
-    {
-        processXenium();
-        //TBD1 return hdf5 file datapath to xeniumPath string 
-        xeniumPAth = "";
-        runXenium();
+    //Disabled due to waiting times only Process used
+    //public void processXeniumandRun()
+    //{
+    //    processXenium();
+    //    //TBD1 return hdf5 file datapath to xeniumPath string 
+    //    xeniumPAth = "";
+    //    runXenium();
 
-    }
+    //}
 
     public void runXenium()
     {
@@ -1099,13 +1102,14 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void processAndRunStomics()
-    {
-        //TBD1 Sabrian process Stomics via processStomics() function and return datapath to new transposed hdf file
-        processStomics();
-        stomicsPath = "";
-        runStomics();
-    }
+    // Not used due to waiting times only process btn in use
+    //public void processAndRunStomics()
+    //{
+    //    //TBD1 Sabrian process Stomics via processStomics() function and return datapath to new transposed hdf file
+    //    processStomics();
+    //    stomicsPath = "";
+    //    runStomics();
+    //}
 
     public void runStomics()
     {
@@ -1114,18 +1118,18 @@ public class UIManager : MonoBehaviour
 
     public void processMerfish()
     {
-        //TBD1 Sabrian process Stomics via processStomics() function and return datapath to new transposed hdf file
+        //TODO: MERFISH python pipeline needs to be connected
         processMerfish();
         merfishMetaPath = "";
         merfishGenePath = "";
     }
 
-    public void processAndRunMerfish()
-    {
-        //TBD1 Sabrian process Stomics via processStomics() function and return datapath to new transposed hdf file
-        processMerfish();
-        runMerfish();
-    }
+    //Not used due to waiting times only process used
+    //public void processAndRunMerfish()
+    //{
+    //    processMerfish();
+    //    runMerfish();
+    //}
 
     public void runMerfish()
     {

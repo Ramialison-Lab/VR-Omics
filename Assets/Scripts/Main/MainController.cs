@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using UnityEngine.SceneManagement;
 // Main Controller Application Script
 
 public class MainController : MonoBehaviour
@@ -10,7 +10,18 @@ public class MainController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Application.Quit();
+            var m_Scene = SceneManager.GetActiveScene();
+            if (m_Scene.name == "Visualisation")
+            {
+                Destroy(GameObject.Find("ScriptHolder"));
+                Destroy(GameObject.Find("ScriptHolderPipeline"));
+                SceneManager.LoadScene(0);
+            }
+            else
+            {
+                Application.Quit();
+
+            }
         }
     }
 }

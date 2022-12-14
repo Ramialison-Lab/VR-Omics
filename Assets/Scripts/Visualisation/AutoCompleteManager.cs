@@ -114,7 +114,6 @@ public class AutoCompleteManager : MonoBehaviour
         //TBD indexof genenames transfer to read hdf
 
         sd.resetNormalisedValues();
-
         if (dfm.c18_visium) sm.readC18Expression(tmp_txt.text);
         else if (dfm.visium) sm.readExpressionList(tmp_txt.text);
         else if (dfm.tomoseq) tsd.runSearchTomo(tmp_txt.text);

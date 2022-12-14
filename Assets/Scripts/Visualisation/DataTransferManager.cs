@@ -190,7 +190,7 @@ public class DataTransferManager : MonoBehaviour
         {
 
             string[] files = Directory.GetFiles(x, "*.h5");
-            string[] csvfiles = Directory.GetFiles(x, "*filtered.csv");
+            string[] csvfiles = Directory.GetFiles(x, "*filtered_transposed.csv");
 
             hdf5datapaths.AddRange(files);
             csvGeneExpPaths.AddRange(csvfiles);
