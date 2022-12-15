@@ -33,12 +33,14 @@ public class DataTransferManager : MonoBehaviour
     public SearchManager sm;
     public AutoCompleteManager acm;
     public ButtonFunctionManager bfm;
+    public MenuCanvas mc;
 
     //Universal lists
     public List<float> x_coordList;
     public List<float> y_coordList;
     public List<float> z_coordList;
     public List<string> spotNameList;
+    public List<GameObject> figureBtns = new List<GameObject>(4);
 
     //Lists
     public List<string> hdf5datapaths;
@@ -98,6 +100,7 @@ public class DataTransferManager : MonoBehaviour
         sm = scriptHolder.GetComponent<SearchManager>();
         acm = scriptHolder.GetComponent<AutoCompleteManager>();
         bfm = scriptHolder.GetComponent<ButtonFunctionManager>();
+        mc = GameObject.Find("MainMenuPanel").GetComponent<MenuCanvas>();
 
         try { df = scriptHolderPipeline.GetComponent<DataTransfer>(); } catch (Exception) { }
 
@@ -183,9 +186,11 @@ public class DataTransferManager : MonoBehaviour
             hdf5datapaths.AddRange(files);
             csvGeneExpPaths.AddRange(csvfiles);        
             
-            string[] positionlists = Directory.GetFiles(x, "*", SearchOption.AllDirectories);
-            foreach (string s in positionlists)
+            string[] allDirectories = Directory.GetFiles(x, "*", SearchOption.AllDirectories);
+            checkForFigures(allDirectories);
+            foreach (string s in allDirectories)
             {
+                if (s.Split("\\").Last() == "tissue_positions_list.csv") positionList = s;
                 if (s.Split("\\").Last() == "tissue_positions_list.csv") positionList = s;
             }
         }
@@ -232,6 +237,7 @@ public class DataTransferManager : MonoBehaviour
                 string[] values = s.Split(',');
                 if (values[1] == "1")
                 {
+                    //TODO: might be replaced with row,cols but those are rotated by 90 degree
                     row[tissueCount] = long.Parse(values[4]) / 100;
                     col[tissueCount] = long.Parse(values[5]) / 100;
                     spotnames[tissueCount] = values[0];
@@ -540,6 +546,39 @@ public class DataTransferManager : MonoBehaviour
 
         sc.object3d = loadedObject;
         sc.objectUsed = true;
+    }
+
+
+    private void checkForFigures(string[] allDirectories)
+    {
+        List<string> figurePaths = new List<string>();
+        foreach (string s in allDirectories) {
+            if (s.Split("\\").Last() == "total_counts_plot.png") {
+                figureBtns[0].SetActive(true);
+                figurePaths.Add(s); }
+            if (s.Split("\\").Last() == "show_spatial_all_hires.png")
+            {
+                figurePaths.Add(s);
+                figureBtns[1].SetActive(true);
+            }
+            if (s.Split("\\").Last() == "show_spatial_hires_clusters.png")
+            {
+                figurePaths.Add(s);
+                figureBtns[2].SetActive(true);
+            }
+            if (s.Split("\\").Last() == "show_spatial_total_counts_n_genes_by_counts.png")
+            {
+                figurePaths.Add(s);
+                figureBtns[3].SetActive(true);
+            }
+            if (s.Split("\\").Last() == "umap_umap_total_counts_n_genes_by_counts_clusters.png")
+            {
+                figurePaths.Add(s);
+                figureBtns[4].SetActive(true);
+            }
+        }
+
+        mc.setFigureDatapaths(figurePaths);
     }
 
     private void checkForSVGData()

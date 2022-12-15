@@ -66,9 +66,6 @@ public class SliceCollider : MonoBehaviour
                 if (s.Split("\\").Last() == "tissue_hires_image.png") imagePath = s;
             }
             byte[] byteArray = File.ReadAllBytes(imagePath);
-
-
-
             Texture2D sampleTexture = new Texture2D(2, 2);
             bool isLoaded = sampleTexture.LoadImage(byteArray);
             imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;

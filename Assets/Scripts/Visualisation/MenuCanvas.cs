@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using VROmics.Main;
+using System.IO;
 
 public class MenuCanvas : MonoBehaviour
 {
@@ -15,6 +16,10 @@ public class MenuCanvas : MonoBehaviour
     public bool lasso = false;
     private bool darkmode = false;
     public GameObject sidemenu;
+    public GameObject figuresPanel;
+    public GameObject imageCanvas;
+    public TMP_Text figuresDatapath;
+    private List<string> figurePaths = new List<string>();
     private void Start()
     {
         sd = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>();
@@ -253,6 +258,69 @@ public class MenuCanvas : MonoBehaviour
     public void showClusterInfoC18()
     {
         GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readC18Cluster();
+    }
+
+    public void toggleFiguresCanvas()
+    {
+        if (figuresPanel.activeSelf) figuresPanel.SetActive(false);
+        else
+        {
+            figuresPanel.SetActive(true);
+        }
+    }
+
+    public void setFigureDatapaths(List<string> figurePaths)
+    {
+        this.figurePaths = figurePaths;
+        byte[] byteArray = File.ReadAllBytes(figurePaths[0]);
+        Texture2D sampleTexture = new Texture2D(2, 2);
+        bool isLoaded = sampleTexture.LoadImage(byteArray);
+        imageCanvas.GetComponentInChildren<RawImage>().texture = sampleTexture;
+        imageCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(600, 200);
+        figuresDatapath.text = figurePaths[0];
+
+    }
+
+    public void changeFigure(GameObject btn)
+    {
+        string nextImage = "";
+        int width = 0;
+        int height = 0;
+        switch (btn.name)
+        {
+            case "TotalCountBtn":       nextImage = figurePaths[0];
+                width = 600;
+                height = 200;
+                figuresDatapath.text = figurePaths[0];
+                break;
+            case "HiresSpatialBtn":     nextImage = figurePaths[1];
+                width = 350;
+                height = 350;
+                figuresDatapath.text = figurePaths[1];
+                break;
+            case "ClusterBtn":          nextImage = figurePaths[2];
+                width = 350;
+                height = 350;
+                figuresDatapath.text = figurePaths[2];
+                break;
+            case "geneByCountBtn":      nextImage = figurePaths[3];
+                width = 600;
+                height = 300;
+                figuresDatapath.text = figurePaths[3];
+                break;
+            case "umapBtn":             nextImage = figurePaths[4];
+                width = 600;
+                height = 200;
+                figuresDatapath.text = figurePaths[4];
+                break;
+        }
+
+        byte[] byteArray = File.ReadAllBytes(nextImage);
+        Texture2D sampleTexture = new Texture2D(2, 2);
+        bool isLoaded = sampleTexture.LoadImage(byteArray);
+        imageCanvas.GetComponentInChildren<RawImage>().texture = sampleTexture;
+        imageCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(width, height);
+
     }
 
     /// <summary>
