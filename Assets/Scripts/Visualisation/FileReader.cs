@@ -106,17 +106,17 @@ public class FileReader : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates Visium coordiantes from obs/_index
+    /// NOT IN USE; Calculates Visium coordiantes from obs/_index
     /// </summary>
     /// <param name="dpath"></param>
-    public void calcCoords(string dpath)
-    {
-        StartCoroutine(readInt(dpath));
+    //public void calcCoords(string dpath)
+    //{
+    //    StartCoroutine(readInt(dpath));
 
-        StartCoroutine(readVarLengthString(dpath, "obs/_index", spotBarcodes));
+    //    StartCoroutine(readVarLengthString(dpath, "obs/_index", spotBarcodes));
 
-        spotNames = spotBarcodes.ToArray();
-    }
+    //    spotNames = spotBarcodes.ToArray();
+    //}
 
     /// <summary>
     /// Reads variable length strings from H5 file filepath, in datasetpath datasetName to target strs 
@@ -226,15 +226,15 @@ public class FileReader : MonoBehaviour
     }
 
 
-    //Reads ints from HDF5 dataset
-    IEnumerator readInt(string path)
-    {
-        //reads row and col values from h5 file
-        col = H5Loader.LoadDataset<long>(path, "/obs/array_col");
-        row = H5Loader.LoadDataset<long>(path, "/obs/array_row");
-        yield return null;
+    ////NOT IN USE; Reads ints from HDF5 dataset
+    //IEnumerator readInt(string path)
+    //{
+    //    //reads row and col values from h5 file
+    //    col = H5Loader.LoadDataset<long>(path, "/obs/array_col");
+    //    row = H5Loader.LoadDataset<long>(path, "/obs/array_row");
+    //    yield return null;
 
-    }
+    //}
 
     // read CSV is replaced with HDF reader
     IEnumerator readCSV(List<string> list, int pos, string file, bool skip)
@@ -252,11 +252,6 @@ public class FileReader : MonoBehaviour
 
     }
 
-    public void resetRowCol()
-    {
-        col = null;
-        row = null;
-    }
     public void clearGeneNames()
     {
         geneNames.Clear();

@@ -319,11 +319,9 @@ public class SearchManager : MonoBehaviour
     {
         int x = 0;
         sd.clearBatchcounter();
-
         //for each dataset selected
         foreach (string datapath in dfm.csvGeneExpPaths)
         {
-            Debug.Log(datapath);
             searchGene(datapath, GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().geneNameDictionary[x].IndexOf(geneName), geneName);
             x++; 
         }
@@ -417,23 +415,17 @@ public class SearchManager : MonoBehaviour
 
     IEnumerator search(string dp, int pos, string gn)
     {
+        //Reading gene expression file on position of gene
         string[] lines = File.ReadAllLines(dp);
-        lines = lines.Skip(1).ToArray();
-
-        // Removing the string with the genename from the CSV list before parsing each entry into a int value for the list
-        //resultExpression = lines[pos].Remove(0, lines[pos].Split(',').First().Length).Split(',').ToList().Select(float.Parse).ToList();
-        // var str = lines[pos-1].Remove(0, lines[pos-1].Split(',').First().Length); 
         var x = lines[pos].Split(',').ToList();
-        x.RemoveAt(0);
-        resultExpression = x.Select(float.Parse).ToList(); 
 
+        resultExpression = x.Select(float.Parse).ToList();
         var max = resultExpression.Max();
         var min = resultExpression.Min();
         var range = (double)(max - min);
         normalised
             = resultExpression.Select(i => 1 * (i - min) / range)
                 .ToList();
-
         yield return null;
     }
 

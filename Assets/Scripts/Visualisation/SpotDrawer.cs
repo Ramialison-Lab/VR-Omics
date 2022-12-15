@@ -411,30 +411,9 @@ public class SpotDrawer : MonoBehaviour
 
     public void setAllZeroColour(List<double> normalise)
     {
-        firstSelect = true;
-        if (!colourcopy)
-        {
-            normalised.AddRange(normalise);
-            colVals.Clear();
-            if (normalise.Count < spots.Length) batchCounter = batchCounter + normalise.Count;
-            else batchCounter = spots.Length;
-            for (int i = 0; i < batchCounter; i++)
-            {
-                colVals.Add(Color.clear);
-            }
-        }
-        else if (copy && colourcopy)
-        {
-            normalisedCopy.Clear();
-            normalisedCopy.AddRange(normalise);
-            newColoursCopy = true;
-            colValsCopy.Clear();
-
-            for (int i = 0; i < spots.Length; i++)
-            {
-                colValsCopy.Add(Color.clear);
-            }
-        }
+        //If gene is not expressed in the tissue colour whole tissue grey
+        for (int j = 0; j < count; j++) colors[j] = Color.grey;
+        SetMeshBuffers();
     }
 
     /// <summary>

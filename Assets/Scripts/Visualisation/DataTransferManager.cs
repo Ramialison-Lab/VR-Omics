@@ -47,7 +47,7 @@ public class DataTransferManager : MonoBehaviour
     public List<float> tempx;
     public List<float> tempy;
     public List<float> tempz;
-    public List<string> spotnames;
+    public string[] spotnames;
     public List<string> geneNamesDistinct;
     public List<List<string>> SpotNameDictionary = new List<List<string>>();
     public List<List<string>> geneNameDictionary = new List<List<string>>();
@@ -174,27 +174,20 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startVisium()
     {
-        //TBD LINKPATH
-        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-        //csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");        
-        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\V1_Human_Lymph_Node_scanpy.hdf5");
-        //csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Human_Lymph_Node\\TransposedTest.csv");
-
-        //hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered.h5");
-        //svGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\V1_Mouse_Kidney_10000______filtered_transposed.csv");
-        //  hdf5datapaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V2_Mouse_Kidney_10000______filtered_S93MOE\\V2_Mouse_Kidney_10000______filtered.h5");
-        // csvGeneExpPaths.Add("C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V2_Mouse_Kidney_10000______filtered_S93MOE\\V2_Mouse_Kidney_10000______filtered_transposed.csv");
-
-
+        string positionList ="";
         foreach (string x in df.pathList)
         {
-
             string[] files = Directory.GetFiles(x, "*.h5");
             string[] csvfiles = Directory.GetFiles(x, "*filtered_transposed.csv");
-           // string[] spatialFolder = x +""
 
             hdf5datapaths.AddRange(files);
-            csvGeneExpPaths.AddRange(csvfiles);
+            csvGeneExpPaths.AddRange(csvfiles);        
+            
+            string[] positionlists = Directory.GetFiles(x, "*", SearchOption.AllDirectories);
+            foreach (string s in positionlists)
+            {
+                if (s.Split("\\").Last() == "tissue_positions_list.csv") positionList = s;
+            }
         }
 
         addHAndEImg = true;
@@ -214,38 +207,54 @@ public class DataTransferManager : MonoBehaviour
         {
             shortList.Add(p.Split('\\').Last());
             //reads barcodes and row and col positions and create merged list of coordinates
-            fr.calcCoords(p);
-            Debug.Log(p);
-            long[] row;
-            long[] col;
+            //fr.calcCoords(p);
 
+            //Read position of all locations that are detected on tissue
+            string[] lines = File.ReadAllLines(positionList);
+            lines = lines.Skip(1).ToArray();
+            int inTissueSize = 0;
 
-
-            for (int i = 0; i < fr.row.Length; i++)
+            for (int i = 0; i < lines.Length; i++)
             {
-                tempx.Add(fr.row[i]);
-                tempy.Add(fr.col[i]);
+                string[] values = lines[i].Split(',');
+                if (values[1] == "1")
+                {
+                    inTissueSize++;
+                }
+            }
+
+            long[] row = new long[inTissueSize];
+            long[] col = new long[inTissueSize];
+            spotnames = new string[inTissueSize];
+            int tissueCount = 0;
+            foreach(string s in lines)
+            {
+                string[] values = s.Split(',');
+                if (values[1] == "1")
+                {
+                    row[tissueCount] = long.Parse(values[4]) / 100;
+                    col[tissueCount] = long.Parse(values[5]) / 100;
+                    spotnames[tissueCount] = values[0];
+                    tissueCount++;
+                }
+
+            }
+
+            for (int i = 0; i < row.Length; i++)
+            {
+                tempx.Add(row[i]);
+                tempy.Add(col[i]);
                 tempz.Add(visiumDepth);
                 dataSetNames.Add(p);
             }
 
             //Adds the collider slice for each dataset that detects user input
-            sc.setSliceCollider((int)fr.col.Min(), (int)fr.col.Max() + 1, (int)fr.row.Max() + 1, (int)fr.row.Min(), visiumDepth, df.pathList[count]);
-            //create Spotnames
+            sc.setSliceCollider((int)col.Min(), (int)col.Max() + 1, (int)row.Max() + 1, (int)row.Min(), visiumDepth, df.pathList[count]);
 
-            for (int l = 0; l < fr.row.Length; l++)
-            {
-                spotnames.Add(fr.spotNames[l]);
-            }
-
-            //cleanup 
-            fr.resetRowCol();
-
-            // TBD - depth automatically increased by 10, needs to be replaced with depth information set in pipeline alignment 
+            // TODO: depth automatically increased by 10, needs to be replaced with depth information set in pipeline alignment 
             visiumDepth = visiumDepth + 10;
 
-            //csvr.createGeneLists(p);
-            SpotNameDictionary.Add(spotnames);
+            SpotNameDictionary.Add(spotnames.ToList());
             fr.readGeneNames(p);
             geneNameDictionary.Add(fr.geneNames);
             geneNamesDistinct.AddRange(fr.geneNames);
@@ -255,7 +264,7 @@ public class DataTransferManager : MonoBehaviour
         }
         checkForSVGData();
         adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(0, 0, 0));
-        sp.StartDrawer(tempx.ToArray(), tempy.ToArray(), tempz.ToArray(), spotnames.ToArray(), dataSetNames.ToArray()); // TODO Please check if we really need lists: tempx, tempy, tempz, ... / convert to arrays
+        sp.StartDrawer(tempx.ToArray(), tempy.ToArray(), tempz.ToArray(), spotnames, dataSetNames.ToArray()); // TODO Please check if we really need lists: tempx, tempy, tempz, ... / convert to arrays
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
     }
