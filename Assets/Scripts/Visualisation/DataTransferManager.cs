@@ -191,6 +191,7 @@ public class DataTransferManager : MonoBehaviour
 
             string[] files = Directory.GetFiles(x, "*.h5");
             string[] csvfiles = Directory.GetFiles(x, "*filtered_transposed.csv");
+           // string[] spatialFolder = x +""
 
             hdf5datapaths.AddRange(files);
             csvGeneExpPaths.AddRange(csvfiles);
@@ -214,6 +215,11 @@ public class DataTransferManager : MonoBehaviour
             shortList.Add(p.Split('\\').Last());
             //reads barcodes and row and col positions and create merged list of coordinates
             fr.calcCoords(p);
+            Debug.Log(p);
+            long[] row;
+            long[] col;
+
+
 
             for (int i = 0; i < fr.row.Length; i++)
             {
@@ -224,7 +230,7 @@ public class DataTransferManager : MonoBehaviour
             }
 
             //Adds the collider slice for each dataset that detects user input
-            sc.setSliceCollider((int)fr.col.Min(), (int)fr.col.Max() + 1, (int)fr.row.Max() + 1, (int)fr.row.Min(), visiumDepth, p);
+            sc.setSliceCollider((int)fr.col.Min(), (int)fr.col.Max() + 1, (int)fr.row.Max() + 1, (int)fr.row.Min(), visiumDepth, df.pathList[count]);
             //create Spotnames
 
             for (int l = 0; l < fr.row.Length; l++)
@@ -245,7 +251,7 @@ public class DataTransferManager : MonoBehaviour
             geneNamesDistinct.AddRange(fr.geneNames);
             geneNamesDistinct = geneNamesDistinct.Distinct().ToList();
 
-            count = count + 1;
+            count++;
         }
         checkForSVGData();
         adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(0, 0, 0));

@@ -1291,13 +1291,13 @@ public class UIManager : MonoBehaviour
                     slices[i].transform.SetParent(contentPanel.transform);
 
                     //TODO: spatial folder location has been changed to ../data/datasetname/spatial/...
-                    byte[] byteArray = File.ReadAllBytes(System.IO.Directory.GetCurrentDirectory() + "/Assets/Images/Error_Images/spatial_file_not_found.png");
                     //Read png image
-                    try
+                    byte[] byteArray = File.ReadAllBytes(System.IO.Directory.GetCurrentDirectory() + "/Assets/Images/Error_Images/spatial_file_not_found.png");
+                    string[] files = Directory.GetFiles(FileBrowser.Result[i], "*", SearchOption.AllDirectories);
+                    foreach (string s in files)
                     {
-                        byteArray = File.ReadAllBytes(@FileBrowser.Result[i] + "\\spatial\\tissue_hires_image.png");
-                    }
-                    catch (Exception) { }
+                        if (s.Split("\\").Last() == "tissue_hires_image.png") byteArray = File.ReadAllBytes(s);                        
+                    }                    
 
                     Texture2D sampleTexture = new Texture2D(2, 2);
                     bool isLoaded = sampleTexture.LoadImage(byteArray);

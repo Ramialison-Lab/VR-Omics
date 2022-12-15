@@ -59,17 +59,22 @@ public class SliceCollider : MonoBehaviour
             imagePlane.transform.localPosition = Vector3.zero;
             imagePlane.GetComponent<Renderer>().material = transparentMat;
 
-            //TBD LINKPATH
-            string imagepath = datasetName.Replace(datasetName.Split('\\').Last(), "");
-            //byte[] byteArray = File.ReadAllBytes(imagepath + "\\figures\\show_spatial_all_hires.svg");
-            //TODO: correct path to Visium spatial image
-            byte[] byteArray = File.ReadAllBytes(imagepath + "\\spatial\\tissue_hires_image.png");
+            string imagePath = System.IO.Directory.GetCurrentDirectory() + "/Assets/Images/Error_Images/spatial_file_not_found.png";
+            string[] files = Directory.GetFiles(datasetName, "*", SearchOption.AllDirectories);
+            foreach (string s in files)
+            {
+                if (s.Split("\\").Last() == "tissue_hires_image.png") imagePath = s;
+            }
+            byte[] byteArray = File.ReadAllBytes(imagePath);
+
+
+
             Texture2D sampleTexture = new Texture2D(2, 2);
             bool isLoaded = sampleTexture.LoadImage(byteArray);
             imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
             imagePlane.AddComponent<HAndEImageManager>();
             //TODO: correct path to Visium spatial image
-            imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagepath + "\\spatial\\tissue_hires_image.png");
+            imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagePath);
             imagePlane.AddComponent<BoxCollider>();
             HandEobjs.Add(imagePlane);
             imagePlane.SetActive(false);
