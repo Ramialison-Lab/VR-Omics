@@ -178,6 +178,7 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startVisium()
     {
+        List<string> tempSpotnames = new List<string>();
         string positionList ="";
         foreach (string x in df.pathList)
         {
@@ -252,6 +253,7 @@ public class DataTransferManager : MonoBehaviour
                 tempx.Add(row[i]);
                 tempy.Add(col[i]);
                 tempz.Add(visiumDepth);
+                tempSpotnames.Add(spotnames[i]);
                 dataSetNames.Add(p);
             }
 
@@ -271,7 +273,7 @@ public class DataTransferManager : MonoBehaviour
         }
         checkForSVGData();
         adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(0, 0, 0));
-        sp.StartDrawer(tempx.ToArray(), tempy.ToArray(), tempz.ToArray(), spotnames, dataSetNames.ToArray()); // TODO Please check if we really need lists: tempx, tempy, tempz, ... / convert to arrays
+        sp.StartDrawer(tempx.ToArray(), tempy.ToArray(), tempz.ToArray(), tempSpotnames.ToArray(), dataSetNames.ToArray()); // TODO Please check if we really need lists: tempx, tempy, tempz, ... / convert to arrays
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
     }

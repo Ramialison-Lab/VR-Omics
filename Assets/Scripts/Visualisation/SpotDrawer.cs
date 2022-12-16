@@ -313,7 +313,8 @@ public class SpotDrawer : MonoBehaviour
                 y = ycoords[i];
                 z = zcoords[i];
             }
-
+            Debug.Log(spotBarcodes.Length);
+            Debug.Log(zcoords.Length);
             //reading out the next spotname and datasetname
             string sname = spotBarcodes[i];
             string datasetn = "";
