@@ -255,11 +255,6 @@ public class MenuCanvas : MonoBehaviour
         svgShown = !svgShown;
     }
 
-    public void showClusterInfoC18()
-    {
-        GameObject.Find("ScriptHolder").GetComponent<SearchManager>().readC18Cluster();
-    }
-
     public void toggleFiguresCanvas()
     {
         if (figuresPanel.activeSelf) figuresPanel.SetActive(false);

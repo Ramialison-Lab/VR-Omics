@@ -213,84 +213,72 @@ public class SearchManager : MonoBehaviour
             = resultExpression.Select(i => 1 * (i - min) / range)
                 .ToList();
 
-        sd.setColors(normalised);
+        if (max == 0)
+        {
+            sd.setAllZeroColour(normalised);
+        }
+        else if (max == min)
+        {
+            //TODO error handling if all expression values are the same
+        }
+        else
+        {
+            sd.setColors(normalised);
+        }
     }
 
     public void readC18Cluster()
     {
-        //Not working
-        //sd.setC18ClusterColor(dfm.c18cluster);
-
         var cluster = dfm.c18cluster;
         List<double> normalised = new List<double>();
+        List<Color> clusterColour = new List<Color>();
 
         foreach (string s in cluster)
         {
             switch (s.Substring(1, s.Length - 2))
             {
-
-                //case ("NA"):
-                //    break;
-                //case ("WH"):
-                //    break;
-                //case ("LV"):
-                //    normalised.Add(0);
-                //    break;
-                //case ("RV"):
-                //    normalised.Add(0.15);
-                //    break;
-                //case ("epc"):
-                //    normalised.Add(0.3);
-                //    break;
-                //case ("OT"):
-                //    normalised.Add(0.45);
-                //    break;
-                //case ("LA"):
-                //    normalised.Add(0.6);
-                //    break;
-                //case ("RA"):
-                //    normalised.Add(0.75);
-                //    break;
-                //case ("P"):
-                //    normalised.Add(0.9);
-                //    break;
-                //case ("A"):
-                //    normalised.Add(1);
-                //    break;
-
                 case ("NA"):
                     break;
                 case ("#fd8d3c"):
                     normalised.Add(0);
+                    clusterColour.Add(new Color(253,141,60,1));
                     break;
                 case ("#41b6c4"):
                     normalised.Add(0.125);
+                    clusterColour.Add(new Color(65, 182, 196, 1));
                     break;
                 case ("#225ea8"):
                     normalised.Add(0.25);
+                    clusterColour.Add(new Color(34, 94, 168, 1));
                     break;
                 case ("#d3d3d3"):
                     normalised.Add(0.375);
+                    clusterColour.Add(new Color(211, 211, 211, 1));
                     break;
                 case ("#9e9ac8"):
                     normalised.Add(0.5);
+                    clusterColour.Add(new Color(158, 154, 200, 1));
                     break;
                 case ("#e31a1c"):
                     normalised.Add(0.625);
+                    clusterColour.Add(new Color(227, 26, 26, 1));
                     break;
                 case ("#c2e699"):
                     normalised.Add(0.75);
+                    clusterColour.Add(new Color(194, 230, 153, 1));
                     break;
                 case ("#238443"):
                     normalised.Add(0.875);
+                    clusterColour.Add(new Color(35, 132, 67, 1));
                     break;
                 case ("#ffffb2"):
                     normalised.Add(1);
+                    clusterColour.Add(new Color(255, 255, 178, 1));
                     break;
-
-            }
+            }          
         }
-        sd.setColors(normalised);
+        sd.skipColourGradient(normalised, clusterColour);
+        //sd.setColors(normalised);
 
     }
 
@@ -308,7 +296,19 @@ public class SearchManager : MonoBehaviour
                 .ToList();
 
         sd.clearBatchcounter();
-        sd.setColors(normalised);
+
+        if (max == 0)
+        {
+            sd.setAllZeroColour(normalised);
+        }
+        else if (max == min && max != 0)
+        {
+            //TBD: handle all values the same but not 0
+        }
+        else
+        {
+            sd.setColors(normalised);
+        }
     }
 
     /// <summary>

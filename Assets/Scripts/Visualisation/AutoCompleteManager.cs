@@ -93,6 +93,7 @@ public class AutoCompleteManager : MonoBehaviour
         GameObject btn = Instantiate(btnPrefab);
         btn.transform.SetParent(scrollView.transform);
         btn.transform.localPosition = new Vector3(0, 0, 0);
+        if (dfm.svgGenes.Contains(geneName)) { btn.GetComponent<Image>().color = Color.cyan; }
         btn.GetComponentInChildren<TMP_Text>().fontSize = 14;
         btn.GetComponentInChildren<TMP_Text>().text = geneName;
         tempBtns.Add(btn);

@@ -45,6 +45,7 @@ public class DataTransferManager : MonoBehaviour
     //Lists
     public List<string> hdf5datapaths;
     public List<string> csvGeneExpPaths;
+    public List<string> svgGenes;
     public List<string> dataSetNames;
     public List<float> tempx;
     public List<float> tempy;
@@ -588,6 +589,7 @@ public class DataTransferManager : MonoBehaviour
         string[] csvfiles;
         try
         {
+            svgGenes = new List<string>();
             string svgpath = df.pathList[0];
             csvfiles = System.IO.Directory.GetFiles(svgpath, "*svgtoggle.csv");
             svgBtn.SetActive(true);
@@ -599,8 +601,8 @@ public class DataTransferManager : MonoBehaviour
             {
                 string[] values = line.Split(',');
                 svgStrings.Add(values[0] + "\t \t \t" + values[17] + "\t \t \t" + values[18]);
+                svgGenes.Add(values[0]);
             }
-
 
             string outputString = "";
             //  foreach (string str in svgStrings)

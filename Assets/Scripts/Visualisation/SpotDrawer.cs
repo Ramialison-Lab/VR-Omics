@@ -253,6 +253,24 @@ public class SpotDrawer : MonoBehaviour
         SetMeshBuffers();
     }
 
+    internal void skipColourGradient(List<double> normalised, List<Color> clusterColour)
+    {
+        for (int i = 0; i < spots.Length; i++)
+        {
+            if (spots[i].HighlightGroup == -1)
+            {
+                try
+                {
+                    colors[i] = clusterColour[i];
+                    spots[i].ExpVal = (float)normalised[i];
+
+                }
+                catch (Exception) { for (int j = 0; j < count; j++) colors[j] = Color.clear; }
+            }
+        }
+        SetMeshBuffers();
+    }
+
     /// <summary>
     /// Initalise the SpotDrawer script, creating batches according to technique and read out information
     /// </summary>
@@ -341,6 +359,7 @@ public class SpotDrawer : MonoBehaviour
 
         StartCoroutine(InitializeShaderBuffers());
     }
+
     //###################################################################################################################
     //Colour gradient functions
     //→ Customise Color tool currently disabled
