@@ -1028,7 +1028,9 @@ public class SpotDrawer : MonoBehaviour
                 break;
         }
 
+        //TODO: The mesh only changes after a couple of times changing the symbol
         mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
+        SetMeshBuffers();
     }
 
     /// <summary>

@@ -52,7 +52,7 @@ public class SliceCollider : MonoBehaviour
             GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
             imagePlane.name = "StainImageObject";
 
-            imagePlane.transform.localScale = new Vector3(cube.transform.localScale.x *1.544f, 0.1f, cube.transform.localScale.z * 1.361f);
+            imagePlane.transform.localScale = new Vector3(cube.transform.localScale.x *1.5f, 0.1f, cube.transform.localScale.z * 1.361f);
             imagePlane.transform.SetParent(cube.transform);
 
             imagePlane.transform.Rotate(new Vector3(-270, -90, 90));

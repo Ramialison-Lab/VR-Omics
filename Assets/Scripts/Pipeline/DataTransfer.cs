@@ -44,14 +44,6 @@ public class DataTransfer : MonoBehaviour
         ui = gameObject.GetComponent<UIManager>();
     }
 
-    public void startVisium(string datapath)
-    {
-        visium = true;
-        visiumPath = datapath;
-        startVisualisationScene();
-
-    }
-
     public void startMerfish()
     {
         merfish = true;
@@ -103,7 +95,8 @@ public class DataTransfer : MonoBehaviour
 
     public void startMultipleVisium(List<string> paths, List<int> rotationValues, List<int> distances)
     {
-        visiumMultiple = true;
+        if(paths.Count ==1) visium = true;
+        else visiumMultiple = true;
         pathList = paths;
         this.rotationValues = rotationValues;
         this.distances = distances;

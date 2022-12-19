@@ -239,9 +239,11 @@ public class DataTransferManager : MonoBehaviour
                 string[] values = s.Split(',');
                 if (values[1] == "1")
                 {
-                    //TODO: might be replaced with row,cols but those are rotated by 90 degree
-                    row[tissueCount] = long.Parse(values[4]) / 100;
-                    col[tissueCount] = long.Parse(values[5]) / 100;
+                    //columns are switched
+                    col[tissueCount] = -long.Parse(values[2]);
+                    row[tissueCount] = long.Parse(values[3]);
+                    //row[tissueCount] = long.Parse(values[4]) / 100;
+                    //col[tissueCount] = long.Parse(values[5]) / 100;
                     spotnames[tissueCount] = values[0];
                     tissueCount++;
                 }

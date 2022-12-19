@@ -620,7 +620,6 @@ public class UIManager : MonoBehaviour
         //startInfo.Arguments = "\"" + wd + "/rcode.r" + " \"";
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = false;
-        UnityEngine.Debug.Log("exe started");
 
 
         Process p = new Process
@@ -1346,7 +1345,7 @@ public class UIManager : MonoBehaviour
 
     public GameObject distanceText;
 
-    public void startVR()
+    public void startVisium()
     {
 
         //TBD get distances by UI input
@@ -1375,7 +1374,9 @@ public class UIManager : MonoBehaviour
                     datapathVisium.Add(x);
                 }
             }
-            gameObject.GetComponent<DataTransfer>().startMultipleVisium(datapathVisium, rotationValues, distances);
+
+                gameObject.GetComponent<DataTransfer>().startMultipleVisium(datapathVisium, rotationValues, distances);
+            
         }
     }
         public List<GameObject> getSliceList()
