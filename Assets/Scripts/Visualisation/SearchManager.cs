@@ -233,54 +233,61 @@ public class SearchManager : MonoBehaviour
         List<double> normalised = new List<double>();
         List<Color> clusterColour = new List<Color>();
         Debug.Log(dfm.c18cluster.Count);
+        float rgb = 255;
         foreach (string s in cluster)
         {
             switch (s.Substring(1, s.Length - 2))
             {
                 case ("NA"):
-                    break;
-                default:
                     normalised.Add(0);
                     clusterColour.Add(Color.clear);
                     break;
                 case ("#fd8d3c"):
                     normalised.Add(0);
-                    clusterColour.Add(new Color(253, 141, 60, 1));
+                    clusterColour.Add(new Color(253/rgb, 141/rgb, 60/rgb));
                     break;
                 case ("#41b6c4"):
                     normalised.Add(0.125);
-                    clusterColour.Add(new Color(65, 182, 196, 1));
+                    clusterColour.Add(new Color(65 / rgb, 182 / rgb, 196 / rgb));
                     break;
                 case ("#225ea8"):
                     normalised.Add(0.25);
-                    clusterColour.Add(new Color(34, 94, 168));
+                    clusterColour.Add(new Color(34 / rgb, 94 / rgb, 168 / rgb));
                     break;
                 case ("#d3d3d3"):
                     normalised.Add(0.375);
-                    clusterColour.Add(new Color(211, 211, 211));
+                    clusterColour.Add(new Color(211 / rgb, 211 / rgb, 211 / rgb));
                     break;
                 case ("#9e9ac8"):
                     normalised.Add(0.5);
-                    clusterColour.Add(new Color(158, 154, 200));
+                    clusterColour.Add(new Color(158 / rgb, 154 / rgb, 200 / rgb));
                     break;
                 case ("#e31a1c"):
                     normalised.Add(0.625);
-                    clusterColour.Add(new Color(227, 26, 26));
+                    clusterColour.Add(new Color(227 / rgb, 26 / rgb, 26 / rgb));
                     break;
                 case ("#c2e699"):
                     normalised.Add(0.75);
-                    clusterColour.Add(new Color(194, 230, 153));
+                    clusterColour.Add(new Color(194 / rgb, 230 / rgb, 153 / rgb));
                     break;
                 case ("#238443"):
                     normalised.Add(0.875);
-                    clusterColour.Add(new Color(35, 132, 67));
+                    clusterColour.Add(new Color(35 / rgb, 132 / rgb, 67 / rgb));
                     break;
                 case ("#ffffb2"):
                     normalised.Add(1);
-                    clusterColour.Add(new Color(255, 255, 178));
+                    clusterColour.Add(new Color(255 / rgb, 255 / rgb, 178 / rgb));
+                    break;
+                default:
+                    Debug.Log("default");
+                    normalised.Add(0);
+                    clusterColour.Add(Color.clear);
                     break;
             }          
         }
+        foreach(Color col in clusterColour) Debug.Log(col);
+
+
         sd.skipColourGradient(normalised, clusterColour);
         //sd.setColors(normalised);
 

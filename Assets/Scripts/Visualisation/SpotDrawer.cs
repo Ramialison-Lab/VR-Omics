@@ -461,10 +461,8 @@ public class SpotDrawer : MonoBehaviour
         {
             if (spots[i].HighlightGroup == -1)
             {
-                Debug.Log(clusterColour[i]);
                 //try
                 {
-                    
                     colors[i] = clusterColour[i];
                     spots[i].ExpVal = (float)norm[i];
 
@@ -484,7 +482,6 @@ public class SpotDrawer : MonoBehaviour
 
         foreach (string s in clusterList)
         {
-            Debug.Log(s.Substring(1, s.Length - 2));
             switch (s.Substring(1, s.Length - 2))
             {
                 case ("NA"):
