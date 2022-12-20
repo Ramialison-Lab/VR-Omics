@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -145,12 +144,6 @@ namespace VROmics.Main
             { //Configure Canvas (TODO refactor?)
                 GameObject Canvas = GameObject.Find("PythonBindCanvas");
                 Canvas canvas = Canvas.GetComponent<Canvas>();
-                for (int i = 0; i < Canvas.transform.childCount; i++)
-                {
-                    var dataview = Canvas.transform.GetChild(i);
-                    if (dataview.name == "Data View")
-                        _dataviewTransform = dataview.GetComponent<RectTransform>();
-                }
                 float w = canvas.renderingDisplaySize.x, h = canvas.renderingDisplaySize.y;
                 CenterCanvas(canvas);
                 Canvas.transform.localScale = new Vector3(4.44f / w, 2.5f / h, 1);
@@ -170,18 +163,11 @@ namespace VROmics.Main
                 // Translate, rotate spots along with canvas                
                 canvasInteractable.selectExited.AddListener((SelectExitEventArgs args) =>
                 {
-                    void DoTRS(SpotDrawer.SpotWrapper[] spots)
+                    void Recompute(SpotDrawer.SpotWrapper[] spots, SpotDrawer.SpotWrapper[] spotsCopy)
                     {
-                        var o_t1 = DataView_Origin;
-                        var canvasM = Matrix4x4.TRS(o_t1, canvas.transform.rotation, canvas.transform.localScale);
-                        foreach (SpotDrawer.SpotWrapper spot in spots)
-                        {
-                            // align with canvas
-                            spot.Location = canvasM.MultiplyPoint(spot.Origin);
-                        }
-                        SpotDrawer.OnTransform -= DoTRS;
+                        // no additional transformations here
                     }
-                    SpotDrawer.OnTransform += DoTRS;
+                    SpotDrawer.OnTransform += Recompute;
                 });
             }
 
@@ -190,21 +176,16 @@ namespace VROmics.Main
 
         private IEnumerator TransformSpots2VRCanvas()
         {
-            Canvas canvas = GameObject.Find("PythonBindCanvas").GetComponent<Canvas>();
+            GameObject Canvas = GameObject.Find("PythonBindCanvas");
+            Canvas canvas = Canvas.GetComponent<Canvas>();
             // Wait some frames, until VR-canvas is up to date
             yield return new WaitUntil(() => CanvasRecentered(canvas));
 
-            // Translate spots onto canvas
-            void DoTRS(SpotDrawer.SpotWrapper[] spots)
+            void Recompute(SpotDrawer.SpotWrapper[] spots, SpotDrawer.SpotWrapper[] spotsCopy)
             {
-                var o = DataView_Origin;
-                var canvasM = Matrix4x4.TRS(o, canvas.transform.rotation, canvas.transform.localScale);
-                foreach (SpotDrawer.SpotWrapper spot in spots)
-                    spot.Location = canvasM.MultiplyPoint(spot.Location); // align with canvas at o
-
-                SpotDrawer.OnTransform -= DoTRS;
+                // no additional transformations here
             }
-            SpotDrawer.OnTransform += DoTRS;
+            SpotDrawer.OnTransform += Recompute;
         }
 
         public static void CenterCanvas(Canvas canvas, float posZ = 2)
@@ -271,11 +252,6 @@ namespace VROmics.Main
         private static Dictionary<Canvas, bool> RecenterStatus = new Dictionary<Canvas, bool>();
 
         #region Visualization Canvas
-        private RectTransform _dataviewTransform;
-        /// <summary>
-        /// World position of the lower, bottom corner of the data view.
-        /// </summary>
-        public Vector3 DataView_Origin => _dataviewTransform.GetChild(0).transform.position;
         private SpotDrawer SpotDrawer;
         #endregion
     }

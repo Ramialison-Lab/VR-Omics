@@ -48,7 +48,6 @@ public class ButtonFunctionManager : MonoBehaviour
             functionPanels[4].SetActive(false);
             functionPanels[5].SetActive(false);
             functionPanels[6].SetActive(false);
-            functionPanels[10].SetActive(false);
             functionPanels[11].SetActive(false);
             functionPanels[12].SetActive(false);
             functionPanels[16].SetActive(false);
@@ -62,7 +61,6 @@ public class ButtonFunctionManager : MonoBehaviour
             functionPanels[4].SetActive(false);
             functionPanels[5].SetActive(false);
             functionPanels[6].SetActive(false);
-            functionPanels[10].SetActive(false);
             functionPanels[11].SetActive(false);
             functionPanels[16].SetActive(false);
         }
@@ -72,7 +70,6 @@ public class ButtonFunctionManager : MonoBehaviour
             functionPanels[1].SetActive(false);
             functionPanels[2].SetActive(false);
             functionPanels[4].SetActive(false);
-            functionPanels[10].SetActive(false);
             functionPanels[11].SetActive(false);
             functionPanels[16].SetActive(false);
 
@@ -83,7 +80,6 @@ public class ButtonFunctionManager : MonoBehaviour
             functionPanels[1].SetActive(false);
             functionPanels[2].SetActive(false);
             functionPanels[4].SetActive(false);
-            functionPanels[10].SetActive(false);
             functionPanels[11].SetActive(false);
             functionPanels[16].SetActive(false);
         }
@@ -97,7 +93,6 @@ public class ButtonFunctionManager : MonoBehaviour
             functionPanels[4].SetActive(false);
             functionPanels[5].SetActive(false);
             functionPanels[6].SetActive(false);
-            functionPanels[10].SetActive(false);
             functionPanels[11].SetActive(false);
             functionPanels[13].SetActive(false);
             functionPanels[16].SetActive(false);

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
 using VROmics.Main;
 /// <summary>
 /// Draws data spots for the main camera using a single mesh onto the GPU.
@@ -79,7 +78,7 @@ public class SpotDrawer : MonoBehaviour
         public int HighlightGroup;
     }
 
-    public delegate void TransformDelegate(SpotWrapper[] spots);
+    public delegate void TransformDelegate(SpotWrapper[] spots, SpotWrapper[] spotsCopy = null);
     /// <summary>
     /// Subscribe any transformation events. Importantly, unsubscribe as needed.
     /// </summary>
@@ -88,7 +87,7 @@ public class SpotDrawer : MonoBehaviour
     // The min and max X and Y values from the read data,
     // where minX, minY, maxX, maxY not_in spot_i for i > 2.
     // Min is bottom left corner, Max is upper right.
-    public Vector2 Min, Max;
+    public Vector2 Min, Max;    
 
     private void Start()
     {
@@ -99,6 +98,11 @@ public class SpotDrawer : MonoBehaviour
 
         mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
         material = symbolSelect.GetComponent<MeshRenderer>().material;
+
+        GameObject Canvas = GameObject.Find("PythonBindCanvas");
+        canvas = Canvas.GetComponent<Canvas>();
+        OriginCopy = GameObject.Find("Origin Copy");
+        Origin = GameObject.Find("Origin");
     }
 
     private void SetMeshBuffers()
@@ -115,15 +119,63 @@ public class SpotDrawer : MonoBehaviour
 
         MeshProperties[] properties = new MeshProperties[count];
         int j = 0;
-        float s_w = EntrypointVR.Instance.VR ? 0.0004f : 0.2f;
+        (float h, float v) s = copy ? (0.5f, 0.75f) : (1f, 1f);
+        var o = Origin.transform.position;
+        var Mc = Matrix4x4.TRS(o, canvas.transform.rotation, canvas.transform.localScale);
+        float s_w = EntrypointVR.Instance.VR ? 0.004f : 1f;
         foreach (SpotWrapper spot in spots)
         {
+            var l = new Vector3(spot.Origin.x * s.h, spot.Origin.y * s.v, spot.Origin.z);
+            spot.Location = Mc.MultiplyPoint(l);
             MeshProperties MPs = new MeshProperties
             {
                 matrix = Matrix4x4.TRS(spot.Location, symbolTransform.rotation, symbolTransform.localScale * s_w),
                 color = colors[j]
             };
             properties[j++] = MPs;
+        }
+
+        if (copy)
+        {
+            Color rc = Color.white;
+            var o_copy = OriginCopy.transform.position;
+            var Mc_Copy = Matrix4x4.TRS(o_copy, canvas.transform.rotation, canvas.transform.localScale);
+            for (int i = 0; i < spotsCopy.Length; i++)
+            {
+                SpotWrapper spot = spotsCopy[i];
+                var l = new Vector3(spot.Origin.x * s.h, spot.Origin.y * s.v, spot.Origin.z);
+                spot.Location = Mc_Copy.MultiplyPoint(l);
+                if (newColoursCopy)
+                {
+                    if (firstSelect)
+                    {
+                        try
+                        {
+                            // evaluate expression value with colorgradient
+                            rc = colValsCopy[i];
+                            spot.ExpVal = (float)normalisedCopy[i];
+                        }
+                        catch (Exception) { rc = Color.clear; };
+                    }
+                    // if spot not found
+                    else { rc = Color.clear; }
+
+                    if (spot.HighlightGroup != -1)
+                    {
+                        if (spot.HighlightGroup == 0) { rc = new Color(255, 0, 0, 1); }
+                        else if (spot.HighlightGroup == 1) rc = new Color(0, 255, 0, 1);
+                        else if (spot.HighlightGroup == 2) rc = new Color(0, 0, 255, 1);
+                        else if (spot.HighlightGroup == 3) rc = new Color(0, 255, 255, 1);
+                    }
+                }
+
+                MeshProperties MPs = new MeshProperties
+                {
+                    matrix = Matrix4x4.TRS(spot.Location, symbolTransform.rotation, symbolTransform.localScale * s_w),
+                    color = rc
+                };
+                properties[j++] = MPs;
+            }
         }
 
         meshPropertiesBuffer = new ComputeBuffer(j + 1, sizeof(float) * 4 * 4 + sizeof(float) * 4);
@@ -145,51 +197,6 @@ public class SpotDrawer : MonoBehaviour
 
         // Draw spots
         OnDraw?.Invoke();
-
-        if (copy) // TODO Do we still need the following?
-        {
-
-            // if side-by-side copy of the slice is active
-
-            //int i = 0;
-            //foreach (MeshWrapper wrap in batchesCopy)
-            //{
-            //    // draw all spots from the batches list
-            //    mpb = new MaterialPropertyBlock();
-            //    Color rc;
-            //    if (newColoursCopy)
-            //    {
-
-            //        if (firstSelect)
-            //        {
-            //            try
-            //            {
-            //                // evaluate expression value with colorgradient
-            //                rc = colValsCopy[i];
-            //                wrap.expVal = (float)normalisedCopy[i];
-            //            }
-            //            catch (Exception) { rc = Color.clear; };
-            //        }
-            //        // if spot not found
-            //        else { rc = Color.clear; }
-
-            //        if (wrap.highlightgroup != -1)
-            //        {
-            //            if (wrap.highlightgroup == 0) { rc = new Color(255, 0, 0, 1); }
-            //            else if (wrap.highlightgroup == 1) rc = new Color(0, 255, 0, 1);
-            //            else if (wrap.highlightgroup == 2) rc = new Color(0, 0, 255, 1);
-            //            else if (wrap.highlightgroup == 3) rc = new Color(0, 255, 255, 1);
-            //        }
-
-            //        mpb.SetColor("_Color", rc);
-            //    }
-            //    {
-            //        matrix = Matrix4x4.TRS(new Vector3(wrap.location.x + 100, wrap.location.y, wrap.location.z), symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-            //        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, false, false);
-            //    }
-            //    i++;
-            //}
-        }
     }
 
     private void OnDisable()
@@ -217,8 +224,12 @@ public class SpotDrawer : MonoBehaviour
             yield break;
 
         OnDraw = null;
-        OnTransform.Invoke(spots);
+        if (copy)
+            OnTransform.Invoke(spots, spotsCopy);
+        else
+            OnTransform.Invoke(spots);
         SetMeshBuffers();
+        OnTransform = null; // on transform event may run at most once / subscription
     }
 
     private void setIdentifierColour()
@@ -264,13 +275,9 @@ public class SpotDrawer : MonoBehaviour
     public void StartDrawer(float[] xcoords, float[] ycoords, float[] zcoords, string[] spotBarcodes, string[] dataSet) // TODO dataset is almost always empty, do we need it?
     {
         //if (Min == Vector2.zero && Min == Max)
-           // throw new Exception("Please supply min, max values of the data points beforehand!");
+        // throw new Exception("Please supply min, max values of the data points beforehand!");
 
-        //Default selection of cube for better performance
-        if (dfm.xenium) symbolSelect = cubeSymb;
-        else if (dfm.merfish) symbolSelect = cubeSymb;
-        else if (dfm.stomics) symbolSelect = cubeSymb;
-        else symbolSelect = sphereSymb;
+        symbolSelect = sphereSymb; // default symbol is sphere, rendered easier
         // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
         // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
         // dataset is the name of the dataset dor ech slice
@@ -320,7 +327,20 @@ public class SpotDrawer : MonoBehaviour
         if (!dfm.xenium || !dfm.merfish || !dfm.stomics)
         {
             for (int i = 0; i < spots.Length; i++)
-                spotsCopy[i] = spots[i];
+            {
+                var spot = spots[i];
+                spotsCopy[i] = new SpotWrapper() // --> deep copy!
+                {
+                    Location = spot.Location,
+                    Origin = spot.Origin,
+                    Loc = spot.Loc,// Do we need loc?
+                    Spotname = spot.Spotname,
+                    DatasetName = spot.DatasetName,
+                    UniqueIdentifier = spot.UniqueIdentifier,
+                    ExpVal = spot.ExpVal,
+                    HighlightGroup = spot.HighlightGroup
+                };
+            }
         }
 
         GameObject.Find("SpotNumberTxt").GetComponent<TMP_Text>().text = spots.Length + " Spots/Cells";
@@ -467,7 +487,7 @@ public class SpotDrawer : MonoBehaviour
                     spots[i].ExpVal = (float)norm[i];
 
                 }
-               // catch (Exception) { for (int j = 0; j < count; j++) colors[j] = Color.clear; }
+                // catch (Exception) { for (int j = 0; j < count; j++) colors[j] = Color.clear; }
             }
         }
         colVals.AddRange(colors);
@@ -849,6 +869,13 @@ public class SpotDrawer : MonoBehaviour
         {
             mergePanel.SetActive(true);
         }
+
+        OnDraw = null;
+        if (copy)
+            count *= 2;
+        else
+            count /= 2;
+        SetMeshBuffers();
     }
 
     /// <summary>
@@ -1124,5 +1151,7 @@ public class SpotDrawer : MonoBehaviour
     }
 
     private Action OnDraw;
-
+    private Canvas canvas;
+    private GameObject OriginCopy;
+    private GameObject Origin;
 }

@@ -109,7 +109,7 @@ public class MenuCanvas : MonoBehaviour
     /// <param name="slider"></param>
     public void SetSize(Slider slider)
     {
-        void DoSetSize(SpotDrawer.SpotWrapper[] spots)
+        void DoSetSize(SpotDrawer.SpotWrapper[] spots, SpotDrawer.SpotWrapper[] spotsCopy)
         {
             GameObject go;
             if (dfm.tomoseq)
@@ -119,7 +119,6 @@ public class MenuCanvas : MonoBehaviour
 
             go.transform.localScale *= value_i_minus_one * slider.value;
             value_i_minus_one = 1f / slider.value;
-            sd.OnTransform -= DoSetSize;
         }
 
         sd.OnTransform += DoSetSize;
