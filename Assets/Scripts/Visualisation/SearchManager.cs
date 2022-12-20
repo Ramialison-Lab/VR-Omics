@@ -232,16 +232,20 @@ public class SearchManager : MonoBehaviour
         var cluster = dfm.c18cluster;
         List<double> normalised = new List<double>();
         List<Color> clusterColour = new List<Color>();
-
+        Debug.Log(dfm.c18cluster.Count);
         foreach (string s in cluster)
         {
             switch (s.Substring(1, s.Length - 2))
             {
                 case ("NA"):
                     break;
+                default:
+                    normalised.Add(0);
+                    clusterColour.Add(Color.clear);
+                    break;
                 case ("#fd8d3c"):
                     normalised.Add(0);
-                    clusterColour.Add(new Color(253,141,60,1));
+                    clusterColour.Add(new Color(253, 141, 60, 1));
                     break;
                 case ("#41b6c4"):
                     normalised.Add(0.125);
@@ -249,31 +253,31 @@ public class SearchManager : MonoBehaviour
                     break;
                 case ("#225ea8"):
                     normalised.Add(0.25);
-                    clusterColour.Add(new Color(34, 94, 168, 1));
+                    clusterColour.Add(new Color(34, 94, 168));
                     break;
                 case ("#d3d3d3"):
                     normalised.Add(0.375);
-                    clusterColour.Add(new Color(211, 211, 211, 1));
+                    clusterColour.Add(new Color(211, 211, 211));
                     break;
                 case ("#9e9ac8"):
                     normalised.Add(0.5);
-                    clusterColour.Add(new Color(158, 154, 200, 1));
+                    clusterColour.Add(new Color(158, 154, 200));
                     break;
                 case ("#e31a1c"):
                     normalised.Add(0.625);
-                    clusterColour.Add(new Color(227, 26, 26, 1));
+                    clusterColour.Add(new Color(227, 26, 26));
                     break;
                 case ("#c2e699"):
                     normalised.Add(0.75);
-                    clusterColour.Add(new Color(194, 230, 153, 1));
+                    clusterColour.Add(new Color(194, 230, 153));
                     break;
                 case ("#238443"):
                     normalised.Add(0.875);
-                    clusterColour.Add(new Color(35, 132, 67, 1));
+                    clusterColour.Add(new Color(35, 132, 67));
                     break;
                 case ("#ffffb2"):
                     normalised.Add(1);
-                    clusterColour.Add(new Color(255, 255, 178, 1));
+                    clusterColour.Add(new Color(255, 255, 178));
                     break;
             }          
         }

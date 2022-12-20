@@ -253,24 +253,6 @@ public class SpotDrawer : MonoBehaviour
         SetMeshBuffers();
     }
 
-    internal void skipColourGradient(List<double> normalised, List<Color> clusterColour)
-    {
-        for (int i = 0; i < spots.Length; i++)
-        {
-            if (spots[i].HighlightGroup == -1)
-            {
-                try
-                {
-                    colors[i] = clusterColour[i];
-                    spots[i].ExpVal = (float)normalised[i];
-
-                }
-                catch (Exception) { for (int j = 0; j < count; j++) colors[j] = Color.clear; }
-            }
-        }
-        SetMeshBuffers();
-    }
-
     /// <summary>
     /// Initalise the SpotDrawer script, creating batches according to technique and read out information
     /// </summary>
@@ -466,6 +448,32 @@ public class SpotDrawer : MonoBehaviour
             }
         }
         setColour();
+    }
+
+
+    public void skipColourGradient(List<double> norm, List<Color> clusterColour)
+    {
+        firstSelect = true;
+        colVals.Clear();
+        normalised.Clear();
+        normalised.AddRange(norm);
+        for (int i = 0; i < spots.Length; i++)
+        {
+            if (spots[i].HighlightGroup == -1)
+            {
+                Debug.Log(clusterColour[i]);
+                //try
+                {
+                    
+                    colors[i] = clusterColour[i];
+                    spots[i].ExpVal = (float)norm[i];
+
+                }
+               // catch (Exception) { for (int j = 0; j < count; j++) colors[j] = Color.clear; }
+            }
+        }
+        colVals.AddRange(colors);
+        SetMeshBuffers();
     }
 
     public void setC18ClusterColor(List<string> clusterList)
