@@ -28,6 +28,12 @@ public class MenuCanvas : MonoBehaviour
         sd.SetMinThreshold(0f);
         sd.maxTresh = 1f;
         Camera.main.backgroundColor = Color.black;
+
+        if (EntrypointVR.Instance.IsDetectingHMD || EntrypointVR.Instance.VR)
+        {
+            GameObject.Find("Enter VR").transform
+                .GetChild(1).gameObject.SetActive(true);
+        }
     }
 
     public void lockRotation()
@@ -318,11 +324,20 @@ public class MenuCanvas : MonoBehaviour
     }
 
     /// <summary>
-    /// Trigger detection for an HMD manually.
+    /// Trigger HMD detection manually.
     /// </summary>
-    public void EnterVR()
+    public void EnterVR(Transform EnterVRTransform)
     {
-        StartCoroutine(EntrypointVR.Instance.DetectHMD());
+        GameObject activeIconGameObject = EnterVRTransform.GetChild(1).gameObject;
+        if (activeIconGameObject.activeSelf)
+        {
+            StopCoroutine(EntrypointVR.Instance.DetectHMD());
+            EntrypointVR.Instance.IsDetectingHMD = false;
+        }
+        else
+            StartCoroutine(EntrypointVR.Instance.DetectHMD());
+
+        activeIconGameObject.SetActive(!activeIconGameObject.activeSelf);
     }
 
     /// <summary>

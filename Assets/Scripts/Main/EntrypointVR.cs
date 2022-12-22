@@ -33,6 +33,7 @@ namespace VROmics.Main
         internal IEnumerator DetectHMD()
         {
             var HMDs = new List<InputDevice>();
+            IsDetectingHMD = true;
             while (true)
             {
                 InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.HeadMounted, HMDs);
@@ -44,6 +45,7 @@ namespace VROmics.Main
                     Debug.Log("Detected a valid HMD:" + hmd.name);
                     HMD = hmd;
                     VR = true;
+                    IsDetectingHMD = false;
                     string currentScene = SceneManager.GetActiveScene().name;
                     switch (currentScene)
                     {
@@ -95,7 +97,7 @@ namespace VROmics.Main
             {//Configure canvas
                 Canvas canvas = Canvas.GetComponent<Canvas>();
                 CenterCanvas(canvas);
-                canvas.transform.localScale = new Vector3(4f / 960, 2.5f / 600, 1);
+                canvas.transform.localScale = new Vector3(4.44f / 960, 2.75f / 600, 1);
             }
 
             //Link XR Interaction Manager
@@ -146,7 +148,7 @@ namespace VROmics.Main
                 Canvas canvas = Canvas.GetComponent<Canvas>();
                 float w = canvas.renderingDisplaySize.x, h = canvas.renderingDisplaySize.y;
                 CenterCanvas(canvas);
-                Canvas.transform.localScale = new Vector3(4.44f / w, 2.5f / h, 1);
+                Canvas.transform.localScale = new Vector3(4.44f / w, 2.75f / h, 1);
                 canvas.renderMode = RenderMode.WorldSpace;
                 BoxCollider collider = Canvas.AddComponent<BoxCollider>();
                 collider.size = new Vector3(w, h, 0.05f);
@@ -249,6 +251,7 @@ namespace VROmics.Main
         /// Is VR active?
         /// </summary>
         public bool VR { get; private set; }
+        public bool IsDetectingHMD { get; set; }
         private static Dictionary<Canvas, bool> RecenterStatus = new Dictionary<Canvas, bool>();
 
         #region Visualization Canvas

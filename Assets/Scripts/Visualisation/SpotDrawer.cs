@@ -101,8 +101,8 @@ public class SpotDrawer : MonoBehaviour
 
         GameObject Canvas = GameObject.Find("PythonBindCanvas");
         canvas = Canvas.GetComponent<Canvas>();
-        OriginCopy = GameObject.Find("Origin Copy");
-        Origin = GameObject.Find("Origin");
+        originCopy = GameObject.Find("Origin Copy");
+        origin = GameObject.Find("Origin");
     }
 
     private void SetMeshBuffers()
@@ -120,7 +120,7 @@ public class SpotDrawer : MonoBehaviour
         MeshProperties[] properties = new MeshProperties[count];
         int j = 0;
         (float h, float v) s = copy ? (0.5f, 0.75f) : (1f, 1f);
-        var o = Origin.transform.position;
+        var o = origin.transform.position;
         var Mc = Matrix4x4.TRS(o, canvas.transform.rotation, canvas.transform.localScale);
         float s_w = EntrypointVR.Instance.VR ? 0.004f : 1f;
         foreach (SpotWrapper spot in spots)
@@ -138,7 +138,7 @@ public class SpotDrawer : MonoBehaviour
         if (copy)
         {
             Color rc = Color.white;
-            var o_copy = OriginCopy.transform.position;
+            var o_copy = originCopy.transform.position;
             var Mc_Copy = Matrix4x4.TRS(o_copy, canvas.transform.rotation, canvas.transform.localScale);
             for (int i = 0; i < spotsCopy.Length; i++)
             {
@@ -1152,6 +1152,6 @@ public class SpotDrawer : MonoBehaviour
 
     private Action OnDraw;
     private Canvas canvas;
-    private GameObject OriginCopy;
-    private GameObject Origin;
+    private GameObject originCopy;
+    private GameObject origin;
 }

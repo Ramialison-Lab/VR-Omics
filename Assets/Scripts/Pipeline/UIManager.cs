@@ -15,7 +15,7 @@ public class UIManager : MonoBehaviour
 {
     //UI buttons
     public Button downloadbtn;
-    public TMP_Dropdown dropdown_list; 
+    public TMP_Dropdown dropdown_list;
     public Button uploadbtn;
     public Button pipelinebtn;
     public Button vrbtn;
@@ -105,7 +105,7 @@ public class UIManager : MonoBehaviour
     public Toggle poltTogglePip;
     public Toggle svgToggle;
     public Toggle plotToggle;
-    
+
     //GameObjects
     public GameObject visiumSuccessPanel;
 
@@ -168,7 +168,7 @@ public class UIManager : MonoBehaviour
         // Manages which panel at UI is currently active
         try
         {
-            unselectAllPanels();  
+            unselectAllPanels();
         }
         catch (Exception) { }
 
@@ -176,7 +176,7 @@ public class UIManager : MonoBehaviour
         {
             case "VisiumdownloadBtn":
                 downloadpanel.SetActive(true);
-                adjust_download_list(); 
+                adjust_download_list();
                 break;
             case "VisiumLoadBtn":
                 uploadpanel.SetActive(true);
@@ -199,7 +199,7 @@ public class UIManager : MonoBehaviour
                 break;
             case "LoadStomicsBtn":
                 stomicsLoadPanel.SetActive(true);
-                break;          
+                break;
             case "ProcessStomicsBtn":
                 stomicsProcessPanel.SetActive(true);
                 break;
@@ -208,13 +208,13 @@ public class UIManager : MonoBehaviour
                 break;
             case "ProcessMerfishBtn":
                 merfishProcessPanel.SetActive(true);
-                break;            
+                break;
             case "LoadOtherBtn":
                 otherLoadPanel.SetActive(true);
                 break;
             case "VisiumC18Btn":
                 runC18();
-                break;            
+                break;
             case "Load3DobjectBtn":
                 objectLoadPanel.SetActive(true);
                 break;
@@ -256,7 +256,7 @@ public class UIManager : MonoBehaviour
         {
             mainExpandMerfish.transform.localPosition = new Vector2(mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.y);
             expMenuMerfish = !expMenuMerfish;
-        }       
+        }
         if (expMenuXen)
         {
             mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
@@ -266,12 +266,12 @@ public class UIManager : MonoBehaviour
         {
             mainExpandPanelTomo.transform.localPosition = new Vector2(mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.y);
             expMenuTomo = !expMenuTomo;
-        }        
+        }
         if (expMenuStomics)
         {
             mainExpandStomics.transform.localPosition = new Vector2(mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.y);
             expMenuStomics = !expMenuStomics;
-        }        
+        }
         if (expMenuOther)
         {
             mainExpandOther.transform.localPosition = new Vector2(mainExpandOther.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandOther.GetComponent<RectTransform>().transform.localPosition.y);
@@ -304,7 +304,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            mainExpandPanelVisium.transform.localPosition =  new Vector2(mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandPanelVisium.transform.localPosition = new Vector2(mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.y);
             expandBtnActivePanelVisium.SetActive(false);
         }
         expMenuVisium = !expMenuVisium;
@@ -475,9 +475,9 @@ public class UIManager : MonoBehaviour
             selectForRotation();
 
             currentSelection.transform.Rotate(0f, 0f, -1);
-            rotationValues[rotPos]++; 
+            rotationValues[rotPos]++;
         }
-        catch (Exception) {}
+        catch (Exception) { }
     }
 
     public void rotateImageMinus()
@@ -489,7 +489,7 @@ public class UIManager : MonoBehaviour
             currentSelection.transform.Rotate(0f, 0f, 1);
             rotationValues[rotPos]--;
         }
-        catch (Exception) {}
+        catch (Exception) { }
     }
 
 
@@ -501,7 +501,7 @@ public class UIManager : MonoBehaviour
 
             slider.value = tempcolor.a;
         }
-        catch (Exception) {}
+        catch (Exception) { }
     }
 
     public void changeTransperency()
@@ -512,7 +512,7 @@ public class UIManager : MonoBehaviour
             tempcolor.a = slider.value;
             currentSelection.GetComponent<RawImage>().color = tempcolor;
         }
-        catch (Exception) {}
+        catch (Exception) { }
     }
 
 
@@ -541,47 +541,49 @@ public class UIManager : MonoBehaviour
 
     public void nextPipelineStep()
     {
-		string[] params_out = new string[4];
-		params_out[0] = filepathUpload;
-		params_out[3] = destinationPath;
-		UnityEngine.Debug.Log(Application.dataPath);
+        string[] params_out = new string[4];
+        params_out[0] = filepathUpload;
+        params_out[3] = destinationPath;
+        UnityEngine.Debug.Log(Application.dataPath);
         if (GameObject.Find("Step6").GetComponentInChildren<Toggle>().isOn)
         {
-			//TBD1 skip all filter steps and just prepare data for VR-Omics = preprocess without filter values
-			params_out[1] = 1.ToString();
-								
+            //TBD1 skip all filter steps and just prepare data for VR-Omics = preprocess without filter values
+            params_out[1] = 1.ToString();
+
         }
         // Manages the workflow of the pipeline part to guide through the 4 individual steps
-        
+
         filterStep = GameObject.Find("Step1").GetComponentInChildren<Toggle>().isOn;
         // filter and svg only
         //correlationStep = GameObject.Find("Step2").GetComponentInChildren<Toggle>().isOn;
         //clusteringStep = GameObject.Find("Step3").GetComponentInChildren<Toggle>().isOn;
         SVGStep = GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn;
 
-		pipelinestepPanel.SetActive(false);
+        pipelinestepPanel.SetActive(false);
         if (filterStep)
         {
             pipelineParamPanel.SetActive(true);
         }
         else
         {
-		    //TBD1 skip filtetr values and go to steps selected
-																																									   
-			if (SVGStep == true) {
-	
-				//TBD1 Sabrina if toggle on, include SVG analysis to filter step
-				params_out[2] = 1.ToString();
-			}
-																																							 
+            //TBD1 skip filtetr values and go to steps selected
+
+            if (SVGStep == true)
+            {
+
+                //TBD1 Sabrina if toggle on, include SVG analysis to filter step
+                params_out[2] = 1.ToString();
+            }
+
         }
 
-        if (SVGStep == true) {
+        if (SVGStep == true)
+        {
             //TBD1 Sabrina if toggle on, include SVG analysis to filter step
             params_out[2] = 1.ToString();
         }
-		
-		save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt","/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
+
+        save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
     }
 
     public void skipFilterStep()
@@ -608,7 +610,7 @@ public class UIManager : MonoBehaviour
     public void save_params_run_step1(string[] filterparam, string outname, string executable)
     {
         // Python integration
-        StreamWriter writer = new StreamWriter(Application.dataPath +outname, false);
+        StreamWriter writer = new StreamWriter(Application.dataPath + outname, false);
         foreach (string param in filterparam)
         {
             writer.WriteLine(param);
@@ -639,32 +641,33 @@ public class UIManager : MonoBehaviour
 
         //TBD1 if processed return datapath via outputDirectory to UI and successful filtered
         string outputDirectory = "";
-		outputDirectory = File.ReadLines(Application.dataPath+"/PythonFiles/outdirectorypaths.txt").Last();
-		visiumSuccessPanel.SetActive(true);
+        outputDirectory = File.ReadLines(Application.dataPath + "/PythonFiles/outdirectorypaths.txt").Last();
+        visiumSuccessPanel.SetActive(true);
         visiumSuccessPanel.GetComponentInChildren<TMP_Text>().text = "Data successful saved to: " + outputDirectory;
-        
+
     }
 
-    
-  // Disabled due to long waiting times, only Process used
-  // public void processAndRunVisium()
-  //  {
-  //      // this function processes the data [filter + SVG only] and starts the Visualisation
-  //      startPipelineDownloadData();
 
-  //      string outputDirectory = "";
+    // Disabled due to long waiting times, only Process used
+    // public void processAndRunVisium()
+    //  {
+    //      // this function processes the data [filter + SVG only] and starts the Visualisation
+    //      startPipelineDownloadData();
 
-		//outputDirectory = File.ReadLines(Application.dataPath+"/PythonFiles/outdirectorypaths.txt").Last();
-		        
-  //      gameObject.GetComponent<DataTransfer>().startVisium(outputDirectory);
+    //      string outputDirectory = "";
 
-  //  }
+    //outputDirectory = File.ReadLines(Application.dataPath+"/PythonFiles/outdirectorypaths.txt").Last();
+
+    //      gameObject.GetComponent<DataTransfer>().startVisium(outputDirectory);
+
+    //  }
 
     public void startPipelineDownloadData()
     {
         string[] filterparam = new string[9];
 
-        if (svgToggle.isOn) {
+        if (svgToggle.isOn)
+        {
 
             //TBD1 Sabrina if toggle on, include SVG analysis to filter step
             filterparam[7] = 1.ToString();
@@ -697,12 +700,12 @@ public class UIManager : MonoBehaviour
             // @Denis: Please doublecheck these values! Same order as below.
             filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
 
-            save_params_run_step1(filterparam,"/PythonFiles/Filter_param.txt","/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
+            save_params_run_step1(filterparam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
         }
         else
         {
             //TBD Sabrina: run Step1 Python notebook WITH following filter params
-            
+
             filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
             filterparam[1] = GameObject.Find("MinCount").GetComponentInChildren<TMP_InputField>().text;
             filterparam[2] = GameObject.Find("MaxCount").GetComponentInChildren<TMP_InputField>().text;
@@ -711,7 +714,7 @@ public class UIManager : MonoBehaviour
             filterparam[5] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
             filterparam[6] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
 
-            save_params_run_step1(filterparam,"/PythonFiles/Filter_param.txt","/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
+            save_params_run_step1(filterparam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
 
         }
     }
@@ -741,7 +744,7 @@ public class UIManager : MonoBehaviour
                     slicesList[pos].transform.position = slicesList[pos - 1].transform.position;
                     slicesList[pos - 1].transform.position = temp;
                 }
-                catch (Exception) {}
+                catch (Exception) { }
             }
         }
         else if (go.name == "ButtonDown")
@@ -764,7 +767,7 @@ public class UIManager : MonoBehaviour
                     slicesList[pos].transform.position = slicesList[pos + 1].transform.position;
                     slicesList[pos + 1].transform.position = temp;
                 }
-                catch (Exception) {}
+                catch (Exception) { }
             }
         }
         else if (go.name == "DeleteBtn")
@@ -809,7 +812,7 @@ public class UIManager : MonoBehaviour
 
         //TBD Sabrina start pipeline steps based on bools filterStep, coorelationStep, clusteringStep, SVGstep
 
-        save_params_run_step1(filterPipelineParam,"/PythonFiles/Filter_param.txt","/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
+        save_params_run_step1(filterPipelineParam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
         // datapath to file = filepathUpload
 
     }
@@ -874,7 +877,7 @@ public class UIManager : MonoBehaviour
     {
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("stomics", stomicsPathField));
-        
+
     }
 
     public void selectStomicssFileProcess()
@@ -889,7 +892,7 @@ public class UIManager : MonoBehaviour
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("merfishMat", merfishMatProcessTMP));
 
-    }    
+    }
     public void selectMerfishMatrixFileLoad()
     {
         //File has been processed ready to load VR
@@ -902,8 +905,8 @@ public class UIManager : MonoBehaviour
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("merfishMeta", merfishMetaProcessTMP));
 
-    }   
-    
+    }
+
     public void selectMerfishMetaLoad()
     {
         //File has been processed ready to load VR
@@ -935,7 +938,7 @@ public class UIManager : MonoBehaviour
     public void selectTomoAP()
     {
         StartCoroutine(selectBrowseFile("AP", tomoAPfield));
-        
+
     }
     public void selectTomoVD()
     {
@@ -964,16 +967,18 @@ public class UIManager : MonoBehaviour
             string res = "";
             for (int i = 0; i < FileBrowser.Result.Length; i++)
             {
-                res = FileBrowser.Result[i];             
+                res = FileBrowser.Result[i];
             }
             tmpinputfield.text = res;
 
             switch (target)
             {
 
-                case "stomics": stomicsPath = res;
+                case "stomics":
+                    stomicsPath = res;
                     break;
-                case "AP": APPath = res;
+                case "AP":
+                    APPath = res;
                     break;
                 case "VD":
                     VDPath = res;
@@ -982,7 +987,7 @@ public class UIManager : MonoBehaviour
                     LRPath = res;
                     break;
                 case "tomoGene":
-                    tomoGenePath= res;
+                    tomoGenePath = res;
                     break;
                 case "xenium":
                     xeniumPAth = res;
@@ -995,7 +1000,7 @@ public class UIManager : MonoBehaviour
                     break;
                 case "xeniumHDF":
                     xeniumPAth = res;
-                    break;                
+                    break;
                 case "otherMat":
                     otherMatrixPath = res;
                     break;
@@ -1007,7 +1012,7 @@ public class UIManager : MonoBehaviour
                     break;
                 case "merfishMat":
                     merfishGenePath = res;
-                    break;                
+                    break;
                 case "object":
                     objectPath = res;
                     break;
@@ -1134,11 +1139,11 @@ public class UIManager : MonoBehaviour
     {
         gameObject.GetComponent<DataTransfer>().startMerfish();
 
-    }   
-    
+    }
+
     public void runOther()
     {
-        for(int i=0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             if (otherCSVInfo[i].text != "") otherCSVColumns[i] = int.Parse(otherCSVInfo[i].text);
             else otherCSVColumns[i] = -1;
@@ -1170,7 +1175,7 @@ public class UIManager : MonoBehaviour
     {
         List<string> objData = new List<string>();
 
-        foreach(TMP_InputField t in objectIfs)
+        foreach (TMP_InputField t in objectIfs)
         {
             if (t.text != "") objData.Add(t.text);
             else objData.Add("0");
@@ -1223,7 +1228,7 @@ public class UIManager : MonoBehaviour
             slicesList.Add(slicesStore[i]);
             transferDatapaths.Add(FileBrowser.Result[i]);
             rotationValues.Add(0);
-            try { alignBtn.SetActive(true); } catch (Exception) {}
+            try { alignBtn.SetActive(true); } catch (Exception) { }
 
 
             string filename = storePathForWarning[i];
@@ -1295,8 +1300,8 @@ public class UIManager : MonoBehaviour
                     string[] files = Directory.GetFiles(FileBrowser.Result[i], "*", SearchOption.AllDirectories);
                     foreach (string s in files)
                     {
-                        if (s.Split("\\").Last() == "tissue_hires_image.png") byteArray = File.ReadAllBytes(s);                        
-                    }                    
+                        if (s.Split("\\").Last() == "tissue_hires_image.png") byteArray = File.ReadAllBytes(s);
+                    }
 
                     Texture2D sampleTexture = new Texture2D(2, 2);
                     bool isLoaded = sampleTexture.LoadImage(byteArray);
@@ -1367,7 +1372,7 @@ public class UIManager : MonoBehaviour
         List<string> datapathVisium = new List<string>();
         foreach (Dropdown.OptionData option in dropd.options)
         {
-            foreach(string x in transferDatapaths)
+            foreach (string x in transferDatapaths)
             {
                 if (x.Split('\\').Last() == option.text)
                 {
@@ -1375,11 +1380,11 @@ public class UIManager : MonoBehaviour
                 }
             }
 
-                gameObject.GetComponent<DataTransfer>().startMultipleVisium(datapathVisium, rotationValues, distances);
-            
+            gameObject.GetComponent<DataTransfer>().startMultipleVisium(datapathVisium, rotationValues, distances);
+
         }
     }
-        public List<GameObject> getSliceList()
+    public List<GameObject> getSliceList()
     {
         return slicesList;
     }
@@ -1389,10 +1394,19 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Trigger detection for an HMD manually.
+    /// Trigger HMD detection manually.
     /// </summary>
-    public void EnterVR()
+    public void EnterVR(Transform EnterVRTransform)
     {
-        StartCoroutine(EntrypointVR.Instance.DetectHMD());
+        GameObject activeIconGameObject = EnterVRTransform.GetChild(1).gameObject;
+        if (activeIconGameObject.activeSelf)
+        {
+            StopCoroutine(EntrypointVR.Instance.DetectHMD());
+            EntrypointVR.Instance.IsDetectingHMD = false;
+        }
+        else
+            StartCoroutine(EntrypointVR.Instance.DetectHMD());
+
+        activeIconGameObject.SetActive(!activeIconGameObject.activeSelf);
     }
 }

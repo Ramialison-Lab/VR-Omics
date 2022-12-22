@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 1157
   m_ShowMode: 4
-  m_Title: Game
+  m_Title: Project
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 350}
   m_MaxSize: {x: 10000, y: 10000}
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 22
+  controlID: 48
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -171,7 +171,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 200}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 23
+  controlID: 49
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -381,23 +381,23 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 84430600
-      m_LastClickedID: 410500
-      m_ExpandedIDs: 5cb3feffb4defeffe8dffeff08e7feffc0ebfeffb0f3feffe6f9feff50fbfeff8601ffff4003fffff404ffff360bffffd211ffffe212ffffde26ffff6428ffff7429ffffae2fffffd031ffff2a33ffff7039fffff43cffff063effff664bffff104dffff1c4effff5e54ffffa057ffff345fffffe260ffff1462ffff3e80ffff7486fffff287ffff108ffffff094fffffc9cffff18a4ffff3cabffff8ab8ffffecbeffff6ccefffff4ffffff42cc000064cc00007cd0000022d300002a2a01000e310100bc460100a04d01001c8801003e880100b4890100568c01004665030070650300926503009a650300b0650300c8650300d2650300e6650300f0650300f465030058660300806603009866030008670300346703005467030060670300646703008e670300e467030050680300b6680300e26803002c6903006469030090690300aa690300cc6903001a6a0300386a0300486a0300ba6a0300de6a0300126b0300226b0300266b03003a6b0300446b0300846b0300a26b0300ea6b0300ee6b0300306c0300346c0300546c0300a26c0300826a04006e3a050052410500ac7b050090820500
+      m_SelectedIDs: 703c0000
+      m_LastClickedID: 0
+      m_ExpandedIDs: 6cceffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: PythonBindCanvas
-        m_OriginalName: PythonBindCanvas
+        m_Name: 
+        m_OriginalName: 
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 410500
+        m_UserData: 0
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 0
+        m_OriginalEventType: 11
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 6}
       m_SearchString: 
@@ -684,7 +684,7 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: -0.03637763, y: -0.56021917, z: 0.024394244, w: -0.8272868}
     speed: 2
-    m_Value: {x: -0.036411136, y: -0.5589308, z: 0.024337614, w: -0.8280569}
+    m_Value: {x: -0.036374588, y: -0.5601723, z: 0.024392202, w: -0.8272176}
   m_Size:
     m_Target: 0.9332586
     speed: 2
@@ -896,22 +896,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scenes
+    - Assets/Scripts/Main
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scenes
+  - Assets/Scripts/Main
   m_LastFoldersGridSize: -1
   m_LastProjectPath: E:\Dimitar\Projects\Spatial Transcriptomics\VR-Omics
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 79}
-    m_SelectedIDs: 72cb0000
-    m_LastClickedID: 52082
-    m_ExpandedIDs: 0000000064a2000074cb000000ca9a3bffffff7f
+    m_SelectedIDs: 2eaf0000
+    m_LastClickedID: 44846
+    m_ExpandedIDs: 0000000064a2000080a2000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
