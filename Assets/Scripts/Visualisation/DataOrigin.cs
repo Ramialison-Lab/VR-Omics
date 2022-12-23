@@ -20,6 +20,14 @@ namespace VROmics.Visualisation
         /// </summary>
         public Vector3 OriginCopy { get; private set; }
 
+        /// <summary>
+        /// Percentage to fill the data-view from the remaining canvas area. Starting 
+        /// from the bottom right corner of the main menu, this gives us a fill percentage,
+        /// corresponding to padding for the data (rough estimate).
+        /// Primary influence on Editor and VR.
+        /// </summary>
+        public float Padding { get; private set; }
+
         public RectTransform LeftOffset;
         public RectTransform RightOffset;
         public RectTransform TopOffset;
@@ -62,6 +70,11 @@ namespace VROmics.Visualisation
                     OriginCopy = rectTransform.position + v;
                     break;
             }
+
+            if (RightOffset.sizeDelta.x >= TopOffset.sizeDelta.y) // scales uniformly, take only one
+                Padding = 1 - RightOffset.sizeDelta.x / (rectTransform.sizeDelta.x - LeftOffset.sizeDelta.x);
+            else
+                Padding = 1 - TopOffset.sizeDelta.y / rectTransform.sizeDelta.y;
         }
 
 #if UNITY_EDITOR

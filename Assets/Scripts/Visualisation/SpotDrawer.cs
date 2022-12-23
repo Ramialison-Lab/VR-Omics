@@ -120,7 +120,10 @@ public class SpotDrawer : MonoBehaviour
 
         MeshProperties[] properties = new MeshProperties[count];
         int j = 0;
-        (float h, float v) s = copy ? (0.5f, 0.75f) : (1f, 1f);
+        float p = dataOrigin.Padding;
+        Debug.Log(p);
+        (float h, float v) s = copy ? 
+            (0.5f * p, 0.5f * p) : (p, p);
         var o = dataOrigin.Origin;
         var Mc = Matrix4x4.TRS(o, canvas.transform.rotation, canvas.transform.localScale);
         float s_w = EntrypointVR.Instance.VR ? 0.004f : 1f;
