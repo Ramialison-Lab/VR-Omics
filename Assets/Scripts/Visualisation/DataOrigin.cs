@@ -48,7 +48,8 @@ namespace VROmics.Visualisation
                     OriginCopy = new Vector3(
                         Origin.x + 0.5f * 
                             (rectTransform.sizeDelta.x - LeftOffset.sizeDelta.x - RightOffset.sizeDelta.x),
-                        Origin.y, Origin.z);
+                        rectTransform.position.y - rectTransform.sizeDelta.y / 4f,
+                        Origin.z);
                     break;
                 case RenderMode.WorldSpace:
                     Origin = new Vector3(
@@ -59,7 +60,8 @@ namespace VROmics.Visualisation
                     OriginCopy = new Vector3(
                         Origin.x + 0.5f * rectTransform.localScale.x *
                             (rectTransform.sizeDelta.x - LeftOffset.sizeDelta.x - RightOffset.sizeDelta.x),
-                        Origin.y, Origin.z);
+                        rectTransform.position.y - rectTransform.sizeDelta.y / 4f * rectTransform.localScale.y,
+                        Origin.z);
                     // rotate
                     var v = Origin - rectTransform.position; // v from canvas pivot to Origin
                     v = rectTransform.rotation * v;

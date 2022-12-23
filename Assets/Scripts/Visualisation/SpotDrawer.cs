@@ -121,10 +121,11 @@ public class SpotDrawer : MonoBehaviour
         MeshProperties[] properties = new MeshProperties[count];
         int j = 0;
         float p = dataOrigin.Padding;
-        Debug.Log(p);
         (float h, float v) s = copy ? 
             (0.5f * p, 0.5f * p) : (p, p);
         var o = dataOrigin.Origin;
+        if (copy) // align o.y with o_copy.y
+            o.y = dataOrigin.OriginCopy.y;
         var Mc = Matrix4x4.TRS(o, canvas.transform.rotation, canvas.transform.localScale);
         float s_w = EntrypointVR.Instance.VR ? 0.004f : 1f;
         foreach (SpotWrapper spot in spots)
