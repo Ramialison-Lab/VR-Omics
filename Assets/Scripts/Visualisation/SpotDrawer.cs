@@ -88,7 +88,8 @@ public class SpotDrawer : MonoBehaviour
     // The min and max X and Y values from the read data,
     // where minX, minY, maxX, maxY not_in spot_i for i > 2.
     // Min is bottom left corner, Max is upper right.
-    public Vector2 Min, Max;    
+    public Vector2 Min { get; set; }
+    public Vector2 Max { get; set; }
 
     private void Start()
     {

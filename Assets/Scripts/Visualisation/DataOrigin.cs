@@ -3,7 +3,7 @@ using UnityEngine;
 namespace VROmics.Visualisation
 {
     /// <summary>
-    /// Constantly provide the origin points, as those are scaled with the canvas.
+    /// Constantly provide origin points, while the canvas is being scaled, translated, and rotated.
     /// 
     /// Author: Dimitar Garkov
     /// </summary>

@@ -59,8 +59,8 @@ namespace VROmics.Main
                             };
                             break;
                         case "Visualisation":
-                            StartCoroutine(InitializeVR(ReconfigureVisualization(true)));
                             SpotDrawer = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>();
+                            StartCoroutine(InitializeVR(ReconfigureVisualization(true)));                            
                             StartCoroutine(TransformSpots2VRCanvas());
                             break;
                     }
@@ -97,7 +97,7 @@ namespace VROmics.Main
             {//Configure canvas
                 Canvas canvas = Canvas.GetComponent<Canvas>();
                 CenterCanvas(canvas);
-                canvas.transform.localScale = new Vector3(4.44f / 960, 2.75f / 600, 1);
+                canvas.transform.localScale = new Vector3(4f / 960, 2.5f / 600, 1);
             }
 
             //Link XR Interaction Manager
@@ -148,7 +148,11 @@ namespace VROmics.Main
                 Canvas canvas = Canvas.GetComponent<Canvas>();
                 float w = canvas.renderingDisplaySize.x, h = canvas.renderingDisplaySize.y;
                 CenterCanvas(canvas);
-                Canvas.transform.localScale = new Vector3(4.44f / w, 2.75f / h, 1);
+                Vector2 min = SpotDrawer.Min;
+                Vector2 max = SpotDrawer.Max;
+                float data_aspect = (max.x - min.x) / (max.y - min.y);
+                float h_aspect = 4f / data_aspect;
+                Canvas.transform.localScale = new Vector3(4f / w, h_aspect / h, 1);
                 canvas.renderMode = RenderMode.WorldSpace;
                 BoxCollider collider = Canvas.AddComponent<BoxCollider>();
                 collider.size = new Vector3(w, h, 0.05f);

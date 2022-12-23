@@ -208,6 +208,8 @@ public class DataTransferManager : MonoBehaviour
                 go.SetActive(false);
             }
         }
+        float minX, maxX, minY, maxY;
+        minX = maxX = minY = maxY = 0;
         int count = 0;
         // Reading datasets and creating merged List for all coordinates
         foreach (string p in hdf5datapaths)
@@ -252,11 +254,18 @@ public class DataTransferManager : MonoBehaviour
 
             for (int i = 0; i < row.Length; i++)
             {
-                tempx.Add(row[i]);
-                tempy.Add(col[i]);
+                float x, y;
+                tempx.Add(x = row[i]);
+                tempy.Add(y = col[i]);
                 tempz.Add(visiumDepth);
                 tempSpotnames.Add(spotnames[i]);
                 dataSetNames.Add(p);
+
+                // Find min and max
+                if (x < minX) minX = x;
+                else if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                else if (y > maxY) maxY = y;
             }
 
             //Adds the collider slice for each dataset that detects user input
@@ -274,7 +283,9 @@ public class DataTransferManager : MonoBehaviour
             count++;
         }
         checkForSVGData();
-        adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(0, 0, 0));
+        adjustCamera(minX, maxX, minY, maxY, tempz.Min(), new Vector3(0, 0, 0));
+        sp.Min = new Vector2(minX, minY);
+        sp.Max = new Vector2(maxX, maxY);
         sp.StartDrawer(tempx.ToArray(), tempy.ToArray(), tempz.ToArray(), tempSpotnames.ToArray(), dataSetNames.ToArray()); // TODO Please check if we really need lists: tempx, tempy, tempz, ... / convert to arrays
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
@@ -298,14 +309,22 @@ public class DataTransferManager : MonoBehaviour
         xeniumY = new float[lines.Length];
         xeniumZ = new float[lines.Length];
         xeniumCell = new string[lines.Length];
+        float minX, maxX, minY, maxY;
+        minX = maxX = minY = maxY = 0;
         for (int i = 0; i < lines.Length; i++)
         {
             string[] values = lines[i].Split(',');
 
-            xeniumX[i] = float.Parse(values[1]);
-            xeniumY[i] = float.Parse(values[2]);
+            float x = xeniumX[i] = float.Parse(values[1]);
+            float y = xeniumY[i] = float.Parse(values[2]);
             xeniumZ[i] = 0;
             xeniumCell[i] = values[0];
+
+            // Find min and max
+            if (x < minX) minX = x;
+            else if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            else if (y > maxY) maxY = y;
         }
 
         string[] linesGn = File.ReadAllLines(xeniumGeneList);
@@ -316,11 +335,13 @@ public class DataTransferManager : MonoBehaviour
             XeniumGeneNames.Add(values[0]);
         }
 
-        sc.setSliceCollider((int)xeniumX.Min(), (int)xeniumX.Max(), (int)xeniumY.Max(), (int)xeniumY.Min(), visiumDepth, "");
+        sc.setSliceCollider((int)minX, (int)maxX, (int)maxY, (int)minY, visiumDepth, "");
 
+        sp.Min = new Vector2(minX, minY);
+        sp.Max = new Vector2(maxX, maxY);
         sp.StartDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell, new string[] { });
 
-        adjustCamera(xeniumX.Min() / 10, xeniumX.Max() / 10, xeniumY.Min() / 10, xeniumY.Max() / 10, xeniumZ.Min(), new Vector3(0, 0, 0));
+        adjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, xeniumZ.Min(), new Vector3(0, 0, 0));
         // scriptHolder.GetComponent<XeniumDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell);
     }
 
@@ -404,6 +425,8 @@ public class DataTransferManager : MonoBehaviour
         c18y = new float[lines.Length];
         c18z = new float[lines.Length];
         c18spot = new string[lines.Length];
+        float minX, maxX, minY, maxY;
+        minX = maxX = minY = maxY = 0;
         for (int i = 0; i < lines.Length; i++)
         {
             string[] values = lines[i].Split(',');
@@ -415,29 +438,32 @@ public class DataTransferManager : MonoBehaviour
             //c18x.Add((float.Parse(values[1])) / 100);
             //c18y.Add((float.Parse(values[2])) / 100);
             //c18z.Add(float.Parse(values[12]));
-
-            c18x[i] = -float.Parse(values[10]);
-            c18y[i] = -float.Parse(values[11]);
+            
+            float x = c18x[i] = -float.Parse(values[10]);
+            float y = c18y[i] = -float.Parse(values[11]);
             c18z[i] = float.Parse(values[12]);
 
 
             c18spot[i] = values[16];
             c18cluster.Add(values[7]);
+
+            // Find min and max
+            if (x < minX) minX = x;
+            else if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            else if (y > maxY) maxY = y;
         }
         //Depth corrdinates from C18heart dataset
         int[] c18xHC = { 192, 205, 230, 250, 285, 289, 321, 327, 353 };
 
         for (int i = 0; i < 9; i++)
         {
-            sc.setSliceCollider((int)c18x.Min(), (int)c18x.Max(), (int)c18y.Max(), (int)c18y.Min(), c18xHC[i], "");
+            sc.setSliceCollider((int)minX, (int)maxX, (int)maxY, (int)minY, c18xHC[i], "");
         }
-        adjustCamera(c18x.Min(), c18x.Max(), c18y.Min(), c18y.Max(), c18z.Min(), new Vector3(0, 0, 0));
-        var x = Math.Abs(c18x.Min() - c18x.Max());
-        var y = Math.Abs(c18y.Min() - c18y.Max());
-        var z = Math.Abs(c18z.Min() + c18z.Max());
-        var zcoord = (c18z.Min() + c18z.Max()) / 2;
+        adjustCamera(minX, maxX, maxY, minY, c18z.Min(), new Vector3(0, 0, 0));
 
-        //c18heartObj.transform.localScale = new Vector3(x/10, y/10, z/10);
+        sp.Min = new Vector2(minX, minY);
+        sp.Max = new Vector2(maxX, maxY);
         sp.StartDrawer(c18x, c18y, c18z, c18spot, new string[] { });
     }
 
@@ -478,7 +504,9 @@ public class DataTransferManager : MonoBehaviour
         stomicsY = fr.readH5Float(stomicsDataPath, "var/new_y");
         stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
 
-        adjustCamera(stomicsX.Min(), stomicsX.Max(), stomicsY.Min(), stomicsY.Max(), stomicsZ.Min(), new Vector3(0, 0, 0));
+        sp.Min = new Vector2(stomicsX.Min(), stomicsY.Min());
+        sp.Max = new Vector2(stomicsX.Max(), stomicsY.Max());
+        adjustCamera(sp.Min.x, sp.Max.x, sp.Min.y, sp.Max.y, stomicsZ.Min(), new Vector3(0, 0, 0));
 
         sp.StartDrawer(stomicsX.ToArray(), stomicsY.ToArray(), stomicsZ.ToArray(), stomicsSpotId.ToArray(), new string[] { }); // TODO Please check if we really need lists: tempx, tempy, tempz, ... / convert to arrays
     }
@@ -509,16 +537,26 @@ public class DataTransferManager : MonoBehaviour
         otherY = new float[lines.Length];
         otherZ = new float[lines.Length];
         otherSpots = new string[lines.Length];
+        float minX, maxX, minY, maxY;
+        minX = maxX = minY = maxY = 0;
         for (int i = 0; i < lines.Length; i++)
         {
             string[] values = lines[i].Split(',');
-            otherX[i] = float.Parse(values[otherCSVCols[0]]);
-            otherY[i] = float.Parse(values[otherCSVCols[1]]);
+            float x = otherX[i] = float.Parse(values[otherCSVCols[0]]);
+            float y = otherY[i] = float.Parse(values[otherCSVCols[1]]);
             otherZ[i] = float.Parse(values[otherCSVCols[2]]);
             otherSpots[i] = values[otherCSVCols[3]];
+
+            // Find min and max
+            if (x < minX) minX = x;
+            else if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            else if (y > maxY) maxY = y;
         }
 
-        adjustCamera(otherX.Min(), otherX.Max(), otherY.Min(), otherY.Max(), otherZ.Min(), new Vector3(0, 0, 0));
+        adjustCamera(minX, maxX, maxY, minY, otherZ.Min(), new Vector3(0, 0, 0));
+        sp.Min = new Vector2(minX, minY);
+        sp.Max = new Vector2(maxX, maxY);
         sp.StartDrawer(otherX, otherY, otherZ, otherSpots, new string[] { });
     }
 
