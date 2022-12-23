@@ -50,7 +50,7 @@ namespace VROmics.Main
                     switch (currentScene)
                     {
                         case "Pipeline":
-                            StartCoroutine(InitializeVR(Reconfigure()));
+                            StartCoroutine(InitializeVR(ReconfigurePipeline()));
                             SceneManager.sceneLoaded += (scene, mode) =>
                             {
                                 if (scene.name != "Visualisation")
@@ -90,7 +90,7 @@ namespace VROmics.Main
             yield return StartCoroutine(sceneCoroutine);
         }
 
-        private IEnumerator Reconfigure()
+        private IEnumerator ReconfigurePipeline()
         {
             GameObject Canvas = GameObject.Find("Canvas");
 
