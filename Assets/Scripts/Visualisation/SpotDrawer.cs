@@ -237,18 +237,6 @@ public class SpotDrawer : MonoBehaviour
         OnTransform = null; // on transform event may run at most once / subscription
     }
 
-    private void setIdentifierColour()
-    {
-        for (int i = 0; i < spots.Length; i++)
-        {
-            if (spots[i].HighlightGroup == 0) { colors[i] = new Color(255, 0, 0, 1); }
-            else if (spots[i].HighlightGroup == 1) colors[i] = new Color(0, 255, 0, 1);
-            else if (spots[i].HighlightGroup == 2) colors[i] = new Color(0, 0, 255, 1);
-            else if (spots[i].HighlightGroup == 3) colors[i] = new Color(0, 255, 255, 1);
-        }
-        SetMeshBuffers();
-    }
-
     private void setColour()
     {
         for (int i = 0; i < spots.Length; i++)
@@ -749,9 +737,10 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="dN">Datasetname coordinate of the spot that needs to be identified</param>
     public void identifySpot(float x_cl, float y_cl, string dN)
     {
+        //TODO Identification is still off
+        //Spot locations only in hundred steps
         x_cl = ((int)x_cl / 100)*100;
         y_cl = ((int)y_cl / 100)*100;
-        //identify the spot clicked
 
         for(int j =0; j<RowCoords.Length; j++)
         {
@@ -759,6 +748,7 @@ public class SpotDrawer : MonoBehaviour
             {
                 if((int)y_cl == ColCoords[j])
                 {
+                    // Identified spot will be added to highlightgroup or removed
                     if (mc.lasso)
                     {
                         if (!addToggle)
@@ -773,12 +763,17 @@ public class SpotDrawer : MonoBehaviour
                                 spots[j].HighlightGroup = active;
                                 spotsCopy[j].HighlightGroup = active;
 
+                                if (active == 0) { colors[j] = new Color(255, 0, 0, 1); }
+                                else if (active == 1) colors[j] = new Color(0, 255, 0, 1);
+                                else if (active == 2) colors[j] = new Color(0, 0, 255, 1);
+                                else if (active == 3) colors[j] = new Color(0, 255, 255, 1);
+                                SetMeshBuffers();
                             }
                         }
                     }
 
                     smm.setSpotInfo(spots[j].Spotname, spots[j].DatasetName, spots[j].UniqueIdentifier, spots[j].Location, spots[j].ExpVal);
-
+                    // passthrough function to identify underlying spots
                     if (passThrough)
                     {
                         if ((int)spots[j].Location.x == (int)x_cl && (int)spots[j].Location.y == (int)y_cl)
@@ -795,7 +790,7 @@ public class SpotDrawer : MonoBehaviour
                 }
             }
         }
-       setIdentifierColour();
+      
 
 
 
