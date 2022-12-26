@@ -821,8 +821,10 @@ public class SpotDrawer : MonoBehaviour
         Transform cubetransform = cube.transform;
         foreach (SpotWrapper s in spots)
         {
-            if (s.DatasetName == dN)
+
+            if (s.DatasetName.Contains(dN))
             {
+                //TODO: Rotation not working for spots
                 Vector3 vec = s.Location;
                 //var delta = Math.Atan2(vec.y, vec.x) * 180 / Math.PI;
 
@@ -849,6 +851,7 @@ public class SpotDrawer : MonoBehaviour
                 s.Origin = s.Location;
             }
         }
+        SetMeshBuffers();
     }
 
     //###################################################################################################################
