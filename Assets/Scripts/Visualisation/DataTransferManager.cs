@@ -47,9 +47,9 @@ public class DataTransferManager : MonoBehaviour
     public List<string> csvGeneExpPaths;
     public List<string> svgGenes;
     public List<string> dataSetNames;
-    public List<float> tempx;
-    public List<float> tempy;
-    public List<float> tempz;
+    public List<float> tempRow;
+    public List<float> tempCol;
+    public List<float> tempDepth;
     public string[] spotnames;
     public List<string> geneNamesDistinct;
     public List<List<string>> SpotNameDictionary = new List<List<string>>();
@@ -242,8 +242,9 @@ public class DataTransferManager : MonoBehaviour
                 if (values[1] == "1")
                 {
                     //columns are switched
-                    col[tissueCount] = -long.Parse(values[2])*100;
-                    row[tissueCount] = long.Parse(values[3])*100;
+                    col[tissueCount] = -(long.Parse(values[2]) * 100+long.Parse(values[2])*100);
+                    row[tissueCount] = long.Parse(values[3])*100;                      
+         
                     //row[tissueCount] = long.Parse(values[4]) / 100;
                     //col[tissueCount] = long.Parse(values[5]) / 100;
                     spotnames[tissueCount] = values[0];
@@ -255,9 +256,9 @@ public class DataTransferManager : MonoBehaviour
             for (int i = 0; i < row.Length; i++)
             {
                 float x, y;
-                tempx.Add(x = row[i]);
-                tempy.Add(y = col[i]);
-                tempz.Add(visiumDepth);
+                tempRow.Add(x = row[i]);
+                tempCol.Add(y = col[i]);
+                tempDepth.Add(visiumDepth);
                 tempSpotnames.Add(spotnames[i]);
                 dataSetNames.Add(p);
 
@@ -269,7 +270,7 @@ public class DataTransferManager : MonoBehaviour
             }
 
             //Adds the collider slice for each dataset that detects user input
-            sc.setSliceCollider((int)col.Min(), (int)col.Max() + 1, (int)row.Max() + 1, (int)row.Min(), visiumDepth, df.pathList[count]);
+            sc.setSliceCollider((int)col.Min(), (int)col.Max(), (int)row.Min(), (int)row.Max(), visiumDepth, df.pathList[count]);
 
             // TODO: depth automatically increased by 10, needs to be replaced with depth information set in pipeline alignment 
             visiumDepth = visiumDepth + 10;
@@ -283,13 +284,14 @@ public class DataTransferManager : MonoBehaviour
             count++;
         }
         checkForSVGData();
-        adjustCamera(minX, maxX, minY, maxY, tempz.Min(), new Vector3(0, 0, 0));
-        Camera.main.transform.position = new Vector3(4750,-2500, -8200);
+        adjustCamera(minX, maxX, minY, maxY, tempDepth.Min(), new Vector3(0, 0, 0));
+        Camera.main.transform.position = new Vector3(5000,-5000, -15000);
         sp.Min = new Vector2(minX, minY);
         sp.Max = new Vector2(maxX, maxY);
-        sp.StartDrawer(tempx.ToArray(), tempy.ToArray(), tempz.ToArray(), tempSpotnames.ToArray(), dataSetNames.ToArray()); // TODO Please check if we really need lists: tempx, tempy, tempz, ... / convert to arrays
+        sp.StartDrawer(tempRow.ToArray(), tempCol.ToArray(), tempDepth.ToArray(), tempSpotnames.ToArray(), dataSetNames.ToArray()); // TODO Please check if we really need lists: tempRow, tempCol, tempDepth, ... / convert to arrays
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
+
     }
 
     /// <summary>
@@ -509,7 +511,7 @@ public class DataTransferManager : MonoBehaviour
         sp.Max = new Vector2(stomicsX.Max(), stomicsY.Max());
         adjustCamera(sp.Min.x, sp.Max.x, sp.Min.y, sp.Max.y, stomicsZ.Min(), new Vector3(0, 0, 0));
 
-        sp.StartDrawer(stomicsX.ToArray(), stomicsY.ToArray(), stomicsZ.ToArray(), stomicsSpotId.ToArray(), new string[] { }); // TODO Please check if we really need lists: tempx, tempy, tempz, ... / convert to arrays
+        sp.StartDrawer(stomicsX.ToArray(), stomicsY.ToArray(), stomicsZ.ToArray(), stomicsSpotId.ToArray(), new string[] { }); // TODO Please check if we really need lists: tempRow, tempCol, tempDepth, ... / convert to arrays
     }
 
     private void startOther()
@@ -658,7 +660,7 @@ public class DataTransferManager : MonoBehaviour
 
             svgContentPanel.GetComponentInChildren<TMP_Text>().text = outputString;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             svgBtn.SetActive(false);
             return;

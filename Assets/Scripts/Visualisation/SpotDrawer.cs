@@ -71,7 +71,6 @@ public class SpotDrawer : MonoBehaviour
     {
         public Vector3 Location;
         public Vector3 Origin;
-        public string Loc; // Do we need loc?
         internal string Spotname;
         internal string DatasetName;
         public int UniqueIdentifier;
@@ -90,6 +89,8 @@ public class SpotDrawer : MonoBehaviour
     // Min is bottom left corner, Max is upper right.
     public Vector2 Min { get; set; }
     public Vector2 Max { get; set; }
+    public float[] RowCoords { get; private set; }
+    public float[] ColCoords { get; private set; }
 
     private void Start()
     {
@@ -238,14 +239,12 @@ public class SpotDrawer : MonoBehaviour
 
     private void setIdentifierColour()
     {
-        int i = 0;
-        foreach (SpotWrapper wrap in spots)
+        for (int i = 0; i < spots.Length; i++)
         {
-            if (wrap.HighlightGroup == 0) { colors[i] = new Color(255, 0, 0, 1); }
-            else if (wrap.HighlightGroup == 1) colors[i] = new Color(0, 255, 0, 1);
-            else if (wrap.HighlightGroup == 2) colors[i] = new Color(0, 0, 255, 1);
-            else if (wrap.HighlightGroup == 3) colors[i] = new Color(0, 255, 255, 1);
-            i++;
+            if (spots[i].HighlightGroup == 0) { colors[i] = new Color(255, 0, 0, 1); }
+            else if (spots[i].HighlightGroup == 1) colors[i] = new Color(0, 255, 0, 1);
+            else if (spots[i].HighlightGroup == 2) colors[i] = new Color(0, 0, 255, 1);
+            else if (spots[i].HighlightGroup == 3) colors[i] = new Color(0, 255, 255, 1);
         }
         SetMeshBuffers();
     }
@@ -278,6 +277,8 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="dataSet">dataset names</param>
     public void StartDrawer(float[] xcoords, float[] ycoords, float[] zcoords, string[] spotBarcodes, string[] dataSet) // TODO dataset is almost always empty, do we need it?
     {
+        this.RowCoords = xcoords;
+        this.ColCoords = ycoords;
         //if (Min == Vector2.zero && Min == Max)
         // throw new Exception("Please supply min, max values of the data points beforehand!");
 
@@ -318,7 +319,6 @@ public class SpotDrawer : MonoBehaviour
             {
                 Location = new Vector3(x, y, z),
                 Origin = new Vector3(x, y, z),
-                Loc = new Vector2(x, y).ToString(),
                 Spotname = sname,
                 DatasetName = datasetn,
                 UniqueIdentifier = startSpotdrawerCount,
@@ -337,7 +337,6 @@ public class SpotDrawer : MonoBehaviour
                 {
                     Location = spot.Location,
                     Origin = spot.Origin,
-                    Loc = spot.Loc,// Do we need loc?
                     Spotname = spot.Spotname,
                     DatasetName = spot.DatasetName,
                     UniqueIdentifier = spot.UniqueIdentifier,
@@ -750,13 +749,60 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="dN">Datasetname coordinate of the spot that needs to be identified</param>
     public void identifySpot(float x_cl, float y_cl, string dN)
     {
-        // if lasso tool selected
-        var x_click = x_cl + clickoffset;
-        var y_click = y_cl + clickoffset;
-        int i = 0;
+        x_cl = ((int)x_cl / 100)*100;
+        y_cl = ((int)y_cl / 100)*100;
+        //identify the spot clicked
+
+        for(int j =0; j<RowCoords.Length; j++)
+        {
+            if((int)x_cl == RowCoords[j])
+            {
+                if((int)y_cl == ColCoords[j])
+                {
+                    if (mc.lasso)
+                    {
+                        if (!addToggle)
+                        {
+                            spots[j].HighlightGroup = -1;
+                            spotsCopy[j].HighlightGroup = -1;
+                        }
+                        else if (addToggle)
+                        {
+                            if (spots[j].HighlightGroup != active)
+                            {
+                                spots[j].HighlightGroup = active;
+                                spotsCopy[j].HighlightGroup = active;
+
+                            }
+                        }
+                    }
+
+                    smm.setSpotInfo(spots[j].Spotname, spots[j].DatasetName, spots[j].UniqueIdentifier, spots[j].Location, spots[j].ExpVal);
+
+                    if (passThrough)
+                    {
+                        if ((int)spots[j].Location.x == (int)x_cl && (int)spots[j].Location.y == (int)y_cl)
+                        {
+                            if (mc.lasso)
+                            {
+                                if (spots[j].HighlightGroup != active)
+                                {
+                                    spots[j].HighlightGroup = active;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+       setIdentifierColour();
+
+
+
+
         //foreach (SpotWrapper mw in spots)
         //{
-        //    if ((dfm.xenium || dfm.c18_visium || mw.DatasetName == dN) && (int)mw.Location.x == (int)x_click && (int)mw.Location.y == (int)y_click)
+        //    if ((dfm.xenium || dfm.c18_visium || mw.DatasetName == dN) && Math.Abs((int)mw.Location.x) == Math.Abs((int)x_click) && (int)Math.Abs(mw.Location.y) == Math.Abs((int)y_click))
         //    {
         //        if (mc.lasso)
         //        {
@@ -1020,7 +1066,6 @@ public class SpotDrawer : MonoBehaviour
             dataEntry.Add(group);
             dataEntry.Add(mw.Spotname);
             dataEntry.Add(mw.ExpVal.ToString());
-            dataEntry.Add(mw.Loc);
             dataEntry.Add(mw.DatasetName);
             dataEntry.Add(mw.UniqueIdentifier.ToString());
 

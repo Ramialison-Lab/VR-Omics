@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TMPro;
@@ -26,20 +27,26 @@ public class SliceCollider : MonoBehaviour
     public bool objectRotate = false;
 
     // Adding a collider slice to each of the Visium slices to detect user input
-    public void setSliceCollider(int btmslice, int topslice, int rslice, int lslice, int d, string datasetName)
+    public void setSliceCollider(int colMin, int colMax, int rowMin, int rowMax, int depth, string datasetName)
+        // (colmin = -15.200; colMax = 0; rowMin = 500; rowMax = 12300; depth = 10, dn) 
     {
-
-        // create cube as slice
+        // create Ciube as SliceCollider and locate to center of Spots
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        // calculate size of collider TBD- some points not coverd
-        var centerx = lslice + (rslice - lslice) / 2;
-        var centery = btmslice + (topslice - btmslice) / 2;
-        cube.transform.position = new Vector3(centerx, centery, d);
-        cube.transform.localScale = new Vector3(rslice - lslice, topslice - btmslice, 1);
+        var centerX = rowMin + ((rowMax - rowMin) / 2);
+        var colHalf = (colMax - colMin) / 2;
+        var centerY = colMin + colHalf;
+        //cube.transform.position = new Vector3(centerX, centerY, depth);
+        cube.transform.position = new Vector3(5700, -6400, depth);
+
+        //Change size of cube to match the spot grid
+
+       //cube.transform.localScale = new Vector3(Math.Abs(rowMax - rowMin), Math.Abs(colMax - colMin), 1);
+       cube.transform.localScale = new Vector3(10000, 13000, 1);
+
         // make them invisible
-        cube.GetComponent<MeshRenderer>().enabled = false;
+        //cube.GetComponent<MeshRenderer>().enabled = false;
         sliceColliders.Add(cube);
-        zcoords.Add(d);
+        zcoords.Add(depth);
         // attach DragObject script to move the slices
         cube.AddComponent<DragObject>();
         cube.GetComponent<DragObject>().resetCoords(datasetName);
