@@ -26,34 +26,31 @@ public class SliceCollider : MonoBehaviour
     public bool objectMove = false;
     public bool objectRotate = false;
 
-    // Adding a collider slice to each of the Visium slices to detect user input
+    private List<GameObject> inactiveGameObjects = new List<GameObject>();
+    private Color transparentColor = new Color(1, 1, 1, 0);
+
     public void setSliceCollider(int colMin, int colMax, int rowMin, int rowMax, int depth, string datasetName)
-        // (colmin = -15.200; colMax = 0; rowMin = 500; rowMax = 12300; depth = 10, dn) 
     {
-        // create Ciube as SliceCollider and locate to center of Spots
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        var centerX = rowMin + ((rowMax - rowMin) / 2);
-        var colHalf = (colMax - colMin) / 2;
-        var centerY = colMin + colHalf;
-        //cube.transform.position = new Vector3(centerX, centerY, depth);
+        GameObject cube;
+        if (inactiveGameObjects.Count > 0)
+        {
+            cube = inactiveGameObjects[0];
+            inactiveGameObjects.RemoveAt(0);
+        }
+        else
+        {
+            cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        }
+        cube.GetComponent<MeshRenderer>().enabled = false;
         cube.transform.position = new Vector3(5700, -6400, depth);
-
-        //Change size of cube to match the spot grid
-
-       //cube.transform.localScale = new Vector3(Math.Abs(rowMax - rowMin), Math.Abs(colMax - colMin), 1);
-       cube.transform.localScale = new Vector3(10000, 13000, 1);
-
-        // make them invisible
-        //cube.GetComponent<MeshRenderer>().enabled = false;
+        cube.transform.localScale = new Vector3(10000, 13000, 1);
         sliceColliders.Add(cube);
         zcoords.Add(depth);
-        // attach DragObject script to move the slices
         cube.AddComponent<DragObject>();
         cube.GetComponent<DragObject>().resetCoords(datasetName);
         cube.GetComponent<DragObject>().setCenterPoint(cube.transform.position);
-        Color newColor = cube.GetComponent<Renderer>().material.color;
-        newColor.a = 0f;
-        cube.GetComponent<Renderer>().material.color = newColor;
+        cube.GetComponent<Renderer>().material.color = transparentColor;
+    
         if (gameObject.GetComponent<DataTransferManager>().addHAndEImg)
         {
             GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -172,7 +169,6 @@ public class SliceCollider : MonoBehaviour
         {
             if ( paths[dd.value].Contains(x.GetComponent<DragObject>().datasetName))
             {
-                Debug.Log("in");
                 x.GetComponent<DragObject>().rotate(direction);
             }
         }

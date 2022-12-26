@@ -55,6 +55,7 @@ public class SpotDrawer : MonoBehaviour
     private string lastGene;
     private string lastGeneCopy;
     public List<GameObject> activepanels = new List<GameObject>(4);
+    private Color[] hl_colors = new Color[] { new Color(255, 0, 0, 1), new Color(0, 255, 0, 1), new Color(0, 0, 255, 1), new Color(0, 255, 255, 1) };
 
     /// <summary>
     /// structure for each spot, storing: 
@@ -734,6 +735,9 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
+    private Dictionary<int, int> highlightedSpots = new Dictionary<int, int>();
+
+
     /// <summary>
     /// Function to identify which spot was clicked and uses highlight method for lasso tool
     /// </summary>
@@ -747,26 +751,39 @@ public class SpotDrawer : MonoBehaviour
         y_cl = ((int)y_cl / 100) * 100;
 
         // Check if the coordinates match a spot
-        if (coordToIndex.TryGetValue(((int)x_cl, (int)y_cl), out int spotIndex))
+        int spotIndex;
+        if (coordToIndex.TryGetValue(((int)x_cl, (int)y_cl), out spotIndex))
         {
             // Identified spot will be added to highlightgroup or removed
             if (mc.lasso)
             {
                 if (!addToggle)
                 {
-                    spots[spotIndex].HighlightGroup = -1;
-                    spotsCopy[spotIndex].HighlightGroup = -1;
+                    highlightedSpots.Remove(spotIndex);
                 }
                 else if (addToggle)
                 {
-                    if (spots[spotIndex].HighlightGroup != active)
+                    if (!highlightedSpots.ContainsKey(spotIndex))
                     {
-                        spots[spotIndex].HighlightGroup = active;
-                        spotsCopy[spotIndex].HighlightGroup = active;
+                        highlightedSpots[spotIndex] = active;
 
-                        // Use an array of colors instead of an if-else chain
-                        var hl_colors = new Color[] { new Color(255, 0, 0, 1), new Color(0, 255, 0, 1), new Color(0, 0, 255, 1), new Color(0, 255, 255, 1) };
-                        colors[spotIndex] = hl_colors[active];
+                        // Use a switch statement instead of an if-else chain
+                        switch (active)
+                        {
+                            case 0:
+                                colors[spotIndex] = hl_colors[0];
+                                break;
+                            case 1:
+                                colors[spotIndex] = hl_colors[1];
+                                break;
+                            case 2:
+                                colors[spotIndex] = hl_colors[2];
+                                break;
+                            case 3:
+                                colors[spotIndex] = hl_colors[3];
+                                break;
+                        }
+
                         SetMeshBuffers();
                     }
                 }
@@ -783,9 +800,9 @@ public class SpotDrawer : MonoBehaviour
                 {
                     if (mc.lasso)
                     {
-                        if (spots[spotIndex].HighlightGroup != active)
+                        if (!highlightedSpots.ContainsKey(spotIndex))
                         {
-                            spots[spotIndex].HighlightGroup = active;
+                            highlightedSpots[spotIndex] = active;
                         }
                     }
                 }
@@ -1153,4 +1170,6 @@ public class SpotDrawer : MonoBehaviour
     private Canvas canvas;
     private DataOrigin dataOrigin;
     private Dictionary<(int, int), int> coordToIndex;
+    public int xAdjust;
+    public int yAdjust;
 }
