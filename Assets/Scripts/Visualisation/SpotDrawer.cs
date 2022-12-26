@@ -265,8 +265,13 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="dataSet">dataset names</param>
     public void StartDrawer(float[] xcoords, float[] ycoords, float[] zcoords, string[] spotBarcodes, string[] dataSet) // TODO dataset is almost always empty, do we need it?
     {
-        this.RowCoords = xcoords;
-        this.ColCoords = ycoords;
+        // Create a dictionary that maps coordinates to spot indices
+        coordToIndex = new Dictionary<(int, int), int>();
+        for (int i = 0; i < xcoords.Length; i++)
+        {
+            coordToIndex[((int)xcoords[i], (int)ycoords[i])] = i;
+        }
+
         //if (Min == Vector2.zero && Min == Max)
         // throw new Exception("Please supply min, max values of the data points beforehand!");
 
@@ -737,108 +742,55 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="dN">Datasetname coordinate of the spot that needs to be identified</param>
     public void identifySpot(float x_cl, float y_cl, string dN)
     {
-        //TODO Identification is still off
-        //Spot locations only in hundred steps
-        x_cl = ((int)x_cl / 100)*100;
-        y_cl = ((int)y_cl / 100)*100;
+        // Spot locations only in hundred steps
+        x_cl = ((int)x_cl / 100) * 100;
+        y_cl = ((int)y_cl / 100) * 100;
 
-        for(int j =0; j<RowCoords.Length; j++)
+        // Check if the coordinates match a spot
+        if (coordToIndex.TryGetValue(((int)x_cl, (int)y_cl), out int spotIndex))
         {
-            if((int)x_cl == RowCoords[j])
+            // Identified spot will be added to highlightgroup or removed
+            if (mc.lasso)
             {
-                if((int)y_cl == ColCoords[j])
+                if (!addToggle)
                 {
-                    // Identified spot will be added to highlightgroup or removed
+                    spots[spotIndex].HighlightGroup = -1;
+                    spotsCopy[spotIndex].HighlightGroup = -1;
+                }
+                else if (addToggle)
+                {
+                    if (spots[spotIndex].HighlightGroup != active)
+                    {
+                        spots[spotIndex].HighlightGroup = active;
+                        spotsCopy[spotIndex].HighlightGroup = active;
+
+                        // Use an array of colors instead of an if-else chain
+                        var hl_colors = new Color[] { new Color(255, 0, 0, 1), new Color(0, 255, 0, 1), new Color(0, 0, 255, 1), new Color(0, 255, 255, 1) };
+                        colors[spotIndex] = hl_colors[active];
+                        SetMeshBuffers();
+                    }
+                }
+            }
+
+            // Use a local variable to store the spot information
+            var spot = spots[spotIndex];
+            smm.setSpotInfo(spot.Spotname, spot.DatasetName, spot.UniqueIdentifier, spot.Location, spot.ExpVal);
+
+            // passthrough function to identify underlying spots
+            if (passThrough)
+            {
+                if ((int)spot.Location.x == (int)x_cl && (int)spot.Location.y == (int)y_cl)
+                {
                     if (mc.lasso)
                     {
-                        if (!addToggle)
+                        if (spots[spotIndex].HighlightGroup != active)
                         {
-                            spots[j].HighlightGroup = -1;
-                            spotsCopy[j].HighlightGroup = -1;
-                        }
-                        else if (addToggle)
-                        {
-                            if (spots[j].HighlightGroup != active)
-                            {
-                                spots[j].HighlightGroup = active;
-                                spotsCopy[j].HighlightGroup = active;
-
-                                if (active == 0) { colors[j] = new Color(255, 0, 0, 1); }
-                                else if (active == 1) colors[j] = new Color(0, 255, 0, 1);
-                                else if (active == 2) colors[j] = new Color(0, 0, 255, 1);
-                                else if (active == 3) colors[j] = new Color(0, 255, 255, 1);
-                                SetMeshBuffers();
-                            }
-                        }
-                    }
-
-                    smm.setSpotInfo(spots[j].Spotname, spots[j].DatasetName, spots[j].UniqueIdentifier, spots[j].Location, spots[j].ExpVal);
-                    // passthrough function to identify underlying spots
-                    if (passThrough)
-                    {
-                        if ((int)spots[j].Location.x == (int)x_cl && (int)spots[j].Location.y == (int)y_cl)
-                        {
-                            if (mc.lasso)
-                            {
-                                if (spots[j].HighlightGroup != active)
-                                {
-                                    spots[j].HighlightGroup = active;
-                                }
-                            }
+                            spots[spotIndex].HighlightGroup = active;
                         }
                     }
                 }
             }
         }
-      
-
-
-
-
-        //foreach (SpotWrapper mw in spots)
-        //{
-        //    if ((dfm.xenium || dfm.c18_visium || mw.DatasetName == dN) && Math.Abs((int)mw.Location.x) == Math.Abs((int)x_click) && (int)Math.Abs(mw.Location.y) == Math.Abs((int)y_click))
-        //    {
-        //        if (mc.lasso)
-        //        {
-        //            if (!addToggle)
-        //            {
-        //                mw.HighlightGroup = -1;
-        //                spotsCopy[i].HighlightGroup = -1;
-        //            }
-        //            else if (addToggle)
-        //            {
-        //                if (mw.HighlightGroup != active)
-        //                {
-        //                    mw.HighlightGroup = active;
-        //                    spotsCopy[i].HighlightGroup = active;
-
-        //                }
-        //            }
-        //        }
-        //        try
-        //        {
-        //            smm.setSpotInfo(mw.Spotname, mw.DatasetName, mw.UniqueIdentifier, mw.Location, mw.ExpVal);
-        //        }
-        //        catch (Exception) { }
-
-        //        if (passThrough)
-        //        {
-        //            if ((int)mw.Location.x == (int)x_click && (int)mw.Location.y == (int)y_click)
-        //            {
-        //                if (mc.lasso)
-        //                {
-        //                    if (mw.HighlightGroup != active)
-        //                    {
-        //                        mw.HighlightGroup = active;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    i++;
-        //}
-        //setIdentifierColour();
     }
 
     /// <summary>
@@ -1197,4 +1149,5 @@ public class SpotDrawer : MonoBehaviour
     private Action OnDraw;
     private Canvas canvas;
     private DataOrigin dataOrigin;
+    private Dictionary<(int, int), int> coordToIndex;
 }

@@ -14575,9 +14575,9 @@ MonoBehaviour:
   csvGeneExpPaths: []
   svgGenes: []
   dataSetNames: []
-  tempx: []
-  tempy: []
-  tempz: []
+  tempRow: []
+  tempCol: []
+  tempDepth: []
   spotnames: []
   geneNamesDistinct: []
   addHAndEImg: 0
