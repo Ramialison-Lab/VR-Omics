@@ -164,12 +164,15 @@ public class SliceCollider : MonoBehaviour
     // detecting rotation of slices
     public void prepareRotation(int direction)
     {
+
         List<string> paths = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().hdf5datapaths;
+       
 
         foreach (GameObject x in sliceColliders)
         {
-            if (x.GetComponent<DragObject>().datasetName == paths[dd.value])
+            if ( paths[dd.value].Contains(x.GetComponent<DragObject>().datasetName))
             {
+                Debug.Log("in");
                 x.GetComponent<DragObject>().rotate(direction);
             }
         }
