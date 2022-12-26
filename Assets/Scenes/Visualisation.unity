@@ -3568,8 +3568,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
-  far clip plane: 1000
+  near clip plane: 0.01
+  far clip plane: 100000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -3616,13 +3616,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _controller: {fileID: 245421343}
-  _speed: 50
+  _speed: 400
   _rotationSpeed: 180
   horizontalSpeed: 2
   verticalSpeed: 2
   IF: {fileID: 914573081}
   menuCanvas: {fileID: 1202353247}
   speed: 3
+  scaleFactor: 10
 --- !u!143 &245421343
 CharacterController:
   m_ObjectHideFlags: 0
@@ -14479,8 +14480,6 @@ MonoBehaviour:
   - {fileID: 1954772186}
   - {fileID: 2013484048}
   - {fileID: 1034406866}
-  Min: {x: 0, y: 0}
-  Max: {x: 0, y: 0}
 --- !u!114 &1052670662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17132,12 +17131,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 40
+    m_Left: 0
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 10
+  m_Spacing: 0
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
@@ -20709,7 +20708,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 230, y: 200}
+  m_SizeDelta: {x: 180.4159, y: 187.03}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1648437538
 MonoBehaviour:
@@ -20726,7 +20725,7 @@ MonoBehaviour:
   m_Content: {fileID: 1307057899}
   m_Horizontal: 1
   m_Vertical: 1
-  m_MovementType: 1
+  m_MovementType: 2
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
@@ -22398,7 +22397,7 @@ Transform:
   m_GameObject: {fileID: 1796680520}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -10000, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -23667,7 +23666,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 269346582}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.4
+  m_Size: 0.37406
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

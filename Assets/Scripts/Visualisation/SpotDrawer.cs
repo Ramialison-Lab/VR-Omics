@@ -117,7 +117,6 @@ public class SpotDrawer : MonoBehaviour
         args[3] = mesh.GetBaseVertex(0);
         argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
         argsBuffer.SetData(args);
-
         MeshProperties[] properties = new MeshProperties[count];
         int j = 0;
         float p = dataOrigin.Padding;

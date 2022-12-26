@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
     public float speed = 1.5f;
     Vector2 mousepos;
     DataTransferManager dfm;
+
+    public int  scaleFactor = 10;
     private void LateUpdate()
     {
         mousepos = Input.mousePosition;
@@ -53,10 +55,10 @@ public class PlayerController : MonoBehaviour
                 float diff_x = Mathf.Abs(Input.mousePosition.x - mousepos.x);
                 float diff_y = Mathf.Abs(Input.mousePosition.y - mousepos.y);
 
-                if (Input.mousePosition.x > mousepos.x && diff_x > diff_y) transform.Rotate(new Vector3(0, -1, 0));
-                if (Input.mousePosition.x < mousepos.x && diff_x > diff_y) transform.Rotate(new Vector3(0, 1, 0));
-                if (Input.mousePosition.y > mousepos.y && diff_y > diff_x) transform.Rotate(new Vector3(1, 0, 0));
-                if (Input.mousePosition.y < mousepos.y && diff_y > diff_x) transform.Rotate(new Vector3(-1, 0, 0));
+                if (Input.mousePosition.x > mousepos.x && diff_x > diff_y) transform.Rotate(new Vector3(0, -1*scaleFactor, 0));
+                if (Input.mousePosition.x < mousepos.x && diff_x > diff_y) transform.Rotate(new Vector3(0, 1 * scaleFactor, 0));
+                if (Input.mousePosition.y > mousepos.y && diff_y > diff_x) transform.Rotate(new Vector3(1 * scaleFactor, 0, 0));
+                if (Input.mousePosition.y < mousepos.y && diff_y > diff_x) transform.Rotate(new Vector3(-1 * scaleFactor, 0, 0));
 
             }
 
@@ -74,14 +76,14 @@ public class PlayerController : MonoBehaviour
 
             if (up)
             {
-                if(dfm.tomoseq) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 30 * Time.deltaTime * speed);
-                else transform.position = new Vector3(transform.position.x, transform.position.y + 30 * Time.deltaTime * speed, transform.position.z);
+                if(dfm.tomoseq) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 100 * Time.deltaTime * speed);
+                else transform.position = new Vector3(transform.position.x, transform.position.y + 100 * Time.deltaTime * speed, transform.position.z);
 
             }
             if (down)
             {
-                if (dfm.tomoseq) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 30 * Time.deltaTime * speed);
-                else transform.position = new Vector3(transform.position.x, transform.position.y - 30 * Time.deltaTime * speed, transform.position.z);
+                if (dfm.tomoseq) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 100 * Time.deltaTime * speed);
+                else transform.position = new Vector3(transform.position.x, transform.position.y - 100 * Time.deltaTime * speed, transform.position.z);
 
             }
         }
