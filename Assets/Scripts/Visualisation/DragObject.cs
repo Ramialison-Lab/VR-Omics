@@ -7,10 +7,16 @@ public class DragObject : MonoBehaviour
     public float xoffset;
     public float yoffset;
     public float zoffset;
+    private int depth;
     public string datasetName;
     public Vector3 centerpoint;
     Vector3 origin;
     SpotDrawer sd;
+    public int colMin;
+    public int colMax;
+    public int rowMin;
+    public int rowMax;
+
     private void Start()
     {
         sd = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>();
@@ -53,14 +59,24 @@ public class DragObject : MonoBehaviour
         }
     }
 
-    public void resetCoords(string datasetName)
+    public void resetCoords()
     {
-        this.datasetName = datasetName;
         xoffset = 0;
         yoffset = 0;
         zoffset = 0;
 
         origin = transform.position;
+    }
+
+    public void setMetaData(int colMin, int colMax, int rowMin, int rowMax, int depth, string datasetName)
+    {
+        this.colMin = colMin;
+        this.colMax = colMax;
+        this.rowMin = rowMin;
+        this.rowMax = rowMax;
+        this.depth = depth;
+        this.datasetName = datasetName;
+
     }
 
     public string getDatasetName()

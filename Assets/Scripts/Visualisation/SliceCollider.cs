@@ -26,29 +26,25 @@ public class SliceCollider : MonoBehaviour
     public bool objectMove = false;
     public bool objectRotate = false;
 
-    private List<GameObject> inactiveGameObjects = new List<GameObject>();
     private Color transparentColor = new Color(1, 1, 1, 0);
 
     public void setSliceCollider(int colMin, int colMax, int rowMin, int rowMax, int depth, string datasetName)
     {
-        GameObject cube;
-        if (inactiveGameObjects.Count > 0)
-        {
-            cube = inactiveGameObjects[0];
-            inactiveGameObjects.RemoveAt(0);
-        }
-        else
-        {
-            cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        }
+
+        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        
         cube.GetComponent<MeshRenderer>().enabled = false;
         cube.transform.position = new Vector3(5700, -6400, depth);
         cube.transform.localScale = new Vector3(10000, 13000, 1);
         sliceColliders.Add(cube);
         zcoords.Add(depth);
+        Color newColor = cube.GetComponent<Renderer>().material.color;
+        newColor.a = 0f;
+        cube.GetComponent<Renderer>().material.color = newColor;
         cube.AddComponent<DragObject>();
-        cube.GetComponent<DragObject>().resetCoords(datasetName);
+        cube.GetComponent<DragObject>().resetCoords();
         cube.GetComponent<DragObject>().setCenterPoint(cube.transform.position);
+        cube.GetComponent<DragObject>().setMetaData(colMin, colMax, rowMin, rowMax,depth, datasetName);
         cube.GetComponent<Renderer>().material.color = transparentColor;
     
         if (gameObject.GetComponent<DataTransferManager>().addHAndEImg)
@@ -153,7 +149,7 @@ public class SliceCollider : MonoBehaviour
             //TBD not using name cube here
             if (hit.collider.gameObject.name == "Cube")
             {
-                GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot(hit.point.x, hit.point.y, hit.collider.gameObject.GetComponent<DragObject>().getDatasetName());
+                GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot(hit.point.x, hit.point.y, hit.collider.gameObject.GetComponent<DragObject>().getDatasetName(), hit.collider.gameObject.GetComponent<DragObject>());
             }
         }
     }

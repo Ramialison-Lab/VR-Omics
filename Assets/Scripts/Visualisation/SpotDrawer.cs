@@ -270,7 +270,9 @@ public class SpotDrawer : MonoBehaviour
         coordToIndex = new Dictionary<(int, int), int>();
         for (int i = 0; i < xcoords.Length; i++)
         {
-            coordToIndex[((int)xcoords[i], (int)ycoords[i])] = i;
+            var x_temp = Math.Abs((int)xcoords[i] / 100);
+            var y_temp = Math.Abs((int)ycoords[i] / 200);
+            coordToIndex[(x_temp,y_temp)] = i;
         }
 
         //if (Min == Vector2.zero && Min == Max)
@@ -744,15 +746,37 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="x_cl">X coordinate of the spot that needs to be identified</param>
     /// <param name="y_cl">Y coordinate of the spot that needs to be identified</param>
     /// <param name="dN">Datasetname coordinate of the spot that needs to be identified</param>
-    public void identifySpot(float x_cl, float y_cl, string dN)
+    public void identifySpot(float x_cl, float y_cl, string dN, DragObject d_obj)
     {
-        // Spot locations only in hundred steps
-        x_cl = ((int)x_cl / 100) * 100;
-        y_cl = ((int)y_cl / 100) * 100;
+        x_cl = Math.Abs(x_cl)+xAdjust;
+        y_cl = Math.Abs(y_cl) +yAdjust;
+        Debug.Log("x_CL " + x_cl);
+        Debug.Log(y_cl);
+
+        var sec_col = Math.Abs(d_obj.colMax - d_obj.colMin) / 200;
+        var sec_row = Math.Abs(d_obj.rowMax - d_obj.rowMin) /100;
+        Debug.Log("sec_col " +sec_col);
+        Debug.Log(sec_row);
+
+        var col_sec_width = d_obj.gameObject.transform.localScale.x / sec_col;
+        var row_sec_width = d_obj.gameObject.transform.localScale.y / sec_row;
+        Debug.Log("col_secWith " + col_sec_width);
+        Debug.Log(row_sec_width);
+
+        var hit_x = x_cl / col_sec_width;
+        var hit_y = y_cl / row_sec_width;
+
+        Debug.Log("hit_x " +hit_x);
+        Debug.Log(hit_y);
+
+        hit_x = (int)(hit_x);
+        hit_y = (int)(hit_y);
+
+        Debug.Log(hit_x + " " + hit_y);
 
         // Check if the coordinates match a spot
         int spotIndex;
-        if (coordToIndex.TryGetValue(((int)x_cl, (int)y_cl), out spotIndex))
+        if (coordToIndex.TryGetValue(((int)hit_x, (int)hit_y), out spotIndex))
         {
             // Identified spot will be added to highlightgroup or removed
             if (mc.lasso)
