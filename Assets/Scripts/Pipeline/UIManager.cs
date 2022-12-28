@@ -152,7 +152,7 @@ public class UIManager : MonoBehaviour
     public int[] otherCSVColumns;
     public Toggle otherHeader;
 
-
+    private int expandPanelOffset = 300;
     private void Start()
     {
         DontDestroyOnLoad(transform.gameObject);
@@ -249,36 +249,36 @@ public class UIManager : MonoBehaviour
 
         if (expMenuVisium)
         {
-            mainExpandPanelVisium.transform.localPosition = new Vector2(mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandPanelVisium.transform.localPosition = new Vector2(mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.y);
             expMenuVisium = !expMenuVisium;
         }
         if (expMenuMerfish)
         {
-            mainExpandMerfish.transform.localPosition = new Vector2(mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandMerfish.transform.localPosition = new Vector2(mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.y);
             expMenuMerfish = !expMenuMerfish;
         }
         if (expMenuXen)
         {
-            mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
             expMenuXen = !expMenuXen;
         }
         if (expMenuTomo)
         {
-            mainExpandPanelTomo.transform.localPosition = new Vector2(mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandPanelTomo.transform.localPosition = new Vector2(mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.y);
             expMenuTomo = !expMenuTomo;
         }
         if (expMenuStomics)
         {
-            mainExpandStomics.transform.localPosition = new Vector2(mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandStomics.transform.localPosition = new Vector2(mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.y);
             expMenuStomics = !expMenuStomics;
         }
         if (expMenuOther)
         {
-            mainExpandOther.transform.localPosition = new Vector2(mainExpandOther.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandOther.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandOther.transform.localPosition = new Vector2(mainExpandOther.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandOther.GetComponent<RectTransform>().transform.localPosition.y);
             expMenuOther = !expMenuOther;
         }
 
-        panelToMove.transform.localPosition = new Vector2(panelToMove.GetComponent<RectTransform>().transform.localPosition.x + 200, panelToMove.GetComponent<RectTransform>().transform.localPosition.y);
+        panelToMove.transform.localPosition = new Vector2(panelToMove.GetComponent<RectTransform>().transform.localPosition.x + expandPanelOffset, panelToMove.GetComponent<RectTransform>().transform.localPosition.y);
     }
 
     /// <summary>
@@ -304,7 +304,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            mainExpandPanelVisium.transform.localPosition = new Vector2(mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandPanelVisium.transform.localPosition = new Vector2(mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.y);
             expandBtnActivePanelVisium.SetActive(false);
         }
         expMenuVisium = !expMenuVisium;
@@ -319,7 +319,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
             expandBtnActivePanelXenium.SetActive(false);
         }
         expMenuXen = !expMenuXen;
@@ -334,7 +334,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            mainExpandMerfish.transform.localPosition = new Vector2(mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandMerfish.transform.localPosition = new Vector2(mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.y);
             expandBtnActivePanelMerfish.SetActive(false);
         }
         expMenuMerfish = !expMenuMerfish;
@@ -349,7 +349,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            mainExpandPanelTomo.transform.localPosition = new Vector2(mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandPanelTomo.transform.localPosition = new Vector2(mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.y);
             expandBtnActivePanelTomo.SetActive(false);
         }
         expMenuTomo = !expMenuTomo;
@@ -364,7 +364,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            mainExpandStomics.transform.localPosition = new Vector2(mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandStomics.transform.localPosition = new Vector2(mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.y);
             expandBtnActivePanelStomics.SetActive(false);
 
         }
@@ -380,7 +380,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            mainExpandOther.transform.localPosition = new Vector2(mainExpandOther.GetComponent<RectTransform>().transform.localPosition.x - 200, mainExpandOther.GetComponent<RectTransform>().transform.localPosition.y);
+            mainExpandOther.transform.localPosition = new Vector2(mainExpandOther.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandOther.GetComponent<RectTransform>().transform.localPosition.y);
             expandBtnActivePanelOther.SetActive(false);
         }
         expMenuOther = !expMenuOther;
