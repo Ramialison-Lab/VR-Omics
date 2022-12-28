@@ -418,7 +418,7 @@ public class DataTransferManager : MonoBehaviour
         heartTranspSlider.SetActive(true);
         Color transp = new Color();
         transp.a = 0.5f;
-        c18Sphere.transform.localScale = new Vector3(50, 50, 50);
+        c18Sphere.transform.localScale = new Vector3(10, 10, 10);
         float[] c18x, c18y, c18z;
         string[] c18spot;
 
