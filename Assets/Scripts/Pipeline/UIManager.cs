@@ -426,7 +426,7 @@ public class UIManager : MonoBehaviour
             imageObj.transform.localScale = new Vector3(imageObj.transform.localScale.x * 3.5f, imageObj.transform.localScale.y * 3.5f, imageObj.transform.localScale.z);
 
             //transform the rawimages results in an offsett of 422.5f, needs to be properly aligned
-            imageObj.GetComponent<RectTransform>().transform.localPosition = new Vector3(-422.5f, 0, 0);
+            imageObj.GetComponent<RectTransform>().transform.localPosition = new Vector3(-350, 0, 0);
             Destroy(imageObj.transform.GetChild(0).gameObject);
 
             //add toggle button to alignement panel
