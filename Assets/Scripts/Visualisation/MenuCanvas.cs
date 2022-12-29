@@ -20,6 +20,9 @@ public class MenuCanvas : MonoBehaviour
     public GameObject imageCanvas;
     public TMP_Text figuresDatapath;
     private List<string> figurePaths = new List<string>();
+    public GameObject moonicon;
+    public GameObject sunicon;
+
     private void Start()
     {
         sd = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>();
@@ -52,10 +55,21 @@ public class MenuCanvas : MonoBehaviour
 
     public void darkMode(GameObject panel)
     {
-        if (panel.activeSelf) panel.SetActive(false);
-        else panel.SetActive(true);
+
+        if (moonicon.activeSelf)
+        {
+            moonicon.SetActive(false);
+            sunicon.SetActive(true);
+        }
+        else
+        {
+            moonicon.SetActive(true);
+            sunicon.SetActive(false);
+        }
+
         if (!darkmode)
         {
+
             darkmode = true;
             Camera.main.backgroundColor = Color.black;
         }
