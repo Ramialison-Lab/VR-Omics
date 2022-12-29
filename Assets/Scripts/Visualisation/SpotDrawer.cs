@@ -815,7 +815,10 @@ public class SpotDrawer : MonoBehaviour
 
             // Use a local variable to store the spot information
             var spot = spots[spotIndex];
-            smm.setSpotInfo(spot.Spotname, spot.DatasetName, spot.UniqueIdentifier, spot.Location, spot.ExpVal);
+            try
+            {
+                smm.setSpotInfo(spot.Spotname, spot.DatasetName, spot.UniqueIdentifier, spot.Location, spot.ExpVal);
+            }catch(Exception) { }
 
             // passthrough function to identify underlying spots
             if (passThrough)
