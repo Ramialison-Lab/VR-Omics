@@ -19,7 +19,7 @@ public class ButtonFunctionManager : MonoBehaviour
             functionPanels[4].SetActive(false);
             functionPanels[5].SetActive(false);
             functionPanels[6].SetActive(false);
-            functionPanels[10].SetActive(false);
+            ////functionPanels[10].SetActive(false);
             functionPanels[11].SetActive(false);
             functionPanels[16].SetActive(false);
 
@@ -33,7 +33,7 @@ public class ButtonFunctionManager : MonoBehaviour
         else if ((df.visium || df.visiumMultiple) && !df.c18)
         {
             // visium multiple slices
-            functionPanels[10].SetActive(false);
+            //functionPanels[10].SetActive(false);
             functionPanels[16].SetActive(false);
             functionPanels[17].SetActive(false);
 
