@@ -278,12 +278,19 @@ public class SpotDrawer : MonoBehaviour
         //if (Min == Vector2.zero && Min == Max)
         // throw new Exception("Please supply min, max values of the data points beforehand!");
 
-        symbolSelect = sphereSymb; // default symbol is sphere, rendered easier
-        // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
-        // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
-        // dataset is the name of the dataset dor ech slice
-        // for each coordinate passed
-        spots = new SpotWrapper[xcoords.Length];
+        symbolSelect = sphereSymb;
+        
+        //Dimension for Visium to small, dataset not visable and clipping mask prevents from close view
+        if (dfm.visium)
+        {
+            symbolSelect.transform.localScale = new Vector3(100, 100, 100);
+        }
+
+            // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
+            // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
+            // dataset is the name of the dataset dor ech slice
+            // for each coordinate passed
+            spots = new SpotWrapper[xcoords.Length];
         for (int i = 0; i < xcoords.Length; i++)
         {
             float x;

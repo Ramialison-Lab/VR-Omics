@@ -15,7 +15,6 @@ public class MenuCanvas : MonoBehaviour
     public bool locked = true;
     public bool lasso = false;
     private bool darkmode = false;
-    public GameObject sidemenu;
     public GameObject figuresPanel;
     public GameObject imageCanvas;
     public TMP_Text figuresDatapath;
@@ -167,17 +166,6 @@ public class MenuCanvas : MonoBehaviour
         return lasso;
     }
 
-    public void toggleSideMenu()
-    {
-        if (sidemenu.activeSelf)
-        {
-            sidemenu.SetActive(false);
-        }
-        else
-        {
-            sidemenu.SetActive(true);
-        }
-    }
     public GameObject settingsMenu;
     private bool settingsActive = false;
     public void toggleSettingsMenu()
@@ -239,21 +227,38 @@ public class MenuCanvas : MonoBehaviour
             obs.GetComponent<HAndEImageManager>().setAlpha(slider.GetComponent<Slider>().value, transparentMat);
         }
     }
+    private Vector3 PosA;
+    private Vector3 PosB;
+    private float duration = 0.2f;
+    private float elapsedTime;
+    private bool move = false;
 
-    public void resetCamera(GameObject btn)
+    private void Update()
     {
-        if(btn.name == "XResetBtn")
+        if (move)
         {
-            Camera.main.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, Camera.main.transform.eulerAngles.z);
+            elapsedTime += Time.deltaTime;
+            float complete = elapsedTime / duration;
+
+            Camera.main.transform.eulerAngles = Vector3.Lerp(PosA, PosB, complete);
         }
-        else if(btn.name == "YResetBtn")
-        {
-            Camera.main.transform.eulerAngles = new Vector3(Camera.main.transform.eulerAngles.x, 0, Camera.main.transform.eulerAngles.z);
-        }
-        else
-        {
-            Camera.main.transform.eulerAngles = new Vector3(Camera.main.transform.eulerAngles.x, Camera.main.transform.eulerAngles.y, 0);
-        }
+        if (PosA == PosB) move = false;
+
+    }
+
+    public void resetCamera()
+    {
+        //elapsedTime = 0;
+        //PosB = new Vector3(transform.position.x - 150, transform.position.y, transform.position.z);
+        //PosA = transform.position;
+        //move = true;
+
+        Camera.main.transform.eulerAngles = new Vector3(0, 0, 0); 
+        // for single axis reset;
+        //Camera.main.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, Camera.main.transform.eulerAngles.z); 
+        //Camera.main.transform.eulerAngles = new Vector3(Camera.main.transform.eulerAngles.x, 0, Camera.main.transform.eulerAngles.z);
+        //Camera.main.transform.eulerAngles = new Vector3(Camera.main.transform.eulerAngles.x, Camera.main.transform.eulerAngles.y, 0);
+
     }
 
     private bool svgShown = false;

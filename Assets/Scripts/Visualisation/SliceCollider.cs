@@ -20,6 +20,7 @@ public class SliceCollider : MonoBehaviour
     public GameObject object3d;
     public List<GameObject> BtnPanels = new List<GameObject>(3);
     public GameObject btngroup;
+    private DataTransferManager dfm;
 
     public bool objectUsed = false;
     public bool objectResize = false;
@@ -27,15 +28,29 @@ public class SliceCollider : MonoBehaviour
     public bool objectRotate = false;
 
     private Color transparentColor = new Color(1, 1, 1, 0);
-
+    private void Start()
+    {
+        dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
+    }
     public void setSliceCollider(int colMin, int colMax, int rowMin, int rowMax, int depth, string datasetName)
     {
 
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         
         cube.GetComponent<MeshRenderer>().enabled = false;
-        cube.transform.position = new Vector3(5700, -6400, depth);
-        cube.transform.localScale = new Vector3(10000, 13000, 1);
+        if (GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().visium)
+        {
+            cube.transform.position = new Vector3(5700, -6400, depth);
+            cube.transform.localScale = new Vector3(10000, 13000, 1);
+        }
+        else
+        {
+            // calculate size of collider TBD- some points not coverd
+            var centerx = rowMax + (rowMin - rowMax) / 2;
+            var centery = colMin + (colMax - colMin) / 2;
+            cube.transform.position = new Vector3(centerx, centery, depth);
+            cube.transform.localScale = new Vector3(rowMin - rowMax, colMax - colMin, 1);
+        }
         sliceColliders.Add(cube);
         zcoords.Add(depth);
         Color newColor = cube.GetComponent<Renderer>().material.color;
