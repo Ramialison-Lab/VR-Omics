@@ -79,7 +79,8 @@ public class DataTransferManager : MonoBehaviour
     public List<string> c18cluster;
 
     //Xenium
-    public string Xeniumdata = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
+    //public string Xeniumdata = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
+    public string Xeniumdata;
     public List<string> XeniumGeneNames = new List<string>();
 
     //Merfish
@@ -300,8 +301,12 @@ public class DataTransferManager : MonoBehaviour
     private void startXenium()
     {
         //TBD LINKPATH
-        string xeniumCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_info\\cell_info_csv.csv";
-        string xeniumGeneList = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_feature_matrix_mtx\\features.tsv";
+        //string xeniumCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_info\\cell_info_csv.csv";
+        //string xeniumGeneList = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_feature_matrix_mtx\\features.tsv";
+
+        string xeniumCoords = df.xeniumCellMetaData;
+        string xeniumGeneList = df.xeniumGenePanelPath;
+        Xeniumdata = df.xeniumMatrix;
 
         float[] xeniumX, xeniumY, xeniumZ;
         string[] xeniumCell;

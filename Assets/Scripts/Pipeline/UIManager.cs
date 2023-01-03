@@ -137,9 +137,9 @@ public class UIManager : MonoBehaviour
     public string VDPath;
     public string LRPath;
     public string tomoGenePath;
-    public string xeniumPAth;
-    public string xeniumGenesPath;
-    public string xeniumSpotsPath;
+    public string xeniumMatrix;
+    public string xeniumGenePanelPath;
+    public string xeniumCellMetaData;
     public string otherMatrixPath;
     public string otherMetaPath;
     public string merfishGenePath;
@@ -848,7 +848,7 @@ public class UIManager : MonoBehaviour
     // Browse for Matrix gene expression file
     public void selectXeniumMatrix()
     {
-        StartCoroutine(selectBrowseFile("xeniumPAth", xeniumMatPathField));
+        StartCoroutine(selectBrowseFile("xeniumMatrix", xeniumMatPathField));
     }
 
     // Xenium for Load
@@ -990,16 +990,16 @@ public class UIManager : MonoBehaviour
                     tomoGenePath = res;
                     break;
                 case "xenium":
-                    xeniumPAth = res;
+                    xeniumMatrix = res;
                     break;
                 case "xeniumGene":
-                    xeniumGenesPath = res;
+                    xeniumGenePanelPath = res;
                     break;
                 case "xeniumSpots":
-                    xeniumSpotsPath = res;
+                    xeniumCellMetaData = res;
                     break;
                 case "xeniumHDF":
-                    xeniumPAth = res;
+                    xeniumMatrix = res;
                     break;
                 case "otherMat":
                     otherMatrixPath = res;
@@ -1030,7 +1030,7 @@ public class UIManager : MonoBehaviour
         // Python integration
         StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Xenium_path.txt", false);
         string[] xenium_path_out = new string[2];
-        xenium_path_out[0] = xeniumPAth;
+        xenium_path_out[0] = xeniumMatrix;
         xenium_path_out[1] = "";// outputDirectory;
         foreach (string param in xenium_path_out)
         {
@@ -1061,7 +1061,7 @@ public class UIManager : MonoBehaviour
     //{
     //    processXenium();
     //    //TBD1 return hdf5 file datapath to xeniumPath string 
-    //    xeniumPAth = "";
+    //    xeniumMatrix = "";
     //    runXenium();
 
     //}

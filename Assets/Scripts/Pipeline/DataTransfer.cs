@@ -23,9 +23,9 @@ public class DataTransfer : MonoBehaviour
     public string LRPath;
     public string tomoGenePath;
     public string visiumPath;
-    public string xeniumPath;
-    public string xeniumGenesPath;
-    public string xeniumSpotsPath;
+    public string xeniumMatrix;
+    public string xeniumGenePanelPath;
+    public string xeniumCellMetaData;
     public string merfishGenePath;
     public string merfishMetaPath;
     public string otherMatrixPath;
@@ -87,9 +87,9 @@ public class DataTransfer : MonoBehaviour
     public void startXenium()
     {
         xenium = true;
-        xeniumPath = ui.xeniumPAth;
-        xeniumGenesPath = ui.xeniumGenesPath;
-        xeniumSpotsPath = ui.xeniumSpotsPath;
+        xeniumMatrix = ui.xeniumMatrix;
+        xeniumGenePanelPath = ui.xeniumGenePanelPath;
+        xeniumCellMetaData = ui.xeniumCellMetaData;
         startVisualisationScene();
     }
 
