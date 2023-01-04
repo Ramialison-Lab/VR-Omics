@@ -17421,8 +17421,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -127.498146}
-  m_SizeDelta: {x: 202.94708, y: 54.996292}
+  m_AnchoredPosition: {x: 70, y: -127.498146}
+  m_SizeDelta: {x: 248.1897, y: 54.9963}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &635756310
 MonoBehaviour:
@@ -17444,7 +17444,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Xenium file (.hdf5) that was processed using VR-Omics Process Step
+  m_text: Xenium gene per location matrix as csv file generated with VR-Omics Process
+    Step
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -17862,8 +17863,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 201.47354, y: -127.498146}
-  m_SizeDelta: {x: 202.94708, y: 54.996292}
+  m_AnchoredPosition: {x: 194.09485, y: -127.498146}
+  m_SizeDelta: {x: 248.1897, y: 54.9963}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &647672661
 MonoBehaviour:
@@ -22713,7 +22714,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 100
+    m_Left: 70
     m_Right: 0
     m_Top: 100
     m_Bottom: 0
@@ -39002,7 +39003,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 100
+    m_Left: 70
     m_Right: 0
     m_Top: 100
     m_Bottom: 0
@@ -39052,7 +39053,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 762.9471, y: -115}
+  m_AnchoredPosition: {x: 778.1897, y: -115}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1369871640
@@ -41414,8 +41415,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 201.47354, y: -127.498146}
-  m_SizeDelta: {x: 202.94708, y: 54.996292}
+  m_AnchoredPosition: {x: 194.09485, y: -127.498146}
+  m_SizeDelta: {x: 248.1897, y: 54.9963}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1460400832
 MonoBehaviour:
@@ -41882,7 +41883,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 100
+    m_Left: 70
     m_Right: 0
     m_Top: 100
     m_Bottom: 0
@@ -45584,7 +45585,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 352.94708, y: -115}
+  m_AnchoredPosition: {x: 368.1897, y: -115}
   m_SizeDelta: {x: 280, y: 30}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1595464004
@@ -48597,7 +48598,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 492.94708, y: -115}
+  m_AnchoredPosition: {x: 508.1897, y: -115}
   m_SizeDelta: {x: 280, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1708309827
@@ -49705,7 +49706,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 682.9471, y: -115}
+  m_AnchoredPosition: {x: 698.1897, y: -115}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1755021127
@@ -50129,7 +50130,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 762.9471, y: -115}
+  m_AnchoredPosition: {x: 778.1897, y: -115}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1765300064
@@ -55289,7 +55290,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 492.94708, y: -115}
+  m_AnchoredPosition: {x: 508.1897, y: -115}
   m_SizeDelta: {x: 280, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1904796794

@@ -250,10 +250,13 @@ public class SpotDrawer : MonoBehaviour
                     spots[i].ExpVal = (float)normalised[i];
 
                 }
-                catch (Exception) { for (int j = 0; j < count; j++) colors[j] = Color.clear; }
+                catch (Exception)
+                {
+                    colors[i] = Color.clear;
+                }
             }
         }
-        SetMeshBuffers();
+       SetMeshBuffers();
     }
 
     /// <summary>

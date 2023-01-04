@@ -148,8 +148,8 @@ public class SearchManager : MonoBehaviour
         var genes = dfm.MerfishGeneNames;
         int x = genes.IndexOf(searchGene);
         //LINKPATH
-        string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
-
+        //string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
+        string merfishData = dfm.merfishGenelist;
 
         string[] lines = File.ReadAllLines(merfishData);
         lines = lines.Skip(1).ToArray();
@@ -160,8 +160,10 @@ public class SearchManager : MonoBehaviour
 
         for (int i = 0; i < values.Count; i++)
         {
+            //Skip first value (geneName)
             if (i > 0) readList.Add(float.Parse(values[i]));
         }
+         
         normaliseAndDraw(readList);
     }
 

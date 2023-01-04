@@ -85,6 +85,8 @@ public class DataTransferManager : MonoBehaviour
 
     //Merfish
     public List<string> MerfishGeneNames = new List<string>();
+    public string merfishGenelist;
+    public string merfishCoords;
 
     //Other
     public string otherMatrixPath;
@@ -302,10 +304,10 @@ public class DataTransferManager : MonoBehaviour
     {
         //TBD LINKPATH
         //string xeniumCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_info\\cell_info_csv.csv";
-        //string xeniumGeneList = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_feature_matrix_mtx\\features.tsv";
+        //string xeniumGenePanelPath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_feature_matrix_mtx\\features.tsv";
 
         string xeniumCoords = df.xeniumCellMetaData;
-        string xeniumGeneList = df.xeniumGenePanelPath;
+        string xeniumGenePanelPath = df.xeniumGenePanelPath;
         Xeniumdata = df.xeniumMatrix;
 
         float[] xeniumX, xeniumY, xeniumZ;
@@ -335,7 +337,7 @@ public class DataTransferManager : MonoBehaviour
             else if (y > maxY) maxY = y;
         }
 
-        string[] linesGn = File.ReadAllLines(xeniumGeneList);
+        string[] linesGn = File.ReadAllLines(xeniumGenePanelPath);
         foreach (string line in linesGn)
         {
             string[] values = line.Split('\t');
@@ -361,9 +363,11 @@ public class DataTransferManager : MonoBehaviour
         //TBD LINKPATH
         //  string merfishCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BRainSlide1\\merfish_cell_metadata.csv";
         //  string merfishGenelist = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
+        Debug.Log(df.merfishMetaPath);
+        Debug.Log(df.merfishGenePath);
 
-        string merfishCoords = df.merfishMetaPath;
-        string merfishGenelist = df.merfishGenePath;
+        merfishCoords = df.merfishMetaPath;
+        merfishGenelist = df.merfishGenePath;
         float[] merfishX, merfishY, merfishZ;
         string[] merfishCell;
 
