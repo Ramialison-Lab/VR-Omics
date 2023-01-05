@@ -654,8 +654,16 @@ public class DataTransferManager : MonoBehaviour
             foreach (string line in lines)
             {
                 string[] values = line.Split(',');
-                svgStrings.Add(values[0] + "\t \t \t" + values[17] + "\t \t \t" + values[18]);
-                svgGenes.Add(values[0]);
+
+                try
+                {
+                    if (float.Parse(values[18]) < 0.5f)
+                    {
+                        svgStrings.Add(values[0] + "\t \t \t" + values[17] + "\t \t \t" + values[18]);
+                        svgGenes.Add(values[0]);
+                    }
+                }
+                catch (Exception) { }
             }
 
             string outputString = "";
