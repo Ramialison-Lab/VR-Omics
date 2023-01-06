@@ -1,0 +1,24 @@
+working directory: C:\Users\Denis.Bienroth\Documents\GitHub\VR_Omics
+C:\Users\Denis.Bienroth\Documents\GitHub\
+C:\Users\Denis.Bienroth\Documents\GitHub\VR_Omics
+C:\Users\Denis.Bienroth\Documents\GitHub\VR_Omics
+C:\Users\Denis.Bienroth\Documents\GitHub\VR_Omics/Assets/PythonFiles/Filter_param.txt
+tryread
+Filter values used:{'file_name': 'V1_Breast_Cancer_Block_A_Section_1', 'mincount': '', 'maxcount': '', 'pct_mt_min': '', 'pct_mt_max': '', 'geneincellmin': '', 'genefiltermin': '', 'svgtoggle': 1, 'plottoggle': 1, '': ''}
+Outpath:C:/Users/Denis.Bienroth/Documents/GitHub/VR_Omics/Assets
+
+destination: C:\Users\Denis.Bienroth\Documents\GitHub\VR_Omics/Assets/PythonFiles/V1_Breast_Cancer_Block_A_Section_1_______filtered_9T6JTM/
+source: C:\Users\Denis.Bienroth\Documents\GitHub\VR_Omics/data/V1_Breast_Cancer_Block_A_Section_1
+moved from: C:\Users\Denis.Bienroth\Documents\GitHub\VR_Omics/data/V1_Breast_Cancer_Block_A_Section_1 to: C:\Users\Denis.Bienroth\Documents\GitHub\VR_Omics/Assets/PythonFiles/V1_Breast_Cancer_Block_A_Section_1_______filtered_9T6JTM/
+no file was loaded
+Number of cells after min count filter: 3798
+Filtering started..
+Start normalization
+Number of spots left: 3798
+Number of genes left: 36601
+normalize 1000
+before variable genes 1000
+After variable genes 1000
+Finished normalization
+Wrote outputfile! Processing finished
+plottoggle is on and applied.
