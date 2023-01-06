@@ -9615,6 +9615,7 @@ GameObject:
   - component: {fileID: 696889372}
   - component: {fileID: 696889371}
   - component: {fileID: 696889370}
+  - component: {fileID: 696889374}
   - component: {fileID: 696889373}
   m_Layer: 5
   m_Name: SideMenu
@@ -9732,6 +9733,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sideMenubtn: {fileID: 917014078}
   CoordinateResetPanel: {fileID: 1666043187}
+--- !u!114 &696889374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 696889368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41810307f00803f4fb90e3348c7790e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &697404793
 GameObject:
   m_ObjectHideFlags: 0
@@ -14777,6 +14790,8 @@ MonoBehaviour:
   Xeniumdata: C:\Users\Denis.Bienroth\Desktop\ST_technologies\Xenium\Xenium.csv
   XeniumGeneNames: []
   MerfishGeneNames: []
+  merfishGenelist: 
+  merfishCoords: 
   otherMatrixPath: 
   otherMetaPath: 
   otherCSVCols: 

@@ -749,7 +749,8 @@ public class SpotDrawer : MonoBehaviour
 
     private Dictionary<int, int> highlightedSpots = new Dictionary<int, int>();
 
-
+    float oldX =-1;
+    float oldY =-1;
     /// <summary>
     /// Function to identify which spot was clicked and uses highlight method for lasso tool
     /// </summary>
@@ -758,88 +759,101 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="dN">Datasetname coordinate of the spot that needs to be identified</param>
     public void identifySpot(float x_cl, float y_cl, string dN, DragObject d_obj)
     {
-        x_cl = Math.Abs(x_cl)+xAdjust;
-        y_cl = Math.Abs(y_cl) +yAdjust;
-        Debug.Log("x_CL " + x_cl);
-        Debug.Log(y_cl);
 
-        var sec_col = Math.Abs(d_obj.colMax - d_obj.colMin) / 200;
-        var sec_row = Math.Abs(d_obj.rowMax - d_obj.rowMin) /100;
-        Debug.Log("sec_col " +sec_col);
-        Debug.Log(sec_row);
-
-        var col_sec_width = d_obj.gameObject.transform.localScale.x / sec_col;
-        var row_sec_width = d_obj.gameObject.transform.localScale.y / sec_row;
-        Debug.Log("col_secWith " + col_sec_width);
-        Debug.Log(row_sec_width);
-
-        var hit_x = x_cl / col_sec_width;
-        var hit_y = y_cl / row_sec_width;
-
-        Debug.Log("hit_x " +hit_x);
-        Debug.Log(hit_y);
-
-        hit_x = (int)(hit_x);
-        hit_y = (int)(hit_y);
-
-        Debug.Log(hit_x + " " + hit_y);
-
-        // Check if the coordinates match a spot
-        int spotIndex;
-        if (coordToIndex.TryGetValue(((int)hit_x, (int)hit_y), out spotIndex))
+        if (oldX != x_cl || oldY != y_cl)
         {
-            // Identified spot will be added to highlightgroup or removed
-            if (mc.lasso)
+            oldX = x_cl;
+            oldY = y_cl;
+            Debug.Log(x_cl);
+            Debug.Log(y_cl);
+
+            x_cl = Math.Abs(x_cl) + xAdjust;
+            y_cl = Math.Abs(y_cl) + yAdjust;
+            //Debug.Log("x_CL " + x_cl);
+            //Debug.Log(y_cl);
+
+            var sec_col = Math.Abs(d_obj.colMax - d_obj.colMin) / 200;
+            var sec_row = Math.Abs(d_obj.rowMax - d_obj.rowMin) / 100;
+            //Debug.Log("sec_col " +sec_col);
+            //Debug.Log(sec_row);
+
+            var col_sec_width = d_obj.gameObject.transform.localScale.x / sec_col;
+            var row_sec_width = d_obj.gameObject.transform.localScale.y / sec_row;
+            //Debug.Log("col_secWith " + col_sec_width);
+            //Debug.Log(row_sec_width);
+
+            var hit_x = x_cl / col_sec_width;
+            var hit_y = y_cl / row_sec_width;
+
+            //Debug.Log("hit_x " +hit_x);
+            //Debug.Log(hit_y);
+
+            hit_x = (int)(hit_x);
+            hit_y = (int)(hit_y);
+
+            //Debug.Log(hit_x + " " + hit_y);
+
+            // Check if the coordinates match a spot
+            int spotIndex;
+            if (coordToIndex.TryGetValue(((int)hit_x, (int)hit_y), out spotIndex))
             {
-                if (!addToggle)
+                // Identified spot will be added to highlightgroup or removed
+                if (mc.lasso)
                 {
-                    highlightedSpots.Remove(spotIndex);
-                }
-                else if (addToggle)
-                {
-                    if (!highlightedSpots.ContainsKey(spotIndex))
+                    if (!addToggle)
                     {
-                        highlightedSpots[spotIndex] = active;
-
-                        // Use a switch statement instead of an if-else chain
-                        switch (active)
-                        {
-                            case 0:
-                                colors[spotIndex] = hl_colors[0];
-                                break;
-                            case 1:
-                                colors[spotIndex] = hl_colors[1];
-                                break;
-                            case 2:
-                                colors[spotIndex] = hl_colors[2];
-                                break;
-                            case 3:
-                                colors[spotIndex] = hl_colors[3];
-                                break;
-                        }
-
-                        SetMeshBuffers();
+                        highlightedSpots.Remove(spotIndex);
                     }
-                }
-            }
-
-            // Use a local variable to store the spot information
-            var spot = spots[spotIndex];
-            try
-            {
-                smm.setSpotInfo(spot.Spotname, spot.DatasetName, spot.UniqueIdentifier, spot.Location, spot.ExpVal);
-            }catch(Exception) { }
-
-            // passthrough function to identify underlying spots
-            if (passThrough)
-            {
-                if ((int)spot.Location.x == (int)x_cl && (int)spot.Location.y == (int)y_cl)
-                {
-                    if (mc.lasso)
+                    else if (addToggle)
                     {
                         if (!highlightedSpots.ContainsKey(spotIndex))
                         {
                             highlightedSpots[spotIndex] = active;
+
+                            // Use a switch statement instead of an if-else chain
+                            switch (active)
+                            {
+                                case 0:
+                                    colors[spotIndex] = hl_colors[0];
+                                    break;
+                                case 1:
+                                    colors[spotIndex] = hl_colors[1];
+                                    break;
+                                case 2:
+                                    colors[spotIndex] = hl_colors[2];
+                                    break;
+                                case 3:
+                                    colors[spotIndex] = hl_colors[3];
+                                    break;
+                            }
+
+                            SetMeshBuffers();
+                        }
+                    }
+                }
+
+                // Use a local variable to store the spot information
+                var spot = spots[spotIndex];
+                
+                    Debug.Log(spot.Spotname);
+                    Debug.Log(spot.DatasetName);
+                    Debug.Log(spot.UniqueIdentifier);
+                    Debug.Log(spot.Location);
+                    Debug.Log(spot.ExpVal);
+                    smm.setSpotInfo(spot.Spotname, spot.DatasetName, spot.UniqueIdentifier, spot.Location, spot.ExpVal);
+                
+
+                // passthrough function to identify underlying spots
+                if (passThrough)
+                {
+                    if ((int)spot.Location.x == (int)x_cl && (int)spot.Location.y == (int)y_cl)
+                    {
+                        if (mc.lasso)
+                        {
+                            if (!highlightedSpots.ContainsKey(spotIndex))
+                            {
+                                highlightedSpots[spotIndex] = active;
+                            }
                         }
                     }
                 }
