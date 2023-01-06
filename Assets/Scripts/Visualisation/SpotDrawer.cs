@@ -107,7 +107,6 @@ public class SpotDrawer : MonoBehaviour
         dataOrigin = Canvas.GetComponent<DataOrigin>();
         canvas = Canvas.GetComponent<Canvas>();
     }
-
     private void SetMeshBuffers()
     {
         ReleaseBuffers();
@@ -122,8 +121,17 @@ public class SpotDrawer : MonoBehaviour
         MeshProperties[] properties = new MeshProperties[count];
         int j = 0;
         float p = dataOrigin.Padding;
-        (float h, float v) s = copy ? 
-            (0.5f * p, 0.5f * p) : (p, p);
+        (float h, float v) s;
+
+        if (dfm.visium)
+        {
+            s = (p, p);
+        }
+        else
+        {
+            s = copy ?
+                (0.5f * p, 0.5f * p) : (p, p);
+        }
         var o = dataOrigin.Origin;
         if (copy) // align o.y with o_copy.y
             o.y = dataOrigin.OriginCopy.y;
@@ -149,7 +157,12 @@ public class SpotDrawer : MonoBehaviour
             for (int i = 0; i < spotsCopy.Length; i++)
             {
                 SpotWrapper spot = spotsCopy[i];
-                var l = new Vector3(spot.Origin.x * s.h, spot.Origin.y * s.v, spot.Origin.z);
+
+                // For Visium offset needed due to higher dimension
+                int offset = dfm.visium ?
+                    10000 : 0;
+                
+                var l = new Vector3((spot.Origin.x * s.h) + offset, spot.Origin.y * s.v, spot.Origin.z);
                 spot.Location = Mc_Copy.MultiplyPoint(l);
                 if (newColoursCopy)
                 {
