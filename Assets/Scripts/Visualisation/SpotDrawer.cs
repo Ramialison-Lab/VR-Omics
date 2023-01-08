@@ -261,6 +261,7 @@ public class SpotDrawer : MonoBehaviour
                 {
                     colors[i] = colVals[i];
                     spots[i].ExpVal = (float)normalised[i];
+                    Debug.Log(colors[i]);
 
                 }
                 catch (Exception)
@@ -455,8 +456,13 @@ public class SpotDrawer : MonoBehaviour
     public void setAllZeroColour(List<double> normalise)
     {
         //If gene is not expressed in the tissue colour whole tissue grey
-        for (int j = 0; j < count; j++) colors[j] = Color.grey;
-        SetMeshBuffers();
+        try
+        {
+            for (int j = 0; j < count; j++) colors[j] = Color.grey;
+            SetMeshBuffers();
+
+        }
+        catch (Exception) { }
     }
 
     /// <summary>
@@ -469,6 +475,7 @@ public class SpotDrawer : MonoBehaviour
         if (!colourcopy)
         {
             normalised.AddRange(normalise);
+
             colVals.Clear();
             if (normalise.Count < spots.Length) batchCounter = batchCounter + normalise.Count;
             else batchCounter = spots.Length;
@@ -969,8 +976,10 @@ public class SpotDrawer : MonoBehaviour
             List<double> mergeList = new List<double>();
             for (int i = 0; i < normCount; i++)
             {
-                mergeList.Add((double)Mathf.Abs((float)(normalised[i] - normalisedCopy[i])));
+                // mergeList.Add((double)Mathf.Abs((float)(normalised[i] - normalisedCopy[i])));
+                mergeList.Add(1);
             }
+            mergeList[0] = 0;
             colourcopy = false;
             setColors(mergeList);
             mergePanel.SetActive(false);
