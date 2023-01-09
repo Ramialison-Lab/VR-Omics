@@ -335,11 +335,7 @@ public class SearchManager : MonoBehaviour
         //for each dataset selected
         foreach (string datapath in dfm.csvGeneExpPaths)
         {
-            DateTime before = DateTime.Now;
             searchGene(datapath, GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().geneNameDictionary[x].IndexOf(geneName), geneName);
-            DateTime after = DateTime.Now;
-            TimeSpan duration = after.Subtract(before);
-            Debug.Log("Duration in milliseconds: " + duration.Milliseconds);
             x++; 
         }
     }
@@ -458,11 +454,7 @@ public class SearchManager : MonoBehaviour
 
     public void searchGene(string datapath, int pos, string gn)
     {
-        DateTime before = DateTime.Now;
         StartCoroutine(search(datapath, pos, gn));
-        DateTime after = DateTime.Now;
-        TimeSpan duration = after.Subtract(before);
-        Debug.Log("Duration in milliseconds: " + duration.Milliseconds);
         if (resultExpression.Max() == 0)
         {
             GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setAllZeroColour(normalised);
