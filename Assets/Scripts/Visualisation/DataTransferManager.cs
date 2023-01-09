@@ -466,7 +466,7 @@ public class DataTransferManager : MonoBehaviour
             else if (y > maxY) maxY = y;
         }
         //Depth corrdinates from C18heart dataset
-        int[] c18xHC = { 192, 205, 230, 250, 285, 289, 321, 327, 353 };
+        int[] c18xHC = { 0, 13, 25, 20, 35, 4, 32, 6, 26};
 
         for (int i = 0; i < 9; i++)
         {

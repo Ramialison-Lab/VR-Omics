@@ -84,22 +84,15 @@ public class AutoCompleteManager : MonoBehaviour
         }
     }
 
-    private void LateUpdate()
-    {
-        foreach(GameObject go in GameObject.FindGameObjectsWithTag("ContentBtn"))
-        {
-            go.transform.Rotate(new Vector3(0, 0, 0));
-        }
-        
-    }
-
     /// <summary>
     /// Adds resultbutton with description geneName
     /// </summary>
     /// <param name="x">the name of the gene to be shown as button description</param>
     private void populateResultBtns(string geneName)
     {
-        GameObject btn = Instantiate(btnPrefab);
+        GameObject btn = Instantiate(btnPrefab, viewPortGo.transform);
+        btn.transform.rotation = Quaternion.Euler(0, 0, 0);
+
         btn.transform.SetParent(scrollView.transform);
         btn.transform.localPosition = new Vector3(0, 0, 0);
         if (dfm.svgGenes.Contains(geneName)) { btn.GetComponent<Image>().color = Color.cyan; }
@@ -109,13 +102,20 @@ public class AutoCompleteManager : MonoBehaviour
         if (sd.inVR)
         {
             btn.transform.localScale = new Vector3(1, 1, 1);
-            btn.transform.parent.transform.Rotate(new Vector3(0, 0, 0));
-            btn.transform.Rotate(new Vector3(0, 0, 0));
         }
         btn.GetComponent<Button>().onClick.AddListener(delegate
         {
             selectGene(btn);
         });
+    }
+
+    private void Update()
+    {
+        foreach(GameObject go in GameObject.FindGameObjectsWithTag("contentBtn"))
+        {
+            go.transform.rotation = Quaternion.Euler(0, 0, 0);
+            Debug.Log(go.transform.rotation);
+        }
     }
 
     /// <summary>
