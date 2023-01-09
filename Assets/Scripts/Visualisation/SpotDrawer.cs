@@ -208,6 +208,21 @@ public class SpotDrawer : MonoBehaviour
         };
     }
 
+    public bool inVR =false;
+
+    public void SetVRDimensions()
+    {
+        inVR = true;
+        // adjustments due to changed Dimesnions needed
+        symbolSelect.transform.localScale = new Vector3(5, 5, 5);
+        for(int i=0; i<spots.Length; i++)
+        {
+            spots[i].Origin = new Vector3((spots[i].Origin.x / 15)+100, (spots[i].Origin.y / 30) +600, spots[i].Origin.z);
+            //spots[i].Location = new Vector3((spots[i].Location.x)+10000, spots[i].Location.y , spots[i].Location.z);
+            SetMeshBuffers();
+        }
+    }
+
     private void Update()
     {
         // Are there any transformations?

@@ -13,7 +13,6 @@ public class SideMenuManager : MonoBehaviour
     private void Start()
     {
         texts = this.gameObject.GetComponentsInChildren<TMP_Text>();
-        foreach (TMP_Text tt in texts) Debug.Log(tt.name);
 
         dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
     }

@@ -84,6 +84,15 @@ public class AutoCompleteManager : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        foreach(GameObject go in GameObject.FindGameObjectsWithTag("ContentBtn"))
+        {
+            go.transform.Rotate(new Vector3(0, 0, 0));
+        }
+        
+    }
+
     /// <summary>
     /// Adds resultbutton with description geneName
     /// </summary>
@@ -97,6 +106,12 @@ public class AutoCompleteManager : MonoBehaviour
         btn.GetComponentInChildren<TMP_Text>().fontSize = 14;
         btn.GetComponentInChildren<TMP_Text>().text = geneName;
         tempBtns.Add(btn);
+        if (sd.inVR)
+        {
+            btn.transform.localScale = new Vector3(1, 1, 1);
+            btn.transform.parent.transform.Rotate(new Vector3(0, 0, 0));
+            btn.transform.Rotate(new Vector3(0, 0, 0));
+        }
         btn.GetComponent<Button>().onClick.AddListener(delegate
         {
             selectGene(btn);

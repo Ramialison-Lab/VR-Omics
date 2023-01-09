@@ -152,7 +152,7 @@ namespace VROmics.Main
                 Vector2 max = SpotDrawer.Max;
                 float data_aspect = (max.x - min.x) / (max.y - min.y);
                 float h_aspect = 4f / data_aspect;
-                Canvas.transform.localScale = new Vector3(4f / w, h_aspect / h, 1);
+                Canvas.transform.localScale = new Vector3(6f / w, h_aspect / h, 1);
                 canvas.renderMode = RenderMode.WorldSpace;
                 BoxCollider collider = Canvas.AddComponent<BoxCollider>();
                 collider.size = new Vector3(w, h, 0.05f);
@@ -164,6 +164,7 @@ namespace VROmics.Main
 
                 // Tracked UI Raycasts
                 Canvas.AddComponent<TrackedDeviceGraphicRaycaster>(); // XR UI Input Module already as default input system
+                SpotDrawer.SetVRDimensions();
 
                 yield return new WaitUntil(() => CanvasRecentered(canvas));
                 // Translate, rotate spots along with canvas                

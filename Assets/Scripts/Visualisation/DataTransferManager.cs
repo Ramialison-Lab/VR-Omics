@@ -245,9 +245,9 @@ public class DataTransferManager : MonoBehaviour
                 if (values[1] == "1")
                 {
                     //columns are switched
-                    col[tissueCount] = -(long.Parse(values[2]) * 100+long.Parse(values[2])*100);
-                    row[tissueCount] = long.Parse(values[3])*100;                      
-         
+                    col[tissueCount] = -(long.Parse(values[2]) * 100 + long.Parse(values[2]) * 100);
+                    row[tissueCount] = long.Parse(values[3]) * 100;
+
                     //row[tissueCount] = long.Parse(values[4]) / 100;
                     //col[tissueCount] = long.Parse(values[5]) / 100;
                     spotnames[tissueCount] = values[0];
@@ -288,7 +288,7 @@ public class DataTransferManager : MonoBehaviour
         }
         checkForSVGData();
         adjustCamera(minX, maxX, minY, maxY, tempDepth.Min(), new Vector3(0, 0, 0));
-        Camera.main.transform.position = new Vector3(5000,-5000, -15000);
+        //Camera.main.transform.position = new Vector3(5000,-5000, -15000);
         sp.Min = new Vector2(minX, minY);
         sp.Max = new Vector2(maxX, maxY);
         sp.StartDrawer(tempRow.ToArray(), tempCol.ToArray(), tempDepth.ToArray(), tempSpotnames.ToArray(), dataSetNames.ToArray()); // TODO Please check if we really need lists: tempRow, tempCol, tempDepth, ... / convert to arrays
