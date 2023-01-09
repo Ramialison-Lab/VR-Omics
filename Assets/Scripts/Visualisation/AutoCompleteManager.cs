@@ -114,7 +114,6 @@ public class AutoCompleteManager : MonoBehaviour
         foreach(GameObject go in GameObject.FindGameObjectsWithTag("contentBtn"))
         {
             go.transform.rotation = Quaternion.Euler(0, 0, 0);
-            Debug.Log(go.transform.rotation);
         }
     }
 

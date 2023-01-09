@@ -295,7 +295,6 @@ public class SpotDrawer : MonoBehaviour
                 {
                     colors[i] = colVals[i];
                     spots[i].ExpVal = (float)normalised[i];
-                    Debug.Log(colors[i]);
 
                 }
                 catch (Exception)
