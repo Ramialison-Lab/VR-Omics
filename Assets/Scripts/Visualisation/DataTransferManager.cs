@@ -196,7 +196,6 @@ public class DataTransferManager : MonoBehaviour
             foreach (string s in allDirectories)
             {
                 if (s.Split("\\").Last() == "tissue_positions_list.csv") positionList = s;
-                if (s.Split("\\").Last() == "tissue_positions_list.csv") positionList = s;
             }
         }
 
