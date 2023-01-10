@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3006195628529567766}
   - component: {fileID: 2474637259830481496}
   - component: {fileID: 7801083366799077531}
-  - component: {fileID: 1654024078958153139}
+  - component: {fileID: 1378658481501403397}
   m_Layer: 5
   m_Name: ContentBtn
   m_TagString: contentBtn
@@ -123,23 +123,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!1818360609 &1654024078958153139
-RotationConstraint:
+--- !u!114 &1378658481501403397
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2321156847687075793}
   m_Enabled: 1
-  m_Weight: 1
-  m_RotationAtRest: {x: 0, y: 0, z: 0}
-  m_RotationOffset: {x: 0, y: 0, z: 0}
-  m_AffectRotationX: 1
-  m_AffectRotationY: 1
-  m_AffectRotationZ: 1
-  m_IsContraintActive: 1
-  m_IsLocked: 1
-  m_Sources: []
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d453a216ea00cf847872cde946cc3cc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7126733331692455586
 GameObject:
   m_ObjectHideFlags: 0

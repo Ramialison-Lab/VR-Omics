@@ -34,10 +34,6 @@ public class SliceCollider : MonoBehaviour
     }
     public void setSliceCollider(int colMin, int colMax, int rowMin, int rowMax, int depth, string datasetName)
     {
-        Debug.Log(colMin / -200);
-        Debug.Log(colMax / -200);
-        Debug.Log(rowMin / 100);
-        Debug.Log(rowMax / 100);
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         
         cube.GetComponent<MeshRenderer>().enabled = false;

@@ -359,9 +359,7 @@ public class DataTransferManager : MonoBehaviour
     {
         //TBD LINKPATH
         //  string merfishCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BRainSlide1\\merfish_cell_metadata.csv";
-        //  string merfishGenelist = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
-        Debug.Log(df.merfishMetaPath);
-        Debug.Log(df.merfishGenePath);
+        //  string merfishGenelist = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv"
 
         merfishCoords = df.merfishMetaPath;
         merfishGenelist = df.merfishGenePath;
@@ -408,6 +406,7 @@ public class DataTransferManager : MonoBehaviour
 
         sp.Min = new Vector2(minX, minY);
         sp.Max = new Vector2(maxX, maxY);
+        Debug.Log(merfishX.Length);
         sp.StartDrawer(merfishX, merfishY, merfishZ, merfishCell, new string[] { });
         adjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, 0, new Vector3(0, 0, 0));
     }

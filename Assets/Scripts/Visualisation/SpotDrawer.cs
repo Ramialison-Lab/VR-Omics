@@ -248,6 +248,15 @@ public class SpotDrawer : MonoBehaviour
 
             }
         }
+       else if (dfm.merfish || dfm.xenium) {
+            symbolSelect.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+            for (int i = 0; i < spots.Length; i++)
+            {
+                spots[i].Origin = new Vector3((spots[i].Origin.x) + 100, (spots[i].Origin.y) + 100, (spots[i].Origin.z));
+
+            }
+
+        }
     }
 
     private void Update()
@@ -343,10 +352,12 @@ public class SpotDrawer : MonoBehaviour
         {
             symbolSelect.transform.localScale = new Vector3(100, 100, 100);
         }
-        if (dfm.stomics)
+        else if (dfm.stomics)
         {
             symbolSelect.transform.localScale = new Vector3(1, 1, 1);
-
+        }else if (dfm.merfish || dfm.xenium)
+        {
+            symbolSelect.transform.localScale = new Vector3(1, 1, 1);
         }
 
         // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
