@@ -506,12 +506,17 @@ public class DataTransferManager : MonoBehaviour
         //stomicsZ = fr.readH5Float(datapath, "obs/new_z");
 
         //stomicsDataPath = df.stomicsPath;
-        stomicsDataPath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\TransposedStomics.h5ad";
+        stomicsDataPath = df.stomicsPath;
         stomicsSpotId = fr.readH5StringVar(stomicsDataPath, "var/_index", stomicsSpotId);
         stomicsGeneNames = fr.readH5StringVar(stomicsDataPath, "obs/geneID", stomicsGeneNames);
         stomicsX = fr.readH5Float(stomicsDataPath, "var/new_x");
         stomicsY = fr.readH5Float(stomicsDataPath, "var/new_y");
         stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
+
+        for(int i =0; i< stomicsZ.Count; i++)
+        {
+            stomicsZ[i] = stomicsZ[i] * 50;
+        }
 
         sp.Min = new Vector2(stomicsX.Min(), stomicsY.Min());
         sp.Max = new Vector2(stomicsX.Max(), stomicsY.Max());

@@ -140,7 +140,7 @@ public class SpotDrawer : MonoBehaviour
         foreach (SpotWrapper spot in spots)
         {
             var l = new Vector3(spot.Origin.x * s.h, spot.Origin.y * s.v, spot.Origin.z);
-            spot.Location = Mc.MultiplyPoint(l);
+            spot.Location = Mc.MultiplyPoint(l);       
             MeshProperties MPs = new MeshProperties
             {
                 matrix = Matrix4x4.TRS(spot.Location, symbolTransform.rotation, symbolTransform.localScale ),
@@ -217,28 +217,36 @@ public class SpotDrawer : MonoBehaviour
        if (dfm.visium)
         {
             // adjustments due to changed Dimesnions needed
-            symbolSelect.transform.localScale = new Vector3(5, 5, 5);
+            symbolSelect.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
             for (int i = 0; i < spots.Length; i++)
             {
-                spots[i].Origin = new Vector3((spots[i].Origin.x / 15) + 100, (spots[i].Origin.y / 30) + 600, spots[i].Origin.z);
+                spots[i].Origin = new Vector3((spots[i].Origin.x / 20) + 200, (spots[i].Origin.y / 30) + 700, spots[i].Origin.z);
                 //spots[i].Location = new Vector3((spots[i].Location.x)+10000, spots[i].Location.y , spots[i].Location.z);
                 SetMeshBuffers();
             }
         }
        else if (dfm.c18_visium)
         {
-            symbolSelect.transform.localScale = new Vector3(5, 5, 5);
+            symbolSelect.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
             for (int i = 0; i < spots.Length; i++)
             {
-                spots[i].Origin = new Vector3((spots[i].Origin.x)+850, (spots[i].Origin.y)+850, (spots[i].Origin.z/200) -1);
+                spots[i].Origin = new Vector3((spots[i].Origin.x/1.2f)+700, (spots[i].Origin.y/1.2f)+700, (spots[i].Origin.z/200) -1);
 
             }
 
-            c18Heart.transform.localScale = new Vector3(0.004f, 0.0045f, 0.0035f);
-            c18Heart.transform.rotation = Quaternion.Euler(-4.349f, -80.906f, -85.086f);
-            c18Heart.transform.position = new Vector3(-0.515f, 0.979f, 2.778f);
+            c18Heart.transform.localScale = new Vector3(0.0041f, 0.005f, 0.004f);
+            c18Heart.transform.rotation = Quaternion.Euler(-4.606f, -81.888f, -81.491f);
+            c18Heart.transform.position = new Vector3(-0.176f, 1.007f, 2.716f);
+        }
+       else if (dfm.stomics)
+        {
+            symbolSelect.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
 
+            for (int i = 0; i < spots.Length; i++)
+            {
+                spots[i].Origin = new Vector3((spots[i].Origin.x) + 300, (spots[i].Origin.y/1.5f) + 300, (spots[i].Origin.z / 5));
 
+            }
         }
     }
 
@@ -335,12 +343,17 @@ public class SpotDrawer : MonoBehaviour
         {
             symbolSelect.transform.localScale = new Vector3(100, 100, 100);
         }
+        if (dfm.stomics)
+        {
+            symbolSelect.transform.localScale = new Vector3(1, 1, 1);
 
-            // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
-            // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
-            // dataset is the name of the dataset dor ech slice
-            // for each coordinate passed
-            spots = new SpotWrapper[xcoords.Length];
+        }
+
+        // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
+        // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
+        // dataset is the name of the dataset dor ech slice
+        // for each coordinate passed
+        spots = new SpotWrapper[xcoords.Length];
         for (int i = 0; i < xcoords.Length; i++)
         {
             float x;
@@ -813,45 +826,37 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="x_cl">X coordinate of the spot that needs to be identified</param>
     /// <param name="y_cl">Y coordinate of the spot that needs to be identified</param>
     /// <param name="dN">Datasetname coordinate of the spot that needs to be identified</param>
-    public void identifySpot(float x_cl, float y_cl, string dN, DragObject d_obj)
+    public void identifySpot(float x_cl, float y_cl, string dN, GameObject sliceCollider)
     {
-
         if (oldX != x_cl || oldY != y_cl)
         {
             oldX = x_cl;
             oldY = y_cl;
-            Debug.Log(x_cl);
-            Debug.Log(y_cl);
 
-            x_cl = Math.Abs(x_cl) + xAdjust;
-            y_cl = Math.Abs(y_cl) + yAdjust;
-            //Debug.Log("x_CL " + x_cl);
-            //Debug.Log(y_cl);
+            int width_NumberSections =0; 
+            int height_NumberSections =0; 
+            if (dfm.visium)
+            {
+                width_NumberSections = (sliceCollider.GetComponent<DragObject>().rowMax / 100) - (sliceCollider.GetComponent<DragObject>().rowMin / 100) + 1;
+                height_NumberSections= (sliceCollider.GetComponent<DragObject>().colMax/200) - (sliceCollider.GetComponent<DragObject>().colMin/200) + 1;
+            }
+            else
+            {
+                width_NumberSections = (sliceCollider.GetComponent<DragObject>().rowMax) - (sliceCollider.GetComponent<DragObject>().rowMin) + 1;
+                height_NumberSections = (sliceCollider.GetComponent<DragObject>().colMax) - (sliceCollider.GetComponent<DragObject>().colMin) + 1;
+            }
+            float width_SectionSize = sliceCollider.transform.localScale.x / width_NumberSections;
+            float height_SectionSize = sliceCollider.transform.localScale.y / height_NumberSections;
 
-            var sec_col = Math.Abs(d_obj.colMax - d_obj.colMin) / 200;
-            var sec_row = Math.Abs(d_obj.rowMax - d_obj.rowMin) / 100;
-            //Debug.Log("sec_col " +sec_col);
-            //Debug.Log(sec_row);
+            float width_HitInWhichSection = Math.Abs(x_cl / width_SectionSize);
+            float height_HitInWhichSection = Math.Abs(y_cl / height_SectionSize);
 
-            var col_sec_width = d_obj.gameObject.transform.localScale.x / sec_col;
-            var row_sec_width = d_obj.gameObject.transform.localScale.y / sec_row;
-            //Debug.Log("col_secWith " + col_sec_width);
-            //Debug.Log(row_sec_width);
-
-            var hit_x = x_cl / col_sec_width;
-            var hit_y = y_cl / row_sec_width;
-
-            //Debug.Log("hit_x " +hit_x);
-            //Debug.Log(hit_y);
-
-            hit_x = (int)(hit_x);
-            hit_y = (int)(hit_y);
-
-            //Debug.Log(hit_x + " " + hit_y);
-
-            // Check if the coordinates match a spot
+            int hit_x = (int)Math.Ceiling(width_HitInWhichSection);
+            int hit_y = (int)Math.Ceiling(height_HitInWhichSection);
+            Debug.Log(hit_x);
+            Debug.Log(hit_y);
             int spotIndex;
-            Debug.Log(hit_x + " + " + hit_y);
+
             if (coordToIndex.TryGetValue(((int)hit_x, (int)hit_y), out spotIndex))
             {
                 // Identified spot will be added to highlightgroup or removed

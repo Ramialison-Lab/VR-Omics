@@ -34,7 +34,10 @@ public class SliceCollider : MonoBehaviour
     }
     public void setSliceCollider(int colMin, int colMax, int rowMin, int rowMax, int depth, string datasetName)
     {
-
+        Debug.Log(colMin / -200);
+        Debug.Log(colMax / -200);
+        Debug.Log(rowMin / 100);
+        Debug.Log(rowMax / 100);
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         
         cube.GetComponent<MeshRenderer>().enabled = false;
@@ -68,7 +71,7 @@ public class SliceCollider : MonoBehaviour
         cube.AddComponent<DragObject>();
         cube.GetComponent<DragObject>().resetCoords();
         cube.GetComponent<DragObject>().setCenterPoint(cube.transform.position);
-        cube.GetComponent<DragObject>().setMetaData(colMin, colMax, rowMin, rowMax,depth, datasetName);
+        cube.GetComponent<DragObject>().setMetaData(colMin, colMax, rowMin, rowMax, depth, datasetName);
         cube.GetComponent<Renderer>().material.color = transparentColor;
     
         if (gameObject.GetComponent<DataTransferManager>().addHAndEImg)
@@ -174,7 +177,7 @@ public class SliceCollider : MonoBehaviour
             //TBD not using name cube here
             if (hit.collider.gameObject.name == "Cube")
             {
-                GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot(hit.point.x, hit.point.y, hit.collider.gameObject.GetComponent<DragObject>().getDatasetName(), hit.collider.gameObject.GetComponent<DragObject>());
+                GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot(hit.point.x, hit.point.y, hit.collider.gameObject.GetComponent<DragObject>().getDatasetName(), hit.collider.gameObject);
             }
         }
     }
