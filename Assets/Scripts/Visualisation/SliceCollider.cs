@@ -40,8 +40,17 @@ public class SliceCollider : MonoBehaviour
         cube.GetComponent<MeshRenderer>().enabled = false;
         if (GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().visium)
         {
-            cube.transform.position = new Vector3(5700, -6400, depth);
-            cube.transform.localScale = new Vector3(10000, 13000, 1);
+
+            // linear approximation of SliceCollider position based on Screen dimensions
+            float height = (float)Screen.height * 7.693f + 7780.92f; 
+            float width = (float)Screen.width * 3.552f + 5805.2f;
+
+            float posX = (float)Screen.width * 1.495f + 3864.75f;
+            float posY = (float)Screen.height * (-3.415f) - 4038.34f;
+
+            cube.transform.position = new Vector3(posX, posY, 0);
+            cube.transform.localScale = new Vector3(width, height, 1);           
+
         }
         else
         {
@@ -93,6 +102,7 @@ public class SliceCollider : MonoBehaviour
 
         }
     }
+
     private void Update()
     {
         //Movement of 3d object

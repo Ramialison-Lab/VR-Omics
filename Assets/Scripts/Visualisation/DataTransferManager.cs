@@ -235,24 +235,22 @@ public class DataTransferManager : MonoBehaviour
             }
 
             long[] row = new long[inTissueSize];
-            long[] col = new long[inTissueSize];
+            long[] col = new long[inTissueSize];           
             spotnames = new string[inTissueSize];
             int tissueCount = 0;
             foreach(string s in lines)
             {
                 string[] values = s.Split(',');
+                //if on tissue
                 if (values[1] == "1")
                 {
                     //columns are switched
-                    col[tissueCount] = -(long.Parse(values[2]) * 100 + long.Parse(values[2]) * 100);
+                    col[tissueCount] = -200*(long.Parse(values[2]));
                     row[tissueCount] = long.Parse(values[3]) * 100;
 
-                    //row[tissueCount] = long.Parse(values[4]) / 100;
-                    //col[tissueCount] = long.Parse(values[5]) / 100;
                     spotnames[tissueCount] = values[0];
                     tissueCount++;
                 }
-
             }
 
             for (int i = 0; i < row.Length; i++)

@@ -143,7 +143,7 @@ public class SpotDrawer : MonoBehaviour
             spot.Location = Mc.MultiplyPoint(l);
             MeshProperties MPs = new MeshProperties
             {
-                matrix = Matrix4x4.TRS(spot.Location, symbolTransform.rotation, symbolTransform.localScale * s_w),
+                matrix = Matrix4x4.TRS(spot.Location, symbolTransform.rotation, symbolTransform.localScale ),
                 color = colors[j]
             };
             properties[j++] = MPs;
@@ -804,6 +804,9 @@ public class SpotDrawer : MonoBehaviour
 
     float oldX =-1;
     float oldY =-1;
+
+    public int testX;
+    public int testY;
     /// <summary>
     /// Function to identify which spot was clicked and uses highlight method for lasso tool
     /// </summary>
@@ -848,6 +851,7 @@ public class SpotDrawer : MonoBehaviour
 
             // Check if the coordinates match a spot
             int spotIndex;
+            Debug.Log(hit_x + " + " + hit_y);
             if (coordToIndex.TryGetValue(((int)hit_x, (int)hit_y), out spotIndex))
             {
                 // Identified spot will be added to highlightgroup or removed
