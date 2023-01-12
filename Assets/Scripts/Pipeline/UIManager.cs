@@ -1126,7 +1126,31 @@ public class UIManager : MonoBehaviour
         processMerfish();
         merfishMetaPath = "";
         merfishGenePath = "";
-    }
+        StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Merfish_path.txt", false);
+        string[] merfish_path_out = new string[2];
+        merfish_path_out[0] = merfishMatrix;
+        merfish_path_out[1] = "";// outputDirectory;
+        foreach (string param in merfish_path_out)
+        {
+            writer.WriteLine(param);
+        }
+        writer.Close();
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_merfish/dist/Load_merfish.exe";
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = false;
+        UnityEngine.Debug.Log("Merfish File load started.");
+
+
+        Process p = new Process
+        {
+            StartInfo = startInfo
+        };
+
+        p.Start();
+        //p.WaitForExit();
+        //loadingPanel.SetActive(false);
 
     //Not used due to waiting times only process used
     //public void processAndRunMerfish()
@@ -1134,6 +1158,10 @@ public class UIManager : MonoBehaviour
     //    processMerfish();
     //    runMerfish();
     //}
+
+    }
+
+
 
     public void runMerfish()
     {
