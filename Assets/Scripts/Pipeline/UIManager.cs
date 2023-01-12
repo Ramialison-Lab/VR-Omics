@@ -1319,7 +1319,7 @@ public class UIManager : MonoBehaviour
                 {
                     //Instantiate and position sliceContainer for each Result
                     slices[i] = Instantiate(sliceContainerPrefab, uploadpanel.transform);
-                    slices[i].transform.position = new Vector2(slices[i].transform.position.x, slices[i].transform.position.y + GameObject.FindGameObjectsWithTag("sliceContainer").Length * -300);
+                   // slices[i].transform.position = new Vector2(slices[i].transform.position.x, slices[i].transform.position.y + GameObject.FindGameObjectsWithTag("sliceContainer").Length * -300);
                     slices[i].transform.SetParent(contentPanel.transform);
 
                     //TODO: spatial folder location has been changed to ../data/datasetname/spatial/...

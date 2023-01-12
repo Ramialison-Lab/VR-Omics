@@ -74,7 +74,7 @@ public class TomoSeqDrawer : MonoBehaviour
     private void Start()
     {
         symbolSelect = cubeSymb;
-
+        symbolSelect.transform.localScale = new Vector3(10, 10, 10);
         foreach (GameObject go in deactivePanels)
         {
             try { go.SetActive(false); } catch (Exception) {}
