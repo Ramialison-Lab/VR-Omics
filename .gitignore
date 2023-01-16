@@ -64,6 +64,7 @@ crashlytics-build.properties
 
 # Directory python executables
 Assets/Scripts/Python_exe/
+Assets/PythonFiles
 Assets/PythonFiles/Filter_param.txt
 Assets/PythonFiles/outdirectorypaths.txt.meta
 Assets/PythonFiles/outdirectorypaths.txt
@@ -75,3 +76,6 @@ Assets/PythonFiles/Filter_param.txt
 Assets/Scripts/Visualisation/DataTransferManager.cs
 Assets/exported_spotlist.txt
 Assets/exported_spotlist.txt.meta
+Pipeline_load_and_filter.txt
+Pipeline_load_and_filter.log
+Assets/PythonFiles/Filter_param.txt

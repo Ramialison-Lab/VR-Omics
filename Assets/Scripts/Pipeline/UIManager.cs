@@ -665,7 +665,7 @@ public class UIManager : MonoBehaviour
         string outputDirectory = "";
         outputDirectory = File.ReadLines(Application.dataPath + "/PythonFiles/outdirectorypaths.txt").Last();
         visiumSuccessPanel.SetActive(true);
-        visiumSuccessPanel.GetComponentInChildren<TMP_Text>().text = "Data successful saved to: " + outputDirectory;
+        visiumSuccessPanel.GetComponentInChildren<TMP_Text>().text = "The automated process is started, this might take a couple of minutes. Please do not close the Python Application pop up window. T he output is done once it closes and will be saved at: " + outputDirectory;
 
     }
 
@@ -688,17 +688,15 @@ public class UIManager : MonoBehaviour
     {
         string[] filterparam = new string[9];
 
+        //TODO: Sabrina, SVG is written but not produced
         if (svgToggle.isOn)
         {
-
-            //TBD1 Sabrina if toggle on, include SVG analysis to filter step
-            filterparam[7] = 1.ToString();
+            filterparam[7] = "1";
         }
 
         if (plotToggle.isOn)
         {
-            //TBD1 create output plots
-            filterparam[8] = 1.ToString();
+            filterparam[8] = "1";
         }
 
         //Stores db literal and the filter params
