@@ -76,6 +76,4 @@ Assets/PythonFiles/Filter_param.txt
 Assets/Scripts/Visualisation/DataTransferManager.cs
 Assets/exported_spotlist.txt
 Assets/exported_spotlist.txt.meta
-Pipeline_load_and_filter.txt
-Pipeline_load_and_filter.log
-Assets/PythonFiles/Filter_param.txt
+
