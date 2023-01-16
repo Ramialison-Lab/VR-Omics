@@ -76,4 +76,5 @@ Assets/PythonFiles/Filter_param.txt
 Assets/Scripts/Visualisation/DataTransferManager.cs
 Assets/exported_spotlist.txt
 Assets/exported_spotlist.txt.meta
+Assets/Logfiles/*
 

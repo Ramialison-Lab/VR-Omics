@@ -1,0 +1,5 @@
+Log file created at 16/01/2023 11:39:02 AM
+[ERROR] 16/01/2023 11:39:02 AM
+Message: Didn't work 
+StackTrace:   at System.Collections.Generic.List`1[T].get_Item (System.Int32 index) [0x00009] in <9aad1b3a47484d63ba2b3985692d80e9>:0 
+  at DataTransferManager.startVisium () [0x0031d] in C:\Users\Denis.Bienroth\Documents\GitHub\VR_Omics\Assets\Scripts\Visualisation\DataTransferManager.cs:300 

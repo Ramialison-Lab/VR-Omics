@@ -234,6 +234,7 @@ public class DataTransferManager : MonoBehaviour
         float minX, maxX, minY, maxY;
         minX = maxX = minY = maxY = 0;
         int count = 0;
+        int depthCounter = 0;
         // Reading datasets and creating merged List for all coordinates
         foreach (string p in hdf5datapaths)
         {
@@ -293,8 +294,20 @@ public class DataTransferManager : MonoBehaviour
             //Adds the collider slice for each dataset that detects user input
             sc.setSliceCollider((int)col.Min(), (int)col.Max(), (int)row.Min(), (int)row.Max(), visiumDepth, df.pathList[count]);
 
-            // TODO: depth automatically increased by 10, needs to be replaced with depth information set in pipeline alignment 
-            visiumDepth = visiumDepth + 10;
+            Debug.Log(visiumDepth);
+            //Distance times 100 to ajust increased dimension
+            try
+            {
+                visiumDepth = visiumDepth + 100 * df.distances[depthCounter];
+                depthCounter++;
+            }
+            catch (Exception e)
+            {
+                LogFileController log = new LogFileController();
+                log.Log(e, "The distance values between the slides couldn't be found. Default values were used instead. Make sure to apply only one value for two slides to adjust the distance between the two slides.");
+                visiumDepth += 1000;
+            }
+            
 
             SpotNameDictionary.Add(spotnames.ToList());
             fr.readGeneNames(p);
