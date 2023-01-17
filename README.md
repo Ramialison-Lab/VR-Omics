@@ -1,3 +1,4 @@
-#VR-Omics Prototype
+#VR-Omics 
 
-##We are currently adding a lot new features and functions to this software, therefore, it's not a stable version. We expect uploading a stable version in Janurary 2023! 
+The full documentation is available at (#https://ramialison-lab.github.io/pages/vromics.html)[VR-Omics Documentation]
+
