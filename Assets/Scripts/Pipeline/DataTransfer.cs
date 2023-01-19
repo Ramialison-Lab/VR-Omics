@@ -55,6 +55,7 @@ public class DataTransfer : MonoBehaviour
     public List<int> rotationValues;
     public List<int> distances;
     public List<string> objData;
+    public LogFileController logfile;
 
     public bool other2D = false;
     public int[] otherCSVCols = new int[4];
@@ -63,6 +64,8 @@ public class DataTransfer : MonoBehaviour
     private void Start()
     {
         ui = gameObject.GetComponent<UIManager>();
+        logfile = new LogFileController();
+        ui.setLogfile(logfile);
     }
 
     public void startMerfish()

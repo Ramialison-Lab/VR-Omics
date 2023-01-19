@@ -113,7 +113,7 @@ public class DataTransferManager : MonoBehaviour
     public string otherMatrixPath;
     public string otherMetaPath;
     public int[] otherCSVCols;
-
+    public LogFileController logfile;
     void Start()
     {
 
@@ -127,7 +127,10 @@ public class DataTransferManager : MonoBehaviour
         bfm = scriptHolder.GetComponent<ButtonFunctionManager>();
         mc = GameObject.Find("MainMenuPanel").GetComponent<MenuCanvas>();
 
-        try { df = scriptHolderPipeline.GetComponent<DataTransfer>(); } catch (Exception) { }
+        try { 
+            df = scriptHolderPipeline.GetComponent<DataTransfer>();
+        } catch (Exception) { }
+        logfile = new LogFileController();
 
         // Uncomment for pipeline connection
         pipelineConnected();
@@ -238,6 +241,7 @@ public class DataTransferManager : MonoBehaviour
         // Reading datasets and creating merged List for all coordinates
         foreach (string p in hdf5datapaths)
         {
+            int visiumScaleFactor = 1;
             shortList.Add(p.Split('\\').Last());
             //reads barcodes and row and col positions and create merged list of coordinates
             //fr.calcCoords(p);
@@ -267,8 +271,8 @@ public class DataTransferManager : MonoBehaviour
                 if (values[1] == "1")
                 {
                     //columns are switched
-                    col[tissueCount] = -200*(long.Parse(values[2]));
-                    row[tissueCount] = long.Parse(values[3]) * 100;
+                    col[tissueCount] = -2*visiumScaleFactor*(long.Parse(values[2]));
+                    row[tissueCount] = long.Parse(values[3]) * visiumScaleFactor;
 
                     spotnames[tissueCount] = values[0];
                     tissueCount++;
@@ -293,19 +297,30 @@ public class DataTransferManager : MonoBehaviour
 
             //Adds the collider slice for each dataset that detects user input
             sc.setSliceCollider((int)col.Min(), (int)col.Max(), (int)row.Min(), (int)row.Max(), visiumDepth, df.pathList[count]);
-
-            Debug.Log(visiumDepth);
-            //Distance times 100 to ajust increased dimension
             try
             {
-                visiumDepth = visiumDepth + 100 * df.distances[depthCounter];
+                // Minimum value needed to ensure distancea great enough for visualisation 
+                if (df.distances[depthCounter] == 0)
+                {
+                    visiumDepth += visiumScaleFactor*10;
+                }
+                else
+                {
+                    try
+                    {// Apply scaleFactor adjust to Visium dimension
+                        visiumDepth = visiumDepth + visiumScaleFactor *10 * df.distances[depthCounter];
+                    }catch(Exception e)
+                    {
+                        logfile.Log(e, "Tried applying distance value but couldn't access value");
+                        visiumDepth += visiumScaleFactor*10;
+                    }
+                }
                 depthCounter++;
             }
             catch (Exception e)
             {
-                LogFileController log = new LogFileController();
-                log.Log(e, "The distance values between the slides couldn't be found. Default values were used instead. Make sure to apply only one value for two slides to adjust the distance between the two slides.");
-                visiumDepth += 1000;
+                logfile.Log(e, "The distance values between the slides couldn't be found. Default values were used instead. Make sure to apply only one value for two slides to adjust the distance between the two slides.");
+                visiumDepth += visiumScaleFactor*10;
             }
             
 
@@ -319,7 +334,6 @@ public class DataTransferManager : MonoBehaviour
         }
         checkForSVGData();
         adjustCamera(minX, maxX, minY, maxY, tempDepth.Min(), new Vector3(0, 0, 0));
-        //Camera.main.transform.position = new Vector3(5000,-5000, -15000);
         sp.Min = new Vector2(minX, minY);
         sp.Max = new Vector2(maxX, maxY);
         sp.StartDrawer(tempRow.ToArray(), tempCol.ToArray(), tempDepth.ToArray(), tempSpotnames.ToArray(), dataSetNames.ToArray()); // TODO Please check if we really need lists: tempRow, tempCol, tempDepth, ... / convert to arrays
@@ -624,6 +638,11 @@ public class DataTransferManager : MonoBehaviour
 
         Camera.main.transform.position = new Vector3(x, y, -depthValue);
         Camera.main.transform.eulerAngles = rotation;
+    }
+
+    public void updateCamera(Vector3 position)
+    {
+        Camera.main.transform.position = new Vector3(position.x, position.y, Camera.main.transform.position.z);
     }
 
     private void loadObject()

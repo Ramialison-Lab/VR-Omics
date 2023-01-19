@@ -53,62 +53,52 @@ public class SliceCollider : MonoBehaviour
     {
         dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
     }
-    public void setSliceCollider(int colMin, int colMax, int rowMin, int rowMax, int depth, string datasetName)
+
+    public void adjustSliceCollider(GameObject sliceCollider, Vector2 minVec, Vector2 maxVec, Vector2 centerPoint, int depth, string datasetName)
     {
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        
-        cube.GetComponent<MeshRenderer>().enabled = false;
-        if (GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().visium)
-        {
+        //TBD setslicecollider funciton here:
+        sliceCollider.GetComponent<MeshRenderer>().enabled = false;
 
-            // linear approximation of SliceCollider position based on Screen dimensions
-            float height = (float)Screen.height * 7.693f + 7780.92f; 
-            float width = (float)Screen.width * 3.552f + 5805.2f;
-
-            float posX = (float)Screen.width * 1.495f + 3864.75f;
-            float posY = (float)Screen.height * (-3.415f) - 4038.34f;
-
-            cube.transform.position = new Vector3(posX, posY, 0);
-            cube.transform.localScale = new Vector3(width, height, 1);           
-
-        }
-        else
-        {
-            // calculate size of collider TBD- some points not coverd
-            var centerx = rowMax + (rowMin - rowMax) / 2;
-            var centery = colMin + (colMax - colMin) / 2;
-            cube.transform.position = new Vector3(centerx, centery, depth);
-            cube.transform.localScale = new Vector3(rowMin - rowMax, colMax - colMin, 1);
-        }
-        sliceColliders.Add(cube);
+        sliceColliders.Add(sliceCollider);
         zcoords.Add(depth);
-        Color newColor = cube.GetComponent<Renderer>().material.color;
+        Color newColor = sliceCollider.GetComponent<Renderer>().material.color;
         newColor.a = 0f;
-        cube.GetComponent<Renderer>().material.color = newColor;
-        cube.AddComponent<DragObject>();
-        cube.GetComponent<DragObject>().resetCoords();
-        cube.GetComponent<DragObject>().setCenterPoint(cube.transform.position);
-        cube.GetComponent<DragObject>().setMetaData(colMin, colMax, rowMin, rowMax, depth, datasetName);
-        cube.GetComponent<Renderer>().material.color = transparentColor;
-    
+        sliceCollider.GetComponent<Renderer>().material.color = newColor;
+        sliceCollider.AddComponent<DragObject>();
+        sliceCollider.GetComponent<DragObject>().resetCoords();
+        // sliceCollider.GetComponent<DragObject>().setCenterPoint(cube.transform.position);
+        // sliceCollider.GetComponent<DragObject>().setMetaData(colMin, colMax, rowMin, rowMax, depth, datasetName);
+        sliceCollider.GetComponent<Renderer>().material.color = transparentColor;
+
         if (gameObject.GetComponent<DataTransferManager>().addHAndEImg)
         {
             GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
             imagePlane.name = "StainImageObject";
 
-            imagePlane.transform.localScale = new Vector3(cube.transform.localScale.x *1.5f, 0.1f, cube.transform.localScale.z * 1.361f);
-            imagePlane.transform.SetParent(cube.transform);
+            imagePlane.transform.localScale = new Vector3(sliceCollider.transform.localScale.x * 1.5f, 0.1f, sliceCollider.transform.localScale.z * 1.361f);
+            imagePlane.transform.SetParent(sliceCollider.transform);
 
             imagePlane.transform.Rotate(new Vector3(-270, -90, 90));
             imagePlane.transform.localPosition = Vector3.zero;
             imagePlane.GetComponent<Renderer>().material = transparentMat;
 
             string imagePath = System.IO.Directory.GetCurrentDirectory() + "/Assets/Images/Error_Images/spatial_file_not_found.png";
-            string[] files = Directory.GetFiles(datasetName, "*", SearchOption.AllDirectories);
-            foreach (string s in files)
+            
+            int index = datasetName.LastIndexOf("\\");
+            string path ="";
+            if (index >= 0)
             {
-                if (s.Split("\\").Last() == "tissue_hires_image.png") imagePath = s;
+                path = datasetName.Substring(0, index);
             }
+            //can't find the spatial image from directory
+            string[] files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+            try
+            {
+                foreach (string s in files)
+                {
+                    if (s.Contains("tissue_hires_image.png") && !s.Contains("meta")) imagePath = s;
+                }
+            }catch(Exception ex) { dfm.logfile.Log(ex, "The tissue image couldn't be found. Make sure the image is in the directory and called tissue_hires_image.png"); }
             byte[] byteArray = File.ReadAllBytes(imagePath);
             Texture2D sampleTexture = new Texture2D(2, 2);
             bool isLoaded = sampleTexture.LoadImage(byteArray);
@@ -121,6 +111,74 @@ public class SliceCollider : MonoBehaviour
             imagePlane.SetActive(false);
 
         }
+    }
+
+    public void setSliceCollider(int colMin, int colMax, int rowMin, int rowMax, int depth, string datasetName)
+    {
+        //GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        
+        //cube.GetComponent<MeshRenderer>().enabled = false;
+        //if (GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().visium)
+        //{
+        //    // linear approximation of SliceCollider position based on Screen dimensions
+        //    float height = (float)Screen.height * 7.693f + 7780.92f; 
+        //    float width = (float)Screen.width * 3.552f + 5805.2f;
+
+        //    float posX = (float)Screen.width * 1.495f + 3864.75f;
+        //    float posY = (float)Screen.height * (-3.415f) - 4038.34f;
+
+        //    cube.transform.position = new Vector3(posX, posY, 0);
+        //    cube.transform.localScale = new Vector3(width, height, 1);           
+        //}
+        //else
+        //{
+        //    // calculate size of collider TBD- some points not coverd
+        //    var centerx = rowMax + (rowMin - rowMax) / 2;
+        //    var centery = colMin + (colMax - colMin) / 2;
+        //    cube.transform.position = new Vector3(centerx, centery, depth);
+        //    cube.transform.localScale = new Vector3(rowMin - rowMax, colMax - colMin, 1);
+        //}
+        //sliceColliders.Add(cube);
+        //zcoords.Add(depth);
+        //Color newColor = cube.GetComponent<Renderer>().material.color;
+        //newColor.a = 0f;
+        //cube.GetComponent<Renderer>().material.color = newColor;
+        //cube.AddComponent<DragObject>();
+        //cube.GetComponent<DragObject>().resetCoords();
+        //cube.GetComponent<DragObject>().setCenterPoint(cube.transform.position);
+        //cube.GetComponent<DragObject>().setMetaData(colMin, colMax, rowMin, rowMax, depth, datasetName);
+        //cube.GetComponent<Renderer>().material.color = transparentColor;
+    
+        //if (gameObject.GetComponent<DataTransferManager>().addHAndEImg)
+        //{
+        //    GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //    imagePlane.name = "StainImageObject";
+
+        //    imagePlane.transform.localScale = new Vector3(cube.transform.localScale.x *1.5f, 0.1f, cube.transform.localScale.z * 1.361f);
+        //    imagePlane.transform.SetParent(cube.transform);
+
+        //    imagePlane.transform.Rotate(new Vector3(-270, -90, 90));
+        //    imagePlane.transform.localPosition = Vector3.zero;
+        //    imagePlane.GetComponent<Renderer>().material = transparentMat;
+
+        //    string imagePath = System.IO.Directory.GetCurrentDirectory() + "/Assets/Images/Error_Images/spatial_file_not_found.png";
+        //    string[] files = Directory.GetFiles(datasetName, "*", SearchOption.AllDirectories);
+        //    foreach (string s in files)
+        //    {
+        //        if (s.Split("\\").Last() == "tissue_hires_image.png") imagePath = s;
+        //    }
+        //    byte[] byteArray = File.ReadAllBytes(imagePath);
+        //    Texture2D sampleTexture = new Texture2D(2, 2);
+        //    bool isLoaded = sampleTexture.LoadImage(byteArray);
+        //    imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
+        //    imagePlane.AddComponent<HAndEImageManager>();
+        //    //TODO: correct path to Visium spatial image
+        //    imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagePath);
+        //    imagePlane.AddComponent<BoxCollider>();
+        //    HandEobjs.Add(imagePlane);
+        //    imagePlane.SetActive(false);
+
+        //}
     }
 
     private void Update()
@@ -192,7 +250,7 @@ public class SliceCollider : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             //TBD not using name cube here
-            if (hit.collider.gameObject.name == "Cube")
+            if (hit.collider.gameObject.name == "SliceCollider")
             {
                 GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot(hit.point.x, hit.point.y, hit.collider.gameObject.GetComponent<DragObject>().getDatasetName(), hit.collider.gameObject);
             }

@@ -114,6 +114,8 @@ public class SpotDrawer : MonoBehaviour
     public float[] RowCoords { get; private set; }
     public float[] ColCoords { get; private set; }
 
+
+    private bool sliceDrawer = false;
     private void Start()
     {
         sm = gameObject.GetComponent<SearchManager>();
@@ -158,10 +160,75 @@ public class SpotDrawer : MonoBehaviour
             o.y = dataOrigin.OriginCopy.y;
         var Mc = Matrix4x4.TRS(o, canvas.transform.rotation, canvas.transform.localScale);
         float s_w = EntrypointVR.Instance.VR ? 0.004f : 1f;
+
+        /////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////
+        ///This SECTION CREATES NEW TEMPLATE SLICECOLLIDER → POSITION STILL OFF
+        ///
+        if (!sliceDrawer)
+        {
+            sliceDrawer = true;
+            Vector3[] positions = new Vector3[spots.Length];
+            for (int i=0; i< spots.Length; i++){
+
+                positions[i] = spots[i].Location;
+            }
+
+            float XMax;
+            float XMin;
+            float YMax;
+            float YMin;
+            Vector3 bottomLeft;
+
+            // Sort the array by x-coordinate in descending order
+            Array.Sort(positions, (v1, v2) => v2.x.CompareTo(v1.x));
+
+            // The first element is the top right corner
+            XMax = positions[0].x;
+            XMin = positions[spots.Length-1].x;
+
+            // Sort the array by y-coordinate in ascending order
+            Array.Sort(positions, (v1, v2) => v1.y.CompareTo(v2.y));
+
+            // The first element is the bottom left corner
+            YMax = positions[0].y;
+            YMin = positions[spots.Length-1].y;
+
+            Vector2 maxvec = new Vector2(XMax, YMax);
+            Vector2 minvec = new Vector2(XMin, YMin);
+
+            GameObject sliceCollider = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            sliceCollider.name = "SliceCollider";
+
+            Vector2 middle = Vector2.Lerp(maxvec, minvec, 0.5f);
+            middle = new Vector2(middle.x * s.h, middle.y *s.v);
+
+            dfm.updateCamera(new Vector3(middle.x, middle.y, 0));
+            sliceCollider.transform.localScale = new Vector3(Math.Abs(maxvec.x - minvec.x) * s.h, Math.Abs(maxvec.y - minvec.y) * s.v, 1);
+            sliceCollider.transform.localPosition = new Vector3(middle.x, middle.y, spots[0].Origin.z);
+
+            GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().adjustSliceCollider(
+                sliceCollider,
+                minvec,
+                maxvec,
+                middle,
+                (int)spots[0].Origin.z,
+                spots[0].DatasetName
+                );
+        }
+
+        /////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////
+        // Create a dictionary that maps coordinates to spot indices
         foreach (SpotWrapper spot in spots)
         {
             var l = new Vector3(spot.Origin.x * s.h, spot.Origin.y * s.v, spot.Origin.z);
-            spot.Location = Mc.MultiplyPoint(l);       
+            //TODO: next line removed might cause erros
+            //spot.Location = Mc.MultiplyPoint(l);
+            spot.Location = l;
+
             MeshProperties MPs = new MeshProperties
             {
                 matrix = Matrix4x4.TRS(spot.Location, symbolTransform.rotation, symbolTransform.localScale ),
@@ -181,7 +248,7 @@ public class SpotDrawer : MonoBehaviour
 
                 // For Visium offset needed due to higher dimension
                 int offset = dfm.visium ?
-                    10000 : 0;
+                    100 : 0;
                 
                 var l = new Vector3((spot.Origin.x * s.h) + offset, spot.Origin.y * s.v, spot.Origin.z);
                 spot.Location = Mc_Copy.MultiplyPoint(l);
@@ -211,7 +278,7 @@ public class SpotDrawer : MonoBehaviour
 
                 MeshProperties MPs = new MeshProperties
                 {
-                    matrix = Matrix4x4.TRS(spot.Location, symbolTransform.rotation, symbolTransform.localScale * s_w),
+                    matrix = Matrix4x4.TRS(spot.Location, symbolTransform.rotation, symbolTransform.localScale *s_w),
                     color = rc
                 };
                 properties[j++] = MPs;
@@ -224,7 +291,8 @@ public class SpotDrawer : MonoBehaviour
 
         OnDraw = () =>
         {
-            Graphics.DrawMeshInstancedIndirect(mesh, 0, material, new Bounds(Vector3.zero, new Vector3(100, 100, 100)),
+            //TODO: adjust Vector3(1000,1000,1000) according to the technique used!
+            Graphics.DrawMeshInstancedIndirect(mesh, 0, material, new Bounds(Vector3.zero, new Vector3(10000, 10000, 10000)),
                 argsBuffer, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false);
         };
     }
@@ -354,32 +422,12 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="dataSet">dataset names</param>
     public void StartDrawer(float[] xcoords, float[] ycoords, float[] zcoords, string[] spotBarcodes, string[] dataSet) // TODO dataset is almost always empty, do we need it?
     {
-        // Create a dictionary that maps coordinates to spot indices
-        coordToIndex = new Dictionary<(int, int), int>();
-        for (int i = 0; i < xcoords.Length; i++)
-        {
-            var x_temp = Math.Abs((int)xcoords[i] / 100);
-            var y_temp = Math.Abs((int)ycoords[i] / 200);
-            coordToIndex[(x_temp,y_temp)] = i;
-        }
-
         //if (Min == Vector2.zero && Min == Max)
         // throw new Exception("Please supply min, max values of the data points beforehand!");
 
         symbolSelect = sphereSymb;
-        
-        //Dimension for Visium to small, dataset not visable and clipping mask prevents from close view
-        if (dfm.visium)
-        {
-            symbolSelect.transform.localScale = new Vector3(100, 100, 100);
-        }
-        else if (dfm.stomics)
-        {
-            symbolSelect.transform.localScale = new Vector3(1, 1, 1);
-        }else if (dfm.merfish || dfm.xenium)
-        {
-            symbolSelect.transform.localScale = new Vector3(1, 1, 1);
-        }
+
+        symbolSelect.transform.localScale = new Vector3(1, 1, 1);
 
         // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
         // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
@@ -864,92 +912,74 @@ public class SpotDrawer : MonoBehaviour
         {
             oldX = x_cl;
             oldY = y_cl;
-
-            int width_NumberSections =0; 
-            int height_NumberSections =0; 
-            if (dfm.visium)
+            
+            int indexOfSpot = -1;
+            for(int i=0; i< spots.Length; i++)
             {
-                width_NumberSections = (sliceCollider.GetComponent<DragObject>().rowMax / 100) - (sliceCollider.GetComponent<DragObject>().rowMin / 100) + 1;
-                height_NumberSections= (sliceCollider.GetComponent<DragObject>().colMax/200) - (sliceCollider.GetComponent<DragObject>().colMin/200) + 1;
-            }
-            else
-            {
-                width_NumberSections = (sliceCollider.GetComponent<DragObject>().rowMax) - (sliceCollider.GetComponent<DragObject>().rowMin) + 1;
-                height_NumberSections = (sliceCollider.GetComponent<DragObject>().colMax) - (sliceCollider.GetComponent<DragObject>().colMin) + 1;
-            }
-            float width_SectionSize = sliceCollider.transform.localScale.x / width_NumberSections;
-            float height_SectionSize = sliceCollider.transform.localScale.y / height_NumberSections;
-
-            float width_HitInWhichSection = Math.Abs(x_cl / width_SectionSize);
-            float height_HitInWhichSection = Math.Abs(y_cl / height_SectionSize);
-
-            int hit_x = (int)Math.Ceiling(width_HitInWhichSection);
-            int hit_y = (int)Math.Ceiling(height_HitInWhichSection);
-            Debug.Log(hit_x);
-            Debug.Log(hit_y);
-            int spotIndex;
-
-            if (coordToIndex.TryGetValue(((int)hit_x, (int)hit_y), out spotIndex))
-            {
-                // Identified spot will be added to highlightgroup or removed
-                if (mc.lasso)
+                if ((int)spots[i].Location.x == (int)x_cl && (int)spots[i].Location.y == (int)y_cl)
                 {
-                    if (!addToggle)
-                    {
-                        highlightedSpots.Remove(spotIndex);
-                    }
-                    else if (addToggle)
-                    {
-                        if (!highlightedSpots.ContainsKey(spotIndex))
-                        {
-                            highlightedSpots[spotIndex] = active;
-
-                            // Use a switch statement instead of an if-else chain
-                            switch (active)
-                            {
-                                case 0:
-                                    colors[spotIndex] = hl_colors[0];
-                                    break;
-                                case 1:
-                                    colors[spotIndex] = hl_colors[1];
-                                    break;
-                                case 2:
-                                    colors[spotIndex] = hl_colors[2];
-                                    break;
-                                case 3:
-                                    colors[spotIndex] = hl_colors[3];
-                                    break;
-                            }
-
-                            SetMeshBuffers();
-                        }
-                    }
-                }
-
-                // Use a local variable to store the spot information
-                var spot = spots[spotIndex];
-                try
-                {
-                    smm.setSpotInfo(spot.Spotname, spot.DatasetName, spot.UniqueIdentifier, spot.Location, spot.ExpVal);
-                }
-                catch (Exception) {};
-                
-
-                // passthrough function to identify underlying spots
-                if (passThrough)
-                {
-                    if ((int)spot.Location.x == (int)x_cl && (int)spot.Location.y == (int)y_cl)
-                    {
+                    indexOfSpot = i;
+                        // Identified spot will be added to highlightgroup or removed
                         if (mc.lasso)
                         {
-                            if (!highlightedSpots.ContainsKey(spotIndex))
+                            if (!addToggle)
                             {
-                                highlightedSpots[spotIndex] = active;
+                                highlightedSpots.Remove(indexOfSpot);
+                            }
+                            else if (addToggle)
+                            {
+                                if (!highlightedSpots.ContainsKey(indexOfSpot))
+                                {
+                                    highlightedSpots[indexOfSpot] = active;
+
+                                    switch (active)
+                                    {
+                                        case 0:
+                                            colors[indexOfSpot] = hl_colors[0];
+                                            break;
+                                        case 1:
+                                            colors[indexOfSpot] = hl_colors[1];
+                                            break;
+                                        case 2:
+                                            colors[indexOfSpot] = hl_colors[2];
+                                            break;
+                                        case 3:
+                                            colors[indexOfSpot] = hl_colors[3];
+                                            break;
+                                    }
+
+                                    SetMeshBuffers();
+                                }
                             }
                         }
-                    }
+
+                        // Use a local variable to store the spot information
+                        var spot = spots[indexOfSpot];
+                        try
+                        {
+                            smm.setSpotInfo(spot.Spotname, spot.DatasetName, spot.UniqueIdentifier, spot.Location, spot.ExpVal);
+                        }
+                        catch (Exception) {};
+                
+
+                        // passthrough function to identify underlying spots
+                        if (passThrough)
+                        {
+                            if ((int)spot.Location.x == (int)x_cl && (int)spot.Location.y == (int)y_cl)
+                            {
+                                if (mc.lasso)
+                                {
+                                    if (!highlightedSpots.ContainsKey(indexOfSpot))
+                                    {
+                                        highlightedSpots[indexOfSpot] = active;
+                                    }
+                                }
+                            }
+                        }
                 }
+                
             }
+           // if (coordToIndex.TryGetValue(((int)hit_x, (int)hit_y), out spotIndex))
         }
     }
 

@@ -12331,8 +12331,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 994948022}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: runMerfish
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: startMerfish
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -17876,7 +17876,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Gene names, usually features.tsv (.tsv, .csv)
+  m_text: Gene panel, usually *_panel.tsv (.tsv, .csv)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -26580,7 +26580,7 @@ GameObject:
   - component: {fileID: 944207510}
   - component: {fileID: 944207509}
   m_Layer: 5
-  m_Name: Button (2)
+  m_Name: StartStomicsBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27837,6 +27837,7 @@ GameObject:
   - component: {fileID: 994948023}
   - component: {fileID: 994948024}
   - component: {fileID: 994948025}
+  - component: {fileID: 994948026}
   m_Layer: 0
   m_Name: ScriptHolderPipeline
   m_TagString: Untagged
@@ -27996,6 +27997,7 @@ MonoBehaviour:
   svgToggle: {fileID: 1570675022}
   plotToggle: {fileID: 1715588983}
   visiumSuccessPanel: {fileID: 1755970802}
+  distanceText: {fileID: 1418750472}
   xeniumFeaturesTMP: {fileID: 1802668409}
   xeniumSpotsTMP: {fileID: 736833854}
   xeniumMatPathField: {fileID: 188053400}
@@ -28037,7 +28039,6 @@ MonoBehaviour:
   other2D: 0
   otherCSVColumns: 00000000000000000000000000000000
   otherHeader: {fileID: 1180134257}
-  distanceText: {fileID: 1418750472}
 --- !u!114 &994948023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28088,6 +28089,7 @@ MonoBehaviour:
   rotationValues: 
   distances: 
   objData: []
+  logfile: {fileID: 0}
   other2D: 0
   otherCSVCols: 00000000000000000000000000000000
 --- !u!114 &994948025
@@ -28103,6 +28105,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   frameRate: 60
+--- !u!114 &994948026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 994948017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7264e9d0bc87e7c49ac3eebf1d360a8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &996011894
 GameObject:
   m_ObjectHideFlags: 0
@@ -39359,8 +39373,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 994948022}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: runXenium
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: startXenium
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -41428,7 +41442,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Spot names, usually cell_info_csv (.tsv, .csv)
+  m_text: Spot names, usually *_cells.csv (.tsv, .csv)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
