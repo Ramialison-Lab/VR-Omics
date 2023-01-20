@@ -66,7 +66,7 @@ public class UIManager : MonoBehaviour
     public GameObject loadingPanel;
     public GameObject objectLoadPanel;
 
-    //H&E stain backgorund slice and Container
+    //H&E stain background slice and Container
     public GameObject sliceRawImage;
     public RawImage expandImage;
     public GameObject sliceContainerPrefab;
@@ -176,6 +176,9 @@ public class UIManager : MonoBehaviour
     public int[] otherCSVColumns;
     public Toggle otherHeader;
 
+    //Access variables
+    DataTransfer df;
+
     //Logfile Parameters
     private LogFileController logfile;
 
@@ -185,12 +188,14 @@ public class UIManager : MonoBehaviour
         DontDestroyOnLoad(transform.gameObject);
         filePaths = new List<string>();
         otherCSVColumns = new int[5];
+
+        df = gameObject.GetComponent<DataTransfer>();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// Start Visualiser functions
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    #region start Visualiser
     /// <summary>
     /// Starting Visium
     /// </summary>
@@ -221,7 +226,7 @@ public class UIManager : MonoBehaviour
                     datapathVisium.Add(x);
                 }
             }
-            gameObject.GetComponent<DataTransfer>().startMultipleVisium(datapathVisium, rotationValues, distances);
+            df.startMultipleVisium(datapathVisium, rotationValues, distances);
         }
     }
 
@@ -230,7 +235,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void startXenium()
     {
-        gameObject.GetComponent<DataTransfer>().startXenium();
+        df.startXenium();
     }
 
     /// <summary>
@@ -238,682 +243,31 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void startMerfish()
     {
-        gameObject.GetComponent<DataTransfer>().startMerfish();
+        df.startMerfish();
 
     }
 
     /// <summary>
-    /// Filling the Visium downloadlist with the Literals of the available datasets from 10X Genomics
+    /// Starting Stomics
     /// </summary>
-    public void adjust_download_list()
+    public void startStomics()
     {
-        // Read file with names of data files
-        string wd = Application.dataPath;
-        wd = wd.Replace('\\', '/');
-        string fileName = wd + "/PythonFiles/list_of_file_names.txt";
+        df.startStomics();
+    }
 
-        var lines = File.ReadAllLines(fileName);
-        string line2 = lines[0];
 
-        string[] components = line2.Split(new string[] { "," }, StringSplitOptions.None);
-
-        // Identify game object with file names as panel
-        m_DropOptions = new List<string>();
-        foreach (string c in components)
-        {
-            m_DropOptions.Add(c);
-        }
-        // add different options to dropdown menu
-        dropdown_list.AddOptions(m_DropOptions);
-
+    /// <summary>
+    /// Start C18 demo data
+    /// </summary>
+    public void startC18()
+    {
+        df.startC18();
     }
 
     /// <summary>
-    /// Instantiate the logfile
+    /// Starting Custom data
     /// </summary>
-    /// <param name="logfile">logfile for current session</param>
-
-    public void setLogfile(LogFileController logfile)
-    {
-        this.logfile = logfile;
-    }
-
-
-    public void toggleListener(GameObject toggle)
-    {
-        UnityEngine.Debug.Log(toggle.GetComponentInChildren<Text>().text);
-
-        foreach (RawImage imag in images)
-        {
-            if (imag.name == toggle.GetComponentInChildren<Text>().text)
-            {
-                if (imag.transform.gameObject.activeSelf)
-                {
-                    imag.transform.gameObject.SetActive(false);
-
-                }
-                else if (!imag.transform.gameObject.activeSelf)
-                {
-                    imag.transform.gameObject.SetActive(true);
-
-                }
-            }
-        }
-
-    }
-
-    public void nextPipelineStep()
-    {
-        string[] params_out = new string[4];
-        params_out[0] = filepathUpload;
-        params_out[3] = destinationPath;
-        UnityEngine.Debug.Log(Application.dataPath);
-        if (GameObject.Find("Step6").GetComponentInChildren<Toggle>().isOn)
-        {
-            //TBD1 skip all filter steps and just prepare data for VR-Omics = preprocess without filter values
-            params_out[1] = 1.ToString();
-
-        }
-        // Manages the workflow of the pipeline part to guide through the 4 individual steps
-
-        filterStep = GameObject.Find("Step1").GetComponentInChildren<Toggle>().isOn;
-        // filter and svg only
-        //correlationStep = GameObject.Find("Step2").GetComponentInChildren<Toggle>().isOn;
-        //clusteringStep = GameObject.Find("Step3").GetComponentInChildren<Toggle>().isOn;
-        SVGStep = GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn;
-
-        pipelinestepPanel.SetActive(false);
-        if (filterStep)
-        {
-            pipelineParamPanel.SetActive(true);
-        }
-        else
-        {
-            //TBD1 skip filtetr values and go to steps selected
-
-            if (SVGStep == true)
-            {
-
-                //TBD1 Sabrina if toggle on, include SVG analysis to filter step
-                params_out[2] = 1.ToString();
-            }
-
-        }
-
-        if (SVGStep == true)
-        {
-            //TBD1 Sabrina if toggle on, include SVG analysis to filter step
-            params_out[2] = 1.ToString();
-        }
-
-        save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
-    }
-
-    public void skipFilterStep()
-    {
-        skipFilter = true;
-        startPipelineDownloadData();
-    }
-
-    public void changeDirectory()
-    {
-        StartCoroutine(selectDirectory());
-    }
-
-    public void selectUpload()
-    {
-        StartCoroutine(selectUploadfile());
-    }
-
-    public void startExplorer()
-    {
-        StartCoroutine(loadImages());
-    }
-
-    public void save_params_run_step1(string[] filterparam, string outname, string executable)
-    {
-        // Python integration
-        StreamWriter writer = new StreamWriter(Application.dataPath + outname, false);
-        foreach (string param in filterparam)
-        {
-            writer.WriteLine(param);
-        }
-        writer.Close();
-
-        ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = Application.dataPath + executable;
-        //startInfo.Arguments = "\"" + wd + "/rcode.r" + " \"";
-        startInfo.UseShellExecute = false;
-        startInfo.CreateNoWindow = false;
-
-
-        Process p = new Process
-        {
-            StartInfo = startInfo
-        };
-
-        p.Start();
-        //p.WaitForExit();
-        //loadingPanel.SetActive(false);
-    }
-
-    public void processOnlyVisium()
-    {
-        // this function only processes the data and doesn't start the visualisation scene
-        startPipelineDownloadData();
-
-        //TBD1 if processed return datapath via outputDirectory to UI and successful filtered
-        string outputDirectory = "";
-        outputDirectory = File.ReadLines(Application.dataPath + "/PythonFiles/outdirectorypaths.txt").Last();
-        visiumSuccessPanel.SetActive(true);
-        visiumSuccessPanel.GetComponentInChildren<TMP_Text>().text = "The automated process is started, this might take a couple of minutes. Please do not close the Python Application pop up window. T he output is done once it closes and will be saved at: " + outputDirectory;
-
-    }
-
-
-    // Disabled due to long waiting times, only Process used
-    // public void processAndRunVisium()
-    //  {
-    //      // this function processes the data [filter + SVG only] and starts the Visualisation
-    //      startPipelineDownloadData();
-
-    //      string outputDirectory = "";
-
-    //outputDirectory = File.ReadLines(Application.dataPath+"/PythonFiles/outdirectorypaths.txt").Last();
-
-    //      gameObject.GetComponent<DataTransfer>().startVisium(outputDirectory);
-
-    //  }
-
-    public void startPipelineDownloadData()
-    {
-        string[] filterparam = new string[9];
-
-        //TODO: Sabrina, SVG is written but not produced
-        if (svgToggle.isOn)
-        {
-            filterparam[7] = "1";
-        }
-
-        if (plotToggle.isOn)
-        {
-            filterparam[8] = "1";
-        }
-
-        //Stores db literal and the filter params
-        if (destinationPath != "")
-        {
-            //TBD Sabrina: use destinationpath for python output instead of default
-            StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/outpath.txt", false);
-            writer.WriteLine(Application.dataPath);
-            writer.Close();
-        }
-        else
-        {
-            StreamWriter writer2 = new StreamWriter(Application.dataPath + "/PythonFiles/outpath.txt", false);
-            writer2.WriteLine(Application.dataPath);
-            writer2.Close();
-        }
-
-        if (skipFilter)
-        {
-            // TBD Sabrina: run Step1 Python notebook without filter params
-            // @Denis: Please doublecheck these values! Same order as below.
-            filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
-
-            save_params_run_step1(filterparam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
-        }
-        else
-        {
-            //TBD Sabrina: run Step1 Python notebook WITH following filter params
-
-            filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
-            filterparam[1] = GameObject.Find("MinCount").GetComponentInChildren<TMP_InputField>().text;
-            filterparam[2] = GameObject.Find("MaxCount").GetComponentInChildren<TMP_InputField>().text;
-            filterparam[3] = GameObject.Find("PCT_MT_min").GetComponentInChildren<TMP_InputField>().text;
-            filterparam[4] = GameObject.Find("PCT_MT_max").GetComponentInChildren<TMP_InputField>().text;
-            filterparam[5] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
-            filterparam[6] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
-
-            save_params_run_step1(filterparam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
-
-        }
-    }
-
-    private void moveSlice(GameObject go)
-    {
-        // Manages how the order of the slices is set by the user, swaping dataset order etc.
-        GameObject swapGO = go.transform.parent.gameObject;
-        int pos = slicesList.IndexOf(swapGO);
-
-        if (go.name == "ButtonUp")
-        {
-            if (pos == 0) return;
-            else
-            {
-                try
-                {
-                    GameObject temp2 = slicesList[pos - 1];
-                    GameObject temp1 = swapGO;
-
-                    // swap in List
-                    slicesList[pos] = temp2; // new swapgo
-                    slicesList[pos - 1] = temp1; //2nd place
-
-                    // swap vector
-                    Vector3 temp = slicesList[pos].transform.position;
-                    slicesList[pos].transform.position = slicesList[pos - 1].transform.position;
-                    slicesList[pos - 1].transform.position = temp;
-                }
-                catch (Exception) { }
-            }
-        }
-        else if (go.name == "ButtonDown")
-        {
-
-            if (pos == slicesList.Count) return;
-            else
-            {
-                try
-                {
-                    GameObject temp2 = slicesList[pos + 1];
-                    GameObject temp1 = swapGO;
-
-                    // swap in List
-                    slicesList[pos] = temp2; // new swapgo
-                    slicesList[pos + 1] = temp1; //2nd place
-
-                    // swap vector
-                    Vector3 temp = slicesList[pos].transform.position;
-                    slicesList[pos].transform.position = slicesList[pos + 1].transform.position;
-                    slicesList[pos + 1].transform.position = temp;
-                }
-                catch (Exception) { }
-            }
-        }
-        else if (go.name == "DeleteBtn")
-        {
-            for (int i = slicesList.Count - 1; i > pos; i--)
-            {
-                slicesList[i].transform.position = slicesList[i - 1].transform.position;
-            }
-
-            slicesList.Remove(swapGO);
-            transferDatapaths.RemoveAt(pos);
-            rotationValues.Remove(rotationValues[0]);
-            Destroy(swapGO);
-
-        }
-    }
-
-    public void getFilterParamPipeline()
-    {
-        // Reading filter parameters for python pipeline
-        string[] filterPipelineParam = new string[9];
-
-        if (poltTogglePip.isOn)
-        {
-            //TBD1 include plot png download
-            filterPipelineParam[8] = 1.ToString();
-        }
-
-        if (GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn)
-        {
-            //TBD1 include SVG step
-            filterPipelineParam[7] = 1.ToString();
-        }
-
-
-        filterPipelineParam[0] = GameObject.Find("MinCount").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[1] = GameObject.Find("MaxCount").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[2] = GameObject.Find("PCT_MT_min").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[3] = GameObject.Find("PCT_MT_max").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[4] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[5] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
-
-        //TBD Sabrina start pipeline steps based on bools filterStep, coorelationStep, clusteringStep, SVGstep
-
-        save_params_run_step1(filterPipelineParam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
-        // datapath to file = filepathUpload
-
-    }
-
-    IEnumerator selectDirectory()
-    {
-        // Starts filebrowser and lets user choose directory for output
-        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
-
-        if (FileBrowser.Success)
-        {
-
-            for (int i = 0; i < FileBrowser.Result.Length; i++)
-            {
-                destinationPath = FileBrowser.Result[i];
-                UnityEngine.Debug.Log(destinationPath);
-            }
-
-        }
-    }
-
-    //Xenium Process
-    //Browse for GeneList of Xenium data
-    public void selectXeniumFeatures()
-    {
-        StartCoroutine(selectBrowseFile("xeniumGene", xeniumFeaturesTMP));
-    }
-    //Browse for Spotlist of Xenium data
-    public void selectXeniumSpot()
-    {
-        StartCoroutine(selectBrowseFile("xeniumSpots", xeniumSpotsTMP));
-    }
-    // Browse for Matrix gene expression file
-    public void selectXeniumMatrix()
-    {
-        StartCoroutine(selectBrowseFile("xeniumMatrix", xeniumMatPathField));
-    }
-
-    // Xenium for Load
-    public void selectXeniumHDF()
-    {
-        StartCoroutine(selectBrowseFile("xeniumHDF", xeniumHDFFieldLoad));
-    }
-
-    public void selectXeniumSpotLoad()
-    {
-        StartCoroutine(selectBrowseFile("xeniumSpots", xeniumSpotsTMPLoad));
-    }
-    // Browse for Matrix gene expression file
-    public void selectXeniumGenenamesLoad()
-    {
-        StartCoroutine(selectBrowseFile("xeniumGene", xeniumFeaturesTMPLoad));
-    }
-
-    //delete?
-    public void selectXeniumHDFLoad()
-    {
-        StartCoroutine(selectBrowseFile("xeniumHDF", xeniumMatPathField));
-    }
-
-    public void selectStomicssFile()
-    {
-        //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("stomics", stomicsPathField));
-
-    }
-
-    public void selectStomicssFileProcess()
-    {
-        //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("stomics", stomicsPathProcessField));
-
-    }
-
-    public void selectMerfishMatrixFileProcess()
-    {
-        //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("merfishMat", merfishMatProcessTMP));
-
-    }
-    public void selectMerfishMatrixFileLoad()
-    {
-        //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("merfishMat", merfishMatLoadTMP));
-
-    }
-
-    public void selectMerfishMetaProcess()
-    {
-        //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("merfishMeta", merfishMetaProcessTMP));
-
-    }
-
-    public void selectMerfishMetaLoad()
-    {
-        //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("merfishMeta", merfishMetaLoadTMP));
-
-    }
-
-    public void selectOtherMatFile()
-    {
-        //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("otherMat", otherMatLoadTMP));
-
-    }
-
-    public void select3DObject()
-    {
-        //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("object", object3DTMP));
-
-    }
-
-    public void selectOtherMetaFile()
-    {
-        //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("otherMeta", otherMetaLoadTMP));
-
-    }
-
-    public void selectTomoAP()
-    {
-        StartCoroutine(selectBrowseFile("AP", tomoAPfield));
-
-    }
-    public void selectTomoVD()
-    {
-        StartCoroutine(selectBrowseFile("VD", tomoVDfield));
-
-    }
-    public void selectTomoLR()
-    {
-        StartCoroutine(selectBrowseFile("LR", tomoLRfield));
-
-    }
-    public void selectTomoGene()
-    {
-        StartCoroutine(selectBrowseFile("tomoGene", tomoGenefield));
-
-    }
-
-
-    // Browse local machine for datapaths (except Visium)
-    IEnumerator selectBrowseFile(string target, TMP_InputField tmpinputfield)
-    {
-        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
-
-        if (FileBrowser.Success)
-        {
-            string res = "";
-            for (int i = 0; i < FileBrowser.Result.Length; i++)
-            {
-                res = FileBrowser.Result[i];
-            }
-            tmpinputfield.text = res;
-
-            switch (target)
-            {
-
-                case "stomics":
-                    stomicsPath = res;
-                    break;
-                case "AP":
-                    APPath = res;
-                    break;
-                case "VD":
-                    VDPath = res;
-                    break;
-                case "LR":
-                    LRPath = res;
-                    break;
-                case "tomoGene":
-                    tomoGenePath = res;
-                    break;
-                case "xenium":
-                    xeniumMatrix = res;
-                    break;
-                case "xeniumGene":
-                    xeniumGenePanelPath = res;
-                    break;
-                case "xeniumSpots":
-                    xeniumCellMetaData = res;
-                    break;
-                case "xeniumHDF":
-                    xeniumMatrix = res;
-                    break;
-                case "otherMat":
-                    otherMatrixPath = res;
-                    break;
-                case "otherMeta":
-                    otherMetaPath = res;
-                    break;
-                case "merfishMeta":
-                    merfishMetaPath = res;
-                    break;
-                case "merfishMat":
-                    merfishGenePath = res;
-                    break;
-                case "object":
-                    objectPath = res;
-                    break;
-                    //case "stomics": stomicsPath = res;
-                    //    break;
-            }
-        }
-    }
-
-    public void processXenium()
-    {
-        //TODO: xeniumMatrix path needs to read datapath
-        StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Xenium_path.txt", false);
-        string[] xenium_path_out = new string[2];
-        xenium_path_out[0] = xeniumMatrix;
-        xenium_path_out[1] = "";// outputDirectory;
-        foreach (string param in xenium_path_out)
-        {
-            writer.WriteLine(param);
-        }
-        writer.Close();
-
-        ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_xenium/dist/Load_xenium.exe";
-        startInfo.UseShellExecute = false;
-        startInfo.CreateNoWindow = false;
-        UnityEngine.Debug.Log("Xenium File load started.");
-
-
-        Process p = new Process
-        {
-            StartInfo = startInfo
-        };
-
-        p.Start();
-        //p.WaitForExit();
-        //loadingPanel.SetActive(false);
-
-    }
-
-    //Disabled due to waiting times only Process used
-    //public void processXeniumandRun()
-    //{
-    //    processXenium();
-    //    //TBD1 return hdf5 file datapath to xeniumPath string 
-    //    xeniumMatrix = "";
-    //    startXenium();
-    //}
-
-
-    public void runC18()
-    {
-        gameObject.GetComponent<DataTransfer>().startC18();
-    }
-    public void processStomics()
-    {
-        //TODO: stomicspath empty, read path first
-        StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Stomics_path.txt", false);
-        string[] stomics_path_out = new string[2];
-        stomics_path_out[0] = stomicsPath;
-        stomics_path_out[1] = "";// outputDirectory;
-
-        foreach (string param in stomics_path_out)
-        {
-            writer.WriteLine(param);
-        }
-        writer.Close();
-
-        ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_stomics/dist/Load_stomics.exe";
-        startInfo.UseShellExecute = false;
-        startInfo.CreateNoWindow = false;
-        UnityEngine.Debug.Log("Xenium File load started.");
-
-
-        Process p = new Process
-        {
-            StartInfo = startInfo
-        };
-
-        p.Start();
-        //p.WaitForExit();
-
-    }
-
-    // Not used due to waiting times only process btn in use
-    //public void processAndRunStomics()
-    //{
-    //    //TBD1 Sabrian process Stomics via processStomics() function and return datapath to new transposed hdf file
-    //    processStomics();
-    //    stomicsPath = "";
-    //    runStomics();
-    //}
-
-    public void runStomics()
-    {
-        gameObject.GetComponent<DataTransfer>().startStomics();
-    }
-
-    public void processMerfish()
-    {
-        //TODO: connect datapaths, read path
-        merfishMetaPath = "";
-        merfishGenePath = "";
-        StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Merfish_path.txt", false);
-        string[] merfish_path_out = new string[2];
-        merfish_path_out[0] = merfishGenePath;
-        merfish_path_out[1] = "";// outputDirectory;
-        foreach (string param in merfish_path_out)
-        {
-            writer.WriteLine(param);
-        }
-        writer.Close();
-
-        ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_merfish/dist/Load_merfish.exe";
-        startInfo.UseShellExecute = false;
-        startInfo.CreateNoWindow = false;
-        UnityEngine.Debug.Log("Merfish File load started.");
-
-
-        Process p = new Process
-        {
-            StartInfo = startInfo
-        };
-
-        p.Start();
-        //p.WaitForExit();
-        //loadingPanel.SetActive(false);
-
-    //Not used due to waiting times only process used
-    //public void processAndRunMerfish()
-    //{
-    //    processMerfish();
-    //    startMerfish();
-    //}
-
-    }
-
-    public void runOther()
+    public void startOther()
     {
         for (int i = 0; i < 4; i++)
         {
@@ -927,68 +281,24 @@ public class UIManager : MonoBehaviour
         {
             other2D = true;
         }
-
-        gameObject.GetComponent<DataTransfer>().startOther();
-
+        df.startOther();
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// Start Visualiser functions
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void clearObjectData()
+
+    /// <summary>
+    /// Instantiate the logfile
+    /// </summary>
+    /// <param name="logfile">logfile for current session</param>
+
+    public void setLogfile(LogFileController logfile)
     {
-        foreach (TMP_InputField t in objectIfs)
-        {
-            t.text = "";
-        }
-        gameObject.GetComponent<DataTransfer>().clearObject();
-
+        this.logfile = logfile;
     }
-
-    public void load3Dobject(GameObject panel)
-    {
-        List<string> objData = new List<string>();
-
-        foreach (TMP_InputField t in objectIfs)
-        {
-            if (t.text != "") objData.Add(t.text);
-            else objData.Add("0");
-        }
-
-        gameObject.GetComponent<DataTransfer>().uploadObject(objData);
-        panel.SetActive(false);
-
-    }
-
-    IEnumerator selectUploadfile()
-    {
-        // Selecting dataset directories to load
-        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
-        if (FileBrowser.Success)
-        {
-            for (int i = 0; i < FileBrowser.Result.Length; i++)
-            {
-                filepathUpload = FileBrowser.Result[i];
-            }
-        }
-    }
-
-    public void declineDuplicate()
-    {
-        warningPanel.SetActive(false);
-    }
-
-    public void collapse()
-    {
-        expandPanel.SetActive(false);
-    }
-
-    private void toggleExpand(GameObject go)
-    {
-        // Expand H&E stain function while setting order of datasets
-        expandPanel.SetActive(true);
-        Texture temptext = go.transform.parent.gameObject.GetComponent<RawImage>().texture;
-        expandImage.texture = temptext;
-        //Graphics.CopyTexture(go.transform.parent.gameObject.GetComponent<RawImage>().texture, expandImage.texture);
-    }
+    #endregion
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// Menu Panels
@@ -1047,7 +357,7 @@ public class UIManager : MonoBehaviour
                 otherLoadPanel.SetActive(true);
                 break;
             case "VisiumC18Btn":
-                runC18();
+                startC18();
                 break;
             case "Load3DobjectBtn":
                 objectLoadPanel.SetActive(true);
@@ -1237,9 +547,618 @@ public class UIManager : MonoBehaviour
     #endregion
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// Process SRT techniques - (not Visium)
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    #region Process SRT data
+    /// <summary>
+    /// Process Merfish data 
+    /// </summary>
+    public void processMerfish()
+    {
+        //TODO: connect datapaths, read path
+        merfishMetaPath = "";
+        merfishGenePath = "";
+        StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Merfish_path.txt", false);
+        string[] merfish_path_out = new string[2];
+        merfish_path_out[0] = merfishGenePath;
+        merfish_path_out[1] = "";// outputDirectory;
+        foreach (string param in merfish_path_out)
+        {
+            writer.WriteLine(param);
+        }
+        writer.Close();
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_merfish/dist/Load_merfish.exe";
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = false;
+        UnityEngine.Debug.Log("Merfish File load started.");
+
+
+        Process p = new Process
+        {
+            StartInfo = startInfo
+        };
+
+        p.Start();
+        //p.WaitForExit();
+        //loadingPanel.SetActive(false);
+
+        //Not used due to waiting times only process used
+        //public void processAndRunMerfish()
+        //{
+        //    processMerfish();
+        //    startMerfish();
+        //}
+
+    }
+
+    /// <summary>
+    /// Process Stomics data
+    /// </summary>
+    public void processStomics()
+    {
+        //TODO: stomicspath empty, read path first
+        StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Stomics_path.txt", false);
+        string[] stomics_path_out = new string[2];
+        stomics_path_out[0] = stomicsPath;
+        stomics_path_out[1] = "";// outputDirectory;
+
+        foreach (string param in stomics_path_out)
+        {
+            writer.WriteLine(param);
+        }
+        writer.Close();
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_stomics/dist/Load_stomics.exe";
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = false;
+        UnityEngine.Debug.Log("Xenium File load started.");
+
+
+        Process p = new Process
+        {
+            StartInfo = startInfo
+        };
+
+        p.Start();
+        //p.WaitForExit();
+
+    }
+
+    /// <summary>
+    /// Process Xenium data
+    /// </summary>
+    public void processXenium()
+    {
+        //TODO: xeniumMatrix path needs to read datapath
+        StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Xenium_path.txt", false);
+        string[] xenium_path_out = new string[2];
+        xenium_path_out[0] = xeniumMatrix;
+        xenium_path_out[1] = "";// outputDirectory;
+        foreach (string param in xenium_path_out)
+        {
+            writer.WriteLine(param);
+        }
+        writer.Close();
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_xenium/dist/Load_xenium.exe";
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = false;
+        UnityEngine.Debug.Log("Xenium File load started.");
+
+
+        Process p = new Process
+        {
+            StartInfo = startInfo
+        };
+
+        p.Start();
+        //p.WaitForExit();
+        //loadingPanel.SetActive(false);
+
+    }
+    #endregion
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// Process Visium & Download data
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    #region Download and Process Visium
+    /// <summary>
+    /// Start the Visium data download and processing the data using the Python AW
+    /// </summary>
+    public void startPipelineDownloadData()
+    {
+        string[] filterparam = new string[9];
+
+        //TODO: Sabrina, SVG is written but not produced
+        if (svgToggle.isOn)
+        {
+            filterparam[7] = "1";
+        }
+
+        if (plotToggle.isOn)
+        {
+            filterparam[8] = "1";
+        }
+
+        //Stores db literal and the filter params
+        if (destinationPath != "")
+        {
+            //TBD Sabrina: use destinationpath for python output instead of default
+            StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/outpath.txt", false);
+            writer.WriteLine(Application.dataPath);
+            writer.Close();
+        }
+        else
+        {
+            StreamWriter writer2 = new StreamWriter(Application.dataPath + "/PythonFiles/outpath.txt", false);
+            writer2.WriteLine(Application.dataPath);
+            writer2.Close();
+        }
+
+        if (skipFilter)
+        {
+            // @Denis: Please doublecheck these values! Same order as below.
+            filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
+
+            save_params_run_step1(filterparam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
+        }
+        else
+        {
+            //TBD Sabrina: run Step1 Python notebook WITH following filter params
+
+            filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
+            filterparam[1] = GameObject.Find("MinCount").GetComponentInChildren<TMP_InputField>().text;
+            filterparam[2] = GameObject.Find("MaxCount").GetComponentInChildren<TMP_InputField>().text;
+            filterparam[3] = GameObject.Find("PCT_MT_min").GetComponentInChildren<TMP_InputField>().text;
+            filterparam[4] = GameObject.Find("PCT_MT_max").GetComponentInChildren<TMP_InputField>().text;
+            filterparam[5] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
+            filterparam[6] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
+
+            save_params_run_step1(filterparam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
+
+        }
+    }
+
+    /// <summary>
+    /// this function only processes the data and doesn't start the visualisation scene
+    /// </summary>
+    public void processOnlyVisium()
+    {
+        // 
+        startPipelineDownloadData();
+
+        //TBD1 if processed return datapath via outputDirectory to UI and successful filtered
+        string outputDirectory = "";
+        outputDirectory = File.ReadLines(Application.dataPath + "/PythonFiles/outdirectorypaths.txt").Last();
+        visiumSuccessPanel.SetActive(true);
+        visiumSuccessPanel.GetComponentInChildren<TMP_Text>().text = "The automated process is started, this might take a couple of minutes. Please do not close the Python Application pop up window. T he output is done once it closes and will be saved at: " + outputDirectory;
+
+    }
+
+    /// <summary>
+    /// Reading the filter parameters for Visium data uploaded from local machine
+    /// </summary>
+    public void getFilterParamPipeline()
+    {
+        // Reading filter parameters for python pipeline
+        string[] filterPipelineParam = new string[9];
+
+        if (poltTogglePip.isOn)
+        {
+            //TBD1 include plot png download
+            filterPipelineParam[8] = 1.ToString();
+        }
+
+        if (GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn)
+        {
+            //TBD1 include SVG step
+            filterPipelineParam[7] = 1.ToString();
+        }
+
+        filterPipelineParam[0] = GameObject.Find("MinCount").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[1] = GameObject.Find("MaxCount").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[2] = GameObject.Find("PCT_MT_min").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[3] = GameObject.Find("PCT_MT_max").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[4] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[5] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
+
+        save_params_run_step1(filterPipelineParam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
+        // datapath to file = filepathUpload
+
+    }
+
+    /// <summary>
+    /// Save the process parameters for Visium data analysis
+    /// </summary>
+    /// <param name="filterparam">Array of all filter parameters</param>
+    /// <param name="outname">Output path name</param>
+    /// <param name="executable">path to the python exe</param>
+    public void save_params_run_step1(string[] filterparam, string outname, string executable)
+    {
+        // Python integration
+        StreamWriter writer = new StreamWriter(Application.dataPath + outname, false);
+        foreach (string param in filterparam)
+        {
+            writer.WriteLine(param);
+        }
+        writer.Close();
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        startInfo.FileName = Application.dataPath + executable;
+        //startInfo.Arguments = "\"" + wd + "/rcode.r" + " \"";
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = false;
+
+
+        Process p = new Process
+        {
+            StartInfo = startInfo
+        };
+
+        p.Start();
+        //p.WaitForExit();
+        //loadingPanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// Starting the next pipeline step if Visium data is uploaded from local machine and filtering was selected
+    /// </summary>
+    public void nextPipelineStep()
+    {
+        string[] params_out = new string[4];
+        params_out[0] = filepathUpload;
+        params_out[3] = destinationPath;
+        UnityEngine.Debug.Log(Application.dataPath);
+        if (GameObject.Find("Step6").GetComponentInChildren<Toggle>().isOn)
+        {
+            //TBD1 skip all filter steps and just prepare data for VR-Omics = preprocess without filter values
+            params_out[1] = 1.ToString();
+
+        }
+        // Manages the workflow of the pipeline part to guide through the 4 individual steps
+
+        filterStep = GameObject.Find("Step1").GetComponentInChildren<Toggle>().isOn;
+        // filter and svg only
+        //correlationStep = GameObject.Find("Step2").GetComponentInChildren<Toggle>().isOn;
+        //clusteringStep = GameObject.Find("Step3").GetComponentInChildren<Toggle>().isOn;
+        SVGStep = GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn;
+
+        pipelinestepPanel.SetActive(false);
+        if (filterStep)
+        {
+            pipelineParamPanel.SetActive(true);
+        }
+        else
+        {
+            //TBD1 skip filtetr values and go to steps selected
+
+            if (SVGStep == true)
+            {
+
+                //TBD1 Sabrina if toggle on, include SVG analysis to filter step
+                params_out[2] = 1.ToString();
+            }
+
+        }
+
+        if (SVGStep == true)
+        {
+            //TBD1 Sabrina if toggle on, include SVG analysis to filter step
+            params_out[2] = 1.ToString();
+        }
+
+        save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
+    }
+
+    /// <summary>
+    /// Skipping filter step and only processing Visium data into visualiser format
+    /// </summary>
+    public void skipFilterStep()
+    {
+        skipFilter = true;
+        startPipelineDownloadData();
+    }
+
+    public void collapse()
+    {
+        expandPanel.SetActive(false);
+    }
+
+    #endregion
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// Starting FileBrowser and selecting files for load and process
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    #region File Browser
+    #region Call File Browser
+    //Xenium Process
+    //Browse for GeneList of Xenium data
+    public void selectXeniumFeatures()
+    {
+        StartCoroutine(selectBrowseFile("xeniumGene", xeniumFeaturesTMP));
+    }
+    //Browse for Spotlist of Xenium data
+    public void selectXeniumSpot()
+    {
+        StartCoroutine(selectBrowseFile("xeniumSpots", xeniumSpotsTMP));
+    }
+    // Browse for Matrix gene expression file
+    public void selectXeniumMatrix()
+    {
+        StartCoroutine(selectBrowseFile("xeniumMatrix", xeniumMatPathField));
+    }
+
+    // Xenium for Load
+    public void selectXeniumHDF()
+    {
+        StartCoroutine(selectBrowseFile("xeniumHDF", xeniumHDFFieldLoad));
+    }
+
+    public void selectXeniumSpotLoad()
+    {
+        StartCoroutine(selectBrowseFile("xeniumSpots", xeniumSpotsTMPLoad));
+    }
+    // Browse for Matrix gene expression file
+    public void selectXeniumGenenamesLoad()
+    {
+        StartCoroutine(selectBrowseFile("xeniumGene", xeniumFeaturesTMPLoad));
+    }
+
+    //delete?
+    public void selectXeniumHDFLoad()
+    {
+        StartCoroutine(selectBrowseFile("xeniumHDF", xeniumMatPathField));
+    }
+
+    public void selectStomicssFile()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("stomics", stomicsPathField));
+
+    }
+
+    public void selectStomicssFileProcess()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("stomics", stomicsPathProcessField));
+
+    }
+
+    public void selectMerfishMatrixFileProcess()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("merfishMat", merfishMatProcessTMP));
+
+    }
+    public void selectMerfishMatrixFileLoad()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("merfishMat", merfishMatLoadTMP));
+
+    }
+
+    public void selectMerfishMetaProcess()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("merfishMeta", merfishMetaProcessTMP));
+
+    }
+
+    public void selectMerfishMetaLoad()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("merfishMeta", merfishMetaLoadTMP));
+
+    }
+
+    public void selectOtherMatFile()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("otherMat", otherMatLoadTMP));
+
+    }
+
+    public void select3DObject()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("object", object3DTMP));
+
+    }
+
+    public void selectOtherMetaFile()
+    {
+        //File has been processed ready to load VR
+        StartCoroutine(selectBrowseFile("otherMeta", otherMetaLoadTMP));
+
+    }
+    public void selectTomoAP()
+    {
+        StartCoroutine(selectBrowseFile("AP", tomoAPfield));
+
+    }
+    public void selectTomoVD()
+    {
+        StartCoroutine(selectBrowseFile("VD", tomoVDfield));
+
+    }
+    public void selectTomoLR()
+    {
+        StartCoroutine(selectBrowseFile("LR", tomoLRfield));
+
+    }
+    public void selectTomoGene()
+    {
+        StartCoroutine(selectBrowseFile("tomoGene", tomoGenefield));
+
+    }
+    #endregion
+
+    #region File Browser
+    /// <summary>
+    /// Open File Explorer to select file from local machine
+    /// </summary>
+    /// <returns>Filepath of selected file in explorer</returns>
+    IEnumerator selectUploadfile()
+    {
+        // Selecting dataset directories to load
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
+        if (FileBrowser.Success)
+        {
+            for (int i = 0; i < FileBrowser.Result.Length; i++)
+            {
+                filepathUpload = FileBrowser.Result[i];
+            }
+        }
+    }
+
+    /// <summary>
+    /// Saving the datapaths from the input fields to the respective path variables
+    /// </summary>
+    /// <param name="target">The string identifier refering to where the filepath will be assigned to</param>
+    /// <param name="tmpinputfield">the input field holding the current datapath that needs to be saved</param>
+    /// <returns></returns>
+    IEnumerator selectBrowseFile(string target, TMP_InputField tmpinputfield)
+    {
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
+
+        if (FileBrowser.Success)
+        {
+            string res = "";
+            for (int i = 0; i < FileBrowser.Result.Length; i++)
+            {
+                res = FileBrowser.Result[i];
+            }
+            tmpinputfield.text = res;
+
+            switch (target)
+            {
+                case "stomics":
+                    stomicsPath = res;
+                    break;
+                case "AP":
+                    APPath = res;
+                    break;
+                case "VD":
+                    VDPath = res;
+                    break;
+                case "LR":
+                    LRPath = res;
+                    break;
+                case "tomoGene":
+                    tomoGenePath = res;
+                    break;
+                case "xenium":
+                    xeniumMatrix = res;
+                    break;
+                case "xeniumGene":
+                    xeniumGenePanelPath = res;
+                    break;
+                case "xeniumSpots":
+                    xeniumCellMetaData = res;
+                    break;
+                case "xeniumHDF":
+                    xeniumMatrix = res;
+                    break;
+                case "otherMat":
+                    otherMatrixPath = res;
+                    break;
+                case "otherMeta":
+                    otherMetaPath = res;
+                    break;
+                case "merfishMeta":
+                    merfishMetaPath = res;
+                    break;
+                case "merfishMat":
+                    merfishGenePath = res;
+                    break;
+                case "object":
+                    objectPath = res;
+                    break;
+                    //case "stomics": stomicsPath = res;
+                    //    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Starts filebrowser and lets user choose directory for output
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator selectDirectory()
+    {
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Files and Folders", "Load");
+
+        if (FileBrowser.Success)
+        {
+
+            for (int i = 0; i < FileBrowser.Result.Length; i++)
+            {
+                destinationPath = FileBrowser.Result[i];
+                UnityEngine.Debug.Log(destinationPath);
+            }
+
+        }
+    }
+
+    /// <summary>
+    /// Open File Explorer to select the Visium files for load to visualiser
+    /// </summary>
+    public void startExplorer()
+    {
+        StartCoroutine(loadImages());
+    }
+
+    /// <summary>
+    /// Select Upload file with file explorer
+    /// </summary>
+    public void selectUpload()
+    {
+        StartCoroutine(selectUploadfile());
+    }
+
+    /// <summary>
+    /// Select path directory for output
+    /// </summary>
+    public void changeDirectory()
+    {
+        StartCoroutine(selectDirectory());
+    }
+    #endregion
+    #endregion
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// Visium upload and align sections
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     #region Visium Upload and Align Sections
+    /// <summary>
+    /// Filling the Visium downloadlist with the Literals of the available datasets from 10X Genomics
+    /// </summary>
+    public void adjust_download_list()
+    {
+        // Read file with names of data files
+        string wd = Application.dataPath;
+        wd = wd.Replace('\\', '/');
+        string fileName = wd + "/PythonFiles/list_of_file_names.txt";
+
+        var lines = File.ReadAllLines(fileName);
+        string line2 = lines[0];
+
+        string[] components = line2.Split(new string[] { "," }, StringSplitOptions.None);
+
+        // Identify game object with file names as panel
+        m_DropOptions = new List<string>();
+        foreach (string c in components)
+        {
+            m_DropOptions.Add(c);
+        }
+        // add different options to dropdown menu
+        dropdown_list.AddOptions(m_DropOptions);
+    }
+
     /// <summary>
     /// Loading the tissue image for visualisation in container ot alignment process
     /// </summary>
@@ -1318,6 +1237,76 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Sort Visium slides during load container view and settitng the order of the slides
+    /// </summary>
+    /// <param name="go">Button to move slide up or down</param>
+    private void moveSlice(GameObject go)
+    {
+        // Manages how the order of the slices is set by the user, swaping dataset order etc.
+        GameObject swapGO = go.transform.parent.gameObject;
+        int pos = slicesList.IndexOf(swapGO);
+
+        if (go.name == "ButtonUp")
+        {
+            if (pos == 0) return;
+            else
+            {
+                try
+                {
+                    GameObject temp2 = slicesList[pos - 1];
+                    GameObject temp1 = swapGO;
+
+                    // swap in List
+                    slicesList[pos] = temp2; // new swapgo
+                    slicesList[pos - 1] = temp1; //2nd place
+
+                    // swap vector
+                    Vector3 temp = slicesList[pos].transform.position;
+                    slicesList[pos].transform.position = slicesList[pos - 1].transform.position;
+                    slicesList[pos - 1].transform.position = temp;
+                }
+                catch (Exception) { }
+            }
+        }
+        else if (go.name == "ButtonDown")
+        {
+
+            if (pos == slicesList.Count) return;
+            else
+            {
+                try
+                {
+                    GameObject temp2 = slicesList[pos + 1];
+                    GameObject temp1 = swapGO;
+
+                    // swap in List
+                    slicesList[pos] = temp2; // new swapgo
+                    slicesList[pos + 1] = temp1; //2nd place
+
+                    // swap vector
+                    Vector3 temp = slicesList[pos].transform.position;
+                    slicesList[pos].transform.position = slicesList[pos + 1].transform.position;
+                    slicesList[pos + 1].transform.position = temp;
+                }
+                catch (Exception) { }
+            }
+        }
+        else if (go.name == "DeleteBtn")
+        {
+            for (int i = slicesList.Count - 1; i > pos; i--)
+            {
+                slicesList[i].transform.position = slicesList[i - 1].transform.position;
+            }
+
+            slicesList.Remove(swapGO);
+            transferDatapaths.RemoveAt(pos);
+            rotationValues.Remove(rotationValues[0]);
+            Destroy(swapGO);
+
+        }
+    }
+
+    /// <summary>
     /// Aligning the tissue images for Visium upload
     /// </summary>
     public void alignment()
@@ -1368,6 +1357,31 @@ public class UIManager : MonoBehaviour
             dropd.ClearOptions();
             dropd.AddOptions(dpOptions);
             selectForRotation();
+        }
+
+    }
+
+    /// <summary>
+    /// Toggles which Tissue image is currently shown
+    /// </summary>
+    /// <param name="toggle"></param>
+    public void toggleListener(GameObject toggle)
+    {
+        foreach (RawImage imag in images)
+        {
+            if (imag.name == toggle.GetComponentInChildren<Text>().text)
+            {
+                if (imag.transform.gameObject.activeSelf)
+                {
+                    imag.transform.gameObject.SetActive(false);
+
+                }
+                else if (!imag.transform.gameObject.activeSelf)
+                {
+                    imag.transform.gameObject.SetActive(true);
+
+                }
+            }
         }
 
     }
@@ -1496,16 +1510,64 @@ public class UIManager : MonoBehaviour
         catch (Exception) { }
     }
 
+    /// <summary>
+    /// Expanding the tissue image
+    /// </summary>
+    /// <param name="go">The object attached to the tissue image to be expanded</param>
+    private void toggleExpand(GameObject go)
+    {
+        // Expand H&E stain function while setting order of datasets
+        expandPanel.SetActive(true);
+        Texture temptext = go.transform.parent.gameObject.GetComponent<RawImage>().texture;
+        expandImage.texture = temptext;
+        //Graphics.CopyTexture(go.transform.parent.gameObject.GetComponent<RawImage>().texture, expandImage.texture);
+    }
     #endregion
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// 3D object
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    #region 3D object
+    /// <summary>
+    /// Resets all Inputfields and deletes the objects that have been passed to the DataTransfer script
+    /// </summary>
+    public void clearObjectData()
+    {
+        foreach (TMP_InputField t in objectIfs)
+        {
+            t.text = "";
+        }
+        df.clearObject();
+
+    }
+
+    /// <summary>
+    /// Pass 3D object information to the DataTransfer script
+    /// </summary>
+    /// <param name="panel"></param>
+    public void load3Dobject(GameObject panel)
+    {
+        List<string> objData = new List<string>();
+
+        foreach (TMP_InputField t in objectIfs)
+        {
+            if (t.text != "") objData.Add(t.text);
+            else objData.Add("0");
+        }
+
+        df.uploadObject(objData);
+        panel.SetActive(false);
+
+    }
+    #endregion
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// Additional functions
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    #region VR Settings
     /// <summary>
     /// Trigger HMD detection manually.
     /// </summary>
-    #region VR Settings
     public void EnterVR(Transform EnterVRTransform)
     {
         GameObject activeIconGameObject = EnterVRTransform.GetChild(1).gameObject;

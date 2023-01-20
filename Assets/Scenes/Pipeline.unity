@@ -13135,7 +13135,7 @@ GameObject:
   - component: {fileID: 397725695}
   - component: {fileID: 397725694}
   m_Layer: 5
-  m_Name: CustomBtn
+  m_Name: StartOtherBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13207,8 +13207,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 994948022}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: runOther
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: startOther
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
