@@ -8,6 +8,11 @@ public class LogFileController : MonoBehaviour
 {
     private string filePath;
 
+    /// <summary>
+    /// Creating a logfile entry in the current logfile instance
+    /// </summary>
+    /// <param name="ex">The Exception</param>
+    /// <param name="message">A string explaining the cause of the exception</param>
     public void Log(Exception ex, string message)
     {
         CleanUp();
@@ -20,6 +25,10 @@ public class LogFileController : MonoBehaviour
             sw.WriteLine("StackTrace: " + ex.StackTrace);
         }
     }
+    
+    /// <summary>
+    /// Cleaning the Logfile directory to only allow total of 20 numbers and everything older than 30 days
+    /// </summary>
     public void CleanUp()
     {
         string dataPath = Application.dataPath + "/Logfiles/";

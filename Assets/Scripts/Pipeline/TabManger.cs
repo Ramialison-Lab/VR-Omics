@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 /*
-* Copyright (c) 2018 Liefe Science Informatics (university of Konstanz, Germany)
+* Copyright (c) 2023 Murdoch Children's Research Institute, Parkville, Melbourne
 * author: Denis Bienroth
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy

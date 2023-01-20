@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (c) 2018 Liefe Science Informatics (university of Konstanz, Germany)
+* Copyright (c) 2023 Life Science Informatics (university of Konstanz, Germany)
 * author: Denis Bienroth
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,9 @@ using UnityEngine.SceneManagement;
 public class MainController : MonoBehaviour
 {
 
-    // Update is called once per frame
+    /// <summary>
+    /// Handling Application quit and navigating from Visualiser to Menu
+    /// </summary>
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))

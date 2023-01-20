@@ -6,7 +6,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 /*
-* Copyright (c) 2018 Liefe Science Informatics (university of Konstanz, Germany)
+* Copyright (c) 2023 Life Science Informatics (university of Konstanz, Germany)
 * author: Denis Bienroth
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy

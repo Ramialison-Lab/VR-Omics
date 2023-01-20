@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (c) 2018 Liefe Science Informatics (university of Konstanz, Germany)
+* Copyright (c) 2023 Life Science Informatics (university of Konstanz, Germany)
 * author: Denis Bienroth
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,8 @@
 * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/using UnityEngine;
+*/
+using UnityEngine;
 using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
@@ -40,16 +41,14 @@ public class MenuManager : MonoBehaviour
     // This function is called if ths csv upload option was selected to upload a csv database from the local machine
     public void CSVoptionSelected()
     {
-
         fadeFunction();
         visiumbtn.SetActive(false);
         uploadContextMenu.SetActive(true);
     }
 
-    // this function is callledd if the database needs to be downloaded and pre-processed from https://www.10xgenomics.com/
+    // this function is called if the database needs to be downloaded and pre-processed from https://www.10xgenomics.com/
     public void VisiumoptionSelected()
     {
-
         fadeFunction();
         csvbtn.SetActive(false);
         downloadContextMenu.SetActive(true);

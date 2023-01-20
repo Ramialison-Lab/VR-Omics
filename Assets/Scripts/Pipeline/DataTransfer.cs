@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (c) 2018 Liefe Science Informatics (university of Konstanz, Germany)
+* Copyright (c) 2023 Life Science Informatics (university of Konstanz, Germany)
 * author: Denis Bienroth
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -60,14 +60,20 @@ public class DataTransfer : MonoBehaviour
     public bool other2D = false;
     public int[] otherCSVCols = new int[4];
 
-    // This script stores the datapaths and all values that need to be transfered to the Visualisation scene
+    /// <summary>
+    /// This script stores all data that needs to be transfered from AW to Visualiser
+    /// </summary>
     private void Start()
     {
         ui = gameObject.GetComponent<UIManager>();
+        //Instanciating a new logfile
         logfile = new LogFileController();
         ui.setLogfile(logfile);
     }
 
+    /// <summary>
+    /// Start Merfish in Visualiser
+    /// </summary>
     public void startMerfish()
     {
         merfish = true;
@@ -76,6 +82,9 @@ public class DataTransfer : MonoBehaviour
         startVisualisationScene();
     }
 
+    /// <summary>
+    /// Start Tomo-Seq in Visualiser
+    /// </summary>
     public void startTomo()
     {
         tomoseq = true;
@@ -87,11 +96,18 @@ public class DataTransfer : MonoBehaviour
         startVisualisationScene();
     }
 
+    /// <summary>
+    /// Start C18 Demo data in Visualiser
+    /// </summary>
     public void startC18()
     {
         c18 = true;
         startVisualisationScene();
     }   
+
+    /// <summary>
+    /// Start Custom data in Visualiser
+    /// </summary>
     public void startOther()
     {
         other2D = ui.other2D;
@@ -102,12 +118,19 @@ public class DataTransfer : MonoBehaviour
         startVisualisationScene();
     }
 
+    /// <summary>
+    /// Start Stomics in Visualiser
+    /// </summary>
     public void startStomics()
     {
         stomics = true;
         stomicsPath =  ui.stomicsPath;
         startVisualisationScene();
     }
+
+    /// <summary>
+    /// Start Xenium in Visualiser
+    /// </summary>
     public void startXenium()
     {
         xenium = true;
@@ -117,6 +140,12 @@ public class DataTransfer : MonoBehaviour
         startVisualisationScene();
     }
 
+    /// <summary>
+    /// Start Multiple Visium slides in Visualiser
+    /// </summary>
+    /// <param name="paths">The paths to the folders of each slide</param>
+    /// <param name="rotationValues">The rotation values applied to each of the slides in alginment process</param>
+    /// <param name="distances">The distances between each of the slides</param>
     public void startMultipleVisium(List<string> paths, List<int> rotationValues, List<int> distances)
     {
         if(paths.Count ==1) visium = true;
@@ -127,11 +156,18 @@ public class DataTransfer : MonoBehaviour
         startVisualisationScene();
     }
 
+    /// <summary>
+    /// Starting the Visualiser Scene
+    /// </summary>
     private void startVisualisationScene()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
+    /// <summary>
+    /// Saving the 3D object datapath
+    /// </summary>
+    /// <param name="objData"></param>
     public void uploadObject(List<string> objData)
     {
         this.objData = objData;
@@ -139,6 +175,9 @@ public class DataTransfer : MonoBehaviour
         startVisualisationScene();
     }
 
+    /// <summary>
+    /// Removing all saved 3D objects
+    /// </summary>
     public void clearObject()
     {
         objectUsed = false;
