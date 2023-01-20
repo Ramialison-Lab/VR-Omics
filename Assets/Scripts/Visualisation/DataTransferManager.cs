@@ -411,6 +411,7 @@ public class DataTransferManager : MonoBehaviour
 
         merfishCoords = df.merfishMetaPath;
         merfishGenelist = df.merfishGenePath;
+            ;
         float[] merfishX, merfishY, merfishZ;
         string[] merfishCell;
 

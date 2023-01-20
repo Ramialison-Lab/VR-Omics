@@ -557,11 +557,11 @@ public class UIManager : MonoBehaviour
     public void processMerfish()
     {
         //TODO: connect datapaths, read path
-        merfishMetaPath = "";
-        merfishGenePath = "";
+
         StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Merfish_path.txt", false);
         string[] merfish_path_out = new string[2];
         merfish_path_out[0] = merfishGenePath;
+        UnityEngine.Debug.Log(merfishGenePath);
         merfish_path_out[1] = "";// outputDirectory;
         foreach (string param in merfish_path_out)
         {
@@ -599,11 +599,11 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void processStomics()
     {
-        //TODO: stomicspath empty, read path first
         StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Stomics_path.txt", false);
         string[] stomics_path_out = new string[2];
         stomics_path_out[0] = stomicsPath;
         stomics_path_out[1] = "";// outputDirectory;
+        UnityEngine.Debug.Log(stomicsPath);
 
         foreach (string param in stomics_path_out)
         {
@@ -615,7 +615,7 @@ public class UIManager : MonoBehaviour
         startInfo.FileName = Application.dataPath + "/Scripts/Python_exe/exe_stomics/dist/Load_stomics.exe";
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = false;
-        UnityEngine.Debug.Log("Xenium File load started.");
+        UnityEngine.Debug.Log("Stomics File load started.");
 
 
         Process p = new Process

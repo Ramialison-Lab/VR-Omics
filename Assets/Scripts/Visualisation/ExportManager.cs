@@ -57,7 +57,7 @@ public class ExportManager : MonoBehaviour
 
     public void printLine(List<string> dataEntry)
     {
-        writer.WriteLine(dataEntry[0] + "," + dataEntry[1] + "," + dataEntry[2] + "," +  dataEntry[3] + "," + dataEntry[4] + "," + dataEntry[5]);
+        writer.WriteLine(dataEntry[0] + "," + dataEntry[1] + "," + dataEntry[2] + "," +  dataEntry[3] + "," + dataEntry[4]);
     }
 
     private void writeHeader()

@@ -408,8 +408,44 @@ public class SpotDrawer : MonoBehaviour
                     colors[i] = Color.clear;
                 }
             }
+            else
+            {
+                colors[i] = hl_colors[spots[i].HighlightGroup];
+                
+            }
         }
        SetMeshBuffers();
+    }
+
+    private void setColourFromUpload()
+    {
+        if (firstGeneSelected)
+        {
+            for (int i = 0; i < spots.Length; i++)
+            {
+                if (spots[i].HighlightGroup != -1)
+                {
+                    colors[i] = hl_colors[spots[i].HighlightGroup];
+
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < spots.Length; i++)
+            {
+                if (spots[i].HighlightGroup != -1)
+                {
+                    colors[i] = hl_colors[spots[i].HighlightGroup];
+
+                }
+                else
+                {
+                    colors[i] = Color.grey;
+                }
+            }
+        }
+        SetMeshBuffers();
     }
 
     /// <summary>
@@ -588,7 +624,7 @@ public class SpotDrawer : MonoBehaviour
             SetMeshBuffers();
 
         }
-        catch (Exception) { }
+        catch (Exception e) { dfm.logfile.Log(e,"The gene was not expressed throughout the whole tissue slide. This caused an error with the normalisation of the values."); }
     }
 
     /// <summary>
@@ -598,6 +634,7 @@ public class SpotDrawer : MonoBehaviour
     public void setColors(List<double> normalise)
     {
         firstSelect = true;
+        firstGeneSelected = true;
         if (!colourcopy)
         {
             normalised.AddRange(normalise);
@@ -883,14 +920,13 @@ public class SpotDrawer : MonoBehaviour
     /// </summary>
     public void unselectAll()
     {
-        foreach (SpotWrapper mw in spots)
+        for(int i=0; i < spots.Length; i++)
         {
-            mw.HighlightGroup = -1;
+            spots[i].HighlightGroup = -1;
         }
-        foreach (SpotWrapper mw in spotsCopy)
-        {
-            mw.HighlightGroup = -1;
-        }
+
+        setColors(normalised);
+
     }
 
     private Dictionary<int, int> highlightedSpots = new Dictionary<int, int>();
@@ -925,6 +961,7 @@ public class SpotDrawer : MonoBehaviour
                             if (!addToggle)
                             {
                                 highlightedSpots.Remove(indexOfSpot);
+                                spots[indexOfSpot].HighlightGroup = -1;
                             }
                             else if (addToggle)
                             {
@@ -936,15 +973,19 @@ public class SpotDrawer : MonoBehaviour
                                     {
                                         case 0:
                                             colors[indexOfSpot] = hl_colors[0];
+                                            spots[indexOfSpot].HighlightGroup = 0;
                                             break;
                                         case 1:
                                             colors[indexOfSpot] = hl_colors[1];
+                                            spots[indexOfSpot].HighlightGroup = 1;
                                             break;
                                         case 2:
                                             colors[indexOfSpot] = hl_colors[2];
+                                            spots[indexOfSpot].HighlightGroup = 2;
                                             break;
                                         case 3:
                                             colors[indexOfSpot] = hl_colors[3];
+                                            spots[indexOfSpot].HighlightGroup = 3;
                                             break;
                                     }
 
@@ -1288,7 +1329,11 @@ public class SpotDrawer : MonoBehaviour
 
     public void reloadGroups(List<string> barcodes, List<int> ids)
     {
-        unselectAll();
+        //unselect all before applying values from upload
+        for(int i=0; i<spots.Length; i++)
+        {
+            spots[i].HighlightGroup = -1;
+        }
 
         foreach (SpotWrapper mw in spots)
         {
@@ -1298,6 +1343,7 @@ public class SpotDrawer : MonoBehaviour
             }
         }
 
+        setColourFromUpload();
     }
 
     private SpotWrapper[] spots;
@@ -1315,6 +1361,7 @@ public class SpotDrawer : MonoBehaviour
     //Initialise variables
     private int startSpotdrawerCount = 0;
     private bool firstSelect = false;
+    private bool firstGeneSelected = false;
 
     //spots variables
     private ComputeBuffer meshPropertiesBuffer;
