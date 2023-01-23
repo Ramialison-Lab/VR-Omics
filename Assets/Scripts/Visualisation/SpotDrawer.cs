@@ -1188,61 +1188,67 @@ public class SpotDrawer : MonoBehaviour
     /// </summary>
     public void ReadSpecial()
     {
-        // TBD only working for 
-        switch (dd.value)
+        try
         {
-            case 1:
-                normalised.Clear();
-                sm.querySbyte("obs/clusters");
-                break;
-            case 2:
-                normalised.Clear();
-                sm.query64bitFloat("obs/log1p_n_genes_by_counts");
-                break;
-            case 3:
-                normalised.Clear();
-                sm.query32bitFloat("obs/log1p_total_counts");
-                break;
-            case 4:
-                normalised.Clear();
-                sm.query32bitFloat("obs/log1p_total_counts_mt");
-                break;
-            case 5:
-                normalised.Clear();
-                sm.query32bitFloat("obs/n_counts");
-                break;
-            case 6:
-                normalised.Clear();
-                sm.queryInt("obs/n_genes_by_counts");
-                break;
-            case 7:
-                normalised.Clear();
-                sm.query64bitFloat("obs/pct_counts_in_top_100_genes");
-                break;
-            case 8:
-                normalised.Clear();
-                sm.query64bitFloat("obs/pct_counts_in_top_200_genes");
-                break;
-            case 9:
-                normalised.Clear();
-                sm.query64bitFloat("obs/pct_counts_in_top_500_genes");
-                break;
-            case 10:
-                normalised.Clear();
-                sm.query64bitFloat("obs/pct_counts_in_top_50_genes");
-                break;
-            case 11:
-                normalised.Clear();
-                sm.query32bitFloat("obs/pct_counts_mt");
-                break;
-            case 12:
-                normalised.Clear();
-                sm.query64bitFloat("obs/total_counts");
-                break;
-            case 13:
-                normalised.Clear();
-                sm.query64bitFloat("obs/total_counts_mt");
-                break;
+            // TBD only working for 
+            switch (dd.value)
+            {
+                case 1:
+                    normalised.Clear();
+                    sm.querySbyte("obs/clusters");
+                    break;
+                case 2:
+                    normalised.Clear();
+                    sm.query64bitFloat("obs/log1p_n_genes_by_counts");
+                    break;
+                case 3:
+                    normalised.Clear();
+                    sm.query32bitFloat("obs/log1p_total_counts");
+                    break;
+                case 4:
+                    normalised.Clear();
+                    sm.query32bitFloat("obs/log1p_total_counts_mt");
+                    break;
+                case 5:
+                    normalised.Clear();
+                    sm.query32bitFloat("obs/n_counts");
+                    break;
+                case 6:
+                    normalised.Clear();
+                    sm.queryInt("obs/n_genes_by_counts");
+                    break;
+                case 7:
+                    normalised.Clear();
+                    sm.query64bitFloat("obs/pct_counts_in_top_100_genes");
+                    break;
+                case 8:
+                    normalised.Clear();
+                    sm.query64bitFloat("obs/pct_counts_in_top_200_genes");
+                    break;
+                case 9:
+                    normalised.Clear();
+                    sm.query64bitFloat("obs/pct_counts_in_top_500_genes");
+                    break;
+                case 10:
+                    normalised.Clear();
+                    sm.query64bitFloat("obs/pct_counts_in_top_50_genes");
+                    break;
+                case 11:
+                    normalised.Clear();
+                    sm.query32bitFloat("obs/pct_counts_mt");
+                    break;
+                case 12:
+                    normalised.Clear();
+                    sm.query64bitFloat("obs/total_counts");
+                    break;
+                case 13:
+                    normalised.Clear();
+                    sm.query64bitFloat("obs/total_counts_mt");
+                    break;
+            }
+        }catch(Exception e)
+        {
+            dfm.logfile.Log(e, "Tried reading a special value from the hd5 file. Ensure that the value exists by opening the HDf file in an HDF viewer and navigate to the /obs folder to find the required entry.");
         }
     }
 
@@ -1257,18 +1263,18 @@ public class SpotDrawer : MonoBehaviour
         {
             if (!dfm.c18_visium)
             {
-                ddValues.Add("Leiden Cluster");
-                ddValues.Add("log1p_n_genes_by_counts");
-                ddValues.Add("log1p_total_counts");
-                ddValues.Add("log1p_total_counts_mt");
-                ddValues.Add("n_counts");
-                ddValues.Add("n_genes_by_counts");
-                ddValues.Add("pct_counts_in_top_100_genes");
-                ddValues.Add("pct_counts_in_top_200_genes");
-                ddValues.Add("pct_counts_in_top_500_genes");
-                ddValues.Add("pct_counts_mt");
-                ddValues.Add("total_counts");
-                ddValues.Add("total_counts_mt");
+                    ddValues.Add("Leiden Cluster");
+                    ddValues.Add("log1p_n_genes_by_counts");
+                    ddValues.Add("log1p_total_counts");
+                    ddValues.Add("log1p_total_counts_mt");
+                    ddValues.Add("n_counts");
+                    ddValues.Add("n_genes_by_counts");
+                    ddValues.Add("pct_counts_in_top_100_genes");
+                    ddValues.Add("pct_counts_in_top_200_genes");
+                    ddValues.Add("pct_counts_in_top_500_genes");
+                    ddValues.Add("pct_counts_mt");
+                    ddValues.Add("total_counts");
+                    ddValues.Add("total_counts_mt");
 
                 dd.AddOptions(ddValues);
             }
@@ -1278,6 +1284,7 @@ public class SpotDrawer : MonoBehaviour
             dd.gameObject.SetActive(false);
         }
     }
+
     //###################################################################################################################
     //Export Feature
 

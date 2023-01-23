@@ -27,18 +27,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using HDF.PInvoke;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace UnityH5Loader {
     public static class H5Loader {
 
         static readonly ulong[] MaxDimensions = {10000, 10000, 10000};
 
-        /// <summary>=
-        /// Loads a 1D int dataset from an H5 file. The dataset must be 'i8' encoded dataset. In python: create it using numpy array with dtype='i8'
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="datasetName"></param>
-        /// <returns></returns>
         [PublicAPI]
         public static int[] LoadIntDataset(string filePath, string datasetName) {
             long[] longArray = LoadDataset<long>(filePath, datasetName);
@@ -46,12 +41,6 @@ namespace UnityH5Loader {
             return integerArray;
         }
 
-        /// <summary>
-        /// Loads a 1d float dataset from an H5 file. The dataset must be 'float' encoded dataset. In python: create it using numpy array with dtype='float'
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="datasetName"></param>
-        /// <returns></returns>
         [PublicAPI]
         public static float[] LoadFloatDataset(string filePath, string datasetName) {
             double[] doubleArray = LoadDataset<double>(filePath, datasetName);
@@ -59,12 +48,7 @@ namespace UnityH5Loader {
             return floatArray;
         }
 
-        /// <summary>
-        /// Loads a 1d string dataset from an H5 file. The dataset must be 'string' encoded dataset. In python: create it using numpy array with dtype='S'
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="dataSetName"></param>
-        /// <returns></returns>
+
         [PublicAPI]
         public static string[] LoadStringDataset(string filePath, string dataSetName) {
             //With much Help from:  https://stackoverflow.com/questions/23295545/reading-string-array-from-a-hdf5-dataset
@@ -114,12 +98,6 @@ namespace UnityH5Loader {
                 yield return theLongString.Substring(i, Math.Min(partLength, theLongString.Length - i));
         }
 
-        /// <summary>
-        /// Loads a 2d integer dataset from an H5 file. The dataset must be an 'i8' encoded dataset. In python: create it using numpy array with dtype='i8'
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="datasetName"></param>
-        /// <returns></returns>
         [PublicAPI]
         public static int[,] Load2dIntDataset(string filePath, string datasetName) {
             long[,] doubleArray = Load2DDataset<long>(filePath, datasetName);
@@ -132,12 +110,6 @@ namespace UnityH5Loader {
             return intArray;
         }
         
-        /// <summary>
-        /// Loads a 2d float dataset from an H5 file. The dataset must be 'float' encoded dataset. In python: create it using numpy array with dtype='float'
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="datasetName"></param>
-        /// <returns></returns>
         public static float[,] Load2dFloatDataset(string filePath, string datasetName) {
             double[,] doubleArray = Load2DDataset<double>(filePath, datasetName);
             float[,] floatArray = new float[doubleArray.GetLength(0),doubleArray.GetLength(1)];
@@ -149,16 +121,6 @@ namespace UnityH5Loader {
             return floatArray;
         }
 
-        /// <summary>
-        /// WARNING: ADVANCED USE ONLY!! Loads a 1D generic dataset from an H5 file.
-        /// The generic loaders only loads data in non-Unity friendly types, such as bytes, uints, longs etc...
-        /// You'll have to know the correct cast to retrieve usable data.
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="datasetName"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="FileNotFoundException"></exception>
         [PublicAPI]
         public static T[] LoadDataset<T>(string filePath, string datasetName) {
             
@@ -197,28 +159,18 @@ namespace UnityH5Loader {
 
         }
 
-        /// <summary>
-        /// WARNING: ADVANCED USE ONLY!! Loads a 2D generic dataset from an H5 file.
-        /// The generic loaders only loads data in non-Unity friendly types, such as bytes, uints, longs etc...
-        /// You'll have to know the correct cast to retrieve usable data.
-        /// 
-        /// Created With help from https://github.com/LiorBanai/HDF5-CSharp/blob/master/HDF5-CSharp/Hdf5Dataset.cs
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="datasetName"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="FileNotFoundException"></exception>
-        static T[,] Load2DDataset<T>(string filePath, string datasetName) {
-            
+        static T[,] Load2DDataset<T>(string filePath, string datasetName)
+        {
+
             if (!File.Exists(filePath)) throw new FileNotFoundException($"Loading dataset {datasetName} from file that doesn't exist {filePath}");
             long fileId = H5F.open(filePath, H5F.ACC_RDONLY);
-            
-            T[,] resultArray = new T[2,2];
-            try {
-                
-                ulong[] start = {0, 0};
-                ulong[] count = {0, 0};
+
+            T[,] resultArray = new T[2, 2];
+            try
+            {
+
+                ulong[] start = { 0, 0 };
+                ulong[] count = { 0, 0 };
 
                 long datasetId = H5D.open(fileId, datasetName);
                 var datatype = H5D.get_type(datasetId);
@@ -227,13 +179,13 @@ namespace UnityH5Loader {
                 ulong[] maxDims = new ulong[rank];
                 ulong[] dims = new ulong[rank];
                 H5S.get_simple_extent_dims(spaceId, dims, maxDims);
-                
+
                 count[0] = dims[0];
                 count[1] = dims[1];
 
                 // Define file hyperslab. 
                 long status = H5S.select_hyperslab(spaceId, H5S.seloper_t.SET, start, null, count, null);
-                
+
                 // Define the memory dataspace.
                 resultArray = new T[dims[0], dims[1]];
                 var memId = H5S.create_simple(rank, dims, null);
@@ -246,11 +198,13 @@ namespace UnityH5Loader {
                 // memory and display.             
                 GCHandle handle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
 
-                try {
+                try
+                {
                     H5D.read(datasetId, datatype, memId, spaceId,
                         H5P.DEFAULT, handle.AddrOfPinnedObject());
                 }
-                finally {
+                finally
+                {
                     handle.Free();
                     H5S.close(status);
                     H5S.close(memId);
@@ -259,13 +213,12 @@ namespace UnityH5Loader {
                     H5D.close(datasetId);
                 }
             }
-            finally {
+            finally
+            {
                 H5F.close(fileId);
             }
             return resultArray;
-
         }
-
 
         static int[] GetDatasetDimensions(long spaceID) {
             int numberOfDimensions = H5S.get_simple_extent_ndims(spaceID);
@@ -279,7 +232,6 @@ namespace UnityH5Loader {
 
             return dimensions;
         }
-
 
         static int[] ConvertDimensionsToIntegers(ulong[] dims) {
             if (dims == null) throw new ArgumentNullException(nameof(dims));
