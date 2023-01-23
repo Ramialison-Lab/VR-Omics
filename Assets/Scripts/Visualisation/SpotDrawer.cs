@@ -77,6 +77,7 @@ public class SpotDrawer : MonoBehaviour
     private string lastGeneCopy;
     public List<GameObject> activepanels = new List<GameObject>(4);
     private Color[] hl_colors = new Color[] { new Color(255, 0, 0, 1), new Color(0, 255, 0, 1), new Color(0, 0, 255, 1), new Color(0, 255, 255, 1) };
+    private int sideBySideDistance = 0;
 
     /// <summary>
     /// structure for each spot, storing: 
@@ -146,15 +147,15 @@ public class SpotDrawer : MonoBehaviour
         float p = dataOrigin.Padding;
         (float h, float v) s;
 
-        if (dfm.visium)
+       // if (dfm.visium)
         {
             s = (p, p);
         }
-        else
-        {
-            s = copy ?
-                (0.5f * p, 0.5f * p) : (p, p);
-        }
+        //else
+        //{
+        //    s = copy ?
+        //        (0.5f * p, 0.5f * p) : (p, p);
+        //}
         var o = dataOrigin.Origin;
         if (copy) // align o.y with o_copy.y
             o.y = dataOrigin.OriginCopy.y;
@@ -217,6 +218,8 @@ public class SpotDrawer : MonoBehaviour
                 (int)spots[0].Origin.z,
                 spots[0].DatasetName
                 );
+
+            sideBySideDistance = (int)(sliceCollider.transform.localScale.x *1.2f);
         }
 
         /////////////////////////////////////////////////////////////////////////
@@ -247,11 +250,13 @@ public class SpotDrawer : MonoBehaviour
                 SpotWrapper spot = spotsCopy[i];
 
                 // For Visium offset needed due to higher dimension
-                int offset = dfm.visium ?
-                    100 : 0;
+               // int offset = dfm.visium ?
+                //    100 : 0;
                 
-                var l = new Vector3((spot.Origin.x * s.h) + offset, spot.Origin.y * s.v, spot.Origin.z);
-                spot.Location = Mc_Copy.MultiplyPoint(l);
+               // var l = new Vector3((spot.Origin.x * s.h), spot.Origin.y * s.v, spot.Origin.z);
+                var l = new Vector3((spots[i].Location.x)+sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
+                // spot.Location = Mc_Copy.MultiplyPoint(l);
+                spot.Location = l;
                 if (newColoursCopy)
                 {
                     if (firstSelect)

@@ -455,7 +455,6 @@ public class DataTransferManager : MonoBehaviour
 
         sp.Min = new Vector2(minX, minY);
         sp.Max = new Vector2(maxX, maxY);
-        Debug.Log(merfishX.Length);
         sp.StartDrawer(merfishX, merfishY, merfishZ, merfishCell, new string[] { });
         adjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, 0, new Vector3(0, 0, 0));
     }
