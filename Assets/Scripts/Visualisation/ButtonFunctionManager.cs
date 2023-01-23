@@ -47,6 +47,7 @@ public class ButtonFunctionManager : MonoBehaviour
         }
         else if ((df.visium && !df.visiumMultiple) && !df.c18)
         {
+            functionPanels[16].SetActive(false);
             functionPanels[17].SetActive(false);
 
         }
@@ -128,6 +129,19 @@ public class ButtonFunctionManager : MonoBehaviour
             functionPanels[14].SetActive(false);
         }
 
+
+    }
+
+    public void ToggleCopySlider()
+    {
+        if (functionPanels[16].activeSelf)
+        {
+            functionPanels[16].SetActive(false);
+        }
+        else
+        {
+            functionPanels[16].SetActive(true);
+        }
 
     }
 }

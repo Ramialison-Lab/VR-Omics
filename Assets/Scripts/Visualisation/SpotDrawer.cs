@@ -264,7 +264,7 @@ public class SpotDrawer : MonoBehaviour
                         try
                         {
                             // evaluate expression value with colorgradient
-                            rc = colValsCopy[i];
+                            rc = Copycolors[i];
                             spot.ExpVal = (float)normalisedCopy[i];
                         }
                         catch (Exception) { rc = Color.clear; };
@@ -272,13 +272,6 @@ public class SpotDrawer : MonoBehaviour
                     // if spot not found
                     else { rc = Color.clear; }
 
-                    if (spot.HighlightGroup != -1)
-                    {
-                        if (spot.HighlightGroup == 0) { rc = new Color(255, 0, 0, 1); }
-                        else if (spot.HighlightGroup == 1) rc = new Color(0, 255, 0, 1);
-                        else if (spot.HighlightGroup == 2) rc = new Color(0, 0, 255, 1);
-                        else if (spot.HighlightGroup == 3) rc = new Color(0, 255, 255, 1);
-                    }
                 }
 
                 MeshProperties MPs = new MeshProperties
@@ -406,20 +399,35 @@ public class SpotDrawer : MonoBehaviour
                 {
                     colors[i] = colVals[i];
                     spots[i].ExpVal = (float)normalised[i];
+                    if (copy){
+                        try
+                        {
+                            Copycolors[i] = colValsCopy[i];
+                        }catch(Exception )
+                        {
+                        }
+                    }
 
                 }
                 catch (Exception)
                 {
                     colors[i] = Color.clear;
+                    if (copy)
+                    {
+
+                        Copycolors[i] = Color.clear;
+                    }
                 }
             }
             else
             {
                 colors[i] = hl_colors[spots[i].HighlightGroup];
+                Copycolors[i] = colors[i];
                 
             }
         }
-       SetMeshBuffers();
+
+        SetMeshBuffers();
     }
 
     private void setColourFromUpload()
@@ -515,7 +523,7 @@ public class SpotDrawer : MonoBehaviour
         }
 
         spotsCopy = new SpotWrapper[spots.Length];
-        if (!dfm.xenium || !dfm.merfish || !dfm.stomics)
+        //if (!dfm.xenium || !dfm.merfish || !dfm.stomics)
         {
             for (int i = 0; i < spots.Length; i++)
             {
@@ -533,7 +541,7 @@ public class SpotDrawer : MonoBehaviour
             }
         }
 
-        GameObject.Find("SpotNumberTxt").GetComponent<TMP_Text>().text = spots.Length + " Spots/Cells";
+        GameObject.Find("SpotNumberTxt").GetComponent<TMP_Text>().text = spots.Length + " Locations Shown";
         prefillDropdown();
         symbolTransform = symbolSelect.transform;
         createColorGradientMenu();
@@ -542,6 +550,7 @@ public class SpotDrawer : MonoBehaviour
         {
             count = spots.Length;
             colors = new Color[count];
+            Copycolors = new Color[count];
             for (int i = 0; i < count; i++)
                 colors[i] = Color.grey;
             yield return new WaitForEndOfFrame();
@@ -564,59 +573,65 @@ public class SpotDrawer : MonoBehaviour
     /// <returns></returns>
     private Color colorGradient(int i, List<double> normValues)
     {
-        if (showGenesExpressed)
+        try
         {
-            if (normValues[i] > minThresh) return Color.green;
-            else return Color.clear;
-        }
+            if (showGenesExpressed)
+            {
+                if (normValues[i] > minThresh) return Color.green;
+                else return Color.clear;
+            }
 
-        if ((float)normValues[i] < minThresh)
+            if ((float)normValues[i] < minThresh)
+            {
+                return Color.clear;
+            }
+            if (!customColour)
+            {
+                Gradient gradient = new Gradient();
+                // Populate the color keys at the relative time 0 and 1 (0 and 100%)
+                GradientColorKey[] gck = new GradientColorKey[5];
+
+                float rgb = 255;
+
+                gck[0].color = new Color(65 / rgb, 105 / rgb, 255 / rgb); // Blue
+                gck[0].time = 0f;
+                gck[1].color = new Color(135 / rgb, 206 / rgb, 250 / rgb); // Cyan
+                gck[1].time = .25f;
+                gck[2].color = new Color(60 / rgb, 179 / rgb, 113 / rgb); // green
+                gck[2].time = 0.50F;
+                gck[3].color = new Color(255 / rgb, 230 / rgb, 0); // yellow
+                gck[3].time = 0.75F;
+                gck[4].color = new Color(180 / rgb, 0, 0); // Red
+                gck[4].time = 1f;
+
+                // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
+                GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
+                alphaKey[0].alpha = 1.0f;
+                alphaKey[0].time = 0.0f;
+                alphaKey[1].alpha = 0.0f;
+                alphaKey[1].time = 1.0f;
+                gradient.SetKeys(gck, alphaKey);
+                gd = gradient;
+                return gradient.Evaluate((float)normValues[i]);
+            }
+            else
+            {
+                Gradient gradient = new Gradient();
+
+                // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
+                GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
+                alphaKey[0].alpha = 1.0f;
+                alphaKey[0].time = 0.0f;
+                alphaKey[1].alpha = 0.0f;
+                alphaKey[1].time = 1.0f;
+
+                gradient.SetKeys(ngck, alphaKey);
+
+                return gradient.Evaluate((float)normValues[i]);
+            }
+        }catch(Exception e)
         {
             return Color.clear;
-        }
-        if (!customColour)
-        {
-            Gradient gradient = new Gradient();
-            // Populate the color keys at the relative time 0 and 1 (0 and 100%)
-            GradientColorKey[] gck = new GradientColorKey[5];
-
-            float rgb = 255;
-
-            gck[0].color = new Color(65 / rgb, 105 / rgb, 255 / rgb); // Blue
-            gck[0].time = 0f;
-            gck[1].color = new Color(135 / rgb, 206 / rgb, 250 / rgb); // Cyan
-            gck[1].time = .25f;
-            gck[2].color = new Color(60 / rgb, 179 / rgb, 113 / rgb); // green
-            gck[2].time = 0.50F;
-            gck[3].color = new Color(255 / rgb, 230 / rgb, 0); // yellow
-            gck[3].time = 0.75F;
-            gck[4].color = new Color(180 / rgb, 0, 0); // Red
-            gck[4].time = 1f;
-
-            // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
-            GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
-            alphaKey[0].alpha = 1.0f;
-            alphaKey[0].time = 0.0f;
-            alphaKey[1].alpha = 0.0f;
-            alphaKey[1].time = 1.0f;
-            gradient.SetKeys(gck, alphaKey);
-            gd = gradient;
-            return gradient.Evaluate((float)normValues[i]);
-        }
-        else
-        {
-            Gradient gradient = new Gradient();
-
-            // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
-            GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
-            alphaKey[0].alpha = 1.0f;
-            alphaKey[0].time = 0.0f;
-            alphaKey[1].alpha = 0.0f;
-            alphaKey[1].time = 1.0f;
-
-            gradient.SetKeys(ngck, alphaKey);
-
-            return gradient.Evaluate((float)normValues[i]);
         }
     }
 
@@ -658,7 +673,8 @@ public class SpotDrawer : MonoBehaviour
             normalisedCopy.AddRange(normalise);
             newColoursCopy = true;
             colValsCopy.Clear();
-
+            Debug.Log(spots.Length);
+            Debug.Log(normalisedCopy.Count);
             for (int i = 0; i < spots.Length; i++)
             {
                 colValsCopy.Add(colorGradient(i, normalisedCopy));
@@ -1101,6 +1117,9 @@ public class SpotDrawer : MonoBehaviour
         if (panel.activeSelf) panel.SetActive(false);
         else panel.SetActive(true);
         copy = !copy;
+
+        GetComponent<ButtonFunctionManager>().ToggleCopySlider();
+ 
         if (!copy && newColoursCopy)
         {
             mergePanel.SetActive(true);
@@ -1381,6 +1400,7 @@ public class SpotDrawer : MonoBehaviour
     private bool colourcopy;
 
     private Color[] colors;
+    private Color[] Copycolors;
 
     private Material material;
 
