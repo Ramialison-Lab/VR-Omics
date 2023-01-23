@@ -585,6 +585,11 @@ public class SpotDrawer : MonoBehaviour
             {
                 return Color.clear;
             }
+            //Decide if grey or blue for value 0
+            //if((float)normValues[i] == 0)
+            //{
+            //    return Color.grey;
+            //}
             if (!customColour)
             {
                 Gradient gradient = new Gradient();
@@ -631,6 +636,7 @@ public class SpotDrawer : MonoBehaviour
             }
         }catch(Exception e)
         {
+            dfm.logfile.Log(e, "One location couldn't be found in the dataset and was set to clear to not show up in the visualisation. Ensure that the location per gene file is symmetric and no values are blanc.");
             return Color.clear;
         }
     }
@@ -673,8 +679,6 @@ public class SpotDrawer : MonoBehaviour
             normalisedCopy.AddRange(normalise);
             newColoursCopy = true;
             colValsCopy.Clear();
-            Debug.Log(spots.Length);
-            Debug.Log(normalisedCopy.Count);
             for (int i = 0; i < spots.Length; i++)
             {
                 colValsCopy.Add(colorGradient(i, normalisedCopy));
@@ -779,17 +783,31 @@ public class SpotDrawer : MonoBehaviour
         else
         {
             GradientColorKey[] gck = new GradientColorKey[5];
+            //float rgb = 255;
+            //gck[0].color = new Color(65 / rgb, 105 / rgb, 255 / rgb); // Blue
+            //gck[0].time = 0f;
+            //gck[1].color = new Color(135 / rgb, 206 / rgb, 250 / rgb); // Cyan
+            //gck[1].time = .25f;
+            //gck[2].color = new Color(60 / rgb, 179 / rgb, 113 / rgb); // green
+            //gck[2].time = 0.50F;
+            //gck[3].color = new Color(255 / rgb, 230 / rgb, 0); // yellow
+            //gck[3].time = 0.75F;
+            //gck[4].color = new Color(180 / rgb, 0, 0); // Red
+            //gck[4].time = 1f;            
+            
             float rgb = 255;
-            gck[0].color = new Color(65 / rgb, 105 / rgb, 255 / rgb); // Blue
+            gck[0].color = new Color(99, 55, 24); // Blue
             gck[0].time = 0f;
-            gck[1].color = new Color(135 / rgb, 206 / rgb, 250 / rgb); // Cyan
+            gck[1].color = new Color(25, 71, 77); // Cyan
             gck[1].time = .25f;
-            gck[2].color = new Color(60 / rgb, 179 / rgb, 113 / rgb); // green
+            gck[2].color = new Color(40, 40, 26); // green
             gck[2].time = 0.50F;
-            gck[3].color = new Color(255 / rgb, 230 / rgb, 0); // yellow
+            gck[3].color = new Color(100, 100, 70); // yellow
             gck[3].time = 0.75F;
-            gck[4].color = new Color(180 / rgb, 0, 0); // Red
+            gck[4].color = new Color(99, 55, 24); // Red
             gck[4].time = 1f;
+
+
 
             //for (int i = 0; i < gck.Length; i++)
             //{
@@ -1139,23 +1157,27 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="merge"></param>
     public void mergeSelection(bool merge)
     {
-        var normCount = normalised.Count;
+
+        //normlaised and normalisedcopy
         if (merge)
         {
             List<double> mergeList = new List<double>();
-            for (int i = 0; i < normCount; i++)
+            for (int i = 0; i < normalised.Count; i++)
             {
-                // mergeList.Add((double)Mathf.Abs((float)(normalised[i] - normalisedCopy[i])));
-                mergeList.Add(1);
+                mergeList.Add((double)Mathf.Abs((float)(normalised[i] - normalisedCopy[i])));
             }
-            mergeList[0] = 0;
             colourcopy = false;
-            setColors(mergeList);
-            mergePanel.SetActive(false);
-            geneSelection.text = "Merged: " + lastGene + "\nwith " + lastGeneCopy;
-            colourcopy = true;
+            copy = false;
+
+            colVals.Clear();
+            for (int i = 0; i < spots.Length; i++)
+            {
+                colVals.Add(colorGradient(i, mergeList));
+            }
+            // geneSelection.text = "Merged: " + lastGene + "\nwith " + lastGeneCopy;
         }
-        else mergePanel.SetActive(false);
+        mergePanel.SetActive(false);
+        setColour();
     }
 
     //###################################################################################################################
