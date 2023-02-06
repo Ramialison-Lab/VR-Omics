@@ -80,6 +80,8 @@ public class DataTransferManager : MonoBehaviour
     public bool addHAndEImg = false;
     private int visiumDepth = 0;
     public TMP_Dropdown sel_DropD; //Dropdown choosing active Slide in dataset
+    public string[] visiumMetaFiles;
+    public string positionList;
 
     //STOmics
     public string stomicsDataPath;
@@ -206,11 +208,11 @@ public class DataTransferManager : MonoBehaviour
     private void startVisium()
     {
         List<string> tempSpotnames = new List<string>();
-        string positionList ="";
         foreach (string x in df.pathList)
         {
             string[] files = Directory.GetFiles(x, "*.h5");
             string[] csvfiles = Directory.GetFiles(x, "*filtered_transposed.csv");
+            visiumMetaFiles = Directory.GetFiles(x, "*metadata.csv");
 
             hdf5datapaths.AddRange(files);
             csvGeneExpPaths.AddRange(csvfiles);        
