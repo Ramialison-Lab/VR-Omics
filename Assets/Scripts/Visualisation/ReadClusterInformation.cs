@@ -39,6 +39,7 @@ public class ReadClusterInformation : MonoBehaviour
     public GameObject clusterPanel;
     public float rgb = 255;
     public Color[] defaultColours;
+    private bool clusterActive= false;
 
     private void Start()
     {
@@ -49,16 +50,20 @@ public class ReadClusterInformation : MonoBehaviour
 
     public void readCluster()
     {
-        if (clusterPanel.activeSelf == false) clusterPanel.SetActive(true);
-        if (dfm.c18_visium)
+        if (!clusterActive)
         {
-            readC18Cluster();
+            clusterActive = true;
+            if (clusterPanel.activeSelf == false) clusterPanel.SetActive(true);
+            if (dfm.c18_visium)
+            {
+                readC18Cluster();
+            }
+            if (dfm.visium && !dfm.c18_visium)
+            {
+                readVisiumCluster();
+            }
+            //TODO: check Visium multiple
         }
-        if (dfm.visium && !dfm.c18_visium)
-        {
-            readVisiumCluster();
-        }
-        //TODO: check Visium multiple
     }
 
     public void readC18Cluster()
@@ -276,6 +281,7 @@ public class ReadClusterInformation : MonoBehaviour
 
     public void resetClusterInfoPanel()
     {
+        clusterActive = false;
         try
         {
             clusterPanel.SetActive(false);
