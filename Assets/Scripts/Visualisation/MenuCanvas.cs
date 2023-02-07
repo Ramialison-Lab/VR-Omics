@@ -111,11 +111,9 @@ public class MenuCanvas : MonoBehaviour
         else activationPanelHandE.SetActive(true);
 
         List<GameObject> hAndEobjs = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().getHandEObjs();
-        Debug.Log(dd.options[dd.value].text);
 
         foreach(GameObject obs in hAndEobjs)
         {
-            Debug.Log(obs.GetComponent<HAndEImageManager>().imagePath);
             if (obs.activeSelf) obs.SetActive(false);
             else obs.SetActive(true);
         }

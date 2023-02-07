@@ -349,13 +349,16 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startXenium()
     {
-        //TBD LINKPATH
-        //string xeniumCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_info\\cell_info_csv.csv";
-        //string xeniumGenePanelPath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\xenium_prerelease_mBrain_large\\mBrain_ff\\cell_feature_matrix_mtx\\features.tsv";
-
-        string xeniumCoords = df.xeniumCellMetaData;
-        string xeniumGenePanelPath = df.xeniumGenePanelPath;
-        Xeniumdata = df.xeniumMatrix;
+        //TODO: replace final names
+        string[] files = Directory.GetFiles(df.xeniumPath, "matrix.csv");
+        //Xeniumdata = df.xeniumMatrix;
+        Xeniumdata = files[0];
+        files = Directory.GetFiles(df.xeniumPath, "*processed_cells.csv");
+        //string xeniumCoords = df.xeniumCellMetaData;
+        string xeniumCoords = files[0];
+        files = Directory.GetFiles(df.xeniumPath, "*feature_matrix.csv");
+        //string xeniumGenePanelPath = df.xeniumGenePanelPath;
+        string xeniumGenePanelPath = files[0];
 
         float[] xeniumX, xeniumY, xeniumZ;
         string[] xeniumCell;
@@ -371,9 +374,9 @@ public class DataTransferManager : MonoBehaviour
         for (int i = 0; i < lines.Length; i++)
         {
             string[] values = lines[i].Split(',');
-
-            float x = xeniumX[i] = float.Parse(values[1]);
-            float y = xeniumY[i] = float.Parse(values[2]);
+            //TODO: change to col 1 and 2 once updated
+            float x = xeniumX[i] = float.Parse(values[2]);
+            float y = xeniumY[i] = float.Parse(values[3]);
             xeniumZ[i] = 0;
             xeniumCell[i] = values[0];
 
@@ -387,7 +390,7 @@ public class DataTransferManager : MonoBehaviour
         string[] linesGn = File.ReadAllLines(xeniumGenePanelPath);
         foreach (string line in linesGn)
         {
-            string[] values = line.Split('\t');
+            string[] values = line.Split(',');
 
             XeniumGeneNames.Add(values[0]);
         }
@@ -411,9 +414,11 @@ public class DataTransferManager : MonoBehaviour
         //  string merfishCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BRainSlide1\\merfish_cell_metadata.csv";
         //  string merfishGenelist = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv"
 
-        merfishCoords = df.merfishMetaPath;
-        merfishGenelist = df.merfishGenePath;
-            ;
+        string[] files = Directory.GetFiles(df.merfishPath, "*metadata_processed.csv");
+        merfishCoords = files[0];
+        files = Directory.GetFiles(df.merfishPath, "*gene_transposed_processed.csv");
+        merfishGenelist = files[0];
+            
         float[] merfishX, merfishY, merfishZ;
         string[] merfishCell;
 
@@ -431,8 +436,8 @@ public class DataTransferManager : MonoBehaviour
             if (i == 0) continue;
 
             string[] values = lines[i].Split(',');
-            float x = float.Parse(values[3]);
-            float y = float.Parse(values[4]);
+            float x = float.Parse(values[20]);
+            float y = float.Parse(values[21]);
 
             merfishX[i] = x;
             merfishY[i] = y;
@@ -447,6 +452,8 @@ public class DataTransferManager : MonoBehaviour
         }
 
         string[] linesGn = File.ReadAllLines(merfishGenelist);
+        linesGn = linesGn.Skip(1).ToArray();
+
         foreach (string line in linesGn)
         {
             string[] values = line.Split(',');

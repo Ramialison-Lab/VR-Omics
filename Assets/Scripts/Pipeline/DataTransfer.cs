@@ -47,8 +47,10 @@ public class DataTransfer : MonoBehaviour
     public string xeniumMatrix;
     public string xeniumGenePanelPath;
     public string xeniumCellMetaData;
+    public string xeniumPath;
     public string merfishGenePath;
     public string merfishMetaPath;
+    public string merfishPath;
     public string otherMatrixPath;
     public string otherMetaPath;
     public List<string> pathList;
@@ -77,8 +79,7 @@ public class DataTransfer : MonoBehaviour
     public void startMerfish()
     {
         merfish = true;
-        merfishGenePath = ui.merfishGenePath;
-        merfishMetaPath = ui.merfishMetaPath;
+        merfishPath = ui.merfishPath;
         startVisualisationScene();
     }
 
@@ -134,9 +135,7 @@ public class DataTransfer : MonoBehaviour
     public void startXenium()
     {
         xenium = true;
-        xeniumMatrix = ui.xeniumMatrix;
-        xeniumGenePanelPath = ui.xeniumGenePanelPath;
-        xeniumCellMetaData = ui.xeniumCellMetaData;
+        xeniumPath = ui.xeniumPath;
         startVisualisationScene();
     }
 

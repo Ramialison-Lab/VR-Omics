@@ -141,6 +141,8 @@ public class UIManager : MonoBehaviour
     public TMP_InputField xeniumFeaturesTMPLoad;
     public TMP_InputField xeniumSpotsTMPLoad;
     public TMP_InputField xeniumHDFFieldLoad;
+    public TMP_InputField xeniumTMPField;
+    public TMP_InputField merfishTMPField;
     public TMP_InputField stomicsPathField;
     public TMP_InputField stomicsPathProcessField;
     public TMP_InputField tomoAPfield;
@@ -163,6 +165,8 @@ public class UIManager : MonoBehaviour
     public string LRPath;
     public string tomoGenePath;
     public string xeniumMatrix;
+    public string xeniumPath;
+    public string merfishPath;
     public string xeniumGenePanelPath;
     public string xeniumCellMetaData;
     public string otherMatrixPath;
@@ -245,7 +249,6 @@ public class UIManager : MonoBehaviour
     public void startMerfish()
     {
         df.startMerfish();
-
     }
 
     /// <summary>
@@ -633,7 +636,6 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void processXenium()
     {
-        //TODO: xeniumMatrix path needs to read datapath
         StreamWriter writer = new StreamWriter(Application.dataPath + "/PythonFiles/Xenium_path.txt", false);
         string[] xenium_path_out = new string[2];
         xenium_path_out[0] = xeniumMatrix;
@@ -876,6 +878,7 @@ public class UIManager : MonoBehaviour
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     #region File Browser
     #region Call File Browser
+    #region Xenium Load for AW processing
     //Xenium Process
     //Browse for GeneList of Xenium data
     public void selectXeniumFeatures()
@@ -892,27 +895,14 @@ public class UIManager : MonoBehaviour
     {
         StartCoroutine(selectBrowseFile("xeniumMatrix", xeniumMatPathField));
     }
+    #endregion
 
-    // Xenium for Load
-    public void selectXeniumHDF()
+    /// <summary>
+    /// Select the directory with Xenium files for loading to Visualiser
+    /// </summary>
+    public void selectXeniumPath()
     {
-        StartCoroutine(selectBrowseFile("xeniumHDF", xeniumHDFFieldLoad));
-    }
-
-    public void selectXeniumSpotLoad()
-    {
-        StartCoroutine(selectBrowseFile("xeniumSpots", xeniumSpotsTMPLoad));
-    }
-    // Browse for Matrix gene expression file
-    public void selectXeniumGenenamesLoad()
-    {
-        StartCoroutine(selectBrowseFile("xeniumGene", xeniumFeaturesTMPLoad));
-    }
-
-    //delete?
-    public void selectXeniumHDFLoad()
-    {
-        StartCoroutine(selectBrowseFile("xeniumHDF", xeniumMatPathField));
+        StartCoroutine(selectBrowseFile("xeniumPath", xeniumTMPField));
     }
 
     public void selectStomicssFile()
@@ -929,13 +919,13 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void selectMerfishMatrixFileProcess()
+    public void selectMerfishPath()
     {
         //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("merfishMat", merfishMatProcessTMP));
-
+        StartCoroutine(selectBrowseFile("merfishPath", merfishTMPField));
     }
-    public void selectMerfishMatrixFileLoad()
+
+    public void selectMerfishMatrixProcess()
     {
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("merfishMat", merfishMatLoadTMP));
@@ -946,14 +936,6 @@ public class UIManager : MonoBehaviour
     {
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("merfishMeta", merfishMetaProcessTMP));
-
-    }
-
-    public void selectMerfishMetaLoad()
-    {
-        //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("merfishMeta", merfishMetaLoadTMP));
-
     }
 
     public void selectOtherMatFile()
@@ -1052,17 +1034,17 @@ public class UIManager : MonoBehaviour
                 case "tomoGene":
                     tomoGenePath = res;
                     break;
-                case "xenium":
+                case "xeniumMatrix":
                     xeniumMatrix = res;
+                    break;                
+                case "xeniumPath":
+                    xeniumPath = res;
                     break;
                 case "xeniumGene":
                     xeniumGenePanelPath = res;
                     break;
                 case "xeniumSpots":
                     xeniumCellMetaData = res;
-                    break;
-                case "xeniumHDF":
-                    xeniumMatrix = res;
                     break;
                 case "otherMat":
                     otherMatrixPath = res;
@@ -1075,6 +1057,9 @@ public class UIManager : MonoBehaviour
                     break;
                 case "merfishMat":
                     merfishGenePath = res;
+                    break;                
+                case "merfishPath":
+                    merfishPath = res;
                     break;
                 case "object":
                     objectPath = res;
