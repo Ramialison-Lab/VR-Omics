@@ -104,6 +104,7 @@ public class DataTransferManager : MonoBehaviour
     //Xenium
     //public string Xeniumdata = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
     public string Xeniumdata;
+    public string xeniumCoords;
     public List<string> XeniumGeneNames = new List<string>();
 
     //Merfish
@@ -350,12 +351,12 @@ public class DataTransferManager : MonoBehaviour
     private void startXenium()
     {
         //TODO: replace final names
-        string[] files = Directory.GetFiles(df.xeniumPath, "matrix.csv");
+        string[] files = Directory.GetFiles(df.xeniumPath, "*_counts.csv");
         //Xeniumdata = df.xeniumMatrix;
         Xeniumdata = files[0];
         files = Directory.GetFiles(df.xeniumPath, "*processed_cells.csv");
         //string xeniumCoords = df.xeniumCellMetaData;
-        string xeniumCoords = files[0];
+        xeniumCoords = files[0];
         files = Directory.GetFiles(df.xeniumPath, "*feature_matrix.csv");
         //string xeniumGenePanelPath = df.xeniumGenePanelPath;
         string xeniumGenePanelPath = files[0];
@@ -374,9 +375,8 @@ public class DataTransferManager : MonoBehaviour
         for (int i = 0; i < lines.Length; i++)
         {
             string[] values = lines[i].Split(',');
-            //TODO: change to col 1 and 2 once updated
-            float x = xeniumX[i] = float.Parse(values[2]);
-            float y = xeniumY[i] = float.Parse(values[3]);
+            float x = xeniumX[i] = float.Parse(values[1]);
+            float y = xeniumY[i] = float.Parse(values[2]);
             xeniumZ[i] = 0;
             xeniumCell[i] = values[0];
 
@@ -423,6 +423,8 @@ public class DataTransferManager : MonoBehaviour
         string[] merfishCell;
 
         string[] lines = File.ReadAllLines(merfishCoords);
+        lines = lines.Skip(1).ToArray();
+
         string[] lineone = lines[1].Split(',');
         float minX, maxX, minY, maxY;
         minX = maxX = float.Parse(lineone[3]);
@@ -431,10 +433,9 @@ public class DataTransferManager : MonoBehaviour
         merfishY = new float[lines.Length];
         merfishZ = new float[lines.Length];
         merfishCell = new string[lines.Length];
+
         for (int i = 0; i < lines.Length; i++)
         {
-            if (i == 0) continue;
-
             string[] values = lines[i].Split(',');
             float x = float.Parse(values[20]);
             float y = float.Parse(values[21]);

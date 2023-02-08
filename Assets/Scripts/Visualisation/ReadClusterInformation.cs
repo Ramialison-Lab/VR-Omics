@@ -62,6 +62,14 @@ public class ReadClusterInformation : MonoBehaviour
             {
                 readVisiumCluster();
             }
+            if (dfm.xenium)
+            {
+                readXeniumCluster();
+            }            
+            if (dfm.merfish)
+            {
+                readMerfishCluster();
+            }
             //TODO: check Visium multiple
         }
     }
@@ -128,6 +136,67 @@ public class ReadClusterInformation : MonoBehaviour
 
     }
 
+    private void readXeniumCluster()
+    {
+
+        List<double> normalised = new List<double>();
+        List<Color> clusterColour = new List<Color>();
+
+        string[] lines = File.ReadAllLines(dfm.xeniumCoords);
+        lines = lines.Skip(1).ToArray();
+        for(int i=0; i<lines.Length; i++)
+        {
+
+            string[] values = lines[i].Split(',');
+
+            normalised.Add(int.Parse(values[20]));
+            clusterColour.Add(defaultColours[int.Parse(values[20])]);
+        }
+
+        generateClusterLegend((int)normalised.Max(), (int)normalised.Min());
+
+        try
+        {
+            sd.skipColourGradient(normalised, clusterColour);
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+
+            dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
+        }
+
+    }
+    private void readMerfishCluster()
+    {
+
+        List<double> normalised = new List<double>();
+        List<Color> clusterColour = new List<Color>();
+
+        string[] lines = File.ReadAllLines(dfm.merfishCoords);
+        lines = lines.Skip(1).ToArray();
+        for (int i = 0; i < lines.Length; i++)
+        {
+
+            string[] values = lines[i].Split(',');
+            normalised.Add(int.Parse(values[19]));
+            clusterColour.Add(defaultColours[int.Parse(values[19])]);
+        }
+
+        generateClusterLegend((int)normalised.Max(), (int)normalised.Min());
+
+        //try
+        {
+            sd.skipColourGradient(normalised, clusterColour);
+        }
+        //catch (Exception e)
+        //{
+        //    Debug.Log(e);
+
+        //    dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
+        //}
+
+    }
 
     private void readVisiumCluster()
     {
@@ -141,6 +210,7 @@ public class ReadClusterInformation : MonoBehaviour
         foreach (string path in dfm.visiumMetaFiles)
         {
 
+            // read SpotIds from the position list from which we have the order of spots
             List<string> spotIDs = new List<string>();
 
             string[] poslines = File.ReadAllLines(dfm.positionList);
@@ -153,10 +223,11 @@ public class ReadClusterInformation : MonoBehaviour
                 }
             }
 
-
+            // read the meta file with the cluster information
             string[] lines = File.ReadAllLines(path);
             lines = lines.Skip(1).ToArray();
 
+            //Create array for the read cluster values, normalised Values and an array with colours
             int[] clusterValues = new int[lines.Length];
             tempNormalised = new double[lines.Length];
             tempColor = new Color[lines.Length];
@@ -177,53 +248,13 @@ public class ReadClusterInformation : MonoBehaviour
 
                     dfm.logfile.Log(e, "The Cluster Values are not stored as full integer numbers, please ensure that the clusters are saved as full integer values to visualise the cluster information");
                     return;
-            }
-        }                
-            
-            //define how many clusters are used 
-            int numberOfClusters = (clusterValues.Max() - clusterValues.Min())+1;
-            int numberOfRows = (int)Math.Ceiling((double)numberOfClusters/3);
-
-            //Resize the clusterPanel
-            RectTransform rect = clusterPanel.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(20 + (numberOfRows * 100),60);
-
-            //for every 3 clusters add a new column and add up to the 3 clusterContainers to it
-
-            GameObject[] columns = new GameObject[numberOfRows];
-
-            for(int i=0; i<numberOfRows; i++)
-            {
-                columns[i] = Instantiate(clusterColumn, clusterPanel.transform);
-            }
-
-            //Fill Cluster containers to the panel
-            int columnCounter = 0;
-            int nextColCount = 0;
-            for(int i=0; i<numberOfClusters; i++)
-            {
-                if (nextColCount<3)
-                {
-                    GameObject clusterCont = Instantiate(clusterContainer, columns[columnCounter].transform);
-                    RawImage img = clusterCont.GetComponentInChildren<RawImage>();
-                    clusterCont.GetComponentInChildren<TMP_Text>().text = "Cluster " + i;
-                    img.color = createDefaultColours()[i];
-                    nextColCount++;
-                }
-                else
-                {
-                    columnCounter++;
-                    nextColCount = 0;
-                    GameObject clusterCont = Instantiate(clusterContainer, columns[columnCounter].transform);
-                    RawImage img = clusterCont.GetComponentInChildren<RawImage>();
-                    clusterCont.GetComponentInChildren<TMP_Text>().text = "Cluster " + i;
-                    img.color = createDefaultColours()[i];
-                    nextColCount++;
                 }
             }
+
+            generateClusterLegend(clusterValues.Max(), clusterValues.Min());
 
             //for each column in columns[] add 3 off the colours and change the text 
-;
+
         }
 
         normalised = new List<double>(tempNormalised);
@@ -241,9 +272,54 @@ public class ReadClusterInformation : MonoBehaviour
 
     }
 
+    private void generateClusterLegend(int cl_max, int cl_min)
+    {
+        //define how many clusters are used 
+        int numberOfClusters = (cl_max - cl_min) + 1;
+        int numberOfRows = (int)Math.Ceiling((double)numberOfClusters / 3);
+
+        //Resize the clusterPanel
+        RectTransform rect = clusterPanel.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(20 + (numberOfRows * 100), 60);
+
+        //for every 3 clusters add a new column and add up to the 3 clusterContainers to it
+
+        GameObject[] columns = new GameObject[numberOfRows];
+
+        for (int i = 0; i < numberOfRows; i++)
+        {
+            columns[i] = Instantiate(clusterColumn, clusterPanel.transform);
+        }
+
+        //Fill Cluster containers to the panel
+        int columnCounter = 0;
+        int nextColCount = 0;
+        for (int i = 0; i < numberOfClusters; i++)
+        {
+            if (nextColCount < 3)
+            {
+                GameObject clusterCont = Instantiate(clusterContainer, columns[columnCounter].transform);
+                RawImage img = clusterCont.GetComponentInChildren<RawImage>();
+                clusterCont.GetComponentInChildren<TMP_Text>().text = "Cluster " + i;
+                img.color = createDefaultColours()[i];
+                nextColCount++;
+            }
+            else
+            {
+                columnCounter++;
+                nextColCount = 0;
+                GameObject clusterCont = Instantiate(clusterContainer, columns[columnCounter].transform);
+                RawImage img = clusterCont.GetComponentInChildren<RawImage>();
+                clusterCont.GetComponentInChildren<TMP_Text>().text = "Cluster " + i;
+                img.color = createDefaultColours()[i];
+                nextColCount++;
+            }
+        }
+    }
+
     private Color[] createDefaultColours()
     {
-        Color[] defaultClusterColours = new Color[30];
+        Color[] defaultClusterColours = new Color[40];
 
         defaultClusterColours[0] = new Color(253 / rgb, 141 / rgb, 60 / rgb);  
         defaultClusterColours[1] = new Color(65 / rgb, 182 / rgb, 196 / rgb);
@@ -275,6 +351,17 @@ public class ReadClusterInformation : MonoBehaviour
         defaultClusterColours[27] = new Color(255 / rgb, 55 / rgb, 178 / rgb);
         defaultClusterColours[28] = new Color(127 / rgb, 32 / rgb, 178 / rgb);
         defaultClusterColours[29] = new Color(25 / rgb, 5 / rgb, 78 / rgb);
+        defaultClusterColours[30] = new Color(11 / rgb, 21 / rgb, 211 / rgb);
+        defaultClusterColours[31] = new Color(50 / rgb, 11 / rgb, 66 / rgb);
+        defaultClusterColours[32] = new Color(200 / rgb, 200 / rgb, 211 / rgb);
+        defaultClusterColours[33] = new Color(111 / rgb, 111 / rgb, 111 / rgb);
+        defaultClusterColours[34] = new Color(80 / rgb, 40 / rgb, 88 / rgb);
+        defaultClusterColours[35] = new Color(20 / rgb, 4 / rgb, 110 / rgb);
+        defaultClusterColours[36] = new Color(2 / rgb, 211 / rgb, 11 / rgb);
+        defaultClusterColours[37] = new Color(111 / rgb, 55 / rgb, 11 / rgb);
+        defaultClusterColours[38] = new Color(111 / rgb, 75 / rgb, 121 / rgb);
+        defaultClusterColours[39] = new Color(240 / rgb, 240 / rgb, 11 / rgb);
+
 
         return defaultClusterColours; 
     }
