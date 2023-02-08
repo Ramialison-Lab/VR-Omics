@@ -10,6 +10,7 @@ TagManager:
   - Undefined
   - expandTag
   - contentBtn
+  - sidePanelText
   layers:
   - Default
   - TransparentFX

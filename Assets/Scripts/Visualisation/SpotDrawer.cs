@@ -54,6 +54,8 @@ public class SpotDrawer : MonoBehaviour
     public GameObject diamondSymb;
     public GameObject MainMenuPanel;
     public GameObject mergePanel;
+    public GameObject sidePanel;
+    public GameObject TMPpro_text;
 
     //Colorgradient
     public GameObject colourGradientObject;
@@ -1174,6 +1176,7 @@ public class SpotDrawer : MonoBehaviour
             {
                 colVals.Add(colorGradient(i, mergeList));
             }
+            writeInfo("Merged: " + lastGene + "\nwith " + lastGeneCopy);
             // geneSelection.text = "Merged: " + lastGene + "\nwith " + lastGeneCopy;
         }
         mergePanel.SetActive(false);
@@ -1359,8 +1362,25 @@ public class SpotDrawer : MonoBehaviour
         if (!colourcopy) { lastGene = gn; }
         else { lastGeneCopy = gn; }
 
-        if (!colourcopy) geneSelection.text = "Original: " + lastGene;
-        else geneSelection.text = "Original: " + lastGene + ",\n Clone: " + lastGeneCopy;
+        if (!colourcopy) writeInfo("Original: " + lastGene);
+        else writeInfo("Original: " + lastGene + ",\n Clone: " + lastGeneCopy);
+    }
+
+
+    /// <summary>
+    /// Write information to Sidepanel
+    /// </summary>
+    /// <param name="info_text"></param>
+    private void writeInfo(string info_text)
+    {
+        foreach(GameObject go in GameObject.FindGameObjectsWithTag("sidePanelText")){
+            Destroy(go);
+        }
+
+        GameObject text = Instantiate(TMPpro_text, sidePanel.transform);
+
+        text.GetComponent<TMP_Text>().text = info_text;
+
     }
 
     /// <summary>

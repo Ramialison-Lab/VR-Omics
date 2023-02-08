@@ -27,28 +27,30 @@ using UnityEngine;
 
 public class SideMenuManager : MonoBehaviour
 {
-    TMP_Text[] texts;
     public List<List<string>> SpotNameDictionary = new List<List<string>>();
     private DataTransferManager dfm;
+    public GameObject TMPpro_text;
+    public GameObject sidePanel;
+
 
     private void Start()
     {
-        texts = this.gameObject.GetComponentsInChildren<TMP_Text>();
-
         dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
     }
 
     public void setSpotInfo(string SpotName, string Dataset, int id, Vector3 loc, float expVal)
     {
+        foreach (GameObject go in GameObject.FindGameObjectsWithTag("sidePanelText")){
+            Destroy(go);
+        }
         int datasetId = dfm.hdf5datapaths.IndexOf(Dataset);
-        foreach (TMP_Text tt in texts) tt.text = "";
-        texts[0].text = SpotName;
-        texts[1].text = "Dataset: " + Dataset.Split('\\').Last();
-        texts[2].text = "Expressionvalue: " + expVal.ToString();
-        texts[3].text = "Location: " + loc.ToString();
+        writeInfo(SpotName);
+        //writeInfo("Dataset: " + Dataset.Split('\\').Last());
+        writeInfo("Expressionvalue: " + expVal.ToString());
+        writeInfo("Location: " + loc.ToString());
 
         int pos = dfm.SpotNameDictionary[datasetId].IndexOf(SpotName);
-       // readSpotInfo(pos, Dataset);
+        readSpotInfo(pos, Dataset);
 
     }
 
@@ -62,13 +64,21 @@ public class SideMenuManager : MonoBehaviour
             values = lines.ToList<string>();
 
         List<string> res = values[pos].Split(',').ToList();
-            texts[4].text = "n_genes_by_counts: " + res[4];
-            texts[5].text = "pct top 50: " + res[8];
-            texts[6].text = "cluster: " + res[16];
-            texts[7].text = "total mt: " + res[12];
-            texts[8].text = "Percantage mt: " + res[13];
-            texts[9].text = "n_counts: " + res[15];
+            writeInfo("n_genes_by_counts: " + res[4]);
+            writeInfo("pct top 50: " + res[8]);
+            writeInfo("cluster: " + res[16]);
+            writeInfo("total mt: " + res[12]);
+            writeInfo("Percantage mt: " + res[13]);
+            writeInfo("n_counts: " + res[15]);
 
         res.Clear();
+    }
+
+    private void writeInfo(string info_text)
+    {
+        GameObject text = Instantiate(TMPpro_text, sidePanel.transform);
+
+        text.GetComponent<TMP_Text>().text = info_text;
+
     }
 }

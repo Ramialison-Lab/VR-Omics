@@ -105,6 +105,8 @@ public class DataTransferManager : MonoBehaviour
     //public string Xeniumdata = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
     public string Xeniumdata;
     public string xeniumCoords;
+    public string xeniumGenePanelPath;
+    public string moran_results;
     public List<string> XeniumGeneNames = new List<string>();
 
     //Merfish
@@ -350,16 +352,15 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startXenium()
     {
-        //TODO: replace final names
         string[] files = Directory.GetFiles(df.xeniumPath, "*_counts.csv");
-        //Xeniumdata = df.xeniumMatrix;
         Xeniumdata = files[0];
         files = Directory.GetFiles(df.xeniumPath, "*processed_cells.csv");
-        //string xeniumCoords = df.xeniumCellMetaData;
         xeniumCoords = files[0];
         files = Directory.GetFiles(df.xeniumPath, "*feature_matrix.csv");
-        //string xeniumGenePanelPath = df.xeniumGenePanelPath;
-        string xeniumGenePanelPath = files[0];
+        xeniumGenePanelPath = files[0];        
+        files = Directory.GetFiles(df.xeniumPath, "*results.csv");
+        moran_results = files[0];
+
 
         float[] xeniumX, xeniumY, xeniumZ;
         string[] xeniumCell;

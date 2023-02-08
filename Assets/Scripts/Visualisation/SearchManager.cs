@@ -48,6 +48,7 @@ public class SearchManager : MonoBehaviour
     private TomoSeqDrawer tmd;
     private SpotDrawer sd;
     private DataTransfer df;
+    private ReadGeneInformation rgi;
 
     //TBD LINKPATH
     public string geneNamesC18 = "Assets/Datasets/C18heart/C18_genelist.csv";
@@ -60,6 +61,8 @@ public class SearchManager : MonoBehaviour
         fr = gameObject.GetComponent<FileReader>();
         tmd = gameObject.GetComponent<TomoSeqDrawer>();
         sd = gameObject.GetComponent<SpotDrawer>();
+        rgi = GetComponent<ReadGeneInformation>();
+
 
         // Creating list of genes for search bar
         if (dfm.c18_visium)
@@ -194,6 +197,7 @@ public class SearchManager : MonoBehaviour
     /// <param name="searchGene">The gene to be read.</param>
     internal void readXeniumExpression(string searchGene)
     {
+        rgi.readGeneInformation(searchGene);
         var genes = dfm.XeniumGeneNames;
 
         int x = genes.IndexOf(searchGene);

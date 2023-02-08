@@ -185,16 +185,16 @@ public class ReadClusterInformation : MonoBehaviour
 
         generateClusterLegend((int)normalised.Max(), (int)normalised.Min());
 
-        //try
+        try
         {
             sd.skipColourGradient(normalised, clusterColour);
         }
-        //catch (Exception e)
-        //{
-        //    Debug.Log(e);
+        catch (Exception e)
+        {
+            Debug.Log(e);
 
-        //    dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
-        //}
+            dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
+        }
 
     }
 
