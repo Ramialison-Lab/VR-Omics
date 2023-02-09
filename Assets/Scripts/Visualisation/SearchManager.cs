@@ -169,6 +169,7 @@ public class SearchManager : MonoBehaviour
     /// <param name="searchGene">the gene to be read</param>
     public void readMerfishExpression(string searchGene)
     {
+        //write gene information to the sidepanel
         rgi.readGeneInformation(searchGene);
 
         var genes = dfm.MerfishGeneNames;

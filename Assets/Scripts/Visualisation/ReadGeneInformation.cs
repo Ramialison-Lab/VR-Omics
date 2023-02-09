@@ -19,14 +19,22 @@ public class ReadGeneInformation : MonoBehaviour
 
     public void readGeneInformation(string geneName)
     {
-        if (dfm.xenium)
+        try
         {
-            readXeniumGeneInfo(geneName);
+            if (dfm.xenium)
+            {
+                readXeniumGeneInfo(geneName);
+            }
+            if (dfm.merfish)
+            {
+                readMerfishGeneInfo(geneName);
+            }            
         }
-        if (dfm.merfish)
+        catch (Exception e)
         {
-            readMerfishGeneInfo(geneName);
+            dfm.logfile.Log(e, "The Moran Result values cpuldn't be read. Ensure the csv file is saved in the directory and ends with results.csv.");
         }
+
     }
     private void readMerfishGeneInfo(string geneName)
     {
