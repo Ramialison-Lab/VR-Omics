@@ -23,6 +23,40 @@ public class ReadGeneInformation : MonoBehaviour
         {
             readXeniumGeneInfo(geneName);
         }
+        if (dfm.merfish)
+        {
+            readMerfishGeneInfo(geneName);
+        }
+    }
+    private void readMerfishGeneInfo(string geneName)
+    {
+        foreach (GameObject go in GameObject.FindGameObjectsWithTag("sidePanelText"))
+        {
+            Destroy(go);
+        }
+
+        string[] lines = File.ReadAllLines(dfm.moran_results);
+
+        header = lines[0].Split(',');
+
+        foreach (string line in lines)
+        {
+            string[] values = line.Split(',');
+
+            if (values[0].ToLower() == geneName.ToLower())
+            {
+                for (int i = 1; i < values.Length; i++)
+                {
+                    try
+                    {
+                        readInfo(values, i);
+                    }
+                    catch (Exception e) { }
+                }
+            }
+        }
+
+
     }
 
     private void readXeniumGeneInfo(string geneName)

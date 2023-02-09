@@ -419,7 +419,9 @@ public class DataTransferManager : MonoBehaviour
         merfishCoords = files[0];
         files = Directory.GetFiles(df.merfishPath, "*gene_transposed_processed.csv");
         merfishGenelist = files[0];
-            
+        files = Directory.GetFiles(df.merfishPath, "*results.csv");
+        moran_results = files[0];
+
         float[] merfishX, merfishY, merfishZ;
         string[] merfishCell;
 
