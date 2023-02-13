@@ -299,7 +299,8 @@ public class DataTransferManager : MonoBehaviour
                 if (y < minY) minY = y;
                 else if (y > maxY) maxY = y;
             }
-
+            //TODO: read scalefactor for adjustment
+            //sm.readVisiumScaleFactor(p);
             //Adds the collider slice for each dataset that detects user input
             sc.setSliceCollider((int)col.Min(), (int)col.Max(), (int)row.Min(), (int)row.Max(), visiumDepth, df.pathList[count]);
             try
@@ -484,7 +485,7 @@ public class DataTransferManager : MonoBehaviour
         heartTranspSlider.SetActive(true);
         Color transp = new Color();
         transp.a = 0.5f;
-        c18Sphere.transform.localScale = new Vector3(10, 10, 10);
+        //c18Sphere.transform.localScale = new Vector3(10, 10, 10);
         float[] c18x, c18y, c18z;
         string[] c18spot;
 

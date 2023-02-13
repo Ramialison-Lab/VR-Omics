@@ -42,7 +42,7 @@ public class SearchManager : MonoBehaviour
     public List<double> normalised;
 
     //Access variables
-    private FileReader fr;
+    public FileReader fr;
     private DataTransferManager dfm;
     private AutoCompleteManager acm;
     private TomoSeqDrawer tmd;
@@ -58,7 +58,6 @@ public class SearchManager : MonoBehaviour
         try { df = GameObject.Find("ScriptHolderPipeline").GetComponent<DataTransfer>(); } catch (Exception) { }
         dfm = gameObject.GetComponent<DataTransferManager>();
         acm = gameObject.GetComponent<AutoCompleteManager>();
-        fr = gameObject.GetComponent<FileReader>();
         tmd = gameObject.GetComponent<TomoSeqDrawer>();
         sd = gameObject.GetComponent<SpotDrawer>();
         rgi = GetComponent<ReadGeneInformation>();
@@ -119,6 +118,26 @@ public class SearchManager : MonoBehaviour
             }
         }
     }
+
+    public void readVisiumScaleFactor(string path) 
+    {
+        string shortName = path.Split("\\").Last();
+        shortName = shortName.Substring(0, shortName.Length - 18);
+        string p = "uns/spatial/" + shortName + "/scalefactors/tissue_hires_scalef";
+        p = "/uns/spatial/V1_Breast_Cancer_Block_A_Section_1/scalefactors/tissue_hires_scalef";
+        Debug.Log(p);
+        Debug.Log(path);
+        List<float> scalefactors = new List<float>();
+        Debug.Log(fr);
+        scalefactors = fr.readH5Float(path, p);
+
+        foreach(float z in scalefactors)
+        {
+            Debug.Log(z);
+        }
+
+    }
+
 
     /// <summary>
     /// Read Stomics data for gene at position in list

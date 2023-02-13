@@ -99,9 +99,13 @@ public class SliceCollider : MonoBehaviour
                     if (s.Contains("tissue_hires_image.png") && !s.Contains("meta")) imagePath = s;
                 }
             }catch(Exception ex) { dfm.logfile.Log(ex, "The tissue image couldn't be found. Make sure the image is in the directory and called tissue_hires_image.png"); }
+            //Debug.Log(imagePath);
+
             byte[] byteArray = File.ReadAllBytes(imagePath);
             Texture2D sampleTexture = new Texture2D(2, 2);
             bool isLoaded = sampleTexture.LoadImage(byteArray);
+           // Debug.Log("Raw size: " + sampleTexture.width + " x " + sampleTexture.height);
+
             imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
             imagePlane.AddComponent<HAndEImageManager>();
             //TODO: correct path to Visium spatial image
