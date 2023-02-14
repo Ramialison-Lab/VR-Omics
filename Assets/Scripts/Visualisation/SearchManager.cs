@@ -322,7 +322,8 @@ public class SearchManager : MonoBehaviour
         //for each dataset selected
         foreach (string datapath in dfm.csvGeneExpPaths)
         {
-            searchGene(datapath, GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().geneNameDictionary[x].IndexOf(geneName), geneName);
+            List<string> listOFNames = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().geneNameDictionary[x];
+            searchGene(datapath, listOFNames.IndexOf(geneName), geneName);
             x++; 
         }
     }

@@ -74,14 +74,15 @@ public class DataTransferManager : MonoBehaviour
     public string[] spotnames;
     public List<string> geneNamesDistinct;
     public List<List<string>> SpotNameDictionary = new List<List<string>>();
-    public List<List<string>> geneNameDictionary = new List<List<string>>();
+    //public List<List<string>> geneNameDictionary = new List<List<string>>();
+    public List<string>[] geneNameDictionary;
 
     //Visium
     public bool addHAndEImg = false;
     private int visiumDepth = 0;
     public TMP_Dropdown sel_DropD; //Dropdown choosing active Slide in dataset
     public string[] visiumMetaFiles;
-    public string positionList;
+    public string[] positionList;
 
     //STOmics
     public string stomicsDataPath;
@@ -211,6 +212,10 @@ public class DataTransferManager : MonoBehaviour
     private void startVisium()
     {
         List<string> tempSpotnames = new List<string>();
+        positionList = new string[df.pathList.Count];
+        geneNameDictionary = new List<string>[df.pathList.Count];
+        int geneNameDictionary_Counter = 0;
+        int positionListCounter = 0;
         foreach (string x in df.pathList)
         {
             string[] files = Directory.GetFiles(x, "*.h5");
@@ -224,7 +229,12 @@ public class DataTransferManager : MonoBehaviour
             checkForFigures(allDirectories);
             foreach (string s in allDirectories)
             {
-                if (s.Split("\\").Last() == "tissue_positions_list.csv") positionList = s;
+                if (s.Split("\\").Last() == "tissue_positions_list.csv") {
+
+                    Debug.Log(s);
+                    positionList[positionListCounter] = s;
+                    positionListCounter++;
+                }
             }
         }
 
@@ -243,16 +253,20 @@ public class DataTransferManager : MonoBehaviour
         minX = maxX = minY = maxY = 0;
         int count = 0;
         int depthCounter = 0;
+        positionListCounter = 0;
         // Reading datasets and creating merged List for all coordinates
-        foreach (string p in hdf5datapaths)
+        //foreach (string p in hdf5datapaths)
+        for(int v=0; v<hdf5datapaths.Count; v++)
         {
+            string p = hdf5datapaths[v];
             int visiumScaleFactor = 1;
             shortList.Add(p.Split('\\').Last());
             //reads barcodes and row and col positions and create merged list of coordinates
             //fr.calcCoords(p);
 
             //Read position of all locations that are detected on tissue
-            string[] lines = File.ReadAllLines(positionList);
+            string[] lines = File.ReadAllLines(positionList[positionListCounter]);
+            positionListCounter++;
             lines = lines.Skip(1).ToArray();
             int inTissueSize = 0;
 
@@ -329,10 +343,16 @@ public class DataTransferManager : MonoBehaviour
                 visiumDepth += visiumScaleFactor*10;
             }
             
-
             SpotNameDictionary.Add(spotnames.ToList());
             fr.readGeneNames(p);
-            geneNameDictionary.Add(fr.geneNames);
+            geneNameDictionary[geneNameDictionary_Counter] = new List<string>();
+            foreach(string x in fr.geneNames)
+            {
+                geneNameDictionary[geneNameDictionary_Counter].Add(x);
+            }
+
+            geneNameDictionary_Counter++;
+
             geneNamesDistinct.AddRange(fr.geneNames);
             geneNamesDistinct = geneNamesDistinct.Distinct().ToList();
 
