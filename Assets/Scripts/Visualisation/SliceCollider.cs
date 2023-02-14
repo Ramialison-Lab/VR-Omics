@@ -433,12 +433,29 @@ public class SliceCollider : MonoBehaviour
         }
     }
 
+    public GameObject topMenuPanel;
+
     public void objectGroupExpand(GameObject panel)
     {
-        if (panel.activeSelf) panel.SetActive(false);
-        else panel.SetActive(true);
-        if (btngroup.activeSelf) btngroup.SetActive(false);
-        else btngroup.SetActive(true);
+        RectTransform topMenu_rect = topMenuPanel.GetComponent<RectTransform>();
+        int topMenu_offset = 100;
+
+        if (panel.activeSelf)
+        {
+            panel.SetActive(false);
+            topMenu_rect.sizeDelta = new Vector2(topMenu_rect.sizeDelta.x - topMenu_offset, topMenu_rect.sizeDelta.y);
+        }
+        else { 
+            panel.SetActive(true);
+            topMenu_rect.sizeDelta = new Vector2(topMenu_rect.sizeDelta.x + topMenu_offset, topMenu_rect.sizeDelta.y);
+
+        }
+        if (btngroup.activeSelf) { 
+            btngroup.SetActive(false); 
+        }
+        else { 
+            btngroup.SetActive(true); 
+        }
     }
 
 }

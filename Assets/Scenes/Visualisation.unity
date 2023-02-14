@@ -14692,7 +14692,7 @@ MonoBehaviour:
   addHAndEImg: 0
   sel_DropD: {fileID: 562369942}
   visiumMetaFiles: []
-  positionList: 
+  positionList: []
   stomicsDataPath: 
   stomicsSpotId: []
   stomicsGeneNames: []
@@ -14855,6 +14855,7 @@ MonoBehaviour:
   objectResize: 0
   objectMove: 0
   objectRotate: 0
+  topMenuPanel: {fileID: 227083345}
 --- !u!114 &1052670670
 MonoBehaviour:
   m_ObjectHideFlags: 0
