@@ -1075,9 +1075,12 @@ public class SpotDrawer : MonoBehaviour
     /// <param name="z">The depth location of the slice</param>
     public void moveSlice(float xoffset, float yoffset, float zoffset, string dN, float z)
     {
-        foreach (SpotWrapper s in spots)
-            if (s.DatasetName == dN && s.Location.z == z)
-                s.Location = new Vector3(s.Origin.x - xoffset, s.Origin.y - yoffset, s.Origin.z);
+        //for(int i=0; i< spots.Length; i++)
+        //{
+        //    spots[i].Origin = new Vector3(spots[i].Location.x - xoffset, spots[i].Location.y - yoffset, spots[i].Origin.z);
+        //}
+        //
+        //SetMeshBuffers();
     }
 
 

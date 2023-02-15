@@ -35,7 +35,7 @@ public class MenuCanvas : MonoBehaviour
     private SpotDrawer sd;
     public bool locked = true;
     public bool lasso = false;
-    private bool darkmode = false;
+    private bool darkmode = true;
     public GameObject figuresPanel;
     public GameObject imageCanvas;
     public TMP_Text figuresDatapath;
@@ -89,15 +89,17 @@ public class MenuCanvas : MonoBehaviour
 
         if (!darkmode)
         {
-
             darkmode = true;
             Camera.main.backgroundColor = Color.black;
         }
         else
         {
-            Camera.main.backgroundColor = backupCol;
+            Debug.Log(Camera.main.backgroundColor);
+
+            Camera.main.backgroundColor = Color.white;
             darkmode = false;
         }
+
     }
 
     public GameObject contextMenuHandESelection;

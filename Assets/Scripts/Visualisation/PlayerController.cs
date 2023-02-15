@@ -32,12 +32,11 @@ public class PlayerController : MonoBehaviour
     private bool up = false;
     private bool down = false;
     public GameObject IF;
-    private bool qKey;
-    private bool eKey;
     public GameObject menuCanvas;
     public float speed = 1.5f;
     Vector2 mousepos;
     DataTransferManager dfm;
+    SliceCollider sc;
 
     public int  scaleFactor = 10;
     private void LateUpdate()
@@ -48,6 +47,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
+        sc = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>();
     }
 
     public void Update()
@@ -64,12 +64,11 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyUp(KeyCode.Space)) up = false;
             if (Input.GetKeyDown(KeyCode.Z)) down = true;
             if (Input.GetKeyUp(KeyCode.Z)) down = false;
-            // TBD set key q or e in cube.dragobject.cs and based on datasetname find the cube to rotate
-            if (Input.GetKeyDown(KeyCode.Q)) qKey = true;
-            if (Input.GetKeyUp(KeyCode.Q)) qKey = false;
+            if(Input.GetKey(KeyCode.Q)) sc.prepareRotation(1);
+            if(Input.GetKey(KeyCode.E)) sc.prepareRotation(-1);
 
-            if (Input.GetAxis("Mouse ScrollWheel") > 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 30 * Time.deltaTime * 100);
-            if (Input.GetAxis("Mouse ScrollWheel") < 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 30 * Time.deltaTime * 100);
+            if (Input.GetAxis("Mouse ScrollWheel") > 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 1 * Time.deltaTime * 100);
+            if (Input.GetAxis("Mouse ScrollWheel") < 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 1 * Time.deltaTime * 100);
 
             if (Input.GetKey(KeyCode.Mouse2))
             {
@@ -82,18 +81,6 @@ public class PlayerController : MonoBehaviour
                 if (Input.mousePosition.y < mousepos.y && diff_y > diff_x) transform.Rotate(new Vector3(-1 * scaleFactor, 0, 0));
 
             }
-
-            if (qKey && !menuCanvas.GetComponent<MenuCanvas>().locked)
-            {
-                GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().prepareRotation(1);
-            }
-            if (eKey && !menuCanvas.GetComponent<MenuCanvas>().locked)
-            {
-                GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().prepareRotation(0);
-            }
-
-            if (Input.GetKeyDown(KeyCode.E)) eKey = true;
-            if (Input.GetKeyUp(KeyCode.E)) eKey = false;
 
             if (up)
             {
