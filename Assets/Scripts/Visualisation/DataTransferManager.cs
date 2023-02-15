@@ -231,7 +231,6 @@ public class DataTransferManager : MonoBehaviour
             {
                 if (s.Split("\\").Last() == "tissue_positions_list.csv") {
 
-                    Debug.Log(s);
                     positionList[positionListCounter] = s;
                     positionListCounter++;
                 }
@@ -255,10 +254,8 @@ public class DataTransferManager : MonoBehaviour
         int depthCounter = 0;
         positionListCounter = 0;
         // Reading datasets and creating merged List for all coordinates
-        //foreach (string p in hdf5datapaths)
-        for(int v=0; v<hdf5datapaths.Count; v++)
+        foreach (string p in hdf5datapaths)
         {
-            string p = hdf5datapaths[v];
             int visiumScaleFactor = 1;
             shortList.Add(p.Split('\\').Last());
             //reads barcodes and row and col positions and create merged list of coordinates
@@ -283,18 +280,31 @@ public class DataTransferManager : MonoBehaviour
             long[] col = new long[inTissueSize];           
             spotnames = new string[inTissueSize];
             int tissueCount = 0;
-            foreach(string s in lines)
+
+            List<string> referenceSpotList = new List<string>();
+            string[] refLines = File.ReadAllLines(visiumMetaFiles[count]);
+            refLines = refLines.Skip(1).ToArray();
+            foreach( string s in refLines)
+            {
+                string[] values = s.Split(',');
+                referenceSpotList.Add(values[0]);
+            }
+
+
+            foreach (string s in lines)
             {
                 string[] values = s.Split(',');
                 //if on tissue
                 if (values[1] == "1")
                 {
-                    //columns are switched
-                    col[tissueCount] = -2*visiumScaleFactor*(long.Parse(values[2]));
-                    row[tissueCount] = long.Parse(values[3]) * visiumScaleFactor;
+                    int original_Pos = referenceSpotList.IndexOf(values[0]);
 
-                    spotnames[tissueCount] = values[0];
-                    tissueCount++;
+                    //columns are switched
+                    col[original_Pos] = -2*visiumScaleFactor*(long.Parse(values[2]));
+                    row[original_Pos] = long.Parse(values[3]) * visiumScaleFactor;
+
+                    spotnames[original_Pos] = values[0];
+                    //tissueCount++;
                 }
             }
 

@@ -209,19 +209,7 @@ public class ReadClusterInformation : MonoBehaviour
 
         foreach (string path in dfm.visiumMetaFiles)
         {
-            // read SpotIds from the position list from which we have the order of spots
-            List<string> spotIDs = new List<string>();
-
-            //TODO: Change positionlistcounter to value of slide clicked;
-            string[] poslines = File.ReadAllLines(dfm.positionList[0]);
-            for (int i = 0; i < poslines.Length; i++)
-            {
-                string[] values = poslines[i].Split(',');
-                if (values[1] == "1")
-                {
-                    spotIDs.Add(values[0]);
-                }
-            }
+          
 
             // read the meta file with the cluster information
             string[] lines = File.ReadAllLines(path);
@@ -238,12 +226,10 @@ public class ReadClusterInformation : MonoBehaviour
                 string[] values = lines[i].Split(',');
                 try
                 {
-                    int originalPos = spotIDs.IndexOf(values[0]);
                     clusterValues[i] = int.Parse(values[15]);
-                    tempNormalised[originalPos] = (double)clusterValues[i];
-                    tempColor[originalPos] = defaultColours[clusterValues[i]];
-                    //clusterColour.Add(defaultColours[clusterValues[i]]);
-                    //normalised.Add(clusterValues[i] / 100);
+                    tempNormalised[i] = (double)clusterValues[i];
+                    tempColor[i] = defaultColours[clusterValues[i]];
+
                 }catch (Exception e){
                     Debug.Log(e);
 
