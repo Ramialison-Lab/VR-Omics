@@ -60,100 +60,122 @@ public class TooltipManager : MonoBehaviour
 
     private string getDescription(string name)
     {
-        string x ="";
+        string tooltip_text ="";
         switch (name)
         {
-            case "SideBySideBtn": x = "Activate a second slice to compare expression patterns";
+            case "SideBySideBtn": 
+                tooltip_text = "Activate a duplicate of the current dataset";
                 break;
             case "ExportBtn":
-                x = "Show Export Options";
+                tooltip_text = "Save the selected ROIs";
+                break;
+            case "LoadGroups":
+                tooltip_text = "Load saved ROIs";
                 break;
             case "HnEBtn":
-                x = "Show H&E overlay";
+                tooltip_text = "Show H&E overlay";
                 break;
             case "LassoBtn":
-                x = "Show Selection tool options";
+                tooltip_text = "Show Selection tool options";
                 break;                       
             case "LightBtn":
-                x = "Disable background for better contrast";
+                tooltip_text = "Change background colour";
                 break;            
             case "LockedBtn":
-                x = "Unlock slice rotation";
+                tooltip_text = "Unlock slice rotation";
                 break;            
             case "UnlockedBtn":
-                x = "Lock slice rotation";
+                tooltip_text = "Lock slice rotation";
                 break;            
             case "SearchWithToggle":
-                x = "Search Genes containg the input";
+                tooltip_text = "Search Genes containg the input";
                 break;            
             case "SearchIF":
-                x = "Enter gene name";
+                tooltip_text = "Enter gene name";
                 break;            
             case "CopySlider":
-                x = "Apply selection to the copy slice";
+                tooltip_text = "Apply selection to the copy slice";
                 break;             
             case "C18HeartSlider":
-                x = "Set the transparency of the heart object";
+                tooltip_text = "Set the transparency of the heart object";
                 break;            
             case "SelectionDropdown":
-                x = "Choose active dataset";
+                tooltip_text = "Choose active dataset";
                 break;            
             case "PassThroughBtn":
-                x = "Allows spot selection through slices";
+                tooltip_text = "Allows spot selection through slices";
                 break;            
             case "0":
-                x = "Activate Group 1";
+                tooltip_text = "Activate Group 1";
                 break;                  
             case "1":
-                x = "Activate Group 2";
+                tooltip_text = "Activate Group 2";
                 break;                
             case "2":
-                x = "Activate Group 3";
+                tooltip_text = "Activate Group 3";
                 break;                
             case "3":
-                x = "Activate Group 4";
+                tooltip_text = "Activate Group 4";
                 break;                
             case "LassoAddorRemoveToggle":
-                x = "Toggle to add or remove spots from selection";
+                tooltip_text = "Toggle to add or remove spots from selection";
                 break;                
             case "CSVBtn":
-                x = "Export selection as CSV file";
+                tooltip_text = "Export selection as CSV file";
                 break;                
             case "ImageBtn":
-                x = "Export an image of the current view";
+                tooltip_text = "Export an image of the current view";
                 break;                
             case "ColorThresholdMin":
-                x = "Set minimal threshold for expression";
+                tooltip_text = "Set minimal threshold for expression";
                 break;                
             case "SphereSizeSlider":
-                x = "Set the size of the symbol";
+                tooltip_text = "Set the size of the symbol";
                 break;               
             case "SettingBtn":
-                x = "Open settings menu";
+                tooltip_text = "Open settings menu";
                 break;              
             case "UnselectLassoBtn":
-                x = "Undo all selections";
+                tooltip_text = "Undo all selections";
                 break;
             case "SVGBtn":
-                x = "Show spatially variable genes list";
+                tooltip_text = "Show spatially variable genes list";
                 break;
             case "ScreenshotBtn":
-                x = "Export image of current view. CTRL + K";
+                tooltip_text = "Create image of current view. CTRL + K";
                 break;
             case "ObjectGroupBtn":
-                x = "Show 3D object movement options";
+                tooltip_text = "Show 3D object movement options";
                 break;            
             case "Move-3dObjectBtn":
-                x = "Move 3d object using F,T,G,H keys and Shift, CTRL+M";
+                tooltip_text = "Move 3d object using F,T,G,H keys and Shift, CTRL+M";
                 break;            
             case "RotateObjectBtn":
-                x = "Rotate 3d object using F,T,G,H keys and Shift, CTRL+R";
+                tooltip_text = "Rotate 3d object using F,T,G,H keys and Shift, CTRL+R";
                 break;            
             case "ResizeObjectBtn":
-                x = "Resize 3d object using F,T,G,H keys and Shift, CTRL+L";
-                break;
+                tooltip_text = "Resize 3d object using F,T,G,H keys and Shift, CTRL+L";
+                break;            
+            case "ClusterBtn":
+                tooltip_text = "Visualise cluster information";
+                break;               
+            case "FiguresBtn":
+                tooltip_text = "Show output plots";
+                break;                
+            case "SphereBtn":
+                tooltip_text = "Change location symbol to cubes";
+                break;                        
+            case "CubeBtn":
+                tooltip_text = "Change location symbol to spheres";
+                break;             
+            case "resetCameraBtn":
+                tooltip_text = "Reset view";
+                break;               
+            case "EnterVRBtn":
+                tooltip_text = "Change to VR environment";
+                break;            
         }
-        return x;
+        return tooltip_text;
     }
 
 }

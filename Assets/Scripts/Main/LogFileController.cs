@@ -15,15 +15,16 @@ public class LogFileController : MonoBehaviour
     /// <param name="message">A string explaining the cause of the exception</param>
     public void Log(Exception ex, string message)
     {
-        CleanUp();
-        filePath = Application.dataPath + "/Logfiles/" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + "_log.txt";
-        using (StreamWriter sw = File.AppendText(filePath))
-        {
-            sw.WriteLine("Log file created at " + DateTime.Now);
-            sw.WriteLine("[ERROR] " + DateTime.Now);
-            sw.WriteLine("Message: " + message);
-            sw.WriteLine("StackTrace: " + ex.StackTrace);
-        }
+            CleanUp();
+            filePath = System.IO.Directory.GetCurrentDirectory() + "/Assets/Logfiles/" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + "_log.txt";
+            using (StreamWriter sw = File.AppendText(filePath))
+            {
+                sw.WriteLine("Log file created at " + DateTime.Now);
+                sw.WriteLine("[ERROR] " + DateTime.Now);
+                sw.WriteLine("Message: " + message);
+                sw.WriteLine("StackTrace: " + ex.StackTrace);
+            }
+
     }
     
     /// <summary>
@@ -31,7 +32,7 @@ public class LogFileController : MonoBehaviour
     /// </summary>
     public void CleanUp()
     {
-        string dataPath = Application.dataPath + "/Logfiles/";
+        string dataPath = System.IO.Directory.GetCurrentDirectory() + "/Assets/Logfiles/";
         string[] files = Directory.GetFiles(dataPath, "*_log.txt");
         
         //delte files older than 30 days ago

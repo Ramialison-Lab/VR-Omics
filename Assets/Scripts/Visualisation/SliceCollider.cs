@@ -80,6 +80,7 @@ public class SliceCollider : MonoBehaviour
 
             imagePlane.transform.Rotate(new Vector3(-270, -90, 90));
             imagePlane.transform.localPosition = Vector3.zero;
+            imagePlane.transform.localPosition = new Vector3(imagePlane.transform.localPosition.x, imagePlane.transform.localPosition.y + 0.054f, imagePlane.transform.localPosition.z);
             imagePlane.GetComponent<Renderer>().material = transparentMat;
 
             string imagePath = System.IO.Directory.GetCurrentDirectory() + "/Assets/Images/Error_Images/spatial_file_not_found.png";

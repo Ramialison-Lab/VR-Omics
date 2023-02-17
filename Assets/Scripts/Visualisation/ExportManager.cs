@@ -43,7 +43,12 @@ public class ExportManager : MonoBehaviour
 
     private void Start()
     {
-        filePath = Application.dataPath;
+#if UNITY_STANDALONE_WIN
+        filePath = System.IO.Directory.GetCurrentDirectory() + "/Assets/ROI_export";
+#endif
+#if UNITY_EDITOR
+        filePath = System.IO.Directory.GetCurrentDirectory();
+#endif
         camera = Camera.main;
         sh = GameObject.Find("ScriptHolder");
         geneText = GameObject.Find("geneNameText");
@@ -129,7 +134,13 @@ public class ExportManager : MonoBehaviour
     {
         var barcodes = new List<string>();
         var ids = new List<int>();
-        string[] lines = File.ReadAllLines(Application.dataPath + "/exported_spotlist.csv");
+        string[] lines;
+#if UNITY_STANDALONE_WIN
+        lines = File.ReadAllLines(System.IO.Directory.GetCurrentDirectory() + "/Assets/ROI_export/exported_spotlist.csv");
+#endif
+#if UNITY_EDITOR
+        lines = File.ReadAllLines(System.IO.Directory.GetCurrentDirectory() + "/exported_spotlist.csv");
+#endif
         lines = lines.Skip(1).ToArray();
         foreach (string line in lines)
         {

@@ -1199,57 +1199,59 @@ public class SpotDrawer : MonoBehaviour
             // TBD only working for 
             switch (dd.value)
             {
-                case 1:
+                case 2:
                     normalised.Clear();
                     sm.querySbyte("obs/clusters");
                     break;
-                case 2:
+                case 3:
                     normalised.Clear();
                     sm.query64bitFloat("obs/log1p_n_genes_by_counts");
                     break;
-                case 3:
+                case 4:
                     normalised.Clear();
                     sm.query32bitFloat("obs/log1p_total_counts");
                     break;
-                case 4:
+                case 5:
                     normalised.Clear();
                     sm.query32bitFloat("obs/log1p_total_counts_mt");
                     break;
-                case 5:
+                case 6:
                     normalised.Clear();
                     sm.query32bitFloat("obs/n_counts");
                     break;
-                case 6:
+                case 7:
                     normalised.Clear();
                     sm.queryInt("obs/n_genes_by_counts");
                     break;
-                case 7:
+                case 8:
                     normalised.Clear();
                     sm.query64bitFloat("obs/pct_counts_in_top_100_genes");
                     break;
-                case 8:
+                case 9:
                     normalised.Clear();
                     sm.query64bitFloat("obs/pct_counts_in_top_200_genes");
                     break;
-                case 9:
+                case 10:
                     normalised.Clear();
                     sm.query64bitFloat("obs/pct_counts_in_top_500_genes");
                     break;
-                case 10:
+                case 11:
                     normalised.Clear();
                     sm.query64bitFloat("obs/pct_counts_in_top_50_genes");
                     break;
-                case 11:
+                case 12:
                     normalised.Clear();
                     sm.query32bitFloat("obs/pct_counts_mt");
                     break;
-                case 12:
+                case 13:
                     normalised.Clear();
                     sm.query64bitFloat("obs/total_counts");
                     break;
-                case 13:
+                case 14:
                     normalised.Clear();
                     sm.query64bitFloat("obs/total_counts_mt");
+                    break;
+                default:
                     break;
             }
         }catch(Exception e)
@@ -1269,6 +1271,7 @@ public class SpotDrawer : MonoBehaviour
         {
             if (!dfm.c18_visium)
             {
+                    ddValues.Add("Please Choose");
                     ddValues.Add("Leiden Cluster");
                     ddValues.Add("log1p_n_genes_by_counts");
                     ddValues.Add("log1p_total_counts");
