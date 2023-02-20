@@ -55,6 +55,7 @@ public class DataTransferManager : MonoBehaviour
     public AutoCompleteManager acm;
     public ButtonFunctionManager bfm;
     public MenuCanvas mc;
+    public JSONReader jr;
 
     //Universal lists
     public List<float> x_coordList;
@@ -83,6 +84,8 @@ public class DataTransferManager : MonoBehaviour
     public TMP_Dropdown sel_DropD; //Dropdown choosing active Slide in dataset
     public string[] visiumMetaFiles;
     public string[] positionList;
+    public string[] jsonFilePaths;
+    public float[] scaleFactors;
 
     //STOmics
     public string stomicsDataPath;
@@ -132,6 +135,7 @@ public class DataTransferManager : MonoBehaviour
         acm = scriptHolder.GetComponent<AutoCompleteManager>();
         bfm = scriptHolder.GetComponent<ButtonFunctionManager>();
         mc = GameObject.Find("MainMenuPanel").GetComponent<MenuCanvas>();
+        jr = scriptHolder.GetComponent<JSONReader>();
 
         try { 
             df = scriptHolderPipeline.GetComponent<DataTransfer>();
@@ -211,11 +215,27 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startVisium()
     {
+        int count = 0;  // counting datasets
         List<string> tempSpotnames = new List<string>();
-        positionList = new string[df.pathList.Count];
+
+        //Dict for geneNames in dataset
         geneNameDictionary = new List<string>[df.pathList.Count];
         int geneNameDictionary_Counter = 0;
+
+        //tissue_position list
+        positionList = new string[df.pathList.Count];
         int positionListCounter = 0;
+
+        //Scalefactors from JSON file for H&E image
+        jsonFilePaths = new string[df.pathList.Count];
+        int jsonListCounter = 0;
+        scaleFactors = new float[df.pathList.Count];
+
+        string[] tissueImagePath = new string[df.pathList.Count];
+        int tissueImageCounter = 0;
+
+
+        //Find the respective files from the Visium dataset repository
         foreach (string x in df.pathList)
         {
             string[] files = Directory.GetFiles(x, "*.h5");
@@ -234,13 +254,72 @@ public class DataTransferManager : MonoBehaviour
                     positionList[positionListCounter] = s;
                     positionListCounter++;
                 }
+                if (s.Contains("scalefactors_json.json") && !s.Contains("meta"))
+                {
+                    jsonFilePaths[jsonListCounter] = s;
+                }
+                if (s.Contains("tissue_hires_image.png") && !s.Contains("meta"))
+                {
+                    tissueImagePath[tissueImageCounter] = s;
+                    tissueImageCounter++;
+                }
             }
         }
+        ////calculate dimensions of H&E image
+        scaleFactors[count] = jr.readScaleFactor(jsonFilePaths[count]);
+
+        //byte[] byteArray = File.ReadAllBytes(tissueImagePath[count]);
+        //Texture2D sampleTexture = new Texture2D(2, 2);
+        //bool isLoaded = sampleTexture.LoadImage(byteArray);
+
+        //float highres_w = sampleTexture.width;
+        //float highres_h = sampleTexture.height;
+
+        //float sF = scaleFactors[count];
+
+        //float fullres_w = highres_w / sF;
+        //float fullres_h = highres_h / sF;
+
+        //string[] ls = File.ReadAllLines(positionList[count]);
+        //ls = ls.Skip(1).ToArray();
+
+        //string[] ln = ls[0].Split(',');
+
+        //Vector2 firstEntry = new Vector2(int.Parse(ln[2]), int.Parse(ln[3]));
+        //Vector2 firstEntryPX = new Vector2(int.Parse(ln[4]), int.Parse(ln[5]));
+
+        //ln = ls[ls.Length-1].Split(',');
+        //Vector2 lastEntry = new Vector2(int.Parse(ln[2]), int.Parse(ln[3]));
+        //Vector2 lastEntryPX = new Vector2(int.Parse(ln[4]), int.Parse(ln[5]));
+
+        //int x_dist = (int)(firstEntry.x - lastEntry.x); //77
+        //int x_dist_px = (int)(firstEntryPX.x - lastEntryPX.x); //18323        
+        
+        //int y_dist = (int)(firstEntry.y - lastEntry.y);
+        //int y_dist_px = (int)(firstEntryPX.y - lastEntryPX.y);
+
+        //float spots_dist_x = x_dist_px / x_dist; //237.96
+        //float spots_dist_y = y_dist_px / y_dist;
+
+        //float x_zero = firstEntryPX.x / spots_dist_x; //16.95
+        //float y_zero = firstEntryPX.y / spots_dist_y;
+
+        //float x_max = lastEntryPX.x / spots_dist_x;
+        //float y_max = lastEntryPX.y / spots_dist_y;
+
+        //GameObject corner_go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //corner_go.transform.position = new Vector3(-x_zero, -2*y_zero, 0);
+        //corner_go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //corner_go.transform.position = new Vector3(x_max, y_max, 0);
+
+        //corner_go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //corner_go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
 
         addHAndEImg = true;
         List<string> shortList = new List<string>();
 
-        //disable copy features for more than one visium slice
+        //disable sideBySide features for more than one visium slice
         if (hdf5datapaths.Count > 1)
         {
             foreach (GameObject go in disableBtn)
@@ -248,9 +327,10 @@ public class DataTransferManager : MonoBehaviour
                 go.SetActive(false);
             }
         }
+
+        //Reading spotlist values
         float minX, maxX, minY, maxY;
         minX = maxX = minY = maxY = 0;
-        int count = 0;
         int depthCounter = 0;
         positionListCounter = 0;
         // Reading datasets and creating merged List for all coordinates
@@ -279,7 +359,6 @@ public class DataTransferManager : MonoBehaviour
             long[] row = new long[inTissueSize];
             long[] col = new long[inTissueSize];           
             spotnames = new string[inTissueSize];
-            int tissueCount = 0;
 
             List<string> referenceSpotList = new List<string>();
             string[] refLines = File.ReadAllLines(visiumMetaFiles[count]);
@@ -290,7 +369,6 @@ public class DataTransferManager : MonoBehaviour
                 referenceSpotList.Add(values[0]);
             }
 
-
             foreach (string s in lines)
             {
                 string[] values = s.Split(',');
@@ -300,8 +378,8 @@ public class DataTransferManager : MonoBehaviour
                     int original_Pos = referenceSpotList.IndexOf(values[0]);
 
                     //columns are switched
-                    col[original_Pos] = -2*visiumScaleFactor*(long.Parse(values[2]));
-                    row[original_Pos] = long.Parse(values[3]) * visiumScaleFactor;
+                    col[original_Pos] = -2*(long.Parse(values[2]));
+                    row[original_Pos] = long.Parse(values[3]);
 
                     spotnames[original_Pos] = values[0];
                     //tissueCount++;

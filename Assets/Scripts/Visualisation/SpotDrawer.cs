@@ -1,6 +1,6 @@
 ﻿/*
 * Copyright (c) 2023 Murdoch Children's Research Institute, Parkville, Melbourne
-* author: Denis Bienroth
+* author: Denis Bienroth, Dimitar Garkov
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"),
@@ -26,11 +26,8 @@ using TMPro;
 using UnityEngine;
 using VROmics.Main;
 using VROmics.Visualisation;
-/// <summary>
-/// Draws data spots for the main camera using a single mesh onto the GPU.
-/// 
-/// Authors: Denis Bienroth, Dimitar Garkov
-/// </summary>
+
+
 public class SpotDrawer : MonoBehaviour
 {
     // Lists
@@ -38,7 +35,6 @@ public class SpotDrawer : MonoBehaviour
     public List<double> normalisedCopy;
     public List<Color> colVals = new List<Color>();
     public List<Color> colValsCopy = new List<Color>();
-
     //Access variables
     private SearchManager sm;
     public TMP_Dropdown dd;
@@ -530,7 +526,7 @@ public class SpotDrawer : MonoBehaviour
             for (int i = 0; i < spots.Length; i++)
             {
                 var spot = spots[i];
-                spotsCopy[i] = new SpotWrapper() // --> deep copy!
+                spotsCopy[i] = new SpotWrapper() 
                 {
                     Location = spot.Location,
                     Origin = spot.Origin,

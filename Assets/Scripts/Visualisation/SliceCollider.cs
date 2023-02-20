@@ -42,6 +42,7 @@ public class SliceCollider : MonoBehaviour
     public List<GameObject> BtnPanels = new List<GameObject>(3);
     public GameObject btngroup;
     private DataTransferManager dfm;
+    int countSFs = 0;
 
     public bool objectUsed = false;
     public bool objectResize = false;
@@ -72,51 +73,168 @@ public class SliceCollider : MonoBehaviour
 
         if (gameObject.GetComponent<DataTransferManager>().addHAndEImg)
         {
-            GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            imagePlane.name = "StainImageObject";
-
-            imagePlane.transform.localScale = new Vector3(sliceCollider.transform.localScale.x * 1.5f, 0.1f, sliceCollider.transform.localScale.z * 1.361f);
-            imagePlane.transform.SetParent(sliceCollider.transform);
-
-            imagePlane.transform.Rotate(new Vector3(-270, -90, 90));
-            imagePlane.transform.localPosition = Vector3.zero;
-            imagePlane.transform.localPosition = new Vector3(imagePlane.transform.localPosition.x, imagePlane.transform.localPosition.y + 0.054f, imagePlane.transform.localPosition.z);
-            imagePlane.GetComponent<Renderer>().material = transparentMat;
-
-            string imagePath = System.IO.Directory.GetCurrentDirectory() + "/Assets/Images/Error_Images/spatial_file_not_found.png";
-            
-            int index = datasetName.LastIndexOf("\\");
-            string path ="";
-            if (index >= 0)
-            {
-                path = datasetName.Substring(0, index);
-            }
-            //can't find the spatial image from directory
-            string[] files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
-            try
-            {
-                foreach (string s in files)
-                {
-                    if (s.Contains("tissue_hires_image.png") && !s.Contains("meta")) imagePath = s;
-                }
-            }catch(Exception ex) { dfm.logfile.Log(ex, "The tissue image couldn't be found. Make sure the image is in the directory and called tissue_hires_image.png"); }
-            //Debug.Log(imagePath);
-
-            byte[] byteArray = File.ReadAllBytes(imagePath);
-            Texture2D sampleTexture = new Texture2D(2, 2);
-            bool isLoaded = sampleTexture.LoadImage(byteArray);
-           // Debug.Log("Raw size: " + sampleTexture.width + " x " + sampleTexture.height);
-
-            imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
-            imagePlane.AddComponent<HAndEImageManager>();
-            //TODO: correct path to Visium spatial image
-            imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagePath);
-            imagePlane.AddComponent<BoxCollider>();
-            HandEobjs.Add(imagePlane);
-            imagePlane.SetActive(false);
-
+            adjustHEStainImage(sliceCollider, datasetName, minVec, maxVec);
         }
     }
+
+    private void adjustHEStainImage(GameObject sliceCollider, string datasetName, Vector2 minVec, Vector2 maxVec)
+    {
+        GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        imagePlane.name = "StainImageObject";
+
+        //imagePlane.transform.localScale = new Vector3(sliceCollider.transform.localScale.x * 1.5f, 0.1f, sliceCollider.transform.localScale.z * 1.361f);
+        //imagePlane.transform.SetParent(sliceCollider.transform);
+
+        //imagePlane.transform.localPosition = Vector3.zero;
+        imagePlane.transform.position = sliceCollider.transform.position;
+
+        imagePlane.GetComponent<Renderer>().material = transparentMat;
+
+        string imagePath = System.IO.Directory.GetCurrentDirectory() + "/Assets/Images/Error_Images/spatial_file_not_found.png";
+
+        int index = datasetName.LastIndexOf("\\");
+        string path = "";
+        if (index >= 0)
+        {
+            path = datasetName.Substring(0, index);
+        }
+        //can't find the spatial image from directory
+        string[] files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+        try
+        {
+            foreach (string s in files)
+            {
+                if (s.Contains("tissue_hires_image.png") && !s.Contains("meta")) imagePath = s;
+            }
+        }
+        catch (Exception ex) { dfm.logfile.Log(ex, "The tissue image couldn't be found. Make sure the image is in the directory and called tissue_hires_image.png"); }
+        Debug.Log(imagePath);
+
+        byte[] byteArray = File.ReadAllBytes(imagePath);
+        Texture2D sampleTexture = new Texture2D(2, 2);
+        bool isLoaded = sampleTexture.LoadImage(byteArray);
+
+        #region Scaling H&E image
+
+        //imagePlane.transform.localPosition = new Vector3(imagePlane.transform.localPosition.x, imagePlane.transform.localPosition.y + 0.054f, imagePlane.transform.localPosition.z);
+        // Debug.Log("Raw size: " + sampleTexture.width + " x " + sampleTexture.height);
+
+        float highres_w = sampleTexture.width;
+        float highres_h = sampleTexture.height;
+
+        float sF = dfm.scaleFactors[countSFs];
+
+        Debug.Log(sF);
+
+
+        float fullres_w = highres_w / sF;
+        float fullres_h = highres_h / sF;
+
+        Debug.Log(fullres_w);
+        Debug.Log(fullres_h);
+
+
+        string[] positionList = dfm.positionList;
+
+        string[] lines = File.ReadAllLines(positionList[countSFs]);
+
+        string[] values = lines[0].Split(',');
+
+
+        int min_x = int.Parse(values[4]);
+        int max_x = int.Parse(values[4]);
+        int min_y = int.Parse(values[5]);
+        int max_y = int.Parse(values[5]);  
+
+        for (int i=0; i < lines.Length; i++){
+
+            values = lines[i].Split(',');
+
+
+            if (int.Parse(values[4]) < min_x)
+                {
+                    min_x = int.Parse(values[4]);
+                }
+            else if (int.Parse(values[4]) > max_x)
+                {
+                    max_x = int.Parse(values[4]);
+                }
+
+            if (int.Parse(values[5]) < min_y)
+            {
+                min_y = int.Parse(values[5]);
+            }
+            else if (int.Parse(values[5]) > max_y)
+            {
+                max_y = int.Parse(values[5]);
+            }
+        }
+
+        Debug.Log(min_x);
+        Debug.Log(max_x);
+        Debug.Log(min_y);
+        Debug.Log(max_y);
+
+
+        float distance_w_left = min_x;
+        float distance_w_right = fullres_w - max_x;
+        float distance_h_bottom = min_y;
+        float distance_h_top = fullres_h - max_y;
+
+
+        float percentage_distance_w_left = distance_w_left/ fullres_w;
+        float percentage_distance_w_right = distance_w_right/fullres_w;
+        float percentage_distance_h_bottom = distance_h_bottom/fullres_h;
+        float percentage_distance_h_top = distance_h_top/fullres_h;
+
+        Debug.Log(percentage_distance_w_left);
+        Debug.Log(percentage_distance_w_right);
+        Debug.Log(percentage_distance_h_bottom);
+        Debug.Log(percentage_distance_h_top);
+
+        imagePlane.transform.localScale = new Vector3(1,1,1);
+        float IP_x = imagePlane.transform.localScale.x; 
+        float IP_y = imagePlane.transform.localScale.y; 
+
+        Debug.Log(IP_x);
+        Debug.Log(IP_y);
+
+        float percentage_highres_w = IP_x - (IP_x * percentage_distance_w_left) - (IP_x * percentage_distance_w_right);
+        float percentage_highres_h = IP_y - (IP_y * percentage_distance_h_top) - (IP_y * percentage_distance_h_bottom);
+
+        Debug.Log(percentage_highres_w);
+        Debug.Log(percentage_highres_h);
+
+        float scaleWidth = sliceCollider.transform.localScale.x / (IP_x * percentage_highres_w);
+        float scaleHeight = sliceCollider.transform.localScale.y / (IP_y * percentage_highres_h);
+
+        // this value says how much percent of the imageplane are stain image
+        // Overlay this percentage with the actual spot dimensions
+
+        //float scaleWidth = sliceCollider.transform.localScale.x / percentage_highres_w;
+        //float scaleHeight = sliceCollider.transform.localScale.y / percentage_highres_h;
+
+        Debug.Log(scaleWidth);
+        Debug.Log(scaleHeight);
+
+        imagePlane.transform.localScale = new Vector3(imagePlane.transform.localScale.x * scaleWidth, imagePlane.transform.localScale.y * scaleHeight, imagePlane.transform.localScale.z);
+
+        //imagePlane.transform.localScale = new Vector3(imagePlane.transform.localScale.x * scaleWidth, imagePlane.transform.localScale.y * scaleHeight, imagePlane.transform.localScale.z);
+
+        countSFs++;
+        #endregion
+
+        imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
+        imagePlane.AddComponent<HAndEImageManager>();
+        //TODO: correct path to Visium spatial image
+        imagePlane.GetComponent<HAndEImageManager>().setImagePath(imagePath);
+        imagePlane.AddComponent<BoxCollider>();
+        HandEobjs.Add(imagePlane);
+        imagePlane.SetActive(false);
+        imagePlane.transform.Rotate(new Vector3(0, 0, 180));
+
+    }
+
 
     public void setSliceCollider(int colMin, int colMax, int rowMin, int rowMax, int depth, string datasetName)
     {

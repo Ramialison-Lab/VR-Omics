@@ -14456,6 +14456,7 @@ GameObject:
   - component: {fileID: 1052670658}
   - component: {fileID: 1052670660}
   - component: {fileID: 1052670667}
+  - component: {fileID: 1052670672}
   - component: {fileID: 1052670665}
   - component: {fileID: 1052670670}
   - component: {fileID: 1052670664}
@@ -14693,6 +14694,8 @@ MonoBehaviour:
   sel_DropD: {fileID: 562369942}
   visiumMetaFiles: []
   positionList: []
+  jsonFilePaths: []
+  scaleFactors: 
   stomicsDataPath: 
   stomicsSpotId: []
   stomicsGeneNames: []
@@ -14890,6 +14893,18 @@ MonoBehaviour:
   sidePanel: {fileID: 696889368}
   TMPpro_text: {fileID: 4780776188165239060, guid: c408be9d74e0dda41936d13fd31cb7f0,
     type: 3}
+--- !u!114 &1052670672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052670655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deb58f6276e31db47b86e3dcc241b5d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1092023741
 GameObject:
   m_ObjectHideFlags: 0
