@@ -58,6 +58,9 @@ public class TomoSeqDrawer : MonoBehaviour
     public List<float> tempz;
     public List<Color> colVals = new List<Color>();
 
+    public List<string> APgenesEnsembl;
+    public List<string> VDgenesEnsembl;
+    public List<string> LRgenesEnsembl;    
     public List<string> APgenes;
     public List<string> VDgenes;
     public List<string> LRgenes;
@@ -134,11 +137,16 @@ public class TomoSeqDrawer : MonoBehaviour
                 if (init)
                 {
 
-                    if (colVals[i] != Color.clear)
+                    try
                     {
+                        if (colVals[i] != Color.clear)
+                        {
 
-                        matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
-                        Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, true, true);
+                            matrix = Matrix4x4.TRS(wrap.location, symbolTransform.rotation, symbolTransform.localScale * 0.1f);
+                            Graphics.DrawMesh(wrap.mesh, matrix, matUsed, 0, main, 0, mpb, true, true);
+                        }
+                    }catch(Exception e)
+                    {
                     }
                 }
                 else
@@ -206,6 +214,7 @@ public class TomoSeqDrawer : MonoBehaviour
     /// </summary>
     public void generateGrid()
     {
+        //read CSV files and checks for size
         getCSVData();
 
         // OUT Overwrite for ripplyMat
@@ -213,28 +222,24 @@ public class TomoSeqDrawer : MonoBehaviour
         vd_size = 50;
         ap_size = 50;
 
-        List<float> RipList = new List<float>();
+        List<float> geneExpList = new List<float>();
         //TBD LINKPATH
-        string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/mymatrix.txt");
+        string[] allDirectories = Directory.GetFiles(this.gameObject.GetComponent<DataTransferManager>().tomoGeneDirectory, "*.txt", SearchOption.AllDirectories);
+
+        string[] lines = File.ReadAllLines(allDirectories[0]);
         //string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/10ss_3dbitmask.txt");
-        foreach(string line in lines)
+        foreach (string line in lines)
         {
-            List<string> values = new List<string>();
-            values = line.Split(' ').ToList();
-            
-            foreach(string c in values)
+            string[] values = line.Split(' ');
+
+            foreach (string c in values)
             {
-                RipList.Add(float.Parse(c));
-
+                geneExpList.Add(float.Parse(c));
             }
-
-
         }
 
-        // OUT till here
-
         int total = lr_size * vd_size * ap_size;
-        
+
         //TBD using bitmask
         int[] bitMask = new int[total];
 
@@ -245,9 +250,8 @@ public class TomoSeqDrawer : MonoBehaviour
             for (int y = 0; y < ap_size; y++)
             {
                 for (int x = 0; x < vd_size; x++)
-                {    
-                    //OUt if Ripply
-                    if(RipList[count] != 0) {
+                {
+                    if(geneExpList[count] != 0) {
                                     tempx.Add(x);
                                     tempy.Add(y);
                                     tempz.Add(z);
@@ -263,7 +267,7 @@ public class TomoSeqDrawer : MonoBehaviour
 
         List<float> nonZero = new List<float>();
 
-        foreach (float x in RipList)
+        foreach (float x in geneExpList)
         {
             if (x != 0)
             {
@@ -291,8 +295,10 @@ public class TomoSeqDrawer : MonoBehaviour
 
         foreach (string line in lines)
         {
-            APgenes.Add(line.Split(',').First());
+            string[] values = line.Split(',');
 
+            APgenesEnsembl.Add(values[0]);
+            APgenes.Add(values[1]);
         }     
                
         lines = File.ReadAllLines(vd_path);
@@ -300,7 +306,10 @@ public class TomoSeqDrawer : MonoBehaviour
 
         foreach (string line in lines)
         {
-            VDgenes.Add(line.Split(',').First());
+            string[] values = line.Split(',');
+
+            VDgenesEnsembl.Add(values[0]);
+            VDgenes.Add(values[1]);
         }
 
         lines = File.ReadAllLines(lr_path);
@@ -308,7 +317,10 @@ public class TomoSeqDrawer : MonoBehaviour
 
         foreach (string line in lines)
         {
-            LRgenes.Add(line.Split(',').First());
+            string[] values = line.Split(',');
+
+            LRgenesEnsembl.Add(values[0]);
+            LRgenes.Add(values[1]);
         }
 
     }
@@ -321,7 +333,7 @@ public class TomoSeqDrawer : MonoBehaviour
     /// <param name="zcoords"></param>
     public void startSpotDrawer(List<float> xcoords, List<float> ycoords, List<float> zcoords)
     {
-
+        batches.Clear();
         for (int i = 0; i < xcoords.Count; i++)
         {
             float x = xcoords[i];
@@ -336,15 +348,15 @@ public class TomoSeqDrawer : MonoBehaviour
         if (tomoGraphCanvas.activeSelf == false) tomoGraphCanvas.SetActive(true);
     }
 
-    public void runSearchTomo(string ensembleId)
+    public void runSearchTomo(string geneName)
     {
         try
         {
-            var APpos = APgenes.IndexOf(ensembleId);
-            var VDpos = VDgenes.IndexOf(ensembleId);
-            var LRpos = LRgenes.IndexOf(ensembleId);
+            var APpos = APgenes.IndexOf(geneName);
+            var VDpos = VDgenes.IndexOf(geneName);
+            var LRpos = LRgenes.IndexOf(geneName);
          
-            StartCoroutine(searchTomo(APpos, VDpos, LRPos));
+            StartCoroutine(searchTomo(APpos, VDpos, LRPos, geneName));
 
         }
         catch (Exception)
@@ -400,6 +412,7 @@ public class TomoSeqDrawer : MonoBehaviour
 
     public List<string> getGeneNames()
     {
+        //return APgenesEnsembl.Union(VDgenesEnsembl.Union(LRgenesEnsembl.ToList())).ToList();
         return APgenes.Union(VDgenes.Union(LRgenes.ToList())).ToList();
     }
 
@@ -410,7 +423,8 @@ public class TomoSeqDrawer : MonoBehaviour
     public GameObject Graph_datapoint;
     public GameObject black_bg;
     private List<GameObject> datapoints = new List<GameObject>();
-    IEnumerator searchTomo(int APpos, int VDpos, int LRpos)
+    
+    IEnumerator searchTomo(int APpos, int VDpos, int LRpos , string geneName)
     {
         normalisedVal.Clear();
         Vals.Clear();
@@ -426,7 +440,17 @@ public class TomoSeqDrawer : MonoBehaviour
         {
             string[] linesAP = File.ReadAllLines(ap_path);
             AP_Exp = new List<float>();
-            AP_Exp = linesAP[APpos].Remove(0, linesAP[APpos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
+
+            string[] values = linesAP[APpos].Split(',');
+
+            for(int i=0; i<values.Length; i++)
+            {
+                if (i > 1) {
+                    AP_Exp.Add(float.Parse(values[i]));
+                    }
+            }
+
+            //AP_Exp = linesAP[APpos].Remove(0, linesAP[APpos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
 
             foreach (float x in AP_Exp)
             {
@@ -438,8 +462,19 @@ public class TomoSeqDrawer : MonoBehaviour
         if (VDpos != -1)
         {
             string[] linesVD = File.ReadAllLines(vd_path);
+
+            string[] values = linesVD[APpos].Split(',');
             VD_Exp = new List<float>();
-            VD_Exp = linesVD[VDpos].Remove(0, linesVD[VDpos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (i > 1)
+                {
+                    VD_Exp.Add(float.Parse(values[i]));
+                }
+            }
+
+            // VD_Exp = linesVD[VDpos].Remove(0, linesVD[VDpos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
 
             foreach (float x in VD_Exp)
             {
@@ -451,8 +486,18 @@ public class TomoSeqDrawer : MonoBehaviour
         if (LRpos != -1)
         {
             string[] linesLR = File.ReadAllLines(lr_path);
+
+            string[] values = linesLR[APpos].Split(',');
             LR_Exp = new List<float>();
-            LR_Exp = linesLR[LRPos].Remove(0, linesLR[LRPos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
+
+            //LR_Exp = linesLR[LRPos].Remove(0, linesLR[LRPos].Split(',').First().Length + 1).Split(',').ToList().Select(float.Parse).ToList();
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (i > 1)
+                {
+                    LR_Exp.Add(float.Parse(values[i]));
+                }
+            }
 
             foreach (float x in LR_Exp)
             {
@@ -468,31 +513,102 @@ public class TomoSeqDrawer : MonoBehaviour
         }
         else
         {
-            // mapping values on 3x3 grid
-            for (int z = 0; z < lr_size; z++)
-            {
-                for (int y = 0; y < ap_size; y++)
-                {
-                    for (int x = 0; x < vd_size; x++)
-                    {
-                        Vals.Add((VD_Exp[x] + AP_Exp[y] + LR_Exp[z]) / sum);
-                    }
-                }
-            }
+
+            applyGeneExpression(geneName);
+            //// mapping values on 3x3 grid
+            //for (int z = 0; z < lr_size; z++)
+            //{
+            //    for (int y = 0; y < ap_size; y++)
+            //    {
+            //        for (int x = 0; x < vd_size; x++)
+            //        {
+            //            Vals.Add((VD_Exp[x] + AP_Exp[y] + LR_Exp[z]) / sum);
+            //        }
+            //    }
+            //}
 
 
-            //normalisation of values 
+            ////normalisation of values 
 
-            var max = Vals.Max();
-            var min = Vals.Min();
-            var range = (double)(max - min);
+            //var max = Vals.Max();
+            //var min = Vals.Min();
+            //var range = (double)(max - min);
 
 
-            normalisedVal = Vals.Select(i => 1 * (i - min) / range).ToList();
+            //normalisedVal = Vals.Select(i => 1 * (i - min) / range).ToList();
 
-            setColors(normalisedVal);
+            //setColors(normalisedVal);
         }
         yield return null;
+    }
+
+    private void applyGeneExpression(string geneName)
+    {
+        start = false;
+        lr_size = 50;
+        vd_size = 50;
+        ap_size = 50;
+
+        List<float> geneExpList = new List<float>();
+
+        string path = this.gameObject.GetComponent<DataTransferManager>().tomoGeneDirectory + "/" + geneName.ToLower() + ".txt";
+
+        //TBD LINKPATH
+        string[] lines = File.ReadAllLines(path);
+        //string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/10ss_3dbitmask.txt");
+        foreach (string line in lines)
+        {
+            string[] values = line.Split(' ');
+
+            foreach (string c in values)
+            {
+                geneExpList.Add(float.Parse(c));
+            }
+        }
+
+        int total = lr_size * vd_size * ap_size;
+
+        //TBD using bitmask
+        int[] bitMask = new int[total];
+
+        int count = 0;
+
+        for (int z = 0; z < lr_size; z++)
+        {
+            for (int y = 0; y < ap_size; y++)
+            {
+                for (int x = 0; x < vd_size; x++)
+                {
+                    if (geneExpList[count] != 0)
+                    {
+                        tempx.Add(x);
+                        tempy.Add(y);
+                        tempz.Add(z);
+                    }
+                    count++;
+                }
+            }
+        }
+        symbolSelect = cubeSymb;
+
+        startSpotDrawer(tempx, tempy, tempz);
+
+        List<float> nonZero = new List<float>();
+
+        foreach (float x in geneExpList)
+        {
+            if (x != 0)
+            {
+                nonZero.Add(x);
+            }
+        }
+
+        var max = nonZero.Max();
+        var min = nonZero.Min();
+        var range = (double)(max - min);
+
+        normalisedVal = nonZero.Select(i => 1 * (i - min) / range).ToList();
+        setColors(normalisedVal);
     }
 
     public void setColors(List<double> normalise)
@@ -509,18 +625,16 @@ public class TomoSeqDrawer : MonoBehaviour
             colVals.Add(colorGradient(i));
 
         }
+        start = true;
+        Debug.Log(batches.Count);
+        Debug.Log(colVals.Count);
+
     }
+
     private float minTresh;
     private Color colorGradient(int i)
     {
-        minTresh = gameObject.GetComponent<SpotDrawer>().minThresh;
-
-        
-
-        if ((float)normalised[i] < minTresh)
-        {
-            return Color.clear;
-        }
+       
         if (true)
         {
             Gradient gradient = new Gradient();

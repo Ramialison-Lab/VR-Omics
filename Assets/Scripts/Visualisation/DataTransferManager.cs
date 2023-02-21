@@ -645,6 +645,8 @@ public class DataTransferManager : MonoBehaviour
         sp.StartDrawer(c18x, c18y, c18z, c18spot, new string[] { });
     }
 
+    public string tomoGeneDirectory;
+
     /// <summary>
     /// Tomo-Seq - This function reads the required datapaths for the tomo-seq data and generates a grid accordingly, data spots are removed based on their expression value of the 3d reconstructed matrix file
     /// </summary>
@@ -652,9 +654,22 @@ public class DataTransferManager : MonoBehaviour
     {
         // transfer from pipeline
         // TBD LINKPATH
-        string ap_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_AP.csv";
-        string vd_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_VD.csv";
-        string lr_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Junker_zebrafish\\15SS_LR.csv";
+
+        string ap_path = df.APPath;
+        string vd_path = df.VDPath;
+        string lr_path = df.LRPath;
+
+        //TODO: Remove this for final build
+#if UNITY_EDITOR
+        if(ap_path =="") ap_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_AP.csv";
+        if (vd_path == "") vd_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_VD.csv";
+        if (lr_path == "") lr_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_LR.csv";
+#endif
+        tomoGeneDirectory = df.tomoGenePath;
+
+        //string ap_path = df.APPath;
+        //string vd_path = df.VDPath;
+        //string lr_path = df.LRPath;
 
         scriptHolder.GetComponent<TomoSeqDrawer>().setDataPaths(ap_path, vd_path, lr_path);
         scriptHolder.GetComponent<TomoSeqDrawer>().generateGrid();

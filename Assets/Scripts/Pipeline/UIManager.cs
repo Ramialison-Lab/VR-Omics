@@ -562,10 +562,20 @@ public class UIManager : MonoBehaviour
         //TODO: connect datapaths, read path
 
         StreamWriter writer = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/Merfish_path.txt", false);
-        string[] merfish_path_out = new string[2];
+        string[] merfish_path_out = new string[11];
         merfish_path_out[0] = merfishGenePath;
-        UnityEngine.Debug.Log(merfishGenePath);
-        merfish_path_out[1] = "";// outputDirectory;
+        merfish_path_out[1] = "";// counts_file;
+        merfish_path_out[2] = "";// meta_file;
+        merfish_path_out[3] = "";// transformation_file;
+        merfish_path_out[4] = "";// outputdirectory;
+        merfish_path_out[5] = "";// min count;
+        merfish_path_out[6] = "";// min cells;
+        merfish_path_out[7] = "";// n_top_genes;
+        merfish_path_out[8] = "";// long analysis;
+        merfish_path_out[9] = "";// max_total_count_var;
+        merfish_path_out[10] = "";// n_genes_by_counts;
+
+
         foreach (string param in merfish_path_out)
         {
             writer.WriteLine(param);
@@ -573,7 +583,7 @@ public class UIManager : MonoBehaviour
         writer.Close();
 
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = System.IO.Directory.GetCurrentDirectory() + "/Assets/Scripts/Python_exe/exe_merfish/dist/Load_merfish.exe";
+        startInfo.FileName = System.IO.Directory.GetCurrentDirectory() + "/Assets/Scripts/Python_exe/exe_merfish/dist/Vizgen_pipeline.exe";
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = false;
         UnityEngine.Debug.Log("Merfish File load started.");
@@ -603,9 +613,17 @@ public class UIManager : MonoBehaviour
     public void processStomics()
     {
         StreamWriter writer = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/Stomics_path.txt", false);
-        string[] stomics_path_out = new string[2];
-        stomics_path_out[0] = stomicsPath;
+        string[] stomics_path_out = new string[10];
+        stomics_path_out[0] = stomicsPath; // filename;
         stomics_path_out[1] = "";// outputDirectory;
+        stomics_path_out[2] = "";// min_gene;
+        stomics_path_out[3] = "";// min_n_genes_by_counts;
+        stomics_path_out[4] = "";// pct_counts_mt;
+        stomics_path_out[5] = "";// min_cell;
+        stomics_path_out[6] = "";// target_sum;
+        stomics_path_out[7] = "";// max_value tl.scale;
+        stomics_path_out[8] = "";// markers_num;
+        stomics_path_out[9] = "";// analysis_long;
         UnityEngine.Debug.Log(stomicsPath);
 
         foreach (string param in stomics_path_out)
@@ -637,9 +655,14 @@ public class UIManager : MonoBehaviour
     public void processXenium()
     {
         StreamWriter writer = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/Xenium_path.txt", false);
-        string[] xenium_path_out = new string[2];
+        string[] xenium_path_out = new string[6];
         xenium_path_out[0] = xeniumMatrix;
         xenium_path_out[1] = "";// outputDirectory;
+        xenium_path_out[2] = "";// gzip file;
+        xenium_path_out[3] = "";// mincount;
+        xenium_path_out[4] = "";// mincells;
+        xenium_path_out[5] = "";// long analysis;
+
         foreach (string param in xenium_path_out)
         {
             writer.WriteLine(param);
@@ -674,11 +697,12 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void startPipelineDownloadData()
     {
-        string[] filterparam = new string[9];
+        string[] filterparam = new string[12];
 
         //TODO: Sabrina, SVG is written but not produced
         if (svgToggle.isOn)
         {
+            UnityEngine.Debug.Log("SVG");
             filterparam[7] = "1";
         }
 
@@ -686,21 +710,21 @@ public class UIManager : MonoBehaviour
         {
             filterparam[8] = "1";
         }
-
+        filterparam[11] = destinationPath;
         //Stores db literal and the filter params
-        if (destinationPath != "")
-        {
-            //TBD Sabrina: use destinationpath for python output instead of default
-            StreamWriter writer = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/outpath.txt", false);
-            writer.WriteLine(System.IO.Directory.GetCurrentDirectory());
-            writer.Close();
-        }
-        else
-        {
-            StreamWriter writer2 = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/outpath.txt", false);
-            writer2.WriteLine(System.IO.Directory.GetCurrentDirectory());
-            writer2.Close();
-        }
+        //if (destinationPath != "")
+        //{
+        //    //TBD Sabrina: use destinationpath for python output instead of default
+        //    StreamWriter writer = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/outpath.txt", false);
+        //    writer.WriteLine(System.IO.Directory.GetCurrentDirectory());
+        //    writer.Close();
+        //}
+        //else
+        //{
+        //    StreamWriter writer2 = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/outpath.txt", false);
+        //    writer2.WriteLine(System.IO.Directory.GetCurrentDirectory());
+        //    writer2.Close();
+        //}
 
         if (skipFilter)
         {
@@ -725,7 +749,8 @@ public class UIManager : MonoBehaviour
             filterparam[4] = GameObject.Find("PCT_MT_max").GetComponentInChildren<TMP_InputField>().text;
             filterparam[5] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
             filterparam[6] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
-
+            filterparam[9] = "";// max_total_count_var;
+            filterparam[10] = "";// n_genes_by_counts;
 #if UNITY_EDITOR
 
             save_params_run_step1(filterparam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
@@ -759,7 +784,8 @@ public class UIManager : MonoBehaviour
     public void getFilterParamPipeline()
     {
         // Reading filter parameters for python pipeline
-        string[] filterPipelineParam = new string[9];
+        string[] filterPipelineParam = new string[12];
+        filterPipelineParam[11] = destinationPath; // outputdirectory
 
         if (poltTogglePip.isOn)
         {
@@ -779,7 +805,8 @@ public class UIManager : MonoBehaviour
         filterPipelineParam[3] = GameObject.Find("PCT_MT_max").GetComponentInChildren<TMP_InputField>().text;
         filterPipelineParam[4] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
         filterPipelineParam[5] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
-
+        filterPipelineParam[9] = "";// max_total_count_var;
+        filterPipelineParam[10] = "";// n_genes_by_counts;
         // datapath to file = filepathUpload
 #if UNITY_EDITOR
 

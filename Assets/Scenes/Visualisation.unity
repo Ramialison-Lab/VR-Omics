@@ -14602,7 +14602,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31da021c5ceef0247b03ac6c2ab786e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  matUsed: {fileID: 2100000, guid: c9bc76c72c37a394da98510ae1328fbf, type: 2}
+  matUsed: {fileID: 2100000, guid: 0661dc44d54c4d744bb51f288e4be5ea, type: 2}
   transparentMaterial: {fileID: 2100000, guid: 74849508c93e3c44ea08ad900a58f679, type: 2}
   normalised: []
   ap_path: C:\Users\Denis.Bienroth\Desktop\ST_technologies\Tomo_seq\Junker_zebrafish\15SS_AP.csv
@@ -14671,6 +14671,7 @@ MonoBehaviour:
   acm: {fileID: 0}
   bfm: {fileID: 0}
   mc: {fileID: 0}
+  jr: {fileID: 0}
   x_coordList: []
   y_coordList: []
   z_coordList: []
@@ -14695,7 +14696,7 @@ MonoBehaviour:
   visiumMetaFiles: []
   positionList: []
   jsonFilePaths: []
-  scaleFactors: 
+  scaleFactors: []
   stomicsDataPath: 
   stomicsSpotId: []
   stomicsGeneNames: []
