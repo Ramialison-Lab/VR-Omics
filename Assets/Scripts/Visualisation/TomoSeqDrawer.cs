@@ -544,71 +544,75 @@ public class TomoSeqDrawer : MonoBehaviour
 
     private void applyGeneExpression(string geneName)
     {
-        start = false;
-        lr_size = 50;
-        vd_size = 50;
-        ap_size = 50;
-
-        List<float> geneExpList = new List<float>();
-
-        string path = this.gameObject.GetComponent<DataTransferManager>().tomoGeneDirectory + "/" + geneName.ToLower() + ".txt";
-
-        //TBD LINKPATH
-        string[] lines = File.ReadAllLines(path);
-        //string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/10ss_3dbitmask.txt");
-        foreach (string line in lines)
+        try
         {
-            string[] values = line.Split(' ');
 
-            foreach (string c in values)
+            start = false;
+            lr_size = 50;
+            vd_size = 50;
+            ap_size = 50;
+
+            List<float> geneExpList = new List<float>();
+
+            string path = this.gameObject.GetComponent<DataTransferManager>().tomoGeneDirectory + "/" + geneName.ToLower() + ".txt";
+
+            //TBD LINKPATH
+            string[] lines = File.ReadAllLines(path);
+            //string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/10ss_3dbitmask.txt");
+            foreach (string line in lines)
             {
-                geneExpList.Add(float.Parse(c));
-            }
-        }
+                string[] values = line.Split(' ');
 
-        int total = lr_size * vd_size * ap_size;
-
-        //TBD using bitmask
-        int[] bitMask = new int[total];
-
-        int count = 0;
-
-        for (int z = 0; z < lr_size; z++)
-        {
-            for (int y = 0; y < ap_size; y++)
-            {
-                for (int x = 0; x < vd_size; x++)
+                foreach (string c in values)
                 {
-                    if (geneExpList[count] != 0)
-                    {
-                        tempx.Add(x);
-                        tempy.Add(y);
-                        tempz.Add(z);
-                    }
-                    count++;
+                    geneExpList.Add(float.Parse(c));
                 }
             }
-        }
-        symbolSelect = cubeSymb;
 
-        startSpotDrawer(tempx, tempy, tempz);
+            int total = lr_size * vd_size * ap_size;
 
-        List<float> nonZero = new List<float>();
+            //TBD using bitmask
+            int[] bitMask = new int[total];
 
-        foreach (float x in geneExpList)
-        {
-            if (x != 0)
+            int count = 0;
+
+            for (int z = 0; z < lr_size; z++)
             {
-                nonZero.Add(x);
+                for (int y = 0; y < ap_size; y++)
+                {
+                    for (int x = 0; x < vd_size; x++)
+                    {
+                        if (geneExpList[count] != 0)
+                        {
+                            tempx.Add(x);
+                            tempy.Add(y);
+                            tempz.Add(z);
+                        }
+                        count++;
+                    }
+                }
             }
-        }
+            symbolSelect = cubeSymb;
 
-        var max = nonZero.Max();
-        var min = nonZero.Min();
-        var range = (double)(max - min);
+            startSpotDrawer(tempx, tempy, tempz);
 
-        normalisedVal = nonZero.Select(i => 1 * (i - min) / range).ToList();
-        setColors(normalisedVal);
+            List<float> nonZero = new List<float>();
+
+            foreach (float x in geneExpList)
+            {
+                if (x != 0)
+                {
+                    nonZero.Add(x);
+                }
+            }
+
+            var max = nonZero.Max();
+            var min = nonZero.Min();
+            var range = (double)(max - min);
+
+            normalisedVal = nonZero.Select(i => 1 * (i - min) / range).ToList();
+            setColors(normalisedVal);
+        }catch(Exception e) { }
     }
 
     public void setColors(List<double> normalise)
@@ -626,9 +630,6 @@ public class TomoSeqDrawer : MonoBehaviour
 
         }
         start = true;
-        Debug.Log(batches.Count);
-        Debug.Log(colVals.Count);
-
     }
 
     private float minTresh;
