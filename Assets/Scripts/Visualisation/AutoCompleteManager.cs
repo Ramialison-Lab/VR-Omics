@@ -111,8 +111,9 @@ public class AutoCompleteManager : MonoBehaviour
     /// <param name="x">the name of the gene to be shown as button description</param>
     private void populateResultBtns(string geneName)
     {
-        GameObject btn = Instantiate(btnPrefab, viewPortGo.transform);
-        btn.transform.rotation = Quaternion.Euler(0, 0, 0);
+        //GameObject btn = Instantiate(btnPrefab, viewPortGo.transform);
+        GameObject btn = Instantiate(btnPrefab);
+        //btn.transform.rotation = Quaternion.Euler(0, 0, 0);
 
         btn.transform.SetParent(scrollView.transform);
         btn.transform.localPosition = new Vector3(0, 0, 0);
@@ -130,13 +131,6 @@ public class AutoCompleteManager : MonoBehaviour
         });
     }
 
-    private void Update()
-    {
-        foreach(GameObject go in GameObject.FindGameObjectsWithTag("contentBtn"))
-        {
-            go.transform.rotation = Quaternion.Euler(0, 0, 0);
-        }
-    }
 
     /// <summary>
     /// Passes the selected gene to the respective method to read out the corrseponding expression value matrix

@@ -14612,6 +14612,9 @@ MonoBehaviour:
   tempy: []
   tempz: []
   colVals: []
+  APgenesEnsembl: []
+  VDgenesEnsembl: []
+  LRgenesEnsembl: []
   APgenes: []
   VDgenes: []
   LRgenes: []
@@ -14721,6 +14724,7 @@ MonoBehaviour:
   otherMetaPath: 
   otherCSVCols: 
   logfile: {fileID: 0}
+  tomoGeneDirectory: 
 --- !u!114 &1052670664
 MonoBehaviour:
   m_ObjectHideFlags: 0

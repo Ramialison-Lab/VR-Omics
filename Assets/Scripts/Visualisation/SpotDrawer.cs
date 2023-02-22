@@ -76,6 +76,7 @@ public class SpotDrawer : MonoBehaviour
     public List<GameObject> activepanels = new List<GameObject>(4);
     private Color[] hl_colors = new Color[] { new Color(255, 0, 0, 1), new Color(0, 255, 0, 1), new Color(0, 0, 255, 1), new Color(0, 255, 255, 1) };
     private int sideBySideDistance = 0;
+    private int sideBySideDistance_VR = 1;
 
     /// <summary>
     /// structure for each spot, storing: 
@@ -241,18 +242,30 @@ public class SpotDrawer : MonoBehaviour
         if (copy)
         {
             Color rc = Color.white;
-            var o_copy = dataOrigin.OriginCopy;
-            var Mc_Copy = Matrix4x4.TRS(o_copy, canvas.transform.rotation, canvas.transform.localScale);
+            //var o_copy = dataOrigin.OriginCopy;
+            //var Mc_Copy = Matrix4x4.TRS(o_copy, canvas.transform.rotation, canvas.transform.localScale);
             for (int i = 0; i < spotsCopy.Length; i++)
             {
                 SpotWrapper spot = spotsCopy[i];
 
                 // For Visium offset needed due to higher dimension
-               // int offset = dfm.visium ?
+                // int offset = dfm.visium ?
                 //    100 : 0;
-                
-               // var l = new Vector3((spot.Origin.x * s.h), spot.Origin.y * s.v, spot.Origin.z);
-                var l = new Vector3((spots[i].Location.x)+sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
+                //var l = new Vector3((spots[i].Location.x) + sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
+
+                Vector3 l = Vector3.zero;
+
+                if (!inVR)
+                {
+                    l = new Vector3((spots[i].Location.x) + sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
+                }
+                else
+                {
+                    l = new Vector3((spots[i].Location.x), spots[i].Location.y, spots[i].Location.z);
+
+                }
+
+                // var l = new Vector3((spot.Origin.x * s.h), spot.Origin.y * s.v, spot.Origin.z);
                 // spot.Location = Mc_Copy.MultiplyPoint(l);
                 spot.Location = l;
                 if (newColoursCopy)
@@ -299,49 +312,49 @@ public class SpotDrawer : MonoBehaviour
     public void SetVRDimensions()
     {
        inVR = true;
-       if (dfm.visium)
+        if (dfm.visium)
         {
             // adjustments due to changed Dimesnions needed
             symbolSelect.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
             for (int i = 0; i < spots.Length; i++)
             {
-                spots[i].Origin = new Vector3((spots[i].Origin.x / 20) + 200, (spots[i].Origin.y / 30) + 700, spots[i].Origin.z);
+                spots[i].Origin = new Vector3((spots[i].Origin.x / 40)-2, (spots[i].Origin.y / 40)+3, spots[i].Origin.z+3);
                 //spots[i].Location = new Vector3((spots[i].Location.x)+10000, spots[i].Location.y , spots[i].Location.z);
                 SetMeshBuffers();
             }
         }
-       else if (dfm.c18_visium)
-        {
-            symbolSelect.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
-            for (int i = 0; i < spots.Length; i++)
-            {
-                spots[i].Origin = new Vector3((spots[i].Origin.x/1.2f)+700, (spots[i].Origin.y/1.2f)+700, (spots[i].Origin.z/200) -1);
+        //else if (dfm.c18_visium)
+        // {
+        //     symbolSelect.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
+        //     for (int i = 0; i < spots.Length; i++)
+        //     {
+        //         spots[i].Origin = new Vector3((spots[i].Origin.x/1.2f)+700, (spots[i].Origin.y/1.2f)+700, (spots[i].Origin.z/200) -1);
 
-            }
+        //     }
 
-            c18Heart.transform.localScale = new Vector3(0.0041f, 0.005f, 0.004f);
-            c18Heart.transform.rotation = Quaternion.Euler(-4.606f, -81.888f, -81.491f);
-            c18Heart.transform.position = new Vector3(-0.176f, 1.007f, 2.716f);
-        }
-       else if (dfm.stomics)
-        {
-            symbolSelect.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+        //     c18Heart.transform.localScale = new Vector3(0.0041f, 0.005f, 0.004f);
+        //     c18Heart.transform.rotation = Quaternion.Euler(-4.606f, -81.888f, -81.491f);
+        //     c18Heart.transform.position = new Vector3(-0.176f, 1.007f, 2.716f);
+        // }
+        //else if (dfm.stomics)
+        // {
+        //     symbolSelect.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
 
-            for (int i = 0; i < spots.Length; i++)
-            {
-                spots[i].Origin = new Vector3((spots[i].Origin.x) + 300, (spots[i].Origin.y/1.5f) + 300, (spots[i].Origin.z / 5));
+        //     for (int i = 0; i < spots.Length; i++)
+        //     {
+        //         spots[i].Origin = new Vector3((spots[i].Origin.x) + 300, (spots[i].Origin.y/1.5f) + 300, (spots[i].Origin.z / 5));
 
-            }
-        }
-       else if (dfm.merfish || dfm.xenium) {
-            symbolSelect.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
-            for (int i = 0; i < spots.Length; i++)
-            {
-                spots[i].Origin = new Vector3((spots[i].Origin.x) + 100, (spots[i].Origin.y) + 100, (spots[i].Origin.z));
+        //     }
+        // }
+        //else if (dfm.merfish || dfm.xenium) {
+        //     symbolSelect.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+        //     for (int i = 0; i < spots.Length; i++)
+        //     {
+        //         spots[i].Origin = new Vector3((spots[i].Origin.x) + 100, (spots[i].Origin.y) + 100, (spots[i].Origin.z));
 
-            }
+        //     }
 
-        }
+        // }
     }
 
     private void Update()
