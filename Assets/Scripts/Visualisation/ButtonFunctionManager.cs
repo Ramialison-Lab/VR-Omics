@@ -23,6 +23,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+/*
+ * Mapping of functionPanels
+ * 
+ * 0    -   Selection Dropdown (showing Dataset)
+ * 1    -   UnlockedBtn
+ * 2    -   LockedBtn
+ * 3    -   LassoBtn (ROI selection)
+ * 4    -   TissueBtn (H&E stain)
+ * 5    -   Export/Import Group
+ * 6    -   Export/Import Group
+ * 7    -   SymbolSize Slider
+ * 8    -   Transparency Slider
+ * 9    -   Colour Gradient
+ * 10   -   Side By Side Btn
+ * 11   -   DropDown Menu for Visium special reads
+ * 12   -   reset Camera View Button
+ * 13   -   SVG Button
+ * 14   -   ObjectGroup Button (move, rotate, resize 3D object)
+ * 15   -   Binary Search - Gene is on Slider
+ * 16   -   CopySlider - Side by Side toggle which dataset active
+ * 17   -   EnterVRBtn
+ */
+
+
 public class ButtonFunctionManager : MonoBehaviour
 {
     DataTransfer df;
@@ -150,5 +176,11 @@ public class ButtonFunctionManager : MonoBehaviour
             functionPanels[16].SetActive(true);
         }
 
+    }
+
+    public void Disable_Buttons_For_VR()
+    {
+        functionPanels[12].SetActive(false);
+        functionPanels[17].SetActive(false);
     }
 }

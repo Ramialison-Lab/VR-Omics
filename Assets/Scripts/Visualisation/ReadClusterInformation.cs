@@ -40,6 +40,8 @@ public class ReadClusterInformation : MonoBehaviour
     public float rgb = 255;
     public Color[] defaultColours;
     private bool clusterActive= false;
+    List<Color> clusterColour = new List<Color>();
+
 
     private void Start()
     {
@@ -78,7 +80,6 @@ public class ReadClusterInformation : MonoBehaviour
     {
         var cluster = dfm.c18cluster;
         List<double> normalised = new List<double>();
-        List<Color> clusterColour = new List<Color>();
         foreach (string s in cluster)
         {
             switch (s.Substring(1, s.Length - 2))
@@ -124,12 +125,12 @@ public class ReadClusterInformation : MonoBehaviour
                     clusterColour.Add(new Color(255 / rgb, 255 / rgb, 178 / rgb));
                     break;
                 default:
-                    Debug.Log("default");
                     normalised.Add(0);
                     clusterColour.Add(Color.clear);
                     break;
             }
         }
+        generateClusterLegend(8, 0);
 
         sd.skipColourGradient(normalised, clusterColour);
         //sd.setColors(normalised);
@@ -289,6 +290,7 @@ public class ReadClusterInformation : MonoBehaviour
                 RawImage img = clusterCont.GetComponentInChildren<RawImage>();
                 clusterCont.GetComponentInChildren<TMP_Text>().text = "Cluster " + i;
                 img.color = createDefaultColours()[i];
+                //if (dfm.c18_visium) img.color = clusterColour[i];
                 nextColCount++;
             }
             else
@@ -299,6 +301,7 @@ public class ReadClusterInformation : MonoBehaviour
                 RawImage img = clusterCont.GetComponentInChildren<RawImage>();
                 clusterCont.GetComponentInChildren<TMP_Text>().text = "Cluster " + i;
                 img.color = createDefaultColours()[i];
+                //if (dfm.c18_visium) img.color = clusterColour[i];
                 nextColCount++;
             }
         }

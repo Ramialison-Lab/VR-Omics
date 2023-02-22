@@ -312,6 +312,9 @@ public class SpotDrawer : MonoBehaviour
     public void SetVRDimensions()
     {
         inVR = true;
+
+        this.gameObject.GetComponent<ButtonFunctionManager>().Disable_Buttons_For_VR();
+
         if (dfm.visium)
         {
             // adjustments due to changed Dimesnions needed
