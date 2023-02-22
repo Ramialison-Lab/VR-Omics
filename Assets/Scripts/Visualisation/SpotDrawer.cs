@@ -180,7 +180,6 @@ public class SpotDrawer : MonoBehaviour
             float XMin;
             float YMax;
             float YMin;
-            Vector3 bottomLeft;
 
             // Sort the array by x-coordinate in descending order
             Array.Sort(positions, (v1, v2) => v2.x.CompareTo(v1.x));
@@ -246,28 +245,29 @@ public class SpotDrawer : MonoBehaviour
             //var Mc_Copy = Matrix4x4.TRS(o_copy, canvas.transform.rotation, canvas.transform.localScale);
             for (int i = 0; i < spotsCopy.Length; i++)
             {
-                SpotWrapper spot = spotsCopy[i];
+                //SpotWrapper spot = spotsCopy[i];
 
-                // For Visium offset needed due to higher dimension
-                // int offset = dfm.visium ?
-                //    100 : 0;
-                //var l = new Vector3((spots[i].Location.x) + sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
+                //// For Visium offset needed due to higher dimension
+                //// int offset = dfm.visium ?
+                ////    100 : 0;
+                ////var l = new Vector3((spots[i].Location.x) + sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
 
-                Vector3 l = Vector3.zero;
+                //Vector3 l = Vector3.zero;
 
-                if (!inVR)
-                {
-                    l = new Vector3((spots[i].Location.x) + sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
-                }
-                else
-                {
-                    l = new Vector3((spots[i].Location.x), spots[i].Location.y, spots[i].Location.z);
+                //if (!inVR)
+                //{
+                //    l = new Vector3((spots[i].Location.x) + sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
+                //}
+                //else
+                //{
+                //    l = new Vector3((spots[i].Location.x), spots[i].Location.y, spots[i].Location.z);
 
-                }
+                //}
+                spotsCopy[i].Location = spots[i].Location;
 
                 // var l = new Vector3((spot.Origin.x * s.h), spot.Origin.y * s.v, spot.Origin.z);
                 // spot.Location = Mc_Copy.MultiplyPoint(l);
-                spot.Location = l;
+                //spot.Location = l;
                 if (newColoursCopy)
                 {
                     if (firstSelect)
@@ -276,7 +276,7 @@ public class SpotDrawer : MonoBehaviour
                         {
                             // evaluate expression value with colorgradient
                             rc = Copycolors[i];
-                            spot.ExpVal = (float)normalisedCopy[i];
+                            spotsCopy[i].ExpVal = (float)normalisedCopy[i];
                         }
                         catch (Exception) { rc = Color.clear; };
                     }
@@ -287,7 +287,7 @@ public class SpotDrawer : MonoBehaviour
 
                 MeshProperties MPs = new MeshProperties
                 {
-                    matrix = Matrix4x4.TRS(spot.Location, symbolTransform.rotation, symbolTransform.localScale *s_w),
+                    matrix = Matrix4x4.TRS(spotsCopy[i].Location, symbolTransform.rotation, symbolTransform.localScale *s_w),
                     color = rc
                 };
                 properties[j++] = MPs;
@@ -311,7 +311,7 @@ public class SpotDrawer : MonoBehaviour
 
     public void SetVRDimensions()
     {
-       inVR = true;
+        inVR = true;
         if (dfm.visium)
         {
             // adjustments due to changed Dimesnions needed
@@ -320,22 +320,22 @@ public class SpotDrawer : MonoBehaviour
             {
                 spots[i].Origin = new Vector3((spots[i].Origin.x / 40)-2, (spots[i].Origin.y / 40)+3, spots[i].Origin.z+3);
                 //spots[i].Location = new Vector3((spots[i].Location.x)+10000, spots[i].Location.y , spots[i].Location.z);
-                SetMeshBuffers();
             }
         }
-        //else if (dfm.c18_visium)
-        // {
-        //     symbolSelect.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
-        //     for (int i = 0; i < spots.Length; i++)
-        //     {
-        //         spots[i].Origin = new Vector3((spots[i].Origin.x/1.2f)+700, (spots[i].Origin.y/1.2f)+700, (spots[i].Origin.z/200) -1);
 
-        //     }
+        else if (dfm.c18_visium)
+        {
+            symbolSelect.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
+            for (int i = 0; i < spots.Length; i++)
+            {
+                spots[i].Origin = new Vector3((spots[i].Origin.x / 1.2f) + 700, (spots[i].Origin.y / 1.2f) + 700, (spots[i].Origin.z / 200) - 1);
 
-        //     c18Heart.transform.localScale = new Vector3(0.0041f, 0.005f, 0.004f);
-        //     c18Heart.transform.rotation = Quaternion.Euler(-4.606f, -81.888f, -81.491f);
-        //     c18Heart.transform.position = new Vector3(-0.176f, 1.007f, 2.716f);
-        // }
+            }
+
+            c18Heart.transform.localScale = new Vector3(0.0041f, 0.005f, 0.004f);
+            c18Heart.transform.rotation = Quaternion.Euler(-4.606f, -81.888f, -81.491f);
+            c18Heart.transform.position = new Vector3(-0.176f, 1.007f, 2.716f);
+        }
         //else if (dfm.stomics)
         // {
         //     symbolSelect.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
@@ -346,15 +346,17 @@ public class SpotDrawer : MonoBehaviour
 
         //     }
         // }
-        //else if (dfm.merfish || dfm.xenium) {
-        //     symbolSelect.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
-        //     for (int i = 0; i < spots.Length; i++)
-        //     {
-        //         spots[i].Origin = new Vector3((spots[i].Origin.x) + 100, (spots[i].Origin.y) + 100, (spots[i].Origin.z));
+        else if (dfm.merfish || dfm.xenium)
+        {
+            symbolSelect.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+            for (int i = 0; i < spots.Length; i++)
+            {
+                spots[i].Origin = new Vector3((spots[i].Origin.x / 250 ), (spots[i].Origin.y / 250), spots[i].Origin.z +3);
+                //spots[i].Location = new Vector3((spots[i].Location.x)+10000, spots[i].Location.y , spots[i].Location.z);
+            }
 
-        //     }
-
-        // }
+        }
+        SetMeshBuffers();
     }
 
     private void Update()
