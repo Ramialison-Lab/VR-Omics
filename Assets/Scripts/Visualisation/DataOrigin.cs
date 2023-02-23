@@ -1,6 +1,6 @@
 /*
 * Copyright (c) 2023 Life Science Informatics (university of Konstanz, Germany)
-* author: Dimitar Garkov
+* author: Dimitar Garkov, Denis Bienroth
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"),

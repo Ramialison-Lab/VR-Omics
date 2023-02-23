@@ -187,7 +187,7 @@ public class UIManager : MonoBehaviour
     //Logfile Parameters
     private LogFileController logfile;
 
-    private int expandPanelOffset = 300;
+    private int expandPanelOffset = 290;
     private void Start()
     {
         DontDestroyOnLoad(transform.gameObject);

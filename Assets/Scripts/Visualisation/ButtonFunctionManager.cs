@@ -23,8 +23,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
 /*
  * Mapping of functionPanels
  * 
@@ -46,6 +44,9 @@ using UnityEngine;
  * 15   -   Binary Search - Gene is on Slider
  * 16   -   CopySlider - Side by Side toggle which dataset active
  * 17   -   EnterVRBtn
+ * 18   -   Min Treshold slider
+ * 19   -   TopMenuBtn  
+ * 20   -   SideMenuBtn
  */
 
 
@@ -100,6 +101,7 @@ public class ButtonFunctionManager : MonoBehaviour
             functionPanels[6].SetActive(false);
             functionPanels[8].SetActive(false);
             functionPanels[11].SetActive(false);
+            functionPanels[18].SetActive(false);
            //TODO: not referenced
 //            functionPanels[12].SetActive(false);
             functionPanels[16].SetActive(false);
@@ -161,8 +163,6 @@ public class ButtonFunctionManager : MonoBehaviour
             functionPanels[8].SetActive(false);
             functionPanels[14].SetActive(false);
         }
-
-
     }
 
     public void ToggleCopySlider()
@@ -182,5 +182,8 @@ public class ButtonFunctionManager : MonoBehaviour
     {
         functionPanels[12].SetActive(false);
         functionPanels[17].SetActive(false);
+        functionPanels[19].SetActive(false);
+        functionPanels[20].SetActive(false);
+
     }
 }

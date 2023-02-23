@@ -19,13 +19,14 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 // Main Controller Application Script
 
 public class MainController : MonoBehaviour
 {
-
+    public GameObject exitPanel;
     /// <summary>
     /// Handling Application quit and navigating from Visualiser to Menu
     /// </summary>
@@ -33,18 +34,42 @@ public class MainController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            var m_Scene = SceneManager.GetActiveScene();
-            if (m_Scene.name == "Visualisation")
-            {
-                Destroy(GameObject.Find("ScriptHolder"));
-                Destroy(GameObject.Find("ScriptHolderPipeline"));
-                SceneManager.LoadScene(0);
-            }
-            else
-            {
-                Application.Quit();
 
+            if(SceneManager.GetActiveScene().name == "Visualisation")
+            {
+                try
+                {
+                    exitPanel.SetActive(true);
+                }
+                catch (Exception) { }
             }
+
+            else if(SceneManager.GetActiveScene().name == "Pipeline")
+            {
+                try 
+                { 
+                    exitPanel.SetActive(true);
+                }
+                catch (Exception) { }
         }
+        }
+    }
+
+    public void BackToMenu()
+    {
+        Destroy(GameObject.Find("ScriptHolder"));
+        Destroy(GameObject.Find("ScriptHolderPipeline"));
+        SceneManager.LoadScene(0);
+    }
+
+    public void ExitApplication()
+    {
+        Application.Quit();
+
+    }
+
+    public void cancelExit(GameObject panel)
+    {
+        panel.SetActive(false);
     }
 }
