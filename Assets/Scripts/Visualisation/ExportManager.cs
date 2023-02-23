@@ -40,15 +40,15 @@ public class ExportManager : MonoBehaviour
     private bool makeScreenshot = false;
     public GameObject geneText;
     private string filePath;
+    private string filePathScreenshot;
+    public TMP_Text text;
+    
 
     private void Start()
     {
-#if UNITY_STANDALONE_WIN
-        filePath = System.IO.Directory.GetCurrentDirectory() + "/Assets/ROI_export";
-#endif
-#if UNITY_EDITOR
-        filePath = System.IO.Directory.GetCurrentDirectory();
-#endif
+        filePath = Application.dataPath + "/Assets/ROI_export";
+        filePathScreenshot = Application.dataPath + "/Assets/Screenshots/";
+
         camera = Camera.main;
         sh = GameObject.Find("ScriptHolder");
         geneText = GameObject.Find("geneNameText");
@@ -80,6 +80,7 @@ public class ExportManager : MonoBehaviour
         writer.WriteLine();
     }
 
+
     public static string ScreenShotName(string path,int width, int height, string gene)
     {
         return string.Format("{0}/screen_{1}x{2}_{3}_{4}.png",
@@ -99,6 +100,7 @@ public class ExportManager : MonoBehaviour
         //TBD link to button and function
         if (makeScreenshot)
         {
+            text.text = filePathScreenshot;
             RenderTexture rt = new RenderTexture(resWidth, resHeight, 24);
             camera.targetTexture = rt;
             Texture2D screenShot = new Texture2D(resWidth, resHeight, TextureFormat.RGB24, false);
@@ -109,7 +111,7 @@ public class ExportManager : MonoBehaviour
             RenderTexture.active = null;
             Destroy(rt);
             byte[] bytes = screenShot.EncodeToPNG();
-            string filename = ScreenShotName(filePath, resWidth, resHeight, geneText.GetComponent<TMP_Text>().text);
+            string filename = ScreenShotName(filePathScreenshot, resWidth, resHeight, geneText.GetComponent<TMP_Text>().text);
             System.IO.File.WriteAllBytes(filename, bytes);
             takeHiResShot = false;
             makeScreenshot = false;
@@ -136,10 +138,10 @@ public class ExportManager : MonoBehaviour
         var ids = new List<int>();
         string[] lines;
 #if UNITY_STANDALONE_WIN
-        lines = File.ReadAllLines(System.IO.Directory.GetCurrentDirectory() + "/Assets/ROI_export/exported_spotlist.csv");
+        lines = File.ReadAllLines(Application.dataPath + "/Assets/ROI_export/exported_spotlist.csv");
 #endif
 #if UNITY_EDITOR
-        lines = File.ReadAllLines(System.IO.Directory.GetCurrentDirectory() + "/exported_spotlist.csv");
+        lines = File.ReadAllLines(Application.dataPath + "/exported_spotlist.csv");
 #endif
         lines = lines.Skip(1).ToArray();
         foreach (string line in lines)

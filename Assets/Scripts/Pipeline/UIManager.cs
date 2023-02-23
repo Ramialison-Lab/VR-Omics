@@ -774,7 +774,7 @@ public class UIManager : MonoBehaviour
         string outputDirectory = "";
         outputDirectory = File.ReadLines(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/outdirectorypaths.txt").Last();
         visiumSuccessPanel.SetActive(true);
-        visiumSuccessPanel.GetComponentInChildren<TMP_Text>().text = "The automated process is started, this might take a couple of minutes. Please do not close the Python Application pop up window. T he output is done once it closes and will be saved at: " + outputDirectory;
+        visiumSuccessPanel.GetComponentInChildren<TMP_Text>().text = "The automated process is started, this might take a couple of minutes. Please do not close the Python Application pop up window. The output is done once it closes and will be saved at: " + outputDirectory;
 
     }
 
