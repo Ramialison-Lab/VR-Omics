@@ -82,7 +82,7 @@ public class DataTransferManager : MonoBehaviour
     public bool addHAndEImg = false;
     private int visiumDepth = 0;
     public TMP_Dropdown sel_DropD; //Dropdown choosing active Slide in dataset
-    public string[] visiumMetaFiles;
+    public List<string> visiumMetaFiles;
     public string[] positionList;
     public string[] jsonFilePaths;
     public float[] scaleFactors;
@@ -234,14 +234,14 @@ public class DataTransferManager : MonoBehaviour
         string[] tissueImagePath = new string[df.pathList.Count];
         int tissueImageCounter = 0;
 
-
         //Find the respective files from the Visium dataset repository
         foreach (string x in df.pathList)
         {
             string[] files = Directory.GetFiles(x, "*.h5");
             string[] csvfiles = Directory.GetFiles(x, "*filtered_transposed.csv");
-            visiumMetaFiles = Directory.GetFiles(x, "*metadata.csv");
+            string[] VisiumMetaFiles = Directory.GetFiles(x, "*metadata.csv");
 
+            visiumMetaFiles.AddRange(VisiumMetaFiles);
             hdf5datapaths.AddRange(files);
             csvGeneExpPaths.AddRange(csvfiles);        
             
@@ -264,6 +264,7 @@ public class DataTransferManager : MonoBehaviour
                     tissueImageCounter++;
                 }
             }
+
         }
         ////calculate dimensions of H&E image
         scaleFactors[count] = jr.readScaleFactor(jsonFilePaths[count]);

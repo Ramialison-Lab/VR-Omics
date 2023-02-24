@@ -135,24 +135,21 @@ public class UIManager : MonoBehaviour
 
 
     // TMP_Inputfield for datapaths
-    public TMP_InputField xeniumFeaturesTMP;
-    public TMP_InputField xeniumSpotsTMP;
-    public TMP_InputField xeniumMatPathField;
-    public TMP_InputField xeniumFeaturesTMPLoad;
-    public TMP_InputField xeniumSpotsTMPLoad;
-    public TMP_InputField xeniumHDFFieldLoad;
+
     public TMP_InputField xeniumTMPField;
-    public TMP_InputField merfishTMPField;
+    public TMP_InputField xenium_feature_matrix_h5_TMP;
+    public TMP_InputField xenium_cells_csv_TMP;
     public TMP_InputField stomicsPathField;
     public TMP_InputField stomicsPathProcessField;
     public TMP_InputField tomoAPfield;
     public TMP_InputField tomoVDfield;
     public TMP_InputField tomoLRfield;
     public TMP_InputField tomoGenefield;
-    public TMP_InputField merfishMatProcessTMP;
-    public TMP_InputField merfishMatLoadTMP;
-    public TMP_InputField merfishMetaProcessTMP;
-    public TMP_InputField merfishMetaLoadTMP;
+    public TMP_InputField merfishTMPField;                      //Load for visualisation
+    public TMP_InputField merfish_counts_LoadTMP;               //Process 
+    public TMP_InputField merfish_meta_LoadTMP;                 //Process
+    public TMP_InputField merfish_transform_LoadTMP;            //Process
+    public TMP_InputField visium_from_local_TMP;            //Process
     public TMP_InputField otherMatLoadTMP;
     public TMP_InputField otherMetaLoadTMP;
     public TMP_InputField object3DTMP;
@@ -172,8 +169,11 @@ public class UIManager : MonoBehaviour
     public string otherMatrixPath;
     public string otherMetaPath;
     public string merfishGenePath;
-    public string merfishMetaPath;
+    private string merfish_counts_file = "";
+    private string merfish_meta_file = "";
+    private string merfish_transformation_file = "";
     public string objectPath;
+    public string visium_local_path;
 
     //Info other custom function
     public Slider other2Dslider;
@@ -554,27 +554,37 @@ public class UIManager : MonoBehaviour
     /// Process SRT techniques - (not Visium)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     #region Process SRT data
+
+    public TMP_InputField[] MerfishParameter;
+    public Toggle merfish_longAnalysis;
+
     /// <summary>
     /// Process Merfish data 
     /// </summary>
     public void processMerfish()
     {
-        //TODO: connect datapaths, read path
+        string longAnalysis = "0";
+
+        if (merfish_longAnalysis.isOn) longAnalysis = "1";
+
+        //checking if paths were pasted without using the browse function
+        if (merfish_counts_file == "" || merfish_counts_file != merfish_counts_LoadTMP.text) merfish_counts_file = merfish_counts_LoadTMP.text;
+        if (merfish_meta_file == "" || merfish_meta_file != merfish_meta_LoadTMP.text) merfish_meta_file = merfish_meta_LoadTMP.text;
+        if (merfish_transformation_file == "" || merfish_transformation_file != merfish_transform_LoadTMP.text) merfish_transformation_file = merfish_transform_LoadTMP.text;
 
         StreamWriter writer = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/Merfish_path.txt", false);
         string[] merfish_path_out = new string[11];
-        merfish_path_out[0] = merfishGenePath;
-        merfish_path_out[1] = "";// counts_file;
-        merfish_path_out[2] = "";// meta_file;
-        merfish_path_out[3] = "";// transformation_file;
+        merfish_path_out[0] = merfishGenePath; //counts_file?
+        merfish_path_out[1] = merfish_counts_file;// counts_file;
+        merfish_path_out[2] = merfish_meta_file;// meta_file;
+        merfish_path_out[3] = merfish_transformation_file;// transformation_file;
         merfish_path_out[4] = "";// outputdirectory;
-        merfish_path_out[5] = "";// min count;
-        merfish_path_out[6] = "";// min cells;
-        merfish_path_out[7] = "";// n_top_genes;
-        merfish_path_out[8] = "";// long analysis;
-        merfish_path_out[9] = "";// max_total_count_var;
-        merfish_path_out[10] = "";// n_genes_by_counts;
-
+        merfish_path_out[5] = MerfishParameter[0].text;// min count;
+        merfish_path_out[6] = MerfishParameter[1].text;// min cells;
+        merfish_path_out[7] = MerfishParameter[2].text;// n_top_genes;
+        merfish_path_out[8] = longAnalysis;// long analysis;
+        merfish_path_out[9] = MerfishParameter[3].text;// max_total_count_var;
+        merfish_path_out[10] = MerfishParameter[4].text;// n_genes_by_counts;
 
         foreach (string param in merfish_path_out)
         {
@@ -596,15 +606,6 @@ public class UIManager : MonoBehaviour
 
         p.Start();
         //p.WaitForExit();
-        //loadingPanel.SetActive(false);
-
-        //Not used due to waiting times only process used
-        //public void processAndRunMerfish()
-        //{
-        //    processMerfish();
-        //    startMerfish();
-        //}
-
     }
 
     /// <summary>
@@ -649,19 +650,31 @@ public class UIManager : MonoBehaviour
 
     }
 
+
+    private string xenium_cell_feature_h5 ="";
+    private string xenium_cells_csv ="";
+    public TMP_InputField[] xeniumParameters;
+    public Toggle Xenium_longAnalysis;
     /// <summary>
     /// Process Xenium data
     /// </summary>
     public void processXenium()
     {
+        string longAnalysis = "0";
+        if (Xenium_longAnalysis.isOn) longAnalysis = "1";
+
+        if (xenium_cell_feature_h5 == "" || xenium_cell_feature_h5 != xenium_feature_matrix_h5_TMP.text) xenium_cell_feature_h5 = xenium_feature_matrix_h5_TMP.text;
+        if (xenium_cells_csv == "" || xenium_cells_csv != xenium_cells_csv_TMP.text) xenium_cells_csv = xenium_cells_csv_TMP.text;
+
         StreamWriter writer = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/Xenium_path.txt", false);
         string[] xenium_path_out = new string[6];
-        xenium_path_out[0] = xeniumMatrix;
-        xenium_path_out[1] = "";// outputDirectory;
-        xenium_path_out[2] = "";// gzip file;
-        xenium_path_out[3] = "";// mincount;
-        xenium_path_out[4] = "";// mincells;
-        xenium_path_out[5] = "";// long analysis;
+        xenium_path_out[0] = xenium_cell_feature_h5; //h5
+        xenium_path_out[1] = "";// outputDirectory; //TODO: teste output
+        xenium_path_out[2] = xenium_cells_csv;// gzip file;
+        xenium_path_out[3] = xeniumParameters[0].text;// mincount; //default values
+        xenium_path_out[4] = xeniumParameters[1].text;// mincells; //default values
+        xenium_path_out[5] = longAnalysis;// long analysis;
+
 
         foreach (string param in xenium_path_out)
         {
@@ -683,8 +696,6 @@ public class UIManager : MonoBehaviour
 
         p.Start();
         //p.WaitForExit();
-        //loadingPanel.SetActive(false);
-
     }
     #endregion
 
@@ -699,7 +710,6 @@ public class UIManager : MonoBehaviour
     {
         string[] filterparam = new string[12];
 
-        //TODO: Sabrina, SVG is written but not produced
         if (svgToggle.isOn)
         {
             UnityEngine.Debug.Log("SVG");
@@ -779,46 +789,6 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Reading the filter parameters for Visium data uploaded from local machine
-    /// </summary>
-    public void getFilterParamPipeline()
-    {
-        // Reading filter parameters for python pipeline
-        string[] filterPipelineParam = new string[12];
-        filterPipelineParam[11] = destinationPath; // outputdirectory
-
-        if (poltTogglePip.isOn)
-        {
-            //TBD1 include plot png download
-            filterPipelineParam[8] = 1.ToString();
-        }
-
-        if (GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn)
-        {
-            //TBD1 include SVG step
-            filterPipelineParam[7] = 1.ToString();
-        }
-
-        filterPipelineParam[0] = GameObject.Find("MinCount").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[1] = GameObject.Find("MaxCount").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[2] = GameObject.Find("PCT_MT_min").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[3] = GameObject.Find("PCT_MT_max").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[4] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[5] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[9] = "";// max_total_count_var;
-        filterPipelineParam[10] = "";// n_genes_by_counts;
-        // datapath to file = filepathUpload
-#if UNITY_EDITOR
-
-        save_params_run_step1(filterPipelineParam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
-#endif
-#if UNITY_STANDALONE_WIN
-        save_params_run_step1(filterPipelineParam, "/Assets/PythonFiles/Filter_param.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy\\dist\\Visium_pipeline.exe");
-
-#endif
-    }
-
-    /// <summary>
     /// Save the process parameters for Visium data analysis
     /// </summary>
     /// <param name="filterparam">Array of all filter parameters</param>
@@ -848,64 +818,109 @@ public class UIManager : MonoBehaviour
 
         p.Start();
         //p.WaitForExit();
-        //loadingPanel.SetActive(false);
+    }
+
+    public void next_Visium_processStep(GameObject currentPanel)
+    {
+        if (visium_local_path != "")
+        {
+            if (GameObject.Find("VisumSkipFilterToggle").GetComponentInChildren<Toggle>().isOn)
+            {
+                process_Visium_from_local_no_filter();
+            }
+            else
+            {
+                currentPanel.SetActive(false);
+                pipelinestepPanel.SetActive(true);
+            }
+        }
+    }
+
+
+    public void process_Visium_from_local_no_filter()
+    {
+        string[] params_out = new string[4];
+        params_out[0] = visium_local_path;
+        params_out[3] = Application.dataPath + "/Assets/PythonFiles/";
+
+        // Skip filter true
+        params_out[1] = 1.ToString();
+        // not SVG since skip filter true
+        params_out[2] = "0";
+
+
+    #if UNITY_EDITOR
+
+            save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
+    #endif
+    #if UNITY_STANDALONE_WIN
+            save_params_run_step1(params_out, "/Assets/PythonFiles/Filter_param_upload.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy_upload\\dist\\Visium_upload.exe");
+
+    #endif
     }
 
     /// <summary>
-    /// Starting the next pipeline step if Visium data is uploaded from local machine and filtering was selected
+    /// Reading the filter parameters for Visium data uploaded from local machine
     /// </summary>
-    public void nextPipelineStep()
+    public void getFilterParamPipeline()
     {
+        //TODO: @Sabrina This function should point to visium_upload exe and we need to map the filterPipelineParam{} according to the process_Visium_from_local_no_filter() function
         string[] params_out = new string[4];
-        params_out[0] = filepathUpload;
-        params_out[3] = destinationPath;
-        if (GameObject.Find("Step6").GetComponentInChildren<Toggle>().isOn)
+        params_out[0] = visium_local_path;
+        params_out[3] = Application.dataPath + "/Assets/PythonFiles/";
+
+        //no skip filter
+        params_out[1] = 0.ToString();
+
+        //chekc if SVG toggle is on
+        if (GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn)
         {
-            //TBD1 skip all filter steps and just prepare data for VR-Omics = preprocess without filter values
-            params_out[1] = 1.ToString();
-
-        }
-        // Manages the workflow of the pipeline part to guide through the 4 individual steps
-
-        filterStep = GameObject.Find("Step1").GetComponentInChildren<Toggle>().isOn;
-        // filter and svg only
-        //correlationStep = GameObject.Find("Step2").GetComponentInChildren<Toggle>().isOn;
-        //clusteringStep = GameObject.Find("Step3").GetComponentInChildren<Toggle>().isOn;
-        SVGStep = GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn;
-
-        pipelinestepPanel.SetActive(false);
-        if (filterStep)
-        {
-            pipelineParamPanel.SetActive(true);
-        }
-        else
-        {
-            //TBD1 skip filtetr values and go to steps selected
-
-            if (SVGStep == true)
-            {
-
-                //TBD1 Sabrina if toggle on, include SVG analysis to filter step
-                params_out[2] = 1.ToString();
-            }
-
-        }
-
-        if (SVGStep == true)
-        {
-            //TBD1 Sabrina if toggle on, include SVG analysis to filter step
             params_out[2] = 1.ToString();
         }
+
+
+
+        // Reading filter parameters for python pipeline
+        string[] filterPipelineParam = new string[12];
+        filterPipelineParam[11] = destinationPath; // outputdirectory
+
+        if (poltTogglePip.isOn)
+        {
+            //TBD1 include plot png download
+            filterPipelineParam[8] = 1.ToString();
+        }
+
+        if (GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn)
+        {
+            //TBD1 include SVG step
+            filterPipelineParam[7] = 1.ToString();
+        }
+
+        Toggle svgToggle = GameObject.Find("SVGToggle_local").GetComponent<Toggle>();
+        if (svgToggle.isOn)
+        {
+            //TODO: which filterparam
+        }
+
+        filterPipelineParam[0] = GameObject.Find("MinCount").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[1] = GameObject.Find("MaxCount").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[2] = GameObject.Find("PCT_MT_min").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[3] = GameObject.Find("PCT_MT_max").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[4] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[5] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[9] = "";// max_total_count_var;
+        filterPipelineParam[10] = "";// n_genes_by_counts;
+        // datapath to file = filepathUpload
 #if UNITY_EDITOR
 
-        save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
+        save_params_run_step1(filterPipelineParam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
 #endif
 #if UNITY_STANDALONE_WIN
-        save_params_run_step1(params_out, "/Assets/PythonFiles/Filter_param_upload.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy_upload\\dist\\Visium_upload.exe");
+        save_params_run_step1(filterPipelineParam, "/Assets/PythonFiles/Filter_param.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy\\dist\\Visium_pipeline.exe");
 
 #endif
-
     }
+
 
     /// <summary>
     /// Skipping filter step and only processing Visium data into visualiser format
@@ -928,24 +943,6 @@ public class UIManager : MonoBehaviour
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     #region File Browser
     #region Call File Browser
-    #region Xenium Load for AW processing
-    //Xenium Process
-    //Browse for GeneList of Xenium data
-    public void selectXeniumFeatures()
-    {
-        StartCoroutine(selectBrowseFile("xeniumGene", xeniumFeaturesTMP));
-    }
-    //Browse for Spotlist of Xenium data
-    public void selectXeniumSpot()
-    {
-        StartCoroutine(selectBrowseFile("xeniumSpots", xeniumSpotsTMP));
-    }
-    // Browse for Matrix gene expression file
-    public void selectXeniumMatrix()
-    {
-        StartCoroutine(selectBrowseFile("xeniumMatrix", xeniumMatPathField));
-    }
-    #endregion
 
     /// <summary>
     /// Select the directory with Xenium files for loading to Visualiser
@@ -953,6 +950,14 @@ public class UIManager : MonoBehaviour
     public void selectXeniumPath()
     {
         StartCoroutine(selectBrowseFile("xeniumPath", xeniumTMPField));
+    }
+    public void Select_Xenium_Cell_Feature_h5()
+    {
+        StartCoroutine(selectBrowseFile("xeniumFeatMatrix", xenium_feature_matrix_h5_TMP));
+    }
+    public void select_Xenium_Cells_CSV()
+    {
+        StartCoroutine(selectBrowseFile("xeniumCellsCSV", xenium_cells_csv_TMP));
     }
 
     public void selectStomicssFile()
@@ -969,23 +974,32 @@ public class UIManager : MonoBehaviour
 
     }
 
+    public void selectVisiumFromLocal()
+    {
+        StartCoroutine(selectBrowseFile("visiumFromLocal", visium_from_local_TMP));
+
+    }
+
     public void selectMerfishPath()
     {
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("merfishPath", merfishTMPField));
     }
 
-    public void selectMerfishMatrixProcess()
+    public void select_Merfish_Counts_File_Process()
     {
-        //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("merfishMat", merfishMatLoadTMP));
-
+        StartCoroutine(selectBrowseFile("mefishCounts", merfish_counts_LoadTMP));
     }
 
-    public void selectMerfishMetaProcess()
+
+    public void select_Merfish_Meta_File_Process()
     {
-        //File has been processed ready to load VR
-        StartCoroutine(selectBrowseFile("merfishMeta", merfishMetaProcessTMP));
+        StartCoroutine(selectBrowseFile("merfishMeta", merfish_meta_LoadTMP ));
+    }
+
+    public void select_Merfish_Transformation_File_Process()
+    {
+        StartCoroutine(selectBrowseFile("merfishTransform", merfish_transform_LoadTMP));
     }
 
     public void selectOtherMatFile()
@@ -1083,33 +1097,36 @@ public class UIManager : MonoBehaviour
                     break;
                 case "tomoGene":
                     tomoGenePath = res;
-                    break;
-                case "xeniumMatrix":
-                    xeniumMatrix = res;
-                    break;                
+                    break;              
                 case "xeniumPath":
                     xeniumPath = res;
                     break;
-                case "xeniumGene":
-                    xeniumGenePanelPath = res;
-                    break;
-                case "xeniumSpots":
-                    xeniumCellMetaData = res;
+                case "xeniumCellsCSV":
+                    xenium_cells_csv = res;
+                    break;               
+                case "xeniumFeatMatrix":
+                    xenium_cell_feature_h5 = res;
                     break;
                 case "otherMat":
                     otherMatrixPath = res;
                     break;
                 case "otherMeta":
                     otherMetaPath = res;
-                    break;
-                case "merfishMeta":
-                    merfishMetaPath = res;
-                    break;
-                case "merfishMat":
-                    merfishGenePath = res;
-                    break;                
+                    break;            
                 case "merfishPath":
                     merfishPath = res;
+                    break;                
+                case "mefishCounts":
+                    merfish_counts_file = res;
+                    break;                
+                case "merfishMeta":
+                    merfish_meta_file = res;
+                    break;                
+                case "merfishTransform":
+                    merfish_transformation_file = res;
+                    break;                
+                case "visiumFromLocal":
+                    visium_local_path = res;
                     break;
                 case "object":
                     objectPath = res;
