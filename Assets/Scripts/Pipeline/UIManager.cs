@@ -181,6 +181,8 @@ public class UIManager : MonoBehaviour
     public int[] otherCSVColumns;
     public Toggle otherHeader;
 
+    public string current_directory;
+
     //Access variables
     DataTransfer df;
 
@@ -193,6 +195,9 @@ public class UIManager : MonoBehaviour
         DontDestroyOnLoad(transform.gameObject);
         filePaths = new List<string>();
         otherCSVColumns = new int[5];
+        string removeFromDirectory = "VR-Omics_Data";
+        current_directory = Application.dataPath;
+        current_directory = current_directory.Replace(removeFromDirectory, "");
 
         df = gameObject.GetComponent<DataTransfer>();
     }
@@ -572,19 +577,19 @@ public class UIManager : MonoBehaviour
         if (merfish_meta_file == "" || merfish_meta_file != merfish_meta_LoadTMP.text) merfish_meta_file = merfish_meta_LoadTMP.text;
         if (merfish_transformation_file == "" || merfish_transformation_file != merfish_transform_LoadTMP.text) merfish_transformation_file = merfish_transform_LoadTMP.text;
 
-        StreamWriter writer = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/Merfish_path.txt", false);
+        StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Merfish_path.txt", false);
         string[] merfish_path_out = new string[11];
-        merfish_path_out[0] = merfishGenePath; //counts_file?
-        merfish_path_out[1] = merfish_counts_file;// counts_file;
-        merfish_path_out[2] = merfish_meta_file;// meta_file;
-        merfish_path_out[3] = merfish_transformation_file;// transformation_file;
-        merfish_path_out[4] = "";// outputdirectory;
-        merfish_path_out[5] = MerfishParameter[0].text;// min count;
-        merfish_path_out[6] = MerfishParameter[1].text;// min cells;
-        merfish_path_out[7] = MerfishParameter[2].text;// n_top_genes;
-        merfish_path_out[8] = longAnalysis;// long analysis;
-        merfish_path_out[9] = MerfishParameter[3].text;// max_total_count_var;
-        merfish_path_out[10] = MerfishParameter[4].text;// n_genes_by_counts;
+        merfish_path_out[0] = merfish_counts_file;// counts_file;
+        merfish_path_out[1] = merfish_meta_file;// meta_file;
+        merfish_path_out[2] = merfish_transformation_file;// transformation_file;
+        merfish_path_out[3] = "";// outputdirectory;
+        merfish_path_out[4] = MerfishParameter[0].text;// min count;
+        merfish_path_out[5] = MerfishParameter[1].text;// min cells;
+        merfish_path_out[6] = MerfishParameter[2].text;// n_top_genes;
+        merfish_path_out[7] = longAnalysis;// long analysis;
+        merfish_path_out[8] = MerfishParameter[3].text;// max_total_count_var;
+        merfish_path_out[9] = MerfishParameter[4].text;// n_genes_by_counts;
+        merfish_path_out[10] = "";
 
         foreach (string param in merfish_path_out)
         {
@@ -593,7 +598,7 @@ public class UIManager : MonoBehaviour
         writer.Close();
 
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = System.IO.Directory.GetCurrentDirectory() + "/Assets/Scripts/Python_exe/exe_merfish/dist/Vizgen_pipeline.exe";
+        startInfo.FileName = current_directory + "/Assets/Scripts/Python_exe/exe_merfish/dist/Vizgen_pipeline.exe";
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = false;
         UnityEngine.Debug.Log("Merfish File load started.");
@@ -613,7 +618,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void processStomics()
     {
-        StreamWriter writer = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/Stomics_path.txt", false);
+        StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Stomics_path.txt", false);
         string[] stomics_path_out = new string[10];
         stomics_path_out[0] = stomicsPath; // filename;
         stomics_path_out[1] = "";// outputDirectory;
@@ -634,7 +639,7 @@ public class UIManager : MonoBehaviour
         writer.Close();
 
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = System.IO.Directory.GetCurrentDirectory() + "/Assets/Scripts/Python_exe/exe_stomics/dist/Load_stomics.exe";
+        startInfo.FileName = current_directory + "/Assets/Scripts/Python_exe/exe_stomics/dist/Load_stomics.exe";
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = false;
         UnityEngine.Debug.Log("Stomics File load started.");
@@ -666,7 +671,7 @@ public class UIManager : MonoBehaviour
         if (xenium_cell_feature_h5 == "" || xenium_cell_feature_h5 != xenium_feature_matrix_h5_TMP.text) xenium_cell_feature_h5 = xenium_feature_matrix_h5_TMP.text;
         if (xenium_cells_csv == "" || xenium_cells_csv != xenium_cells_csv_TMP.text) xenium_cells_csv = xenium_cells_csv_TMP.text;
 
-        StreamWriter writer = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/Xenium_path.txt", false);
+        StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Xenium_path.txt", false);
         string[] xenium_path_out = new string[6];
         xenium_path_out[0] = xenium_cell_feature_h5; //h5
         xenium_path_out[1] = "";// outputDirectory; //TODO: teste output
@@ -683,7 +688,7 @@ public class UIManager : MonoBehaviour
         writer.Close();
 
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = System.IO.Directory.GetCurrentDirectory() + "/Assets/Scripts/Python_exe/exe_xenium/dist/Load_xenium.exe";
+        startInfo.FileName = current_directory + "/Assets/Scripts/Python_exe/exe_xenium/dist/Load_xenium.exe";
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = false;
         UnityEngine.Debug.Log("Xenium File load started.");
@@ -782,7 +787,7 @@ public class UIManager : MonoBehaviour
 
         //TBD1 if processed return datapath via outputDirectory to UI and successful filtered
         string outputDirectory = "";
-        outputDirectory = File.ReadLines(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/outdirectorypaths.txt").Last();
+        outputDirectory = File.ReadLines(current_directory + "/Assets/PythonFiles/outdirectorypaths.txt").Last();
         visiumSuccessPanel.SetActive(true);
         visiumSuccessPanel.GetComponentInChildren<TMP_Text>().text = "The automated process is started, this might take a couple of minutes. Please do not close the Python Application pop up window. The output is done once it closes and will be saved at: " + outputDirectory;
 
@@ -797,7 +802,7 @@ public class UIManager : MonoBehaviour
     public void save_params_run_step1(string[] filterparam, string outname, string executable)
     {
         // Python integration
-        StreamWriter writer = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + outname, false);
+        StreamWriter writer = new StreamWriter(current_directory + outname, false);
         foreach (string param in filterparam)
         {
             writer.WriteLine(param);
@@ -805,7 +810,7 @@ public class UIManager : MonoBehaviour
         writer.Close();
 
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = System.IO.Directory.GetCurrentDirectory() + executable;
+        startInfo.FileName = current_directory + executable;
         //startInfo.Arguments = "\"" + wd + "/rcode.r" + " \"";
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = false;
@@ -841,13 +846,12 @@ public class UIManager : MonoBehaviour
     {
         string[] params_out = new string[4];
         params_out[0] = visium_local_path;
-        params_out[3] = Application.dataPath + "/Assets/PythonFiles/";
+        params_out[3] = current_directory + "Assets/PythonFiles/";
 
-        // Skip filter true
+        // Skip filter → Prepare Toggle (means prepare data only, no analysis)
         params_out[1] = 1.ToString();
         // not SVG since skip filter true
         params_out[2] = "0";
-
 
     #if UNITY_EDITOR
 
@@ -865,58 +869,41 @@ public class UIManager : MonoBehaviour
     public void getFilterParamPipeline()
     {
         //TODO: @Sabrina This function should point to visium_upload exe and we need to map the filterPipelineParam{} according to the process_Visium_from_local_no_filter() function
-        string[] params_out = new string[4];
-        params_out[0] = visium_local_path;
-        params_out[3] = Application.dataPath + "/Assets/PythonFiles/";
-
+        string[] filterPipelineParam = new string[14];
+        filterPipelineParam[0] = visium_local_path;
         //no skip filter
-        params_out[1] = 0.ToString();
-
-        //chekc if SVG toggle is on
-        if (GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn)
+        filterPipelineParam[1] = 0.ToString();
+        //check if SVG toggle is on
+        if (GameObject.Find("SVGToggle_local").GetComponent<Toggle>().isOn)
         {
-            params_out[2] = 1.ToString();
+            filterPipelineParam[2] = 1.ToString();
+        }
+        filterPipelineParam[3] = current_directory + "Assets/PythonFiles/VisiumProcessed";
+        if (GameObject.Find("PlotToggle").GetComponent<Toggle>().isOn)
+        {
+            filterPipelineParam[4] = 1.ToString();
         }
 
+        filterPipelineParam[5] = GameObject.Find("MinCount").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[6] = GameObject.Find("MaxCount").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[7] = GameObject.Find("PCT_MT_min").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[8] = GameObject.Find("PCT_MT_max").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[9] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
+        filterPipelineParam[10] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
+        //TBD
+        filterPipelineParam[11] = "";// max_total_count_var;
+        filterPipelineParam[12] = "";// n_genes_by_counts;
+        filterPipelineParam[13] = "";// not in use;
 
 
-        // Reading filter parameters for python pipeline
-        string[] filterPipelineParam = new string[12];
-        filterPipelineParam[11] = destinationPath; // outputdirectory
-
-        if (poltTogglePip.isOn)
-        {
-            //TBD1 include plot png download
-            filterPipelineParam[8] = 1.ToString();
-        }
-
-        if (GameObject.Find("Step4").GetComponentInChildren<Toggle>().isOn)
-        {
-            //TBD1 include SVG step
-            filterPipelineParam[7] = 1.ToString();
-        }
-
-        Toggle svgToggle = GameObject.Find("SVGToggle_local").GetComponent<Toggle>();
-        if (svgToggle.isOn)
-        {
-            //TODO: which filterparam
-        }
-
-        filterPipelineParam[0] = GameObject.Find("MinCount").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[1] = GameObject.Find("MaxCount").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[2] = GameObject.Find("PCT_MT_min").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[3] = GameObject.Find("PCT_MT_max").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[4] = GameObject.Find("GeneInCellMin").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[5] = GameObject.Find("GeneFilterMin").GetComponentInChildren<TMP_InputField>().text;
-        filterPipelineParam[9] = "";// max_total_count_var;
-        filterPipelineParam[10] = "";// n_genes_by_counts;
-        // datapath to file = filepathUpload
 #if UNITY_EDITOR
 
-        save_params_run_step1(filterPipelineParam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
+        save_params_run_step1(filterPipelineParam, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
+
 #endif
 #if UNITY_STANDALONE_WIN
-        save_params_run_step1(filterPipelineParam, "/Assets/PythonFiles/Filter_param.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy\\dist\\Visium_pipeline.exe");
+        save_params_run_step1(filterPipelineParam, "/Assets/PythonFiles/Filter_param_upload.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy_upload\\dist\\Visium_upload.exe");
+
 
 #endif
     }
@@ -1193,7 +1180,7 @@ public class UIManager : MonoBehaviour
     public void adjust_download_list()
     {
         // Read file with names of data files
-        string wd = System.IO.Directory.GetCurrentDirectory();
+        string wd = current_directory;
         wd = wd.Replace('\\', '/');
         string fileName = wd + "/Assets/PythonFiles/list_of_file_names.txt";
 
@@ -1235,24 +1222,31 @@ public class UIManager : MonoBehaviour
                 }
                 else
                 {
-                    UnityEngine.Debug.Log(FileBrowser.Result[i]);
                     //Instantiate and position sliceContainer for each Result
                     slices[i] = Instantiate(sliceContainerPrefab, uploadpanel.transform);
                     // slices[i].transform.position = new Vector2(slices[i].transform.position.x, slices[i].transform.position.y + GameObject.FindGameObjectsWithTag("sliceContainer").Length * -300);
                     slices[i].transform.SetParent(contentPanel.transform);
 
                     //TODO: spatial folder location has been changed to ../data/datasetname/spatial/...
-                    //Read png image
+                    //Read png image\
+
+                    byte[] byteArray;
+
 
                     try
                     {
-                        byte[] byteArray = File.ReadAllBytes(System.IO.Directory.GetCurrentDirectory() + "/Assets/Images/Error_Images/spatial_file_not_found.png");
+                        byteArray = File.ReadAllBytes(current_directory + "/Assets/Images/Error_Images/spatial_file_not_found.png");
 
-          
-                        string[] files = Directory.GetFiles(FileBrowser.Result[i], "*", SearchOption.AllDirectories);
-                        foreach (string s in files)
+                        try
                         {
-                            if (s.Split("\\").Last() == "tissue_hires_image.png") byteArray = File.ReadAllBytes(s);
+                            string[] files = Directory.GetFiles(FileBrowser.Result[i], "*", SearchOption.AllDirectories);
+                            foreach (string s in files)
+                            {
+                                if (s.Split("\\").Last() == "tissue_hires_image.png") byteArray = File.ReadAllBytes(s);
+                            }
+                        }
+                        catch (Exception e)
+                        {
                         }
 
                         Texture2D sampleTexture = new Texture2D(2, 2);
@@ -1263,7 +1257,7 @@ public class UIManager : MonoBehaviour
                             slices[i].GetComponentInChildren<RawImage>().texture = sampleTexture;
                         }
                     }
-                    catch (Exception e) { }
+                    catch (Exception) { }
                     slicesList.Add(slices[i]);
                     transferDatapaths.Add(FileBrowser.Result[i]);
                     rotationValues.Add(0);

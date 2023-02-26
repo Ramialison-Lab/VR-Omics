@@ -169,6 +169,7 @@ public class SpotDrawer : MonoBehaviour
         ///
         if (!sliceDrawer)
         {
+            
             sliceDrawer = true;
             Vector3[] positions = new Vector3[spots.Length];
             for (int i=0; i< spots.Length; i++){
@@ -252,18 +253,19 @@ public class SpotDrawer : MonoBehaviour
                 ////    100 : 0;
                 ////var l = new Vector3((spots[i].Location.x) + sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
 
-                //Vector3 l = Vector3.zero;
+                Vector3 l = Vector3.zero;
 
-                //if (!inVR)
-                //{
-                //    l = new Vector3((spots[i].Location.x) + sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
-                //}
+                if (!inVR)
+                {
+                    l = new Vector3((spots[i].Location.x) + sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
+                }
                 //else
                 //{
                 //    l = new Vector3((spots[i].Location.x), spots[i].Location.y, spots[i].Location.z);
 
                 //}
-                spotsCopy[i].Location = spots[i].Location;
+                //spotsCopy[i].Location = spots[i].Location;
+                spotsCopy[i].Location = l;
 
                 // var l = new Vector3((spot.Origin.x * s.h), spot.Origin.y * s.v, spot.Origin.z);
                 // spot.Location = Mc_Copy.MultiplyPoint(l);
@@ -492,7 +494,9 @@ public class SpotDrawer : MonoBehaviour
 
         symbolSelect = sphereSymb;
 
-        symbolSelect.transform.localScale = new Vector3(1, 1, 1);
+        if(dfm.c18_visium) symbolSelect.transform.localScale = new Vector3(10, 10, 10);
+
+        else symbolSelect.transform.localScale = new Vector3(1, 1, 1);
 
         // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
         // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
