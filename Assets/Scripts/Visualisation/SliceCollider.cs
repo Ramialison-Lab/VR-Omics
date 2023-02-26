@@ -170,10 +170,10 @@ public class SliceCollider : MonoBehaviour
             }
         }
 
-        Debug.Log(min_x);
-        Debug.Log(max_x);
-        Debug.Log(min_y);
-        Debug.Log(max_y);
+        //Debug.Log(min_x);
+        //Debug.Log(max_x);
+        //Debug.Log(min_y);
+        //Debug.Log(max_y);
 
 
         float distance_w_left = min_x;
@@ -187,23 +187,23 @@ public class SliceCollider : MonoBehaviour
         float percentage_distance_h_bottom = distance_h_bottom/fullres_h;
         float percentage_distance_h_top = distance_h_top/fullres_h;
 
-        Debug.Log(percentage_distance_w_left);
-        Debug.Log(percentage_distance_w_right);
-        Debug.Log(percentage_distance_h_bottom);
-        Debug.Log(percentage_distance_h_top);
+        //Debug.Log(percentage_distance_w_left);
+        //Debug.Log(percentage_distance_w_right);
+        //Debug.Log(percentage_distance_h_bottom);
+        //Debug.Log(percentage_distance_h_top);
 
         imagePlane.transform.localScale = new Vector3(1,1,1);
         float IP_x = imagePlane.transform.localScale.x; 
         float IP_y = imagePlane.transform.localScale.y; 
 
-        Debug.Log(IP_x);
-        Debug.Log(IP_y);
+        //Debug.Log(IP_x);
+        //Debug.Log(IP_y);
 
         float percentage_highres_w = IP_x - (IP_x * percentage_distance_w_left) - (IP_x * percentage_distance_w_right);
         float percentage_highres_h = IP_y - (IP_y * percentage_distance_h_top) - (IP_y * percentage_distance_h_bottom);
 
-        Debug.Log(percentage_highres_w);
-        Debug.Log(percentage_highres_h);
+        //Debug.Log(percentage_highres_w);
+        //Debug.Log(percentage_highres_h);
 
         float scaleWidth = sliceCollider.transform.localScale.x / (IP_x * percentage_highres_w);
         float scaleHeight = sliceCollider.transform.localScale.y / (IP_y * percentage_highres_h);
@@ -214,8 +214,8 @@ public class SliceCollider : MonoBehaviour
         //float scaleWidth = sliceCollider.transform.localScale.x / percentage_highres_w;
         //float scaleHeight = sliceCollider.transform.localScale.y / percentage_highres_h;
 
-        Debug.Log(scaleWidth);
-        Debug.Log(scaleHeight);
+        //Debug.Log(scaleWidth);
+        //Debug.Log(scaleHeight);
 
         imagePlane.transform.localScale = new Vector3(imagePlane.transform.localScale.x * scaleWidth, imagePlane.transform.localScale.y * scaleHeight, imagePlane.transform.localScale.z);
 
