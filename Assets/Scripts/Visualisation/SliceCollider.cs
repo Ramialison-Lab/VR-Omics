@@ -108,7 +108,7 @@ public class SliceCollider : MonoBehaviour
             }
         }
         catch (Exception ex) { dfm.logfile.Log(ex, "The tissue image couldn't be found. Make sure the image is in the directory and called tissue_hires_image.png"); }
-        Debug.Log(imagePath);
+        //Debug.Log(imagePath);
 
         byte[] byteArray = File.ReadAllBytes(imagePath);
         Texture2D sampleTexture = new Texture2D(2, 2);
@@ -124,14 +124,11 @@ public class SliceCollider : MonoBehaviour
 
         float sF = dfm.scaleFactors[countSFs];
 
-        Debug.Log(sF);
-
-
         float fullres_w = highres_w / sF;
         float fullres_h = highres_h / sF;
 
-        Debug.Log(fullres_w);
-        Debug.Log(fullres_h);
+        //Debug.Log(fullres_w);
+        //Debug.Log(fullres_h);
 
 
         string[] positionList = dfm.positionList;

@@ -168,57 +168,26 @@ public class SpotDrawer : MonoBehaviour
         ///This SECTION CREATES NEW TEMPLATE SLICECOLLIDER → POSITION STILL OFF
         ///
         if (!sliceDrawer)
-        {
+        {    
             
+
+            //TODO: adapt to create slice for each slide
             sliceDrawer = true;
-            Vector3[] positions = new Vector3[spots.Length];
-            for (int i=0; i< spots.Length; i++){
-
-                positions[i] = spots[i].Location;
+           // if (!dfm.visium || !dfm.c18_visium)
+            {
+                setSliceCollider(s);
+         
             }
+            //if(dfm.visium)
+            //{
+            //    foreach(int x in dfm.datasetSizes)
+            //    {
+            //        Vector3[] positions = new Vector3[x];
 
-            float XMax;
-            float XMin;
-            float YMax;
-            float YMin;
 
-            // Sort the array by x-coordinate in descending order
-            Array.Sort(positions, (v1, v2) => v2.x.CompareTo(v1.x));
-
-            // The first element is the top right corner
-            XMax = positions[0].x;
-            XMin = positions[spots.Length-1].x;
-
-            // Sort the array by y-coordinate in ascending order
-            Array.Sort(positions, (v1, v2) => v1.y.CompareTo(v2.y));
-
-            // The first element is the bottom left corner
-            YMax = positions[0].y;
-            YMin = positions[spots.Length-1].y;
-
-            Vector2 maxvec = new Vector2(XMax, YMax);
-            Vector2 minvec = new Vector2(XMin, YMin);
-
-            GameObject sliceCollider = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            sliceCollider.name = "SliceCollider";
-
-            Vector2 middle = Vector2.Lerp(maxvec, minvec, 0.5f);
-            middle = new Vector2(middle.x * s.h, middle.y *s.v);
-
-            dfm.updateCamera(new Vector3(middle.x, middle.y, 0));
-            sliceCollider.transform.localScale = new Vector3(Math.Abs(maxvec.x - minvec.x) * s.h, Math.Abs(maxvec.y - minvec.y) * s.v, 1);
-            sliceCollider.transform.localPosition = new Vector3(middle.x, middle.y, spots[0].Origin.z);
-
-            GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().adjustSliceCollider(
-                sliceCollider,
-                minvec,
-                maxvec,
-                middle,
-                (int)spots[0].Origin.z,
-                spots[0].DatasetName
-                );
-
-            sideBySideDistance = (int)(sliceCollider.transform.localScale.x *1.2f);
+            //        setSliceColliderVisium(s);
+            //    }
+            //}
         }
 
         /////////////////////////////////////////////////////////////////////////
@@ -362,6 +331,111 @@ public class SpotDrawer : MonoBehaviour
 
         }
         SetMeshBuffers();
+    }
+
+    private void setSliceCollider((float h, float v) s)
+    {
+        Vector3[] positions = new Vector3[spots.Length];
+        for (int i = 0; i < spots.Length; i++)
+        {
+
+            positions[i] = spots[i].Location;
+        }
+
+        float XMax;
+        float XMin;
+        float YMax;
+        float YMin;
+
+        // Sort the array by x-coordinate in descending order
+        Array.Sort(positions, (v1, v2) => v2.x.CompareTo(v1.x));
+
+        // The first element is the top right corner
+        XMax = positions[0].x;
+        XMin = positions[spots.Length - 1].x;
+
+        // Sort the array by y-coordinate in ascending order
+        Array.Sort(positions, (v1, v2) => v1.y.CompareTo(v2.y));
+
+        // The first element is the bottom left corner
+        YMax = positions[0].y;
+        YMin = positions[spots.Length - 1].y;
+
+        Vector2 maxvec = new Vector2(XMax, YMax);
+        Vector2 minvec = new Vector2(XMin, YMin);
+
+        GameObject sliceCollider = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        sliceCollider.name = "SliceCollider";
+
+        Vector2 middle = Vector2.Lerp(maxvec, minvec, 0.5f);
+        middle = new Vector2(middle.x * s.h, middle.y * s.v);
+
+        dfm.updateCamera(new Vector3(middle.x, middle.y, 0));
+        sliceCollider.transform.localScale = new Vector3(Math.Abs(maxvec.x - minvec.x) * s.h, Math.Abs(maxvec.y - minvec.y) * s.v, 1);
+        sliceCollider.transform.localPosition = new Vector3(middle.x, middle.y, spots[0].Origin.z);
+
+        GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().adjustSliceCollider(
+            sliceCollider,
+            minvec,
+            maxvec,
+            middle,
+            (int)spots[0].Origin.z,
+            spots[0].DatasetName
+            );
+
+        sideBySideDistance = (int)(sliceCollider.transform.localScale.x * 1.2f);
+    }
+
+    private void setSliceColliderVisium((float h, float v) s)
+    {
+        Vector3[] positions = new Vector3[spots.Length];
+        for (int i = 0; i < spots.Length; i++)
+        {
+            positions[i] = spots[i].Location;
+        }
+
+        float XMax;
+        float XMin;
+        float YMax;
+        float YMin;
+
+        // Sort the array by x-coordinate in descending order
+        Array.Sort(positions, (v1, v2) => v2.x.CompareTo(v1.x));
+
+        // The first element is the top right corner
+        XMax = positions[0].x;
+        XMin = positions[spots.Length - 1].x;
+
+        // Sort the array by y-coordinate in ascending order
+        Array.Sort(positions, (v1, v2) => v1.y.CompareTo(v2.y));
+
+        // The first element is the bottom left corner
+        YMax = positions[0].y;
+        YMin = positions[spots.Length - 1].y;
+
+        Vector2 maxvec = new Vector2(XMax, YMax);
+        Vector2 minvec = new Vector2(XMin, YMin);
+
+        GameObject sliceCollider = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        sliceCollider.name = "SliceCollider";
+
+        Vector2 middle = Vector2.Lerp(maxvec, minvec, 0.5f);
+        middle = new Vector2(middle.x * s.h, middle.y * s.v);
+
+        dfm.updateCamera(new Vector3(middle.x, middle.y, 0));
+        sliceCollider.transform.localScale = new Vector3(Math.Abs(maxvec.x - minvec.x) * s.h, Math.Abs(maxvec.y - minvec.y) * s.v, 1);
+        sliceCollider.transform.localPosition = new Vector3(middle.x, middle.y, spots[0].Origin.z);
+
+        GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().adjustSliceCollider(
+            sliceCollider,
+            minvec,
+            maxvec,
+            middle,
+            (int)spots[0].Origin.z,
+            spots[0].DatasetName
+            );
+
+        sideBySideDistance = (int)(sliceCollider.transform.localScale.x * 1.2f);
     }
 
     private void Update()

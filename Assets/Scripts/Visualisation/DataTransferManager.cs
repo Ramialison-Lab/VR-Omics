@@ -86,6 +86,7 @@ public class DataTransferManager : MonoBehaviour
     public string[] positionList;
     public string[] jsonFilePaths;
     public float[] scaleFactors;
+    public int[] datasetSizes;
 
     //STOmics
     public string stomicsDataPath;
@@ -221,6 +222,8 @@ public class DataTransferManager : MonoBehaviour
         //Dict for geneNames in dataset
         geneNameDictionary = new List<string>[df.pathList.Count];
         int geneNameDictionary_Counter = 0;
+
+        datasetSizes = new int[df.pathList.Count];
 
         //tissue_position list
         positionList = new string[df.pathList.Count];
@@ -402,6 +405,7 @@ public class DataTransferManager : MonoBehaviour
                 if (y < minY) minY = y;
                 else if (y > maxY) maxY = y;
             }
+            datasetSizes[count] = row.Length;
             //TODO: read scalefactor for adjustment
             //sm.readVisiumScaleFactor(p);
             //Adds the collider slice for each dataset that detects user input
