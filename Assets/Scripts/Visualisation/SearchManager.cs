@@ -51,7 +51,7 @@ public class SearchManager : MonoBehaviour
     private ReadGeneInformation rgi;
 
     //TBD LINKPATH
-    public string geneNamesC18 = "Assets/Datasets/C18heart/C18_genelist.csv";
+    public string geneNamesC18; 
 
     private void Start(){   
         //Access variables
@@ -61,7 +61,7 @@ public class SearchManager : MonoBehaviour
         tmd = gameObject.GetComponent<TomoSeqDrawer>();
         sd = gameObject.GetComponent<SpotDrawer>();
         rgi = GetComponent<ReadGeneInformation>();
-
+        geneNamesC18 = Application.dataPath + "/Assets/Datasets/C18heart/C18_genelist.csv";
 
         // Creating list of genes for search bar
         if (dfm.c18_visium)
@@ -69,6 +69,7 @@ public class SearchManager : MonoBehaviour
             string[] lines = File.ReadAllLines(geneNamesC18);
             foreach(string line in lines)
             {
+                
                 List<string> values = new List<string>();
                 values = line.Split(',').ToList();
                 if (values[1] != "") geneNames.Add(values[1].Substring(1));
@@ -133,7 +134,7 @@ public class SearchManager : MonoBehaviour
 
         foreach(float z in scalefactors)
         {
-            Debug.Log(z);
+           // Debug.Log(z);
         }
 
     }
@@ -248,7 +249,7 @@ public class SearchManager : MonoBehaviour
         // TBD LINKPATH
 
         //string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
-        string geneC18 = System.IO.Directory.GetCurrentDirectory() + "/Assets/Datasets/C18heart/C18genesTranspose.csv";
+        string geneC18 = Application.dataPath + "/Assets/Datasets/C18heart/C18genesTranspose.csv";
         string[] lines = File.ReadAllLines(geneC18);
         lines = lines.Skip(1).ToArray();
         List<double> normalised = new List<double>();

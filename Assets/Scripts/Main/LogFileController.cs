@@ -16,7 +16,7 @@ public class LogFileController : MonoBehaviour
     public void Log(Exception ex, string message)
     {
             CleanUp();
-            filePath = System.IO.Directory.GetCurrentDirectory() + "/Assets/Logfiles/" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + "_log.txt";
+            filePath = Application.dataPath + "/Assets/Logfiles/" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + "_log.txt";
             using (StreamWriter sw = File.AppendText(filePath))
             {
                 sw.WriteLine("Log file created at " + DateTime.Now);
@@ -32,7 +32,7 @@ public class LogFileController : MonoBehaviour
     /// </summary>
     public void CleanUp()
     {
-        string dataPath = System.IO.Directory.GetCurrentDirectory() + "/Assets/Logfiles/";
+        string dataPath = Application.dataPath + "/Assets/Logfiles/";
         string[] files = Directory.GetFiles(dataPath, "*_log.txt");
         
         //delte files older than 30 days ago

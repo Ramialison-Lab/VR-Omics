@@ -577,7 +577,7 @@ public class UIManager : MonoBehaviour
         if (merfish_meta_file == "" || merfish_meta_file != merfish_meta_LoadTMP.text) merfish_meta_file = merfish_meta_LoadTMP.text;
         if (merfish_transformation_file == "" || merfish_transformation_file != merfish_transform_LoadTMP.text) merfish_transformation_file = merfish_transform_LoadTMP.text;
 
-        StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Merfish_path.txt", false);
+        StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Merfish_param.txt", false);
         string[] merfish_path_out = new string[11];
         merfish_path_out[0] = merfish_counts_file;// counts_file;
         merfish_path_out[1] = merfish_meta_file;// meta_file;
@@ -726,24 +726,9 @@ public class UIManager : MonoBehaviour
             filterparam[8] = "1";
         }
         filterparam[11] = destinationPath;
-        //Stores db literal and the filter params
-        //if (destinationPath != "")
-        //{
-        //    //TBD Sabrina: use destinationpath for python output instead of default
-        //    StreamWriter writer = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/outpath.txt", false);
-        //    writer.WriteLine(System.IO.Directory.GetCurrentDirectory());
-        //    writer.Close();
-        //}
-        //else
-        //{
-        //    StreamWriter writer2 = new StreamWriter(System.IO.Directory.GetCurrentDirectory() + "/Assets/PythonFiles/outpath.txt", false);
-        //    writer2.WriteLine(System.IO.Directory.GetCurrentDirectory());
-        //    writer2.Close();
-        //}
 
         if (skipFilter)
         {
-            // @Denis: Please doublecheck these values! Same order as below.
             filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
 #if UNITY_EDITOR
 
@@ -846,10 +831,10 @@ public class UIManager : MonoBehaviour
     {
         string[] params_out = new string[4];
         params_out[0] = visium_local_path;
-        params_out[3] = current_directory + "Assets/PythonFiles/";
+        params_out[3] = current_directory + "Assets/PythonFiles/VisiumProcessed";
 
         // Skip filter → Prepare Toggle (means prepare data only, no analysis)
-        params_out[1] = 1.ToString();
+        params_out[1] = "0";
         // not SVG since skip filter true
         params_out[2] = "0";
 
@@ -872,7 +857,7 @@ public class UIManager : MonoBehaviour
         string[] filterPipelineParam = new string[14];
         filterPipelineParam[0] = visium_local_path;
         //no skip filter
-        filterPipelineParam[1] = 0.ToString();
+        filterPipelineParam[1] = "1";
         //check if SVG toggle is on
         if (GameObject.Find("SVGToggle_local").GetComponent<Toggle>().isOn)
         {
@@ -893,7 +878,6 @@ public class UIManager : MonoBehaviour
         //TBD
         filterPipelineParam[11] = "";// max_total_count_var;
         filterPipelineParam[12] = "";// n_genes_by_counts;
-        filterPipelineParam[13] = "";// not in use;
 
 
 #if UNITY_EDITOR
@@ -1182,8 +1166,11 @@ public class UIManager : MonoBehaviour
         // Read file with names of data files
         string wd = current_directory;
         wd = wd.Replace('\\', '/');
+#if UNITY_EDITOR
+        string fileName = Application.dataPath + "/PythonFiles/list_of_file_names.txt";
+#else
         string fileName = wd + "/Assets/PythonFiles/list_of_file_names.txt";
-
+#endif
         var lines = File.ReadAllLines(fileName);
         string line2 = lines[0];
 
@@ -1576,12 +1563,12 @@ public class UIManager : MonoBehaviour
         expandImage.texture = temptext;
         //Graphics.CopyTexture(go.transform.parent.gameObject.GetComponent<RawImage>().texture, expandImage.texture);
     }
-    #endregion
+#endregion
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// 3D object
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    #region 3D object
+#region 3D object
     /// <summary>
     /// Resets all Inputfields and deletes the objects that have been passed to the DataTransfer script
     /// </summary>
@@ -1613,12 +1600,12 @@ public class UIManager : MonoBehaviour
         panel.SetActive(false);
 
     }
-    #endregion
+#endregion
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// Additional functions
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    #region VR Settings
+#region VR Settings
     /// <summary>
     /// Trigger HMD detection manually.
     /// </summary>
@@ -1635,5 +1622,5 @@ public class UIManager : MonoBehaviour
 
         activeIconGameObject.SetActive(!activeIconGameObject.activeSelf);
     }
-    #endregion
+#endregion
 }

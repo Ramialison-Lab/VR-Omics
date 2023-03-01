@@ -76,6 +76,43 @@ public class ReadClusterInformation : MonoBehaviour
         }
     }
 
+    public void readC18Areas()
+    {
+        // TBD LINKPATH
+
+        //string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
+        string[] lines = File.ReadAllLines(dfm.coordsC18);
+        lines = lines.Skip(1).ToArray();
+
+        List<double> normalised = new List<double>();
+
+        List<float> resultExpression = new List<float>();
+
+        foreach (string line in lines)
+        {
+            
+            string[] values = line.Split(',');
+            Debug.Log(values[8]);
+            if (values[8].Contains("RV"))
+            {
+                clusterColour.Add(Color.red);
+                normalised.Add(1);
+            }
+            else if (values[8].Contains("RA"))
+            {
+                clusterColour.Add(Color.blue);
+                normalised.Add(0);
+            }
+            else
+            {
+                clusterColour.Add(Color.gray);
+                normalised.Add(0);
+            }
+        }
+
+        sd.skipColourGradient(normalised, clusterColour);
+    }
+
     public void readC18Cluster()
     {
         var cluster = dfm.c18cluster;

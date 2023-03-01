@@ -101,9 +101,9 @@ public class DataTransferManager : MonoBehaviour
     public GameObject c18heartObj;
     public GameObject heartTranspSlider;
     //public string geneC18 = "Assets/Datasets/C18heart/C18genesTranspose.csv";
-    public string geneC18Path = System.IO.Directory.GetCurrentDirectory() + "/Datasets/C18heart/C18genesTranspose.csv";
+    public string geneC18Path;
     //public string coordsC18 = "Assets/Datasets/C18heart/C18heart.csv";
-    public string coordsC18 = System.IO.Directory.GetCurrentDirectory() + "/Datasets/C18heart/C18heart.csv";
+    public string coordsC18;
     public List<string> c18cluster;
 
     //Xenium
@@ -124,6 +124,7 @@ public class DataTransferManager : MonoBehaviour
     public string otherMetaPath;
     public int[] otherCSVCols;
     public LogFileController logfile;
+    public string current_directory;
     void Start()
     {
 
@@ -163,7 +164,7 @@ public class DataTransferManager : MonoBehaviour
     private void pipelineConnected()
     {
         df = scriptHolderPipeline.GetComponent<DataTransfer>();
-
+        current_directory = df.current_directory;
         if (df.c18)
         {
             sp.visium = true;
@@ -592,6 +593,8 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startC18()
     {
+        geneC18Path = current_directory + "/Assets/Datasets/C18heart/C18genesTranspose.csv";
+        coordsC18 = current_directory + "Assets/Datasets/C18heart/C18heart.csv";
         c18heartObj.SetActive(true);
         sc.object3d = c18heartObj;
         sc.objectUsed = true;
@@ -802,34 +805,41 @@ public class DataTransferManager : MonoBehaviour
 
     private void checkForFigures(string[] allDirectories)
     {
-        List<string> figurePaths = new List<string>();
-        foreach (string s in allDirectories) {
-            if (s.Split("\\").Last() == "total_counts_plot.png") {
-                figureBtns[0].SetActive(true);
-                figurePaths.Add(s); }
-            if (s.Split("\\").Last() == "show_spatial_all_hires.png")
+        try
+        {
+            List<string> figurePaths = new List<string>();
+            foreach (string s in allDirectories)
             {
-                figurePaths.Add(s);
-                figureBtns[1].SetActive(true);
+                if (s.Split("\\").Last() == "total_counts_plot.png")
+                {
+                    figureBtns[0].SetActive(true);
+                    figurePaths.Add(s);
+                }
+                if (s.Split("\\").Last() == "show_spatial_all_hires.png")
+                {
+                    figurePaths.Add(s);
+                    figureBtns[1].SetActive(true);
+                }
+                if (s.Split("\\").Last() == "show_spatial_hires_clusters.png")
+                {
+                    figurePaths.Add(s);
+                    figureBtns[2].SetActive(true);
+                }
+                if (s.Split("\\").Last() == "show_spatial_total_counts_n_genes_by_counts.png")
+                {
+                    figurePaths.Add(s);
+                    figureBtns[3].SetActive(true);
+                }
+                if (s.Split("\\").Last() == "umap_umap_total_counts_n_genes_by_counts_clusters.png")
+                {
+                    figurePaths.Add(s);
+                    figureBtns[4].SetActive(true);
+                }
             }
-            if (s.Split("\\").Last() == "show_spatial_hires_clusters.png")
-            {
-                figurePaths.Add(s);
-                figureBtns[2].SetActive(true);
-            }
-            if (s.Split("\\").Last() == "show_spatial_total_counts_n_genes_by_counts.png")
-            {
-                figurePaths.Add(s);
-                figureBtns[3].SetActive(true);
-            }
-            if (s.Split("\\").Last() == "umap_umap_total_counts_n_genes_by_counts_clusters.png")
-            {
-                figurePaths.Add(s);
-                figureBtns[4].SetActive(true);
-            }
-        }
 
-        mc.setFigureDatapaths(figurePaths);
+            mc.setFigureDatapaths(figurePaths);
+        }
+        catch (Exception e) { }
     }
 
     private void checkForSVGData()

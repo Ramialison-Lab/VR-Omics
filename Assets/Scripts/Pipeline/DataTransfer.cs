@@ -61,6 +61,7 @@ public class DataTransfer : MonoBehaviour
 
     public bool other2D = false;
     public int[] otherCSVCols = new int[4];
+    public string current_directory;
 
     /// <summary>
     /// This script stores all data that needs to be transfered from AW to Visualiser
@@ -160,6 +161,7 @@ public class DataTransfer : MonoBehaviour
     /// </summary>
     private void startVisualisationScene()
     {
+        current_directory = ui.current_directory;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 

@@ -1,5 +1,6 @@
 ﻿/*
-* Copyright (c) 2023 Murdoch Children's Research Institute, Parkville, Melbourne
+* Copyright (c) 2023 Murdoch Children's Research Institute, Parkville, Melbourne; 
+* University Konstanz, Germany
 * author: Denis Bienroth, Dimitar Garkov
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -702,6 +703,19 @@ public class SpotDrawer : MonoBehaviour
                 gck[3].time = 0.75F;
                 gck[4].color = new Color(180 / rgb, 0, 0); // Red
                 gck[4].time = 1f;
+
+
+
+                //gck[0].color = new Color(65 / rgb, 105 / rgb, 255 / rgb); // Blue
+                //gck[0].time = 0f;
+                //gck[2].color = new Color(60 / rgb, 179 / rgb, 113 / rgb); // green
+                //gck[1].time = .25f;
+                //gck[2].color = new Color(150 / rgb, 200 / rgb, 50 / rgb); // green
+                //gck[2].time = 0.50F;
+                //gck[3].color = new Color(255 / rgb, 230 / rgb, 0); // yellow
+                //gck[3].time = 0.75F;
+                //gck[4].color = new Color(180 / rgb, 0, 0); // Red
+                //gck[4].time = 1f;
 
                 // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
                 GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];

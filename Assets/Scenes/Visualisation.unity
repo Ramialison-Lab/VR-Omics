@@ -14890,6 +14890,7 @@ MonoBehaviour:
   positionList: []
   jsonFilePaths: []
   scaleFactors: []
+  datasetSizes: 
   stomicsDataPath: 
   stomicsSpotId: []
   stomicsGeneNames: []
@@ -14912,7 +14913,6 @@ MonoBehaviour:
   merfishCoords: 
   otherMatrixPath: 
   otherMetaPath: 
-  otherGenePanel: 
   otherCSVCols: 
   logfile: {fileID: 0}
   tomoGeneDirectory: 
@@ -15006,7 +15006,7 @@ MonoBehaviour:
   - {fileID: 1359217083}
   - {fileID: 1840308950}
   - {fileID: 746890227}
-  - {fileID: 227083345}
+  - {fileID: 618199384}
   - {fileID: 917014078}
 --- !u!114 &1052670668
 MonoBehaviour:
