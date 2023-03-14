@@ -43,7 +43,7 @@ public class InformationManager : MonoBehaviour
         switch (button.name)
         {
             case "visium_Download_Info":
-                infoText = "More information can be found here: https://scanpy-tutorials.readthedocs.io/en/latest/spatial/basic-analysis.html";
+                infoText = "More information can be found here:file:///C:/Users/Denis.Bienroth/Documents/GitHub/Ramialison-Lab/Ramialison-Lab.github.io/pages/vromics.html#filter \n or here: https://scanpy-tutorials.readthedocs.io/en/latest/spatial/basic-analysis.html";
                 break;
             case "visium_Pipeline_load_Info":
                 infoText = "More information can be found here: https://scanpy-tutorials.readthedocs.io/en/latest/spatial/basic-analysis.html";

@@ -90,7 +90,7 @@ public class SliceCollider : MonoBehaviour
 
         imagePlane.GetComponent<Renderer>().material = transparentMat;
 
-        string imagePath = System.IO.Directory.GetCurrentDirectory() + "/Assets/Images/Error_Images/spatial_file_not_found.png";
+        string imagePath = dfm.current_directory + "/Assets/Images/Error_Images/spatial_file_not_found.png";
 
         int index = datasetName.LastIndexOf("\\");
         string path = "";

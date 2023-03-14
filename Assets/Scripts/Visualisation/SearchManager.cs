@@ -189,9 +189,12 @@ public class SearchManager : MonoBehaviour
     /// <param name="searchGene">the gene to be read</param>
     public void readMerfishExpression(string searchGene)
     {
-        //write gene information to the sidepanel
-        rgi.readGeneInformation(searchGene);
-
+        try
+        {
+            //write gene information to the sidepanel
+            rgi.readGeneInformation(searchGene);
+        }
+        catch (Exception e) { }
         var genes = dfm.MerfishGeneNames;
         int x = genes.IndexOf(searchGene);
         //LINKPATH
@@ -220,7 +223,10 @@ public class SearchManager : MonoBehaviour
     /// <param name="searchGene">The gene to be read.</param>
     internal void readXeniumExpression(string searchGene)
     {
-        rgi.readGeneInformation(searchGene);
+        try
+        {
+            rgi.readGeneInformation(searchGene);
+        }catch(Exception e) { }
         var genes = dfm.XeniumGeneNames;
 
         int x = genes.IndexOf(searchGene);

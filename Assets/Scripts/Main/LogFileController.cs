@@ -17,6 +17,8 @@ public class LogFileController : MonoBehaviour
     {
             CleanUp();
             filePath = Application.dataPath + "/Assets/Logfiles/" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + "_log.txt";
+        try
+        {
             using (StreamWriter sw = File.AppendText(filePath))
             {
                 sw.WriteLine("Log file created at " + DateTime.Now);
@@ -24,6 +26,8 @@ public class LogFileController : MonoBehaviour
                 sw.WriteLine("Message: " + message);
                 sw.WriteLine("StackTrace: " + ex.StackTrace);
             }
+        }
+        catch (Exception e) { }
 
     }
     
@@ -32,29 +36,32 @@ public class LogFileController : MonoBehaviour
     /// </summary>
     public void CleanUp()
     {
-        string dataPath = Application.dataPath + "/Assets/Logfiles/";
-        string[] files = Directory.GetFiles(dataPath, "*_log.txt");
-        
-        //delte files older than 30 days ago
-        DateTime thirtyDaysAgo = DateTime.Now.AddDays(-30);
-        foreach (string file in files)
+        try
         {
-            FileInfo fileInfo = new FileInfo(file);
-            if (fileInfo.CreationTime < thirtyDaysAgo)
-            {
-                File.Delete(file);
-            }
-        }
-        //Delete files if more than maxFiles value are found
-        int maxFiles = 20;
-        if (files.Length > maxFiles)
-        {
-            Array.Sort(files, (a, b) => File.GetCreationTime(a).CompareTo(File.GetCreationTime(b)));
-            for (int i = 0; i < files.Length - maxFiles; i++)
-            {
-                File.Delete(files[i]);
-            }
-        }
+            string dataPath = Application.dataPath + "/Assets/Logfiles/";
+            string[] files = Directory.GetFiles(dataPath, "*_log.txt");
 
+            //delte files older than 30 days ago
+            DateTime thirtyDaysAgo = DateTime.Now.AddDays(-30);
+            foreach (string file in files)
+            {
+                FileInfo fileInfo = new FileInfo(file);
+                if (fileInfo.CreationTime < thirtyDaysAgo)
+                {
+                    File.Delete(file);
+                }
+            }
+            //Delete files if more than maxFiles value are found
+            int maxFiles = 20;
+            if (files.Length > maxFiles)
+            {
+                Array.Sort(files, (a, b) => File.GetCreationTime(a).CompareTo(File.GetCreationTime(b)));
+                for (int i = 0; i < files.Length - maxFiles; i++)
+                {
+                    File.Delete(files[i]);
+                }
+            }
+        }
+        catch (Exception e) { }
     }
 }

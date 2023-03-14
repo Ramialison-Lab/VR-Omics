@@ -578,7 +578,7 @@ public class UIManager : MonoBehaviour
         if (merfish_transformation_file == "" || merfish_transformation_file != merfish_transform_LoadTMP.text) merfish_transformation_file = merfish_transform_LoadTMP.text;
 
         StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Merfish_param.txt", false);
-        string[] merfish_path_out = new string[11];
+        string[] merfish_path_out = new string[10];
         merfish_path_out[0] = merfish_counts_file;// counts_file;
         merfish_path_out[1] = merfish_meta_file;// meta_file;
         merfish_path_out[2] = merfish_transformation_file;// transformation_file;
@@ -589,7 +589,6 @@ public class UIManager : MonoBehaviour
         merfish_path_out[7] = longAnalysis;// long analysis;
         merfish_path_out[8] = MerfishParameter[3].text;// max_total_count_var;
         merfish_path_out[9] = MerfishParameter[4].text;// n_genes_by_counts;
-        merfish_path_out[10] = "";
 
         foreach (string param in merfish_path_out)
         {

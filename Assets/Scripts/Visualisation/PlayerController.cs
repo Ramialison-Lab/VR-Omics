@@ -38,6 +38,11 @@ public class PlayerController : MonoBehaviour
     DataTransferManager dfm;
     SliceCollider sc;
 
+    public float moveSpeed = 0.1f;
+
+    private bool isMoving = false;
+    private Vector3 lastPosition;
+    public float zoomSpeed = 1.0f;
     public int  scaleFactor = 10;
     private void LateUpdate()
     {
@@ -55,31 +60,57 @@ public class PlayerController : MonoBehaviour
         if (!GameObject.Find("ScriptHolder").GetComponent<AutoCompleteManager>().InputFocused())
         {
             //KEYINPUT
-            Vector3 move = new Vector3(Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed, 0, Input.GetAxisRaw("Vertical") * Time.deltaTime * speed);
+            Vector3 move = new Vector3(Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed * (-1), Input.GetAxisRaw("Vertical") * Time.deltaTime * speed *(-1), 0);
             move = this.transform.TransformDirection(move);
             _controller.Move(move * _speed);
 
+            float zoomInput = Input.GetAxis("Mouse ScrollWheel"); // Get the zoom input from the mouse scroll wheel
+
+            if (zoomInput != 0.0f) // Check if there is any zoom input
+            {
+                Camera.main.fieldOfView -= zoomInput * zoomSpeed; // Adjust the camera's field of view based on the zoom input
+                Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, 10.0f, 60.0f); // Clamp the camera's field of view to a minimum of 10 and a maximum of 60 degrees
+            }
+
             //TBD disable movement if inputfie;d selected
-            if (Input.GetKeyDown(KeyCode.Space)) up = true;
-            if (Input.GetKeyUp(KeyCode.Space)) up = false;
-            if (Input.GetKeyDown(KeyCode.Z)) down = true;
-            if (Input.GetKeyUp(KeyCode.Z)) down = false;
-            if(Input.GetKey(KeyCode.Q)) sc.prepareRotation(1);
+            //if (Input.GetKeyDown(KeyCode.Space)) up = true; 
+            //if (Input.GetKeyUp(KeyCode.Space)) up = false;
+            //if (Input.GetKeyDown(KeyCode.Z)) down = true;
+            //if (Input.GetKeyUp(KeyCode.Z)) down = false;
+            if (Input.GetKey(KeyCode.Q)) sc.prepareRotation(1);
             if(Input.GetKey(KeyCode.E)) sc.prepareRotation(-1);
 
-            if (Input.GetAxis("Mouse ScrollWheel") > 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 1 * Time.deltaTime * 100);
-            if (Input.GetAxis("Mouse ScrollWheel") < 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 1 * Time.deltaTime * 100);
+            //if (Input.GetAxis("Mouse ScrollWheel") > 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 1 * Time.deltaTime * 100);
+            //if (Input.GetAxis("Mouse ScrollWheel") < 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 1 * Time.deltaTime * 100);
 
-            if (Input.GetKey(KeyCode.Mouse2))
+            if (Input.GetMouseButtonDown(2))
             {
-                float diff_x = Mathf.Abs(Input.mousePosition.x - mousepos.x);
-                float diff_y = Mathf.Abs(Input.mousePosition.y - mousepos.y);
+                isMoving = true;
+                lastPosition = Input.mousePosition;
+                //float diff_x = Mathf.Abs(Input.mousePosition.x - mousepos.x);
+                //float diff_y = Mathf.Abs(Input.mousePosition.y - mousepos.y);
 
-                if (Input.mousePosition.x > mousepos.x && diff_x > diff_y) transform.Rotate(new Vector3(0, -1*scaleFactor, 0));
-                if (Input.mousePosition.x < mousepos.x && diff_x > diff_y) transform.Rotate(new Vector3(0, 1 * scaleFactor, 0));
-                if (Input.mousePosition.y > mousepos.y && diff_y > diff_x) transform.Rotate(new Vector3(1 * scaleFactor, 0, 0));
-                if (Input.mousePosition.y < mousepos.y && diff_y > diff_x) transform.Rotate(new Vector3(-1 * scaleFactor, 0, 0));
+                //if (Input.mousePosition.x > mousepos.x && diff_x > diff_y) transform.Rotate(new Vector3(0, -1*scaleFactor, 0));
+                //if (Input.mousePosition.x < mousepos.x && diff_x > diff_y) transform.Rotate(new Vector3(0, 1 * scaleFactor, 0));
+                //if (Input.mousePosition.y > mousepos.y && diff_y > diff_x) transform.Rotate(new Vector3(1 * scaleFactor, 0, 0));
+                //if (Input.mousePosition.y < mousepos.y && diff_y > diff_x) transform.Rotate(new Vector3(-1 * scaleFactor, 0, 0));
 
+            }
+            if (Input.GetMouseButtonUp(2)) // Check if right mouse button is released
+            {
+                isMoving = false;
+            }
+            if (isMoving)
+            {
+                Vector3 delta = Input.mousePosition - lastPosition;
+                transform.Translate(-delta.x * moveSpeed, -delta.y * moveSpeed, 0);
+                lastPosition = Input.mousePosition;
+            }
+
+            if (Input.GetMouseButton(1)) // Check if middle mouse button is pressed
+            {
+                float rotateAmount = Input.GetAxis("Mouse X") * moveSpeed;
+                Camera.main.transform.Rotate(0, -rotateAmount*5,0);
             }
 
             if (up)

@@ -100,7 +100,7 @@ public class ExportManager : MonoBehaviour
         //TBD link to button and function
         if (makeScreenshot)
         {
-            text.text = filePathScreenshot;
+            //text.text = filePathScreenshot;
             RenderTexture rt = new RenderTexture(resWidth, resHeight, 24);
             camera.targetTexture = rt;
             Texture2D screenShot = new Texture2D(resWidth, resHeight, TextureFormat.RGB24, false);

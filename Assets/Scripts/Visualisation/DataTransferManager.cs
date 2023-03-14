@@ -467,14 +467,18 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startXenium()
     {
-        string[] files = Directory.GetFiles(df.xeniumPath, "*_counts.csv");
+        string[] files = Directory.GetFiles(df.xeniumPath, "*gene_transposed_counts.csv");
         Xeniumdata = files[0];
+        Debug.Log(Xeniumdata);
         files = Directory.GetFiles(df.xeniumPath, "*processed_cells.csv");
         xeniumCoords = files[0];
         files = Directory.GetFiles(df.xeniumPath, "*feature_matrix.csv");
-        xeniumGenePanelPath = files[0];        
-        files = Directory.GetFiles(df.xeniumPath, "*results.csv");
-        moran_results = files[0];
+        xeniumGenePanelPath = files[0];
+        try
+        {
+            files = Directory.GetFiles(df.xeniumPath, "*results.csv");
+            moran_results = files[0];
+        }catch(Exception e) { }
 
 
         float[] xeniumX, xeniumY, xeniumZ;
@@ -534,8 +538,12 @@ public class DataTransferManager : MonoBehaviour
         merfishCoords = files[0];
         files = Directory.GetFiles(df.merfishPath, "*gene_transposed_processed.csv");
         merfishGenelist = files[0];
-        files = Directory.GetFiles(df.merfishPath, "*results.csv");
-        moran_results = files[0];
+        try
+        {
+            files = Directory.GetFiles(df.merfishPath, "*results.csv");
+            moran_results = files[0];
+        }
+        catch (Exception e) { }
 
         float[] merfishX, merfishY, merfishZ;
         string[] merfishCell;

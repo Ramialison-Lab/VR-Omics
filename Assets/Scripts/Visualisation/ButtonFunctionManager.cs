@@ -169,10 +169,14 @@ public class ButtonFunctionManager : MonoBehaviour
 
     public void Disable_Buttons_For_VR()
     {
+        //TODO: fix Side-by-side
+        functionPanels[10].SetActive(false);
+
         functionPanels[12].SetActive(false);
         functionPanels[17].SetActive(false);
         functionPanels[19].SetActive(false);
         functionPanels[20].SetActive(false);
+
 
     }
 }
