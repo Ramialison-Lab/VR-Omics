@@ -409,8 +409,6 @@ public class DataTransferManager : MonoBehaviour
             datasetSizes[count] = row.Length;
             //TODO: read scalefactor for adjustment
             //sm.readVisiumScaleFactor(p);
-            //Adds the collider slice for each dataset that detects user input
-            sc.setSliceCollider((int)col.Min(), (int)col.Max(), (int)row.Min(), (int)row.Max(), visiumDepth, df.pathList[count]);
             try
             {
                 // Minimum value needed to ensure distancea great enough for visualisation 
@@ -469,7 +467,6 @@ public class DataTransferManager : MonoBehaviour
     {
         string[] files = Directory.GetFiles(df.xeniumPath, "*gene_transposed_counts.csv");
         Xeniumdata = files[0];
-        Debug.Log(Xeniumdata);
         files = Directory.GetFiles(df.xeniumPath, "*processed_cells.csv");
         xeniumCoords = files[0];
         files = Directory.GetFiles(df.xeniumPath, "*feature_matrix.csv");
@@ -515,8 +512,6 @@ public class DataTransferManager : MonoBehaviour
             XeniumGeneNames.Add(values[0]);
         }
 
-        sc.setSliceCollider((int)minX, (int)maxX, (int)maxY, (int)minY, visiumDepth, "");
-
         sp.Min = new Vector2(minX, minY);
         sp.Max = new Vector2(maxX, maxY);
         sp.StartDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell, new string[] { });
@@ -530,14 +525,13 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startMerfish()
     {
-        //TBD LINKPATH
-        //  string merfishCoords = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BRainSlide1\\merfish_cell_metadata.csv";
-        //  string merfishGenelist = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv"
-
+        //Searching for Files in the directory
         string[] files = Directory.GetFiles(df.merfishPath, "*metadata_processed.csv");
         merfishCoords = files[0];
         files = Directory.GetFiles(df.merfishPath, "*gene_transposed_processed.csv");
         merfishGenelist = files[0];
+       
+        //seraching for optional Moran Results file
         try
         {
             files = Directory.GetFiles(df.merfishPath, "*results.csv");
@@ -548,13 +542,23 @@ public class DataTransferManager : MonoBehaviour
         float[] merfishX, merfishY, merfishZ;
         string[] merfishCell;
 
+        /*
+         * Reading coordinate files  
+        */
         string[] lines = File.ReadAllLines(merfishCoords);
+
+        //Read csv header of metadata file for positions
+        int csv_position_x_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "spatial_x");
+        int csv_position_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "spatial_y");
         lines = lines.Skip(1).ToArray();
 
+        //reading values from the first line of the csv file
         string[] lineone = lines[1].Split(',');
         float minX, maxX, minY, maxY;
+        //Initialise with any value that really exisits in the dataset
         minX = maxX = float.Parse(lineone[3]);
         minY = maxY = float.Parse(lineone[4]);
+        //initialise arrays to total length of data set
         merfishX = new float[lines.Length];
         merfishY = new float[lines.Length];
         merfishZ = new float[lines.Length];
@@ -563,8 +567,8 @@ public class DataTransferManager : MonoBehaviour
         for (int i = 0; i < lines.Length; i++)
         {
             string[] values = lines[i].Split(',');
-            float x = float.Parse(values[20]);
-            float y = float.Parse(values[21]);
+            float x = float.Parse(values[csv_position_x_values]);
+            float y = float.Parse(values[csv_position_y_values]);
 
             merfishX[i] = x;
             merfishY[i] = y;
@@ -578,6 +582,7 @@ public class DataTransferManager : MonoBehaviour
             else if (y > maxY) maxY = y;
         }
 
+        //Read gene names from gene list → Always column 0 
         string[] linesGn = File.ReadAllLines(merfishGenelist);
         linesGn = linesGn.Skip(1).ToArray();
 
@@ -586,8 +591,6 @@ public class DataTransferManager : MonoBehaviour
             string[] values = line.Split(',');
             MerfishGeneNames.Add(values[0]);
         }
-
-        sc.setSliceCollider((int)minX, (int)maxX, (int)maxY, (int)minY, 0, "");
 
         sp.Min = new Vector2(minX, minY);
         sp.Max = new Vector2(maxX, maxY);
@@ -650,10 +653,6 @@ public class DataTransferManager : MonoBehaviour
         //Depth corrdinates from C18heart dataset
         int[] c18xHC = { 0, 13, 25, 20, 35, 4, 32, 6, 26};
 
-        for (int i = 0; i < 9; i++)
-        {
-            sc.setSliceCollider((int)minX, (int)maxX, (int)maxY, (int)minY, c18xHC[i], "");
-        }
         adjustCamera(minX, maxX, maxY, minY, c18z.Min(), new Vector3(0, 0, 0));
 
         sp.Min = new Vector2(minX, minY);
