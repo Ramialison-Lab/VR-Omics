@@ -1689,6 +1689,8 @@ MonoBehaviour:
   LeftOffset: {fileID: 149414639}
   RightOffset: {fileID: 696889369}
   TopOffset: {fileID: 227083346}
+  Canvas_Transform: {fileID: 120312797}
+  inVR: 0
 --- !u!1 &123959724
 GameObject:
   m_ObjectHideFlags: 0
@@ -3443,6 +3445,8 @@ MonoBehaviour:
   IF: {fileID: 914573081}
   menuCanvas: {fileID: 1202353247}
   speed: 1
+  moveSpeed: 0.1
+  zoomSpeed: 1
   scaleFactor: 10
 --- !u!143 &245421343
 CharacterController:
@@ -14723,6 +14727,7 @@ MonoBehaviour:
   colValsCopy: []
   dd: {fileID: 200879416}
   geneSelection: {fileID: 0}
+  d_org: {fileID: 120312798}
   symbolSelect: {fileID: 1796680520}
   sphereSymb: {fileID: 1796680520}
   cubeSymb: {fileID: 97734267}
@@ -14915,6 +14920,7 @@ MonoBehaviour:
   otherMetaPath: 
   otherCSVCols: 
   logfile: {fileID: 0}
+  current_directory: 
   tomoGeneDirectory: 
 --- !u!114 &1052670664
 MonoBehaviour:

@@ -113,7 +113,7 @@ public class AutoCompleteManager : MonoBehaviour
     {
         //GameObject btn = Instantiate(btnPrefab, viewPortGo.transform);
         GameObject btn = Instantiate(btnPrefab);
-        //btn.transform.rotation = Quaternion.Euler(0, 0, 0);
+        btn.transform.rotation = Quaternion.Euler(0, 0, 0);
 
         btn.transform.SetParent(scrollView.transform);
         btn.transform.localPosition = new Vector3(0, 0, 0);

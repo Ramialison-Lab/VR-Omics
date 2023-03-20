@@ -51,8 +51,17 @@ namespace VROmics.Visualisation
         public RectTransform RightOffset;
         public RectTransform TopOffset;
 
+        public RectTransform Canvas_Transform;
+
+        public bool inVR = false;
+
         void Update()
         {
+
+            if (inVR)
+            {
+                Canvas_Transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
             // also up-to-date in the editor
             canvas = GetComponent<Canvas>();
             rectTransform = GetComponent<RectTransform>();
@@ -96,6 +105,11 @@ namespace VROmics.Visualisation
                 Padding = 1 - RightOffset.sizeDelta.x / (rectTransform.sizeDelta.x - LeftOffset.sizeDelta.x);
             else
                 Padding = 1 - TopOffset.sizeDelta.y / rectTransform.sizeDelta.y;
+        }
+
+        public void ResetCanvasOrientation()
+        {
+            inVR = true;
         }
 
 #if UNITY_EDITOR
