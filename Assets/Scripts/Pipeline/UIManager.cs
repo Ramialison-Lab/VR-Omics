@@ -253,7 +253,18 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void startMerfish()
     {
-        df.startMerfish();
+
+            bool files_found = false;
+            files_found = GetComponent<FilePathCheck>().Check_Directory_For_Files(merfishPath, "merfish");
+
+            if (files_found)
+            {
+                df.startMerfish();
+            }
+            else
+            {
+                UnityEngine.Debug.Log("Files missing");
+            }
     }
 
     /// <summary>
