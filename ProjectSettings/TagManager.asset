@@ -12,6 +12,7 @@ TagManager:
   - contentBtn
   - sidePanelText
   - exitPanel
+  - fileChecker
   layers:
   - Default
   - TransparentFX

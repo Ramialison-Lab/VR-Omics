@@ -185,6 +185,7 @@ public class UIManager : MonoBehaviour
 
     //Access variables
     DataTransfer df;
+    FilePathCheck fpc;
 
     //Logfile Parameters
     private LogFileController logfile;
@@ -200,6 +201,7 @@ public class UIManager : MonoBehaviour
         current_directory = current_directory.Replace(removeFromDirectory, "");
 
         df = gameObject.GetComponent<DataTransfer>();
+        fpc = gameObject.GetComponent<FilePathCheck>();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,7 +247,12 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void startXenium()
     {
-        df.startXenium();
+        fpc.checkXeniumPath(xeniumPath);
+
+        if (fpc.files_Checked)
+        {
+            df.startXenium();
+        }
     }
 
     /// <summary>
@@ -254,17 +261,12 @@ public class UIManager : MonoBehaviour
     public void startMerfish()
     {
 
-            bool files_found = false;
-            files_found = GetComponent<FilePathCheck>().Check_Directory_For_Files(merfishPath, "merfish");
+        fpc.checkMerfishPath(merfishPath);
 
-            if (files_found)
-            {
-                df.startMerfish();
-            }
-            else
-            {
-                UnityEngine.Debug.Log("Files missing");
-            }
+        if(fpc.files_Checked)
+        {
+            df.startMerfish();
+        }
     }
 
     /// <summary>

@@ -76,8 +76,7 @@ public class SpotDrawer : MonoBehaviour
     private string lastGeneCopy;
     public List<GameObject> activepanels = new List<GameObject>(4);
     private Color[] hl_colors = new Color[] { new Color(255, 0, 0, 1), new Color(0, 255, 0, 1), new Color(0, 0, 255, 1), new Color(0, 255, 255, 1) };
-    private int sideBySideDistance = 0;
-    private int sideBySideDistance_VR = 1;
+    private float sideBySideDistance = 0;
 
     /// <summary>
     /// structure for each spot, storing: 
@@ -218,23 +217,21 @@ public class SpotDrawer : MonoBehaviour
                 (int)spots[0].Origin.z,
                 spots[0].DatasetName
                 );
-
-            sideBySideDistance = (int)(sliceCollider.transform.localScale.x *1.2f);
         }
 
         /////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////
         // Create a dictionary that maps coordinates to spot indices
-        foreach (SpotWrapper spot in spots)
+        for (int i = 0; i < spots.Length; i++)
         {
-            var l = new Vector3(spot.Origin.x * s.h, spot.Origin.y * s.v, spot.Origin.z);
+            var l = new Vector3(spots[i].Origin.x * s.h, spots[i].Origin.y * s.v, spots[i].Origin.z);
             //TODO: next line removed might cause erros
             //spot.Location = Mc.MultiplyPoint(l);
-            spot.Location = l;
+            spots[i].Location = l;
 
             MeshProperties MPs = new MeshProperties
             {
-                matrix = Matrix4x4.TRS(spot.Location, symbolTransform.rotation, symbolTransform.localScale ),
+                matrix = Matrix4x4.TRS(spots[i].Location, symbolTransform.rotation, symbolTransform.localScale ),
                 color = colors[j]
             };
             properties[j++] = MPs;
@@ -245,6 +242,24 @@ public class SpotDrawer : MonoBehaviour
             Color rc = Color.white;
             //var o_copy = dataOrigin.OriginCopy;
             //var Mc_Copy = Matrix4x4.TRS(o_copy, canvas.transform.rotation, canvas.transform.localScale);
+
+            Vector3 leftmost = spots[0].Location;
+            Vector3 rightmost = spots[0].Location;
+
+            for (int i = 0; i < spots.Length; i++)
+            {
+                if (spots[i].Location.x < leftmost.x)
+                {
+                    leftmost = spots[i].Location;
+                }
+                else if (spots[i].Location.x > rightmost.x)
+                {
+                    rightmost = spots[i].Location;
+                }
+            }
+
+            float totalDistance = Vector3.Distance(leftmost, rightmost);
+
             for (int i = 0; i < spotsCopy.Length; i++)
             {
                 //SpotWrapper spot = spotsCopy[i];
@@ -254,19 +269,18 @@ public class SpotDrawer : MonoBehaviour
                 ////    100 : 0;
                 ////var l = new Vector3((spots[i].Location.x) + sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
 
-                Vector3 l = Vector3.zero;
 
-                if (!inVR)
-                {
-                    l = new Vector3((spots[i].Location.x) + sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
-                }
                 //else
                 //{
                 //    l = new Vector3((spots[i].Location.x), spots[i].Location.y, spots[i].Location.z);
 
                 //}
                 //spotsCopy[i].Location = spots[i].Location;
-                spotsCopy[i].Location = l;
+
+                sideBySideDistance = totalDistance * 1.2f;
+
+                spotsCopy[i].Location = new Vector3((spots[i].Location.x) + sideBySideDistance, spots[i].Location.y, spots[i].Location.z);
+                
 
                 // var l = new Vector3((spot.Origin.x * s.h), spot.Origin.y * s.v, spot.Origin.z);
                 // spot.Location = Mc_Copy.MultiplyPoint(l);
@@ -290,7 +304,7 @@ public class SpotDrawer : MonoBehaviour
 
                 MeshProperties MPs = new MeshProperties
                 {
-                    matrix = Matrix4x4.TRS(spotsCopy[i].Location, symbolTransform.rotation, symbolTransform.localScale *s_w),
+                    matrix = Matrix4x4.TRS(spotsCopy[i].Location, symbolTransform.rotation, symbolTransform.localScale),
                     color = rc
                 };
                 properties[j++] = MPs;

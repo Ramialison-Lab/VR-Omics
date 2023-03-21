@@ -59,7 +59,7 @@ public class ReadGeneInformation : MonoBehaviour
                     {
                         readInfo(values, i);
                     }
-                    catch (Exception e) { }
+                    catch (Exception) { }
                 }
             }
         }
@@ -90,7 +90,7 @@ public class ReadGeneInformation : MonoBehaviour
                     {
                         readInfo(values,i);
                     }
-                    catch (Exception e) { } }
+                    catch (Exception) { } }
             }
         }
 
@@ -110,7 +110,7 @@ public class ReadGeneInformation : MonoBehaviour
                     {
                         readInfo(values, i);
                     }
-                    catch (Exception e) { }
+                    catch (Exception) { }
                 }
             }
         }

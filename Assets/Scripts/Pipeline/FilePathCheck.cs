@@ -6,10 +6,13 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
 using System;
+using UnityEngine.UI;
 
 public class FilePathCheck : MonoBehaviour
 {
     public bool files_Checked = false;
+    public GameObject check_template;
+    public GameObject cross_template;
 
     private string[] merfish_Files =
     {
@@ -17,51 +20,88 @@ public class FilePathCheck : MonoBehaviour
         "gene_transposed_processed.csv",
     };
 
+    private string[] xenium_Files =
+{
+        "gene_transposed_counts.csv",
+        "processed_cells.csv",
+        "feature_matrix.csv",
+    };
 
-    /// <summary>
-    /// Check if the datapath selected contains all files needed for the Visualiser
-    /// </summary>
-    /// <param name="path">The datapath directory to be checked</param>
-    /// <param name="srtMethod">The SRT Method used.</param>
-    /// <returns>Returns true if all necessary files have been found.</returns>
-    public bool Check_Directory_For_Files(string path, string srtMethod)
+    private bool CheckForFiles(string[] directories, string filename)
     {
 
-        bool all_files_found = false;
-
-        switch (srtMethod)
-        {
-            case "merfish":
-                {
-                    all_files_found = CheckForFiles(path,merfish_Files);
-                    break;
-                }
-        }
-
-        return all_files_found;
-    }
-
-    private bool CheckForFiles(string path, string[] filenames)
-    {
-        try
-        {
-            string[] allDirectories = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
-            bool allExist = true;
-            foreach (string x in filenames)
+            foreach(string str in directories)
             {
-                if (!allDirectories.Any(x => x.Contains(x)))
+                if (str.Contains(filename))
                 {
-                    allExist = false;
-                    break;
+                    return true;
                 }
             }
-
-            return allExist;
-        }catch(Exception e)
-        {
-            Debug.Log("File wrong format");
             return false;
+    }
+
+    public void checkMerfishPath(string path)
+    {
+        foreach(GameObject go in GameObject.FindGameObjectsWithTag("fileChecker"))
+        {
+            Destroy(go);
         }
+        bool all_found = true;
+
+        string[] allDirectories = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+
+        foreach (string file in merfish_Files)
+        {
+
+            bool file_found = CheckForFiles(allDirectories, file);
+
+            if (file_found)
+            {
+                GameObject check_temp = GameObject.Instantiate(check_template, GameObject.Find("Merfish_Container").transform);
+                check_temp.GetComponentInChildren<TMP_Text>().text = file;
+            }
+            else
+            {
+                GameObject cross_temp = GameObject.Instantiate(cross_template, GameObject.Find("Merfish_Container").transform);
+                cross_temp.GetComponentInChildren<TMP_Text>().text = file;
+                all_found = false;
+            }
+        }
+
+        if (all_found) files_Checked = true;
+
+    }
+
+    public void checkXeniumPath(string path)
+    {
+        foreach (GameObject go in GameObject.FindGameObjectsWithTag("fileChecker"))
+        {
+            Destroy(go);
+        }
+        bool all_found = true;
+
+        string[] allDirectories = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+
+        foreach (string file in xenium_Files)
+        {
+
+            bool file_found = CheckForFiles(allDirectories, file);
+
+            if (file_found)
+            {
+                GameObject check_temp = GameObject.Instantiate(check_template, GameObject.Find("Xenium_Container").transform);
+                check_temp.GetComponentInChildren<TMP_Text>().text = file;
+            }
+            else
+            {
+                GameObject cross_temp = GameObject.Instantiate(cross_template, GameObject.Find("Xenium_Container").transform);
+                cross_temp.GetComponentInChildren<TMP_Text>().text = file;
+                all_found = false;
+            }
+        }
+
+        if (all_found) files_Checked = true;
+
     }
 
 
