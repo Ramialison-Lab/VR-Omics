@@ -8,8 +8,6 @@ public class JSONReader : MonoBehaviour
 {
     public static string ReadJsonFile(string filePath)
     {
-        Debug.Log(filePath);
-
         // Check if the file exists
         if (!File.Exists(filePath))
         {

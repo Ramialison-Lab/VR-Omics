@@ -60,7 +60,7 @@ public class PlayerController : MonoBehaviour
         if (!GameObject.Find("ScriptHolder").GetComponent<AutoCompleteManager>().InputFocused())
         {
             //KEYINPUT
-            Vector3 move = new Vector3(Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed * (-1), Input.GetAxisRaw("Vertical") * Time.deltaTime * speed *(-1), 0);
+            Vector3 move = new Vector3(Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed * (1), Input.GetAxisRaw("Vertical") * Time.deltaTime * speed *(1), 0);
             move = this.transform.TransformDirection(move);
             _controller.Move(move * _speed);
 
@@ -72,28 +72,14 @@ public class PlayerController : MonoBehaviour
                 Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, 10.0f, 60.0f); // Clamp the camera's field of view to a minimum of 10 and a maximum of 60 degrees
             }
 
-            //TBD disable movement if inputfie;d selected
-            //if (Input.GetKeyDown(KeyCode.Space)) up = true; 
-            //if (Input.GetKeyUp(KeyCode.Space)) up = false;
-            //if (Input.GetKeyDown(KeyCode.Z)) down = true;
-            //if (Input.GetKeyUp(KeyCode.Z)) down = false;
             if (Input.GetKey(KeyCode.Q)) sc.prepareRotation(1);
             if(Input.GetKey(KeyCode.E)) sc.prepareRotation(-1);
 
-            //if (Input.GetAxis("Mouse ScrollWheel") > 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 1 * Time.deltaTime * 100);
-            //if (Input.GetAxis("Mouse ScrollWheel") < 0f) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 1 * Time.deltaTime * 100);
 
             if (Input.GetMouseButtonDown(2))
             {
                 isMoving = true;
                 lastPosition = Input.mousePosition;
-                //float diff_x = Mathf.Abs(Input.mousePosition.x - mousepos.x);
-                //float diff_y = Mathf.Abs(Input.mousePosition.y - mousepos.y);
-
-                //if (Input.mousePosition.x > mousepos.x && diff_x > diff_y) transform.Rotate(new Vector3(0, -1*scaleFactor, 0));
-                //if (Input.mousePosition.x < mousepos.x && diff_x > diff_y) transform.Rotate(new Vector3(0, 1 * scaleFactor, 0));
-                //if (Input.mousePosition.y > mousepos.y && diff_y > diff_x) transform.Rotate(new Vector3(1 * scaleFactor, 0, 0));
-                //if (Input.mousePosition.y < mousepos.y && diff_y > diff_x) transform.Rotate(new Vector3(-1 * scaleFactor, 0, 0));
 
             }
             if (Input.GetMouseButtonUp(2)) // Check if right mouse button is released
