@@ -63,6 +63,10 @@ public class SearchManager : MonoBehaviour
         rgi = GetComponent<ReadGeneInformation>();
         geneNamesC18 = Application.dataPath + "/Assets/Datasets/C18heart/C18_genelist.csv";
 
+#if UNITY_EDITOR
+        geneNamesC18 = Application.dataPath + "/Datasets/C18heart/C18_genelist.csv";
+#endif
+
         // Creating list of genes for search bar
         if (dfm.c18_visium)
         {
@@ -231,7 +235,7 @@ public class SearchManager : MonoBehaviour
 
         int x = genes.IndexOf(searchGene);
 
-        string[] lines = File.ReadAllLines(dfm.Xeniumdata);
+        string[] lines = File.ReadAllLines(dfm.xeniumCounts);
         lines = lines.Skip(1).ToArray();
 
         List<string> values = new List<string>();
@@ -256,6 +260,9 @@ public class SearchManager : MonoBehaviour
 
         //string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
         string geneC18 = Application.dataPath + "/Assets/Datasets/C18heart/C18genesTranspose.csv";
+#if UNITY_EDITOR
+        geneC18 = Application.dataPath + "/Datasets/C18heart/C18genesTranspose.csv";
+#endif
         string[] lines = File.ReadAllLines(geneC18);
         lines = lines.Skip(1).ToArray();
         List<double> normalised = new List<double>();

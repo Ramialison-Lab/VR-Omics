@@ -25,8 +25,7 @@ using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-//library to load obj during runtime
-using Dummiesman;
+using Dummiesman;   //library to load obj during runtime
 using UnityEngine.UI;
 
 public class DataTransferManager : MonoBehaviour
@@ -57,11 +56,12 @@ public class DataTransferManager : MonoBehaviour
     public MenuCanvas mc;
     public JSONReader jr;
 
-    //Universal lists
-    public List<float> x_coordList;
-    public List<float> y_coordList;
-    public List<float> z_coordList;
-    public List<string> spotNameList;
+    //Universal
+    float[] x_coordinates;
+    float[] y_coordinates;
+    float[] z_coordinates;
+    string[] location_names;
+    string[] dataset_names;
     public List<GameObject> figureBtns = new List<GameObject>(4);
 
     //Lists
@@ -75,7 +75,6 @@ public class DataTransferManager : MonoBehaviour
     public string[] spotnames;
     public List<string> geneNamesDistinct;
     public List<List<string>> SpotNameDictionary = new List<List<string>>();
-    //public List<List<string>> geneNameDictionary = new List<List<string>>();
     public List<string>[] geneNameDictionary;
 
     //Visium
@@ -100,15 +99,12 @@ public class DataTransferManager : MonoBehaviour
     public GameObject c18Sphere;
     public GameObject c18heartObj;
     public GameObject heartTranspSlider;
-    //public string geneC18 = "Assets/Datasets/C18heart/C18genesTranspose.csv";
     public string geneC18Path;
-    //public string coordsC18 = "Assets/Datasets/C18heart/C18heart.csv";
     public string coordsC18;
     public List<string> c18cluster;
 
     //Xenium
-    //public string Xeniumdata = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Xenium\\Xenium.csv";
-    public string Xeniumdata;
+    public string xeniumCounts;
     public string xeniumCoords;
     public string xeniumGenePanelPath;
     public string moran_results;
@@ -119,15 +115,18 @@ public class DataTransferManager : MonoBehaviour
     public string merfishGenelist;
     public string merfishCoords;
 
+    //Tomoseq
+    public string tomoGeneDirectory;
+
     //Other
     public string otherMatrixPath;
     public string otherMetaPath;
     public int[] otherCSVCols;
     public LogFileController logfile;
     public string current_directory;
+
     void Start()
     {
-
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
         sp = scriptHolder.GetComponent<SpotDrawer>();
@@ -144,72 +143,7 @@ public class DataTransferManager : MonoBehaviour
         } catch (Exception) { }
         logfile = new LogFileController();
 
-        // Uncomment for pipeline connection
         pipelineConnected();
-
-        //if (c18_visium) { visium = true; }
-        //if (visium)
-        //{
-        //    sp.visium = visium;
-        //    if (c18_visium) startc18();
-        //    else startvisium();
-        //}
-        //else if (tomoseq) starttomoseq();
-        //else if (stomics) startstomics();
-        //else if (xenium) startxenium();
-        //else if (merfish) startmerfish();
-        //else if (other) startother();
-    }
-
-    private void pipelineConnected()
-    {
-        df = scriptHolderPipeline.GetComponent<DataTransfer>();
-        current_directory = df.current_directory;
-        if (df.c18)
-        {
-            sp.visium = true;
-            c18_visium = true;
-            sc.objectUsed = true;
-            startC18();
-        }
-        else if ((df.visium || df.visiumMultiple) && !df.c18)
-        {
-            sp.visium = true;
-            visium = true;
-            startVisium();
-        }
-        else if (df.tomoseq)
-        {
-            tomoseq = true;
-            startTomoSeq();
-        }
-        else if (df.stomics)
-        {
-            stomics = true;
-            startStomics();
-        }
-        else if (df.xenium)
-        {
-            xenium = true;
-            startXenium();
-        }
-        else if (df.merfish)
-        {
-            merfish = true;
-            startMerfish();
-        }
-        else if (df.other)
-        {
-            other = true;
-            startOther();
-        }
-
-        if (df.objectUsed)
-        {
-            loadObject();
-        }
-
-        bfm.setFunction(df);
     }
 
     /// <summary>
@@ -217,44 +151,34 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void startVisium()
     {
-        int count = 0;  // counting datasets
-        List<string> tempSpotnames = new List<string>();
-
-        //Dict for geneNames in dataset
-        geneNameDictionary = new List<string>[df.pathList.Count];
+        int count = 0;                                              // counting which dataset is used
         int geneNameDictionary_Counter = 0;
-
-        datasetSizes = new int[df.pathList.Count];
-
-        //tissue_position list
-        positionList = new string[df.pathList.Count];
         int positionListCounter = 0;
-
-        //Scalefactors from JSON file for H&E image
-        jsonFilePaths = new string[df.pathList.Count];
         int jsonListCounter = 0;
-        scaleFactors = new float[df.pathList.Count];
-
-        string[] tissueImagePath = new string[df.pathList.Count];
         int tissueImageCounter = 0;
+         
+        List<string> shortList = new List<string>();                //List for names of slices from datasetnames
+        geneNameDictionary = new List<string>[df.pathList.Count];   //Dicitonary of all gene names
+        positionList = new string[df.pathList.Count];               //Datapaths to tissue_possition lists
+        jsonFilePaths = new string[df.pathList.Count];              //Datapaths to json files containing the H&E scale factors
+        datasetSizes = new int[df.pathList.Count];                  //Size of locations of the datasets
+        scaleFactors = new float[df.pathList.Count];                //scaleFactors of H&E stain image used to calculate size 
+        string[] tissueImagePath = new string[df.pathList.Count];   //Data paths to the tissue images (H&E stain image)
 
         //Find the respective files from the Visium dataset repository
         foreach (string x in df.pathList)
         {
-            string[] files = Directory.GetFiles(x, "*.h5");
-            string[] csvfiles = Directory.GetFiles(x, "*filtered_transposed.csv");
-            string[] VisiumMetaFiles = Directory.GetFiles(x, "*metadata.csv");
-
-            visiumMetaFiles.AddRange(VisiumMetaFiles);
-            hdf5datapaths.AddRange(files);
-            csvGeneExpPaths.AddRange(csvfiles);        
-            
             string[] allDirectories = Directory.GetFiles(x, "*", SearchOption.AllDirectories);
+
+            visiumMetaFiles.AddRange(Directory.GetFiles(x, "*metadata.csv"));
+            hdf5datapaths.AddRange(Directory.GetFiles(x, "*.h5"));
+            csvGeneExpPaths.AddRange(Directory.GetFiles(x, "*filtered_transposed.csv"));
+
             checkForFigures(allDirectories);
             foreach (string s in allDirectories)
             {
-                if (s.Split("\\").Last() == "tissue_positions_list.csv") {
-
+                if (s.Split("\\").Last() == "tissue_positions_list.csv")
+                {
                     positionList[positionListCounter] = s;
                     positionListCounter++;
                 }
@@ -268,61 +192,11 @@ public class DataTransferManager : MonoBehaviour
                     tissueImageCounter++;
                 }
             }
-
         }
-        ////calculate dimensions of H&E image
+
+        //calculate dimensions of H&E image
         scaleFactors[count] = jr.readScaleFactor(jsonFilePaths[count]);
-
-        //byte[] byteArray = File.ReadAllBytes(tissueImagePath[count]);
-        //Texture2D sampleTexture = new Texture2D(2, 2);
-        //bool isLoaded = sampleTexture.LoadImage(byteArray);
-
-        //float highres_w = sampleTexture.width;
-        //float highres_h = sampleTexture.height;
-
-        //float sF = scaleFactors[count];
-
-        //float fullres_w = highres_w / sF;
-        //float fullres_h = highres_h / sF;
-
-        //string[] ls = File.ReadAllLines(positionList[count]);
-        //ls = ls.Skip(1).ToArray();
-
-        //string[] ln = ls[0].Split(',');
-
-        //Vector2 firstEntry = new Vector2(int.Parse(ln[2]), int.Parse(ln[3]));
-        //Vector2 firstEntryPX = new Vector2(int.Parse(ln[4]), int.Parse(ln[5]));
-
-        //ln = ls[ls.Length-1].Split(',');
-        //Vector2 lastEntry = new Vector2(int.Parse(ln[2]), int.Parse(ln[3]));
-        //Vector2 lastEntryPX = new Vector2(int.Parse(ln[4]), int.Parse(ln[5]));
-
-        //int x_dist = (int)(firstEntry.x - lastEntry.x); //77
-        //int x_dist_px = (int)(firstEntryPX.x - lastEntryPX.x); //18323        
-        
-        //int y_dist = (int)(firstEntry.y - lastEntry.y);
-        //int y_dist_px = (int)(firstEntryPX.y - lastEntryPX.y);
-
-        //float spots_dist_x = x_dist_px / x_dist; //237.96
-        //float spots_dist_y = y_dist_px / y_dist;
-
-        //float x_zero = firstEntryPX.x / spots_dist_x; //16.95
-        //float y_zero = firstEntryPX.y / spots_dist_y;
-
-        //float x_max = lastEntryPX.x / spots_dist_x;
-        //float y_max = lastEntryPX.y / spots_dist_y;
-
-        //GameObject corner_go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //corner_go.transform.position = new Vector3(-x_zero, -2*y_zero, 0);
-        //corner_go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //corner_go.transform.position = new Vector3(x_max, y_max, 0);
-
-        //corner_go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //corner_go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-
-
         addHAndEImg = true;
-        List<string> shortList = new List<string>();
 
         //disable sideBySide features for more than one visium slice
         if (hdf5datapaths.Count > 1)
@@ -333,11 +207,12 @@ public class DataTransferManager : MonoBehaviour
             }
         }
 
-        //Reading spotlist values
-        float minX, maxX, minY, maxY;
-        minX = maxX = minY = maxY = 0;
+        //Reading spotlist values, reading min and max values of the location positions
+        float minX, maxX, minY, maxY, minZ;
+        minX = maxX = minY = maxY = minZ = 0;
         int depthCounter = 0;
         positionListCounter = 0;
+
         // Reading datasets and creating merged List for all coordinates
         foreach (string p in hdf5datapaths)
         {
@@ -349,7 +224,10 @@ public class DataTransferManager : MonoBehaviour
             //Read position of all locations that are detected on tissue
             string[] lines = File.ReadAllLines(positionList[positionListCounter]);
             positionListCounter++;
-            lines = lines.Skip(1).ToArray();
+            if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
+            {
+                lines = lines.Skip(1).ToArray();
+            }
             int inTissueSize = 0;
 
             for (int i = 0; i < lines.Length; i++)
@@ -362,13 +240,21 @@ public class DataTransferManager : MonoBehaviour
             }
 
             long[] row = new long[inTissueSize];
-            long[] col = new long[inTissueSize];           
-            spotnames = new string[inTissueSize];
+            long[] col = new long[inTissueSize];
+            location_names = new string[inTissueSize];
+            dataset_names = new string[inTissueSize];
+            x_coordinates = new float[inTissueSize];
+            y_coordinates = new float[inTissueSize];
+            z_coordinates = new float[inTissueSize];
 
             List<string> referenceSpotList = new List<string>();
             string[] refLines = File.ReadAllLines(visiumMetaFiles[count]);
-            refLines = refLines.Skip(1).ToArray();
-            foreach( string s in refLines)
+            if(CSVHeaderInformation.CheckForHeaderInCSV_without_header(refLines[0], refLines[1]))
+            {
+                refLines = refLines.Skip(1).ToArray();           
+            }
+
+            foreach (string s in refLines)
             {
                 string[] values = s.Split(',');
                 referenceSpotList.Add(values[0]);
@@ -383,29 +269,30 @@ public class DataTransferManager : MonoBehaviour
                     int original_Pos = referenceSpotList.IndexOf(values[0]);
 
                     //columns are switched
-                    col[original_Pos] = -2*(long.Parse(values[2]));
+                    col[original_Pos] = -2 * (long.Parse(values[2]));
                     row[original_Pos] = long.Parse(values[3]);
 
-                    spotnames[original_Pos] = values[0];
+                    location_names[original_Pos] = values[0];
                     //tissueCount++;
                 }
             }
 
             for (int i = 0; i < row.Length; i++)
             {
-                float x, y;
-                tempRow.Add(x = row[i]);
-                tempCol.Add(y = col[i]);
-                tempDepth.Add(visiumDepth);
-                tempSpotnames.Add(spotnames[i]);
-                dataSetNames.Add(p);
+                float x, y ,z;
+                x_coordinates[i] = x = row[i];
+                y_coordinates[i] = y = col[i];
+                z_coordinates[i] = z = visiumDepth;
+                dataset_names[i] = p;
 
                 // Find min and max
                 if (x < minX) minX = x;
                 else if (x > maxX) maxX = x;
                 if (y < minY) minY = y;
                 else if (y > maxY) maxY = y;
+                if (z < minZ) minZ = z;
             }
+
             datasetSizes[count] = row.Length;
             //TODO: read scalefactor for adjustment
             //sm.readVisiumScaleFactor(p);
@@ -414,17 +301,18 @@ public class DataTransferManager : MonoBehaviour
                 // Minimum value needed to ensure distancea great enough for visualisation 
                 if (df.distances[depthCounter] == 0)
                 {
-                    visiumDepth += visiumScaleFactor*10;
+                    visiumDepth += visiumScaleFactor * 10;
                 }
                 else
                 {
                     try
                     {// Apply scaleFactor adjust to Visium dimension
-                        visiumDepth = visiumDepth + visiumScaleFactor *10 * df.distances[depthCounter];
-                    }catch(Exception e)
+                        visiumDepth = visiumDepth + visiumScaleFactor * 10 * df.distances[depthCounter];
+                    }
+                    catch (Exception e)
                     {
                         logfile.Log(e, "Tried applying distance value but couldn't access value");
-                        visiumDepth += visiumScaleFactor*10;
+                        visiumDepth += visiumScaleFactor * 10;
                     }
                 }
                 depthCounter++;
@@ -432,13 +320,13 @@ public class DataTransferManager : MonoBehaviour
             catch (Exception e)
             {
                 logfile.Log(e, "The distance values between the slides couldn't be found. Default values were used instead. Make sure to apply only one value for two slides to adjust the distance between the two slides.");
-                visiumDepth += visiumScaleFactor*10;
+                visiumDepth += visiumScaleFactor * 10;
             }
-            
-            SpotNameDictionary.Add(spotnames.ToList());
+
+            SpotNameDictionary.Add(location_names.ToList());
             fr.readGeneNames(p);
             geneNameDictionary[geneNameDictionary_Counter] = new List<string>();
-            foreach(string x in fr.geneNames)
+            foreach (string x in fr.geneNames)
             {
                 geneNameDictionary[geneNameDictionary_Counter].Add(x);
             }
@@ -451,14 +339,15 @@ public class DataTransferManager : MonoBehaviour
             count++;
         }
         checkForSVGData();
-        adjustCamera(minX, maxX, minY, maxY, tempDepth.Min(), new Vector3(0, 0, 0));
+        adjustCamera(minX, maxX, minY, maxY, minZ, new Vector3(0, 0, 0));
         sp.Min = new Vector2(minX, minY);
         sp.Max = new Vector2(maxX, maxY);
-        sp.StartDrawer(tempRow.ToArray(), tempCol.ToArray(), tempDepth.ToArray(), tempSpotnames.ToArray(), dataSetNames.ToArray()); // TODO Please check if we really need lists: tempRow, tempCol, tempDepth, ... / convert to arrays
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
 
+        sp.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, dataset_names); 
     }
+
 
     /// <summary>
     /// Xenium - This function starts the Xenium process, reads all related datapaths and creates the required lists to call the SpotDrawer script
@@ -466,7 +355,7 @@ public class DataTransferManager : MonoBehaviour
     private void startXenium()
     {
         string[] files = Directory.GetFiles(df.xeniumPath, "*gene_transposed_counts.csv");
-        Xeniumdata = files[0];
+        xeniumCounts = files[0];
         files = Directory.GetFiles(df.xeniumPath, "*processed_cells.csv");
         xeniumCoords = files[0];
         files = Directory.GetFiles(df.xeniumPath, "*feature_matrix.csv");
@@ -475,33 +364,34 @@ public class DataTransferManager : MonoBehaviour
         {
             files = Directory.GetFiles(df.xeniumPath, "*results.csv");
             moran_results = files[0];
-        }catch(Exception e) { }
-
-
-        float[] xeniumX, xeniumY, xeniumZ;
-        string[] xeniumCell;
+        }catch(Exception) { }
 
         string[] lines = File.ReadAllLines(xeniumCoords);
-        lines = lines.Skip(1).ToArray();
-        xeniumX = new float[lines.Length];
-        xeniumY = new float[lines.Length];
-        xeniumZ = new float[lines.Length];
-        xeniumCell = new string[lines.Length];
-        float minX, maxX, minY, maxY;
-        minX = maxX = minY = maxY = 0;
+        if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
+        {
+            lines = lines.Skip(1).ToArray();
+        }
+
+        x_coordinates = new float[lines.Length];
+        y_coordinates = new float[lines.Length];
+        z_coordinates = new float[lines.Length];
+        location_names = new string[lines.Length];
+        float minX, maxX, minY, maxY, minZ;
+        minX = maxX = minY = maxY = minZ =0;
         for (int i = 0; i < lines.Length; i++)
         {
             string[] values = lines[i].Split(',');
-            float x = xeniumX[i] = float.Parse(values[1]);
-            float y = xeniumY[i] = float.Parse(values[2]);
-            xeniumZ[i] = 0;
-            xeniumCell[i] = values[0];
+            float x = x_coordinates[i] = float.Parse(values[1]);
+            float y = y_coordinates[i] = float.Parse(values[2]);
+            float z = z_coordinates[i] = 0;
+            location_names[i] = values[0];
 
             // Find min and max
             if (x < minX) minX = x;
             else if (x > maxX) maxX = x;
             if (y < minY) minY = y;
             else if (y > maxY) maxY = y;
+            if (z < minZ) minZ = z;
         }
 
         string[] linesGn = File.ReadAllLines(xeniumGenePanelPath);
@@ -514,9 +404,9 @@ public class DataTransferManager : MonoBehaviour
 
         sp.Min = new Vector2(minX, minY);
         sp.Max = new Vector2(maxX, maxY);
-        sp.StartDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell, new string[] { });
+        sp.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
 
-        adjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, xeniumZ.Min(), new Vector3(0, 0, 0));
+        adjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, minZ, new Vector3(0, 0, 0));
         // scriptHolder.GetComponent<XeniumDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell);
     }
 
@@ -539,9 +429,6 @@ public class DataTransferManager : MonoBehaviour
         }
         catch (Exception e) { }
 
-        float[] merfishX, merfishY, merfishZ;
-        string[] merfishCell;
-
         /*
          * Reading coordinate files  
         */
@@ -550,19 +437,23 @@ public class DataTransferManager : MonoBehaviour
         //Read csv header of metadata file for positions
         int csv_position_x_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "spatial_x");
         int csv_position_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "spatial_y");
-        lines = lines.Skip(1).ToArray();
-
+        if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
+        {
+            lines = lines.Skip(1).ToArray();
+        }
         //reading values from the first line of the csv file
         string[] lineone = lines[1].Split(',');
-        float minX, maxX, minY, maxY;
+        float minX, maxX, minY, maxY, minZ;
+
         //Initialise with any value that really exisits in the dataset
         minX = maxX = float.Parse(lineone[3]);
         minY = maxY = float.Parse(lineone[4]);
+        minZ = 0;
         //initialise arrays to total length of data set
-        merfishX = new float[lines.Length];
-        merfishY = new float[lines.Length];
-        merfishZ = new float[lines.Length];
-        merfishCell = new string[lines.Length];
+        x_coordinates = new float[lines.Length];
+        y_coordinates = new float[lines.Length];
+        z_coordinates = new float[lines.Length];
+        location_names = new string[lines.Length];
 
         for (int i = 0; i < lines.Length; i++)
         {
@@ -570,10 +461,10 @@ public class DataTransferManager : MonoBehaviour
             float x = float.Parse(values[csv_position_x_values]);
             float y = float.Parse(values[csv_position_y_values]);
 
-            merfishX[i] = x;
-            merfishY[i] = y;
-            merfishZ[i] = 0;
-            merfishCell[i] = values[0];
+            x_coordinates[i] = x;
+            y_coordinates[i] = y;
+            z_coordinates[i] = 0;
+            location_names[i] = values[0];
 
             // Find min and max
             if (x < minX) minX = x;
@@ -584,8 +475,10 @@ public class DataTransferManager : MonoBehaviour
 
         //Read gene names from gene list → Always column 0 
         string[] linesGn = File.ReadAllLines(merfishGenelist);
-        linesGn = linesGn.Skip(1).ToArray();
-
+        if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(linesGn[0], linesGn[1]))
+        {
+            linesGn = linesGn.Skip(1).ToArray();
+        }
         foreach (string line in linesGn)
         {
             string[] values = line.Split(',');
@@ -594,7 +487,7 @@ public class DataTransferManager : MonoBehaviour
 
         sp.Min = new Vector2(minX, minY);
         sp.Max = new Vector2(maxX, maxY);
-        sp.StartDrawer(merfishX, merfishY, merfishZ, merfishCell, new string[] { });
+        sp.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
         adjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, 0, new Vector3(0, 0, 0));
     }
 
@@ -606,42 +499,44 @@ public class DataTransferManager : MonoBehaviour
     {
         geneC18Path = current_directory + "/Assets/Datasets/C18heart/C18genesTranspose.csv";
         coordsC18 = current_directory + "Assets/Datasets/C18heart/C18heart.csv";
+#if UNITY_EDITOR
+        geneC18Path = Application.dataPath + "/Datasets/C18heart/C18genesTranspose.csv";
+        coordsC18 = Application.dataPath + "/Datasets/C18heart/C18heart.csv";
+#endif
+        //Setting object parameters for 3D heart used
         c18heartObj.SetActive(true);
         sc.object3d = c18heartObj;
         sc.objectUsed = true;
+
         heartTranspSlider.SetActive(true);
         Color transp = new Color();
         transp.a = 0.5f;
         //c18Sphere.transform.localScale = new Vector3(10, 10, 10);
-        float[] c18x, c18y, c18z;
-        string[] c18spot;
 
         string[] lines = File.ReadAllLines(coordsC18);
-        lines = lines.Skip(1).ToArray();
-        c18x = new float[lines.Length];
-        c18y = new float[lines.Length];
-        c18z = new float[lines.Length];
-        c18spot = new string[lines.Length];
-        float minX, maxX, minY, maxY;
-        minX = maxX = minY = maxY = 0;
+        if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
+        {
+            lines = lines.Skip(1).ToArray();
+        }
+
+        x_coordinates = new float[lines.Length];
+        y_coordinates = new float[lines.Length];
+        z_coordinates = new float[lines.Length];
+        location_names = new string[lines.Length];
+        float minX, maxX, minY, maxY, minZ;
+        minX = maxX = minY = maxY = maxX = minZ = 0;
+
+        // Read XYZ - Coordinates
         for (int i = 0; i < lines.Length; i++)
         {
             string[] values = lines[i].Split(',');
-
-            //c18x.Add((532 - float.Parse(values[10])));
-            //c18y.Add((598 - float.Parse(values[11])));
-            //c18z.Add(float.Parse(values[12]));
-
-            //c18x.Add((float.Parse(values[1])) / 100);
-            //c18y.Add((float.Parse(values[2])) / 100);
-            //c18z.Add(float.Parse(values[12]));
             
-            float x = c18x[i] = -float.Parse(values[10]);
-            float y = c18y[i] = -float.Parse(values[11]);
-            c18z[i] = float.Parse(values[12]);
+            float x = x_coordinates[i] = -float.Parse(values[10]);
+            float y = y_coordinates[i] = -float.Parse(values[11]);
+            float z = z_coordinates[i] = float.Parse(values[12]);
 
 
-            c18spot[i] = values[16];
+            location_names[i] = values[16];
             c18cluster.Add(values[7]);
 
             // Find min and max
@@ -649,18 +544,15 @@ public class DataTransferManager : MonoBehaviour
             else if (x > maxX) maxX = x;
             if (y < minY) minY = y;
             else if (y > maxY) maxY = y;
+            if (z < minZ) minZ = z;
         }
-        //Depth corrdinates from C18heart dataset
-        int[] c18xHC = { 0, 13, 25, 20, 35, 4, 32, 6, 26};
 
-        adjustCamera(minX, maxX, maxY, minY, c18z.Min(), new Vector3(0, 0, 0));
+        adjustCamera(minX, maxX, maxY, minY, minZ, new Vector3(0, 0, 0));
 
         sp.Min = new Vector2(minX, minY);
         sp.Max = new Vector2(maxX, maxY);
-        sp.StartDrawer(c18x, c18y, c18z, c18spot, new string[] { });
+        sp.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
     }
-
-    public string tomoGeneDirectory;
 
     /// <summary>
     /// Tomo-Seq - This function reads the required datapaths for the tomo-seq data and generates a grid accordingly, data spots are removed based on their expression value of the 3d reconstructed matrix file
@@ -721,7 +613,7 @@ public class DataTransferManager : MonoBehaviour
         sp.Max = new Vector2(stomicsX.Max(), stomicsY.Max());
         adjustCamera(sp.Min.x, sp.Max.x, sp.Min.y, sp.Max.y, stomicsZ.Min(), new Vector3(0, 0, 0));
 
-        sp.StartDrawer(stomicsX.ToArray(), stomicsY.ToArray(), stomicsZ.ToArray(), stomicsSpotId.ToArray(), new string[] { }); // TODO Please check if we really need lists: tempRow, tempCol, tempDepth, ... / convert to arrays
+        sp.StartDrawer(stomicsX.ToArray(), stomicsY.ToArray(), stomicsZ.ToArray(), stomicsSpotId.ToArray(), new string[] { }); 
     }
 
     private void startOther()
@@ -733,9 +625,6 @@ public class DataTransferManager : MonoBehaviour
 
         //otherCSVCols 0 → X, 1 → Y, 2 → Z, 3 → Spot/Cell ID,
 
-        float[] otherX, otherY, otherZ;
-        string[] otherSpots;
-
         if (df.other2D)
         {
             //all z = 0
@@ -746,31 +635,32 @@ public class DataTransferManager : MonoBehaviour
         {
             lines = lines.Skip(1).ToArray();
         }
-        otherX = new float[lines.Length];
-        otherY = new float[lines.Length];
-        otherZ = new float[lines.Length];
-        otherSpots = new string[lines.Length];
-        float minX, maxX, minY, maxY;
-        minX = maxX = minY = maxY = 0;
+        x_coordinates = new float[lines.Length];
+        y_coordinates = new float[lines.Length];
+        z_coordinates = new float[lines.Length];
+        location_names = new string[lines.Length];
+        float minX, maxX, minY, maxY, minZ;
+        minX = maxX = minY = maxY = minZ = 0;
         for (int i = 0; i < lines.Length; i++)
         {
             string[] values = lines[i].Split(',');
-            float x = otherX[i] = float.Parse(values[otherCSVCols[0]]);
-            float y = otherY[i] = float.Parse(values[otherCSVCols[1]]);
-            otherZ[i] = float.Parse(values[otherCSVCols[2]]);
-            otherSpots[i] = values[otherCSVCols[3]];
+            float x = x_coordinates[i] = float.Parse(values[otherCSVCols[0]]);
+            float y = y_coordinates[i] = float.Parse(values[otherCSVCols[1]]);
+            float z = z_coordinates[i] = float.Parse(values[otherCSVCols[2]]);
+            location_names[i] = values[otherCSVCols[3]];
 
             // Find min and max
             if (x < minX) minX = x;
             else if (x > maxX) maxX = x;
             if (y < minY) minY = y;
             else if (y > maxY) maxY = y;
+            if (z < minZ) minZ = z;
         }
 
-        adjustCamera(minX, maxX, maxY, minY, otherZ.Min(), new Vector3(0, 0, 0));
+        adjustCamera(minX, maxX, maxY, minY, minZ, new Vector3(0, 0, 0));
         sp.Min = new Vector2(minX, minY);
         sp.Max = new Vector2(maxX, maxY);
-        sp.StartDrawer(otherX, otherY, otherZ, otherSpots, new string[] { });
+        sp.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
     }
 
     /// <summary>
@@ -862,7 +752,10 @@ public class DataTransferManager : MonoBehaviour
             svgBtn.SetActive(true);
             List<string> svgStrings = new List<string>();
             string[] lines = File.ReadAllLines(csvfiles[0]);
-            lines = lines.Skip(1).ToArray();
+            if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
+            {
+                lines = lines.Skip(1).ToArray();
+            }
             svgStrings.Add("Genename \t \t pVal \t \t qVal");
             foreach (string line in lines)
             {
@@ -911,4 +804,58 @@ public class DataTransferManager : MonoBehaviour
         //    });
         //}
     }
+
+    /// <summary>
+    /// Selecting the correct pipeline for the SRT technique choosen.
+    /// </summary>
+    private void pipelineConnected()
+    {
+        df = scriptHolderPipeline.GetComponent<DataTransfer>();
+        current_directory = df.current_directory;
+
+        if (df.c18)
+        {
+            sp.visium = true;
+            c18_visium = true;
+            sc.objectUsed = true;
+            startC18();
+        }
+        else if (df.visium || df.visiumMultiple)
+        {
+            sp.visium = true;
+            visium = true;
+            startVisium();
+        }
+        else if (df.tomoseq)
+        {
+            tomoseq = true;
+            startTomoSeq();
+        }
+        else if (df.stomics)
+        {
+            stomics = true;
+            startStomics();
+        }
+        else if (df.xenium)
+        {
+            xenium = true;
+            startXenium();
+        }
+        else if (df.merfish)
+        {
+            merfish = true;
+            startMerfish();
+        }
+        else if (df.other)
+        {
+            other = true;
+            startOther();
+        }
+        if (df.objectUsed)
+        {
+            loadObject();
+        }
+        bfm.setFunction(df);
+    }
+
 }
