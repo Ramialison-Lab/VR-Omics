@@ -412,39 +412,23 @@ public class UIManager : MonoBehaviour
     /// Expands the transfered panel into visible view and collapses all other panels out of view.
     /// </summary>
     /// <param name="panelToMove">The panel to be expanded</param>
+
     private void expandPanelOut(GameObject panelToMove)
     {
         disableAllExpandBTnPanels();
 
-        if (expMenuVisium)
+        // Create an array of main expand panels and their corresponding boolean flags
+        GameObject[] mainExpandPanels = { mainExpandPanelVisium, mainExpandMerfish, mainExpandPanelXenium, mainExpandPanelTomo, mainExpandStomics, mainExpandOther };
+        bool[] expMenuFlags = { expMenuVisium, expMenuMerfish, expMenuXen, expMenuTomo, expMenuStomics, expMenuOther };
+
+        // Iterate through the main expand panels and update their positions based on their corresponding boolean flags
+        for (int i = 0; i < mainExpandPanels.Length; i++)
         {
-            mainExpandPanelVisium.transform.localPosition = new Vector2(mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.y);
-            expMenuVisium = !expMenuVisium;
-        }
-        if (expMenuMerfish)
-        {
-            mainExpandMerfish.transform.localPosition = new Vector2(mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.y);
-            expMenuMerfish = !expMenuMerfish;
-        }
-        if (expMenuXen)
-        {
-            mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
-            expMenuXen = !expMenuXen;
-        }
-        if (expMenuTomo)
-        {
-            mainExpandPanelTomo.transform.localPosition = new Vector2(mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.y);
-            expMenuTomo = !expMenuTomo;
-        }
-        if (expMenuStomics)
-        {
-            mainExpandStomics.transform.localPosition = new Vector2(mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.y);
-            expMenuStomics = !expMenuStomics;
-        }
-        if (expMenuOther)
-        {
-            mainExpandOther.transform.localPosition = new Vector2(mainExpandOther.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandOther.GetComponent<RectTransform>().transform.localPosition.y);
-            expMenuOther = !expMenuOther;
+            if (expMenuFlags[i])
+            {
+                mainExpandPanels[i].transform.localPosition = new Vector2(mainExpandPanels[i].GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanels[i].GetComponent<RectTransform>().transform.localPosition.y);
+                expMenuFlags[i] = false;
+            }
         }
 
         panelToMove.transform.localPosition = new Vector2(panelToMove.GetComponent<RectTransform>().transform.localPosition.x + expandPanelOffset, panelToMove.GetComponent<RectTransform>().transform.localPosition.y);
@@ -743,10 +727,8 @@ public class UIManager : MonoBehaviour
         {
             filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
 #if UNITY_EDITOR
-
             save_params_run_step1(filterparam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
-#endif
-#if UNITY_STANDALONE_WIN
+#else
             save_params_run_step1(filterparam, "/Assets/PythonFiles/Filter_param.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy\\dist\\Visium_pipeline.exe");
 #endif
         }
@@ -766,10 +748,8 @@ public class UIManager : MonoBehaviour
 #if UNITY_EDITOR
 
             save_params_run_step1(filterparam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
-#endif
-#if UNITY_STANDALONE_WIN
+#else
             save_params_run_step1(filterparam, "/Assets/PythonFiles/Filter_param.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy\\dist\\Visium_pipeline.exe");
-
 #endif
         }
     }
@@ -853,9 +833,8 @@ public class UIManager : MonoBehaviour
     #if UNITY_EDITOR
 
             save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
-    #endif
-    #if UNITY_STANDALONE_WIN
-            save_params_run_step1(params_out, "/Assets/PythonFiles/Filter_param_upload.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy_upload\\dist\\Visium_upload.exe");
+    #else
+        save_params_run_step1(params_out, "/Assets/PythonFiles/Filter_param_upload.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy_upload\\dist\\Visium_upload.exe");
 
     #endif
     }
@@ -891,19 +870,12 @@ public class UIManager : MonoBehaviour
         filterPipelineParam[11] = "";// max_total_count_var;
         filterPipelineParam[12] = "";// n_genes_by_counts;
 
-
 #if UNITY_EDITOR
-
         save_params_run_step1(filterPipelineParam, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
-
-#endif
-#if UNITY_STANDALONE_WIN
+#else
         save_params_run_step1(filterPipelineParam, "/Assets/PythonFiles/Filter_param_upload.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy_upload\\dist\\Visium_upload.exe");
-
-
 #endif
     }
-
 
     /// <summary>
     /// Skipping filter step and only processing Visium data into visualiser format
@@ -947,20 +919,17 @@ public class UIManager : MonoBehaviour
     {
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("stomics", stomicsPathField));
-
     }
 
     public void selectStomicssFileProcess()
     {
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("stomics", stomicsPathProcessField));
-
     }
 
     public void selectVisiumFromLocal()
     {
         StartCoroutine(selectBrowseFile("visiumFromLocal", visium_from_local_TMP));
-
     }
 
     public void selectMerfishPath()
@@ -973,7 +942,6 @@ public class UIManager : MonoBehaviour
     {
         StartCoroutine(selectBrowseFile("mefishCounts", merfish_counts_LoadTMP));
     }
-
 
     public void select_Merfish_Meta_File_Process()
     {
@@ -989,41 +957,38 @@ public class UIManager : MonoBehaviour
     {
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("otherMat", otherMatLoadTMP));
-
     }
 
     public void select3DObject()
     {
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("object", object3DTMP));
-
     }
 
     public void selectOtherMetaFile()
     {
         //File has been processed ready to load VR
         StartCoroutine(selectBrowseFile("otherMeta", otherMetaLoadTMP));
-
     }
+
     public void selectTomoAP()
     {
         StartCoroutine(selectBrowseFile("AP", tomoAPfield));
-
     }
+
     public void selectTomoVD()
     {
         StartCoroutine(selectBrowseFile("VD", tomoVDfield));
-
     }
+
     public void selectTomoLR()
     {
         StartCoroutine(selectBrowseFile("LR", tomoLRfield));
-
     }
+
     public void selectTomoGene()
     {
         StartCoroutine(selectBrowseFile("tomoGene", tomoGenefield));
-
     }
     #endregion
 
@@ -1226,16 +1191,15 @@ public class UIManager : MonoBehaviour
                     // slices[i].transform.position = new Vector2(slices[i].transform.position.x, slices[i].transform.position.y + GameObject.FindGameObjectsWithTag("sliceContainer").Length * -300);
                     slices[i].transform.SetParent(contentPanel.transform);
 
-                    //TODO: spatial folder location has been changed to ../data/datasetname/spatial/...
-                    //Read png image\
-
                     byte[] byteArray;
-
 
                     try
                     {
+#if UNITY_EDITOR
+                        byteArray = File.ReadAllBytes(Application.dataPath + "/Images/Error_Images/spatial_file_not_found.png");
+#else
                         byteArray = File.ReadAllBytes(current_directory + "/Assets/Images/Error_Images/spatial_file_not_found.png");
-
+#endif
                         try
                         {
                             string[] files = Directory.GetFiles(FileBrowser.Result[i], "*", SearchOption.AllDirectories);
@@ -1244,9 +1208,7 @@ public class UIManager : MonoBehaviour
                                 if (s.Split("\\").Last() == "tissue_hires_image.png") byteArray = File.ReadAllBytes(s);
                             }
                         }
-                        catch (Exception e)
-                        {
-                        }
+                        catch (Exception){}
 
                         Texture2D sampleTexture = new Texture2D(2, 2);
                         bool isLoaded = sampleTexture.LoadImage(byteArray);
@@ -1265,26 +1227,25 @@ public class UIManager : MonoBehaviour
                     string filename = FileBrowser.Result[i];
                     slices[i].GetComponentInChildren<Text>().text = filename.Split('\\').Last();
                 }
+            }
 
-
-                //Add Listener to all buttons
-                GameObject[] btnsUp = GameObject.FindGameObjectsWithTag("moveButton");
-                foreach (GameObject go in btnsUp)
+            //Add Listener to all buttons
+            GameObject[] btnsUp = GameObject.FindGameObjectsWithTag("moveButton");
+            foreach (GameObject go in btnsUp)
+            {
+                go.GetComponent<Button>().onClick.AddListener(delegate
                 {
-                    go.GetComponent<Button>().onClick.AddListener(delegate
-                    {
-                        moveSlice(go);
-                    });
-                }
+                    moveSlice(go);
+                });
+            }
 
-                GameObject[] btnsExpand = GameObject.FindGameObjectsWithTag("expandTag");
-                foreach (GameObject go in btnsExpand)
+            GameObject[] btnsExpand = GameObject.FindGameObjectsWithTag("expandTag");
+            foreach (GameObject go in btnsExpand)
+            {
+                go.GetComponent<Button>().onClick.AddListener(delegate
                 {
-                    go.GetComponent<Button>().onClick.AddListener(delegate
-                    {
-                        toggleExpand(go);
-                    });
-                }
+                    toggleExpand(go);
+                });
             }
         }
     }
@@ -1297,52 +1258,28 @@ public class UIManager : MonoBehaviour
     {
         // Manages how the order of the slices is set by the user, swaping dataset order etc.
         GameObject swapGO = go.transform.parent.gameObject;
+
         int pos = slicesList.IndexOf(swapGO);
 
+        //Move slice position up in container
         if (go.name == "ButtonUp")
         {
             if (pos == 0) return;
-            else
-            {
-                try
-                {
-                    GameObject temp2 = slicesList[pos - 1];
-                    GameObject temp1 = swapGO;
 
-                    // swap in List
-                    slicesList[pos] = temp2; // new swapgo
-                    slicesList[pos - 1] = temp1; //2nd place
+            GameObject swapGo1 = slicesList[pos - 1];
+            GameObject swapGo2 = swapGO;
 
-                    // swap vector
-                    Vector3 temp = slicesList[pos].transform.position;
-                    slicesList[pos].transform.position = slicesList[pos - 1].transform.position;
-                    slicesList[pos - 1].transform.position = temp;
-                }
-                catch (Exception) { }
-            }
+            SwapSlices(swapGo1, swapGo2);
         }
+        //move slice position down in container
         else if (go.name == "ButtonDown")
         {
+            if (pos == slicesList.Count - 1) return;
 
-            if (pos == slicesList.Count) return;
-            else
-            {
-                try
-                {
-                    GameObject temp2 = slicesList[pos + 1];
-                    GameObject temp1 = swapGO;
+            GameObject swapGo1 = swapGO;
+            GameObject swapGo2 = slicesList[pos + 1];
 
-                    // swap in List
-                    slicesList[pos] = temp2; // new swapgo
-                    slicesList[pos + 1] = temp1; //2nd place
-
-                    // swap vector
-                    Vector3 temp = slicesList[pos].transform.position;
-                    slicesList[pos].transform.position = slicesList[pos + 1].transform.position;
-                    slicesList[pos + 1].transform.position = temp;
-                }
-                catch (Exception) { }
-            }
+            SwapSlices(swapGo1, swapGo2);
         }
         else if (go.name == "DeleteBtn")
         {
@@ -1357,6 +1294,25 @@ public class UIManager : MonoBehaviour
             Destroy(swapGO);
 
         }
+    }
+
+    /// <summary>
+    /// Swaps element slice1 with slice2 in visium multiple upload container
+    /// </summary>
+    /// <param name="slice1"></param>
+    /// <param name="slice2"></param>
+    private void SwapSlices(GameObject slice1, GameObject slice2)
+    {
+        // swap in List
+        int index1 = slicesList.IndexOf(slice1);
+        int index2 = slicesList.IndexOf(slice2);
+        slicesList[index1] = slice2;
+        slicesList[index2] = slice1;
+
+        // swap vector
+        Vector3 temp = slice1.transform.position;
+        slice1.transform.position = slice2.transform.position;
+        slice2.transform.position = temp;
     }
 
     /// <summary>
@@ -1378,7 +1334,7 @@ public class UIManager : MonoBehaviour
             //TBD set all same size
             imageObj.transform.localScale = new Vector3(imageObj.transform.localScale.x * 3.5f, imageObj.transform.localScale.y * 3.5f, imageObj.transform.localScale.z);
 
-            //transform the rawimages results in an offsett of 422.5f, needs to be properly aligned
+            //transform the rawimages results in an offsett needs to be aligned
             imageObj.GetComponent<RectTransform>().transform.localPosition = new Vector3(-350, 0, 0);
             Destroy(imageObj.transform.GetChild(0).gameObject);
 
@@ -1391,7 +1347,6 @@ public class UIManager : MonoBehaviour
             toggle.GetComponentInChildren<Text>().text = gobj.GetComponentInChildren<Text>().text;
 
             dpOptions.Add(toggle.GetComponentInChildren<Text>().text.ToString());
-
 
             toggle.GetComponent<Toggle>().onValueChanged.AddListener(delegate
             {
@@ -1420,6 +1375,7 @@ public class UIManager : MonoBehaviour
     /// <param name="toggle"></param>
     public void toggleListener(GameObject toggle)
     {
+        UnityEngine.Debug.Log("called");
         foreach (RawImage imag in images)
         {
             if (imag.name == toggle.GetComponentInChildren<Text>().text)
