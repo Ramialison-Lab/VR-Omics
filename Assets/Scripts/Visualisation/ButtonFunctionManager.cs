@@ -47,6 +47,10 @@ using UnityEngine;
  * 18   -   Min Treshold slider
  * 19   -   TopMenuBtn  
  * 20   -   SideMenuBtn
+ * 21   -   ClusterBtn
+ * 22   -   ScreenshotBtn
+ * 23   -   FiguresBtn (FigureViewer)
+ * 24   -   SymbolHolder (Change Symbol Sphere, Square)
  */
 
 
@@ -179,4 +183,23 @@ public class ButtonFunctionManager : MonoBehaviour
 
 
     }
+
+    /// <summary>
+    /// Disable Button by identifier, see ButtonFunctionManager notes for identifiers
+    /// </summary>
+    /// <param name="id"></param>
+    public void Disable_Btn_By_Identifier(int id)
+    {
+        functionPanels[id].SetActive(false);
+    }
+
+    /// <summary>
+    /// Enable Button by identifier, see ButtonFunctionManager notes for identifiers
+    /// </summary>
+    /// <param name="id"></param>
+    public void Enable_Btn_By_Identifier(int id)
+    {
+        functionPanels[id].SetActive(false);
+    }
+
 }

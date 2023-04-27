@@ -372,6 +372,9 @@ public class DataTransferManager : MonoBehaviour
             lines = lines.Skip(1).ToArray();
         }
 
+        string[] allDirectories = Directory.GetFiles(df.xeniumPath, "*", SearchOption.AllDirectories);
+        checkForFigures(allDirectories);
+
         x_coordinates = new float[lines.Length];
         y_coordinates = new float[lines.Length];
         z_coordinates = new float[lines.Length];
@@ -434,6 +437,10 @@ public class DataTransferManager : MonoBehaviour
         */
         string[] lines = File.ReadAllLines(merfishCoords);
 
+        //checking for all image files
+        string[] allDirectories = Directory.GetFiles(df.merfishPath, "*", SearchOption.AllDirectories);
+        checkForFigures(allDirectories);
+        
         //Read csv header of metadata file for positions
         int csv_position_x_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "spatial_x");
         int csv_position_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "spatial_y");
@@ -603,8 +610,11 @@ public class DataTransferManager : MonoBehaviour
         stomicsX = fr.readH5Float(stomicsDataPath, "var/new_x");
         stomicsY = fr.readH5Float(stomicsDataPath, "var/new_y");
         stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
+        //checking for all image files
+        string[] allDirectories = Directory.GetFiles(stomicsDataPath, "*", SearchOption.AllDirectories);
+        checkForFigures(allDirectories);
 
-        for(int i =0; i< stomicsZ.Count; i++)
+        for (int i =0; i< stomicsZ.Count; i++)
         {
             stomicsZ[i] = stomicsZ[i] * 50;
         }
@@ -704,39 +714,22 @@ public class DataTransferManager : MonoBehaviour
     {
         try
         {
-            List<string> figurePaths = new List<string>();
-            foreach (string s in allDirectories)
+            List<string> figure_Paths = new List<string>();
+            foreach(string x in allDirectories)
             {
-                if (s.Split("\\").Last() == "total_counts_plot.png")
+                if (x.Contains(".png") && !x.Contains("meta"))
                 {
-                    figureBtns[0].SetActive(true);
-                    figurePaths.Add(s);
-                }
-                if (s.Split("\\").Last() == "show_spatial_all_hires.png")
-                {
-                    figurePaths.Add(s);
-                    figureBtns[1].SetActive(true);
-                }
-                if (s.Split("\\").Last() == "show_spatial_hires_clusters.png")
-                {
-                    figurePaths.Add(s);
-                    figureBtns[2].SetActive(true);
-                }
-                if (s.Split("\\").Last() == "show_spatial_total_counts_n_genes_by_counts.png")
-                {
-                    figurePaths.Add(s);
-                    figureBtns[3].SetActive(true);
-                }
-                if (s.Split("\\").Last() == "umap_umap_total_counts_n_genes_by_counts_clusters.png")
-                {
-                    figurePaths.Add(s);
-                    figureBtns[4].SetActive(true);
+                    figure_Paths.Add(x);
                 }
             }
+            mc.setFigureDatapaths(figure_Paths);
 
-            mc.setFigureDatapaths(figurePaths);
+
         }
-        catch (Exception e) { }
+        catch (Exception e) {
+            //Disable Figure Viewer
+            bfm.Enable_Btn_By_Identifier(23);
+        }
     }
 
     private void checkForSVGData()
