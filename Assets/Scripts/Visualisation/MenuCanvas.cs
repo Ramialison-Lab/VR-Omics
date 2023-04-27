@@ -25,6 +25,9 @@ using UnityEngine.UI;
 using TMPro;
 using VROmics.Main;
 using System.IO;
+using System.Linq;
+using System.Diagnostics;
+using System;
 
 public class MenuCanvas : MonoBehaviour
 {
@@ -42,6 +45,7 @@ public class MenuCanvas : MonoBehaviour
     private List<string> figurePaths = new List<string>();
     public GameObject moonicon;
     public GameObject sunicon;
+    private int figuresCount = 0;
 
     private void Start()
     {
@@ -94,7 +98,7 @@ public class MenuCanvas : MonoBehaviour
         }
         else
         {
-            Debug.Log(Camera.main.backgroundColor);
+            UnityEngine.Debug.Log(Camera.main.backgroundColor);
 
             Camera.main.backgroundColor = Color.white;
             darkmode = false;
@@ -224,7 +228,6 @@ public class MenuCanvas : MonoBehaviour
     public TMP_Dropdown symbDrop;
     public void setSymbol()
     {
-        Debug.Log(symbDrop.options[symbDrop.value].text);
 
         if (dfm.tomoseq)
         {
@@ -312,54 +315,92 @@ public class MenuCanvas : MonoBehaviour
     public void setFigureDatapaths(List<string> figurePaths)
     {
         this.figurePaths = figurePaths;
-        byte[] byteArray = File.ReadAllBytes(figurePaths[0]);
-        Texture2D sampleTexture = new Texture2D(2, 2);
-        bool isLoaded = sampleTexture.LoadImage(byteArray);
-        imageCanvas.GetComponentInChildren<RawImage>().texture = sampleTexture;
-        imageCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(600, 200);
-        figuresDatapath.text = figurePaths[0];
+
+        setFigure(figurePaths[figuresCount]);
 
     }
 
-    public void changeFigure(GameObject btn)
+    public void openInImageViewer()
     {
-        string nextImage = "";
-        int width = 0;
-        int height = 0;
-        switch (btn.name)
+        try
         {
-            case "TotalCountBtn":       nextImage = figurePaths[0];
-                width = 600;
-                height = 200;
-                figuresDatapath.text = figurePaths[0];
-                break;
-            case "HiresSpatialBtn":     nextImage = figurePaths[1];
-                width = 350;
-                height = 350;
-                figuresDatapath.text = figurePaths[1];
-                break;
-            case "ClusterBtn":          nextImage = figurePaths[2];
-                width = 350;
-                height = 350;
-                figuresDatapath.text = figurePaths[2];
-                break;
-            case "geneByCountBtn":      nextImage = figurePaths[3];
-                width = 600;
-                height = 300;
-                figuresDatapath.text = figurePaths[3];
-                break;
-            case "umapBtn":             nextImage = figurePaths[4];
-                width = 600;
-                height = 200;
-                figuresDatapath.text = figurePaths[4];
-                break;
+            Process.Start(current_image_viewed);
+        }catch (Exception) {}
+    }
+
+    private string current_image_viewed;
+
+    private void setFigure(string path)
+    {
+        current_image_viewed = path;
+        GameObject canvas = imageCanvas.transform.parent.gameObject;
+
+        using (FileStream fileStream = File.OpenRead(path))
+        {
+            byte[] byteArray = new byte[fileStream.Length];
+            fileStream.Read(byteArray, 0, (int)fileStream.Length);
+
+            Texture2D sampleTexture = new Texture2D(2, 2);
+            bool isLoaded = sampleTexture.LoadImage(byteArray);
+
+            float canvas_height = imageCanvas.GetComponent<RectTransform>().sizeDelta.y;
+            float original_height = sampleTexture.height;
+            float original_width = sampleTexture.width;
+
+            float ratio = original_width / original_height;
+
+            canvas.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height *0.6f);
+
+            imageCanvas.GetComponentInChildren<RawImage>().texture = sampleTexture;
+            float new_height = 0.6f * canvas.GetComponent<RectTransform>().rect.height;
+            float new_width = new_height * ratio;
+
+            imageCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(new_width, new_height);
         }
 
-        byte[] byteArray = File.ReadAllBytes(nextImage);
-        Texture2D sampleTexture = new Texture2D(2, 2);
-        bool isLoaded = sampleTexture.LoadImage(byteArray);
-        imageCanvas.GetComponentInChildren<RawImage>().texture = sampleTexture;
-        imageCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(width, height);
+        figuresDatapath.text = Path.GetFileName(path);
+    }
+
+    //private void setFigure(string path)
+    //{
+    //    GameObject canvas = imageCanvas.transform.parent.gameObject;
+    //    byte[] byteArray = File.ReadAllBytes(path);
+    //    Texture2D sampleTexture = new Texture2D(2, 2);
+    //    bool isLoaded = sampleTexture.LoadImage(byteArray);
+
+    //    float canvas_height = imageCanvas.GetComponent<RectTransform>().sizeDelta.y;
+    //    float original_height = sampleTexture.height;
+    //    float original_width = sampleTexture.width;
+
+    //    float ratio = original_width / original_height;
+    //    canvas.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height *0.6f);
+
+    //    float new_height = 0.6f * canvas.GetComponent<RectTransform>().rect.height;
+    //    float new_width = new_height * ratio;
+
+    //    imageCanvas.GetComponentInChildren<RawImage>().texture = sampleTexture;
+    //    imageCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(new_width, new_height);
+
+    //    figuresDatapath.text = path.Split('\\').Last();
+    //}
+
+    public void changeFigure(GameObject btn)
+    {
+        if(btn.name == "Back_Btn")
+        {
+            figuresCount = figuresCount - 1;
+
+            if (figuresCount < 0) figuresCount = figurePaths.Count - 1;
+
+            setFigure(figurePaths[figuresCount]);
+        }
+        else if(btn.name == "Forward_Btn")
+        {
+            figuresCount = figuresCount + 1;
+            if (figuresCount > figurePaths.Count - 1) figuresCount = 0;
+
+            setFigure(figurePaths[figuresCount]);
+        }
 
     }
 
