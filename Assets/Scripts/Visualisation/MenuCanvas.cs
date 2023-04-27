@@ -31,310 +31,181 @@ using System;
 
 public class MenuCanvas : MonoBehaviour
 {
-    private Color backupCol;
-    public GameObject lockBtn;
-    public GameObject ulockBtn;
+    //Access variables
     private DataTransferManager dfm;
     private SpotDrawer sd;
-    public bool locked = true;
+
+    //Lasso Option
     public bool lasso = false;
-    private bool darkmode = true;
+    public GameObject contextMenuSelection;
+
+    //FigureViewer
     public GameObject figuresPanel;
     public GameObject imageCanvas;
     public TMP_Text figuresDatapath;
     private List<string> figurePaths = new List<string>();
+    private int figuresCount = 0;
+    private string current_image_viewed;
+
+    //Darkmode
     public GameObject moonicon;
     public GameObject sunicon;
-    private int figuresCount = 0;
+    private bool darkmode = true;
+
+    //H&E image option
+    public GameObject contextMenuHandESelection;
+    public GameObject activationPanelHandE;
+
+    //Export feature
+    public bool export = false;
+
+    //SVG Viewer
+    private bool svgShown = false;
+    public GameObject svgPanel;
+
+    //Other
+    public GameObject c18heart; 
+    public Material transparentMat;
+    private float value_i_minus_one = 1f; // Value for resizing the location spots
+
 
     private void Start()
     {
         sd = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>();
-        backupCol = Camera.main.backgroundColor;
         dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
+        
         sd.SetMinThreshold(0f);
         sd.maxTresh = 1f;
+
         Camera.main.backgroundColor = Color.black;
 
         if (EntrypointVR.Instance.IsDetectingHMD || EntrypointVR.Instance.VR)
         {
-            GameObject.Find("Enter VR").transform
-                .GetChild(1).gameObject.SetActive(true);
+            GameObject.Find("Enter VR").transform.GetChild(1).gameObject.SetActive(true);
         }
     }
 
-    public void lockRotation()
+    //Functions for lasso tool for location selection
+    #region Lasso
+    /// <summary>
+    /// Toggles lasso mode for selection of single locations in the Visualiser.
+    /// </summary>
+    /// <param name="panel">The panel to show or hide when the lasso mode is toggled.</param>
+    public void ToggleLasso(GameObject panel)
     {
-        locked = true;
-        lockBtn.SetActive(false);
-        ulockBtn.SetActive(true);
-    }
-
-    public void unlockRotation()
-    {
-        locked = false;
-        lockBtn.SetActive(true);
-        ulockBtn.SetActive(false);
-    }
-
-    public void darkMode(GameObject panel)
-    {
-
-        if (moonicon.activeSelf)
+        if (contextMenuSelection.activeSelf)
         {
-            moonicon.SetActive(false);
-            sunicon.SetActive(true);
+            contextMenuSelection.SetActive(false);
         }
         else
         {
-            moonicon.SetActive(true);
-            sunicon.SetActive(false);
+            contextMenuSelection.SetActive(true);
         }
 
-        if (!darkmode)
-        {
-            darkmode = true;
-            Camera.main.backgroundColor = Color.black;
-        }
-        else
-        {
-            UnityEngine.Debug.Log(Camera.main.backgroundColor);
-
-            Camera.main.backgroundColor = Color.white;
-            darkmode = false;
-        }
-
-    }
-
-    public GameObject contextMenuHandESelection;
-    public GameObject activationPanelHandE;
-    public TMP_Dropdown dd;
-    public void toggleHAndEMode()
-    {
-        if (contextMenuHandESelection.activeSelf) contextMenuHandESelection.SetActive(false);
-        else contextMenuHandESelection.SetActive(true);
-        if (activationPanelHandE.activeSelf) activationPanelHandE.SetActive(false);
-        else activationPanelHandE.SetActive(true);
-
-        List<GameObject> hAndEobjs = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().getHandEObjs();
-
-        foreach(GameObject obs in hAndEobjs)
-        {
-            if (obs.activeSelf) obs.SetActive(false);
-            else obs.SetActive(true);
-        }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="slider"></param>
-    public void SetColorMinThreshold(Slider slider)
-    {
-        sd.SetMinThreshold(slider.value);
-        foreach(Transform t in slider.transform)
-        {
-            if (t.name == "ThresholdText")
-            {
-                t.GetComponent<TMP_Text>().text = "Min: " + (slider.value * 100).ToString("00.0") + "%";
-                break;
-            }
-        }
-    }
-
-    public void setColorMaxTreshold(GameObject slider)
-    {
-        sd.maxTresh = slider.GetComponent<Slider>().value;
-    }
-   
-    /// <summary>
-    /// Changes the size of each rendered spot, based on the localScale of the common mesh.
-    /// </summary>
-    /// <param name="slider"></param>
-    public void SetSize(Slider slider)
-    {
-        void DoSetSize(SpotDrawer.SpotWrapper[] spots, SpotDrawer.SpotWrapper[] spotsCopy)
-        {
-            GameObject go;
-            if (dfm.tomoseq)
-                go = GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().getSelectedSymbol();
-            else
-                go = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().symbolSelect;
-
-            go.transform.localScale *= value_i_minus_one * slider.value;
-            value_i_minus_one = 1f / slider.value;
-        }
-
-        sd.OnTransform += DoSetSize;
-    }
-
-    public GameObject contextMenuSelection;
-    public void toggleLasso(GameObject panel)
-    {
-        if (contextMenuSelection.activeSelf) contextMenuSelection.SetActive(false);
-        else contextMenuSelection.SetActive(true);
         lasso = !lasso;
-        if (lasso) panel.SetActive(true);
-        else panel.SetActive(false);
+
+        if (lasso)
+        {
+            panel.SetActive(true);
+        }
+        else
+        {
+            panel.SetActive(false);
+        }
     }
 
-    public GameObject c18heart; // TODO this is shown for merfish, etc. but is for c18 - do we need it for all?
-    public void setC18heartObjTransp(GameObject slider)
-    {
-        Color col = c18heart.transform.GetComponent<Renderer>().material.color;
-        col.a = slider.GetComponent<Slider>().value;
-        c18heart.transform.GetComponent<Renderer>().material.color = col;
-    }
-
-    public bool getLasso()
+    /// <summary>
+    /// Check if lasso tool is currently enabled.
+    /// </summary>
+    /// <returns>bool lasso</returns>
+    public bool GetLasso()
     {
         return lasso;
     }
+    #endregion
 
-    public GameObject settingsMenu;
-    private bool settingsActive = false;
-    public void toggleSettingsMenu()
+    //Functions related to H&E stain image overlay
+    #region H&E
+    /// <summary>
+    /// Toogle H&E overlay mode
+    /// </summary>
+    public void ToggleHAndEMode()
     {
-        if (settingsActive) settingsMenu.SetActive(false);
-        else settingsMenu.SetActive(true);
-        settingsActive = !settingsActive;
-    }
+        contextMenuHandESelection.SetActive(!contextMenuHandESelection.activeSelf);
+        activationPanelHandE.SetActive(!activationPanelHandE.activeSelf);
 
-    public bool export = false;
-    public void toggleExport(GameObject panel)
-    {
-        if (panel.activeSelf) panel.SetActive(false);
-        else panel.SetActive(true);
-        if (export) export = false;
-        else export = true;
-    }
+        List<GameObject> hAndEobjs = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().getHandEObjs();
 
-    public GameObject colourPanel;
-    public GameObject symbolPanel;
-
-    public void switchSymbolMenu()
-    {
-        if (colourPanel.activeSelf) { 
-            colourPanel.SetActive(false);
-            symbolPanel.SetActive(true);
-        }
-        else
+        foreach (GameObject obj in hAndEobjs)
         {
-            colourPanel.SetActive(true);
-            symbolPanel.SetActive(false);
+            obj.SetActive(!obj.activeSelf);
         }
     }
 
-    public TMP_Dropdown symbDrop;
-    public void setSymbol()
-    {
-
-        if (dfm.tomoseq)
-        {
-            GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().setSymbol(symbDrop.options[symbDrop.value].text);
-        }
-        else
-        {
-            GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setSymbol(symbDrop.options[symbDrop.value].text);
-        }
-    }
-
-
-    public Material transparentMat;
-
-    public void setAlphaHAneE(GameObject slider)
+    /// <summary>
+    /// Sets the alpha value of the H&E objects based on the value of a slider.
+    /// </summary>
+    /// <param name="slider">The slider whose value will be used to set the alpha.</param>
+    public void SetAlphaHAneE(GameObject slider)
     {
         List<GameObject> hAndEobjs = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>().getHandEObjs();
 
-        foreach (GameObject obs in hAndEobjs)
+        foreach (GameObject obj in hAndEobjs)
         {
-            obs.GetComponent<HAndEImageManager>().setAlpha(slider.GetComponent<Slider>().value, transparentMat);
+            obj.GetComponent<HAndEImageManager>().setAlpha(slider.GetComponent<Slider>().value, transparentMat);
         }
     }
-    private Vector3 PosA;
-    private Vector3 PosB;
-    private float duration = 0.2f;
-    private float elapsedTime;
-    private bool move = false;
+    #endregion
 
-    private void Update()
+    //Functions for threshold sliders
+    #region Threshold
+    /// <summary>
+    /// Setting threshold for gene expression values.
+    /// Any location in the dataset with a gene expression value below the threshold will be turned off. 
+    /// </summary>
+    /// <param name="slider">The slider control used to adjust the threshold value.</param>
+    public void SetColorMinThreshold(Slider slider)
     {
-        if (move)
-        {
-            elapsedTime += Time.deltaTime;
-            float complete = elapsedTime / duration;
-
-            Camera.main.transform.eulerAngles = Vector3.Lerp(PosA, PosB, complete);
-        }
-        if (PosA == PosB) move = false;
-
+        sd.SetMinThreshold(slider.value);
+        TMP_Text thresholdText = slider.transform.Find("ThresholdText").GetComponent<TMP_Text>();
+        thresholdText.text = "Min: " + (slider.value * 100).ToString("00.0") + "%";
     }
 
-    public void resetCamera()
+    /// <summary>
+    /// Set maximum threshold for gene expression values.
+    /// Note: This function is currently not in use!
+    /// </summary>
+    /// <param name="slider"></param>
+    public void SetColorMaxTreshold(GameObject slider)
     {
-        //elapsedTime = 0;
-        //PosB = new Vector3(transform.position.x - 150, transform.position.y, transform.position.z);
-        //PosA = transform.position;
-        //move = true;
-
-        Camera.main.transform.eulerAngles = new Vector3(0, 0, 0); 
-        // for single axis reset;
-        //Camera.main.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, Camera.main.transform.eulerAngles.z); 
-        //Camera.main.transform.eulerAngles = new Vector3(Camera.main.transform.eulerAngles.x, 0, Camera.main.transform.eulerAngles.z);
-        //Camera.main.transform.eulerAngles = new Vector3(Camera.main.transform.eulerAngles.x, Camera.main.transform.eulerAngles.y, 0);
-
+        sd.maxTresh = slider.GetComponent<Slider>().value;
     }
+    #endregion
 
-    private bool svgShown = false;
-    public GameObject svgPanel;
-
-    public void showSVG(GameObject panel)
-    {
-        if (svgShown)
-        {
-            panel.SetActive(false);
-            svgPanel.SetActive(false);
-        }
-        else
-        {
-            panel.SetActive(true);
-            svgPanel.SetActive(true);
-        }
-        svgShown = !svgShown;
-    }
-
-    public void toggleFiguresCanvas()
-    {
-        if (figuresPanel.activeSelf) figuresPanel.SetActive(false);
-        else
-        {
-            figuresPanel.SetActive(true);
-        }
-    }
-
-    public void setFigureDatapaths(List<string> figurePaths)
-    {
-        this.figurePaths = figurePaths;
-
-        setFigure(figurePaths[figuresCount]);
-
-    }
-
-    public void openInImageViewer()
+    //ImageViewer related functions to show png files in Visualiser
+    #region ImageViewer
+    /// <summary>
+    /// Opens the default image viewer on the computer, with the currently shown image. 
+    /// </summary>
+    public void OpenInImageViewer()
     {
         try
         {
             Process.Start(current_image_viewed);
-        }catch (Exception) {}
+        }
+        catch (Exception) {}
     }
 
-    private string current_image_viewed;
-
-    private void setFigure(string path)
+    /// <summary>
+    /// Set a image on the FigureViewer canvas.
+    /// </summary>
+    /// <param name="path">The path to the image to show.</param>
+    private void SetFigure(string path)
     {
         current_image_viewed = path;
         GameObject canvas = imageCanvas.transform.parent.gameObject;
 
+        // Read image from path as byte stream and apply it to canvas.
         using (FileStream fileStream = File.OpenRead(path))
         {
             byte[] byteArray = new byte[fileStream.Length];
@@ -361,49 +232,136 @@ public class MenuCanvas : MonoBehaviour
         figuresDatapath.text = Path.GetFileName(path);
     }
 
-    //private void setFigure(string path)
-    //{
-    //    GameObject canvas = imageCanvas.transform.parent.gameObject;
-    //    byte[] byteArray = File.ReadAllBytes(path);
-    //    Texture2D sampleTexture = new Texture2D(2, 2);
-    //    bool isLoaded = sampleTexture.LoadImage(byteArray);
-
-    //    float canvas_height = imageCanvas.GetComponent<RectTransform>().sizeDelta.y;
-    //    float original_height = sampleTexture.height;
-    //    float original_width = sampleTexture.width;
-
-    //    float ratio = original_width / original_height;
-    //    canvas.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height *0.6f);
-
-    //    float new_height = 0.6f * canvas.GetComponent<RectTransform>().rect.height;
-    //    float new_width = new_height * ratio;
-
-    //    imageCanvas.GetComponentInChildren<RawImage>().texture = sampleTexture;
-    //    imageCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(new_width, new_height);
-
-    //    figuresDatapath.text = path.Split('\\').Last();
-    //}
-
-    public void changeFigure(GameObject btn)
+    /// <summary>
+    /// Change to next figure. Direction forward or back depending on input button used.
+    /// </summary>
+    /// <param name="btn">The name of the button calling the function.</param>
+    public void ChangeFigure(GameObject btn)
     {
-        if(btn.name == "Back_Btn")
+        if (btn.name == "Back_Btn")
         {
-            figuresCount = figuresCount - 1;
-
-            if (figuresCount < 0) figuresCount = figurePaths.Count - 1;
-
-            setFigure(figurePaths[figuresCount]);
+            figuresCount--;
+            if (figuresCount < 0)
+            {
+                figuresCount = figurePaths.Count - 1;
+            }
         }
-        else if(btn.name == "Forward_Btn")
+        else if (btn.name == "Forward_Btn")
         {
-            figuresCount = figuresCount + 1;
-            if (figuresCount > figurePaths.Count - 1) figuresCount = 0;
-
-            setFigure(figurePaths[figuresCount]);
+            figuresCount++;
+            if (figuresCount > figurePaths.Count - 1)
+            {
+                figuresCount = 0;
+            }
         }
-
+        SetFigure(figurePaths[figuresCount]);
     }
 
+    /// <summary>
+    /// Toggle the FigureViewer panel.
+    /// </summary>
+    public void ToggleFiguresCanvas()
+    {
+        figuresPanel.SetActive(!figuresPanel.activeSelf);
+    }
+
+    /// <summary>
+    /// Sets the data paths of all figures found in the directory.
+    /// Note: This will also load the first image found into the panel.
+    /// </summary>
+    /// <param name="figurePaths">List of data paths to .png images in the directory.</param>
+    public void SetFigureDatapaths(List<string> figurePaths)
+    {
+        this.figurePaths = figurePaths;
+        SetFigure(figurePaths[figuresCount]);
+    }
+
+    #endregion
+
+    //Single functions for canvas related operations
+    #region Other
+    /// <summary>
+    /// Toogle background colour in Visualiser from black to white
+    /// </summary>
+    public void DarkMode()
+    {
+
+        if (moonicon.activeSelf)
+        {
+            moonicon.SetActive(false);
+            sunicon.SetActive(true);
+        }
+        else
+        {
+            moonicon.SetActive(true);
+            sunicon.SetActive(false);
+        }
+
+        if (!darkmode)
+        {
+            Camera.main.backgroundColor = Color.black;
+            darkmode = true;
+        }
+        else
+        {
+            Camera.main.backgroundColor = Color.white;
+            darkmode = false;
+        }
+    }
+
+    /// <summary>
+    /// Changes the size of each rendered spot, based on the localScale of the common mesh.
+    /// </summary>
+    /// <param name="slider">The slider used to set the spot size.</param>
+    public void SetSize(Slider slider)
+    {
+        void DoSetSize(SpotDrawer.SpotWrapper[] spots, SpotDrawer.SpotWrapper[] spotsCopy)
+        {
+            GameObject go = dfm.tomoseq ? GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().getSelectedSymbol() : GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().symbolSelect;
+
+            go.transform.localScale *= value_i_minus_one * slider.value;
+            value_i_minus_one = 1f / slider.value;
+        }
+
+        sd.OnTransform += DoSetSize;
+    }
+
+    /// <summary>
+    /// Set transparency of the C18 heart object
+    /// </summary>
+    /// <param name="slider"></param>
+    public void SetC18heartObjTransp(GameObject slider)
+    {
+        Color col = c18heart.transform.GetComponent<Renderer>().material.color;
+        col.a = slider.GetComponent<Slider>().value;
+        c18heart.transform.GetComponent<Renderer>().material.color = col;
+    }
+
+    /// <summary>
+    /// Reset the camera orientation back to origin.
+    /// </summary>
+    public void ResetCamera()
+    {
+        Camera.main.transform.eulerAngles = new Vector3(0, 0, 0); 
+    }
+
+    /// <summary>
+    /// Toggles the SVG panel.
+    /// </summary>
+    /// <param name="panel"></param>
+    public void ShowSVG(GameObject panel)
+    {
+        bool shouldShow = !svgShown;
+
+        panel.SetActive(shouldShow);
+        svgPanel.SetActive(shouldShow);
+
+        svgShown = shouldShow;
+    }
+    #endregion
+
+    //HMD related settings
+    #region HMD
     /// <summary>
     /// Trigger HMD detection manually.
     /// </summary>
@@ -420,9 +378,5 @@ public class MenuCanvas : MonoBehaviour
 
         activeIconGameObject.SetActive(!activeIconGameObject.activeSelf);
     }
-
-    /// <summary>
-    /// The previous slider value i-1.
-    /// </summary>
-    private float value_i_minus_one = 1f;
+    #endregion
 }
