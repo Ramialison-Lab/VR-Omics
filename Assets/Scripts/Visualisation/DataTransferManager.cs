@@ -722,7 +722,7 @@ public class DataTransferManager : MonoBehaviour
                     figure_Paths.Add(x);
                 }
             }
-            mc.setFigureDatapaths(figure_Paths);
+            mc.SetFigureDatapaths(figure_Paths);
 
 
         }
