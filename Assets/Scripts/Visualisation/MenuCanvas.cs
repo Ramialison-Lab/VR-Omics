@@ -358,6 +358,14 @@ public class MenuCanvas : MonoBehaviour
 
         svgShown = shouldShow;
     }
+
+    /// <summary>
+    /// Save the current session to continue later.
+    /// </summary>
+    public void SaveSession()
+    {
+        sd.SaveSession();
+    }
     #endregion
 
     //HMD related settings

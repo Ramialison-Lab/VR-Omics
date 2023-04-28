@@ -27,8 +27,8 @@ using UnityEngine;
  * Mapping of functionPanels
  * 
  * 0    -   Selection Dropdown (showing Dataset)
- * 1    -   UnlockedBtn
- * 2    -   LockedBtn
+ * 1    -   Not used
+ * 2    -   Not used
  * 3    -   LassoBtn (ROI selection)
  * 4    -   TissueBtn (H&E stain)
  * 5    -   Export/Import Group
@@ -59,16 +59,22 @@ public class ButtonFunctionManager : MonoBehaviour
     DataTransfer df;
     public List<GameObject> functionPanels = new List<GameObject>();
 
-    public void setFunction(DataTransfer df)
+    /// <summary>
+    /// Disable buttons depending on the SRT technique used. 
+    /// Depending if the feature is supported by the SRT method used.
+    /// Note: This is done manually.
+    /// </summary>
+    /// <param name="df">DataTransfer instance.</param>
+    public void SetFunction(DataTransfer df)
     {
         this.df = df;
+        
         functionPanels[16].SetActive(false);
+
         if (df.c18)
         {
             //C18
             functionPanels[0].SetActive(false);
-            functionPanels[1].SetActive(false);
-            functionPanels[2].SetActive(false);
             functionPanels[4].SetActive(false);
             functionPanels[5].SetActive(false);
             functionPanels[6].SetActive(false);
@@ -76,6 +82,7 @@ public class ButtonFunctionManager : MonoBehaviour
             functionPanels[11].SetActive(false);
 
         }
+
         else if ((df.visium && !df.visiumMultiple) && !df.c18)
         {
             functionPanels[8].SetActive(false);
@@ -87,14 +94,11 @@ public class ButtonFunctionManager : MonoBehaviour
             // visium multiple slices
             //functionPanels[10].SetActive(false);
             functionPanels[8].SetActive(false);
-
-
         }
+
         else if (df.tomoseq)
         {
             functionPanels[0].SetActive(false);
-            functionPanels[1].SetActive(false);
-            functionPanels[2].SetActive(false);
             functionPanels[3].SetActive(false);
             functionPanels[4].SetActive(false);
             functionPanels[5].SetActive(false);
@@ -108,8 +112,6 @@ public class ButtonFunctionManager : MonoBehaviour
         else if (df.stomics)
         {
             functionPanels[0].SetActive(false);
-            functionPanels[1].SetActive(false);
-            functionPanels[2].SetActive(false);
             functionPanels[3].SetActive(false);
             functionPanels[4].SetActive(false);
             functionPanels[5].SetActive(false);
@@ -120,8 +122,6 @@ public class ButtonFunctionManager : MonoBehaviour
         else if (df.xenium)
         {
             functionPanels[0].SetActive(false);
-            functionPanels[1].SetActive(false);
-            functionPanels[2].SetActive(false);
             functionPanels[4].SetActive(false);
             functionPanels[8].SetActive(false);
             functionPanels[11].SetActive(false);
@@ -130,8 +130,6 @@ public class ButtonFunctionManager : MonoBehaviour
         else if (df.merfish)
         {
             functionPanels[0].SetActive(false);
-            functionPanels[1].SetActive(false);
-            functionPanels[2].SetActive(false);
             functionPanels[4].SetActive(false);
             functionPanels[8].SetActive(false);
             functionPanels[11].SetActive(false);
@@ -140,8 +138,6 @@ public class ButtonFunctionManager : MonoBehaviour
         {
             // custom option
             functionPanels[0].SetActive(false);
-            functionPanels[1].SetActive(false);
-            functionPanels[2].SetActive(false);
             functionPanels[3].SetActive(false);
             functionPanels[4].SetActive(false);
             functionPanels[5].SetActive(false);
@@ -160,28 +156,15 @@ public class ButtonFunctionManager : MonoBehaviour
 
     public void ToggleCopySlider()
     {
-        if (functionPanels[16].activeSelf)
-        {
-            functionPanels[16].SetActive(false);
-        }
-        else
-        {
-            functionPanels[16].SetActive(true);
-        }
-
+        functionPanels[16].SetActive(!functionPanels[16].activeSelf);
     }
 
     public void Disable_Buttons_For_VR()
     {
-        //TODO: fix Side-by-side
-        //functionPanels[10].SetActive(false);
-
         functionPanels[12].SetActive(false);
         functionPanels[17].SetActive(false);
         functionPanels[19].SetActive(false);
         functionPanels[20].SetActive(false);
-
-
     }
 
     /// <summary>

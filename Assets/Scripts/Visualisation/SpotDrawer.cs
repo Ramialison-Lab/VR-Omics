@@ -19,9 +19,11 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using VROmics.Main;
@@ -43,6 +45,7 @@ public class SpotDrawer : MonoBehaviour
     private SideMenuManager smm;
     private MenuCanvas mc;
     public DataOrigin d_org;
+    private AutoCompleteManager acm;
 
     //Gameobjects
     public GameObject symbolSelect;
@@ -77,6 +80,49 @@ public class SpotDrawer : MonoBehaviour
     public List<GameObject> activepanels = new List<GameObject>(4);
     private Color[] hl_colors = new Color[] { new Color(255, 0, 0, 1), new Color(0, 255, 0, 1), new Color(0, 0, 255, 1), new Color(0, 255, 255, 1) };
     private float sideBySideDistance = 0;
+
+    private SpotWrapper[] spots;
+    private SpotWrapper[] spotsCopy;
+    private Transform symbolTransform;
+    private Matrix4x4 matrix;
+    private MaterialPropertyBlock mpb;
+    private int batchCounter = 0;
+
+    //Rotation variables
+    private Vector3 currentEulerAngles;
+    private int delta = 0;
+    private float cube_z;
+
+    //Initialise variables
+    private int startSpotdrawerCount = 0;
+    private bool firstSelect = false;
+    private bool firstGeneSelected = false;
+
+    //spots variables
+    private ComputeBuffer meshPropertiesBuffer;
+    private ComputeBuffer argsBuffer;
+    private Mesh mesh;
+    private int count = 0;
+    private bool colourInit;
+
+    //Side-byside - copy feature 
+    private bool newColoursCopy;
+    private bool copy;
+    private bool colourcopy;
+
+    private Color[] colors;
+    private Color[] Copycolors;
+
+    private Material material;
+
+    private Action OnDraw;
+    private Canvas canvas;
+    private DataOrigin dataOrigin;
+    private Dictionary<(int, int), int> coordToIndex;
+    public int xAdjust;
+    public int yAdjust;
+    public bool inVR =false;
+    public GameObject c18Heart;
 
     /// <summary>
     /// structure for each spot, storing: 
@@ -116,12 +162,13 @@ public class SpotDrawer : MonoBehaviour
 
 
     private bool sliceDrawer = false;
-    private void Start()
+    private void Awake()
     {
         sm = gameObject.GetComponent<SearchManager>();
         dfm = gameObject.GetComponent<DataTransferManager>();
         smm = GameObject.Find("SideMenu").GetComponent<SideMenuManager>();
         mc = MainMenuPanel.GetComponent<MenuCanvas>();
+        acm = gameObject.GetComponent<AutoCompleteManager>();
 
         mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
         material = symbolSelect.GetComponent<MeshRenderer>().material;
@@ -130,6 +177,7 @@ public class SpotDrawer : MonoBehaviour
         dataOrigin = Canvas.GetComponent<DataOrigin>();
         canvas = Canvas.GetComponent<Canvas>();
     }
+
     private void SetMeshBuffers()
     {
         ReleaseBuffers();
@@ -205,7 +253,7 @@ public class SpotDrawer : MonoBehaviour
             Vector2 middle = Vector2.Lerp(maxvec, minvec, 0.5f);
             middle = new Vector2(middle.x * s.h, middle.y *s.v);
 
-            dfm.updateCamera(new Vector3(middle.x, middle.y, 0));
+            dfm.UpdateCamera(new Vector3(middle.x, middle.y, 0));
             sliceCollider.transform.localScale = new Vector3(Math.Abs(maxvec.x - minvec.x) * s.h, Math.Abs(maxvec.y - minvec.y) * s.v, 1);
             sliceCollider.transform.localPosition = new Vector3(middle.x, middle.y, spots[0].Origin.z);
 
@@ -323,9 +371,20 @@ public class SpotDrawer : MonoBehaviour
         };
     }
 
-    public bool inVR =false;
-    public GameObject c18Heart;
+    private void Update()
+    {
+        // Are there any transformations?
+        if (OnTransform != null)
+            StartCoroutine(TransformOnNextFrame(spots));
 
+        // Draw spots
+        OnDraw?.Invoke();
+    }
+
+
+    /// <summary>
+    /// Adjusting to VR dimension change; new player location.
+    /// </summary>
     public void SetVRDimensions()
     {
         inVR = true;
@@ -380,15 +439,6 @@ public class SpotDrawer : MonoBehaviour
         SetMeshBuffers();
     }
 
-    private void Update()
-    {
-        // Are there any transformations?
-        if (OnTransform != null)
-            StartCoroutine(TransformOnNextFrame(spots));
-
-        // Draw spots
-        OnDraw?.Invoke();
-    }
 
     private void OnDisable()
     {
@@ -423,77 +473,6 @@ public class SpotDrawer : MonoBehaviour
         OnTransform = null; // on transform event may run at most once / subscription
     }
 
-    private void setColour()
-    {
-        for (int i = 0; i < spots.Length; i++)
-        {
-            if (spots[i].HighlightGroup == -1)
-            {
-                try
-                {
-                    colors[i] = colVals[i];
-                    spots[i].ExpVal = (float)normalised[i];
-                    if (copy){
-                        try
-                        {
-                            Copycolors[i] = colValsCopy[i];
-                        }catch(Exception )
-                        {
-                        }
-                    }
-
-                }
-                catch (Exception)
-                {
-                    colors[i] = Color.clear;
-                    if (copy)
-                    {
-
-                        Copycolors[i] = Color.clear;
-                    }
-                }
-            }
-            else
-            {
-                colors[i] = hl_colors[spots[i].HighlightGroup];
-                Copycolors[i] = colors[i];
-                
-            }
-        }
-
-        SetMeshBuffers();
-    }
-
-    private void setColourFromUpload()
-    {
-        if (firstGeneSelected)
-        {
-            for (int i = 0; i < spots.Length; i++)
-            {
-                if (spots[i].HighlightGroup != -1)
-                {
-                    colors[i] = hl_colors[spots[i].HighlightGroup];
-
-                }
-            }
-        }
-        else
-        {
-            for (int i = 0; i < spots.Length; i++)
-            {
-                if (spots[i].HighlightGroup != -1)
-                {
-                    colors[i] = hl_colors[spots[i].HighlightGroup];
-
-                }
-                else
-                {
-                    colors[i] = Color.grey;
-                }
-            }
-        }
-        SetMeshBuffers();
-    }
 
     /// <summary>
     /// Initalise the SpotDrawer script, creating batches according to technique and read out information
@@ -509,14 +488,13 @@ public class SpotDrawer : MonoBehaviour
         // throw new Exception("Please supply min, max values of the data points beforehand!");
 
         symbolSelect = sphereSymb;
-
         if(dfm.c18_visium) symbolSelect.transform.localScale = new Vector3(10, 10, 10);
 
         else symbolSelect.transform.localScale = new Vector3(1, 1, 1);
 
         // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot
         // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
-        // dataset is the name of the dataset dor ech slice
+        // dataset is the name of the dataset for ech slice
         // for each coordinate passed
         spots = new SpotWrapper[xcoords.Length];
         for (int i = 0; i < xcoords.Length; i++)
@@ -597,10 +575,8 @@ public class SpotDrawer : MonoBehaviour
         StartCoroutine(InitializeShaderBuffers());
     }
 
-    //###################################################################################################################
-    //Colour gradient functions
-    //→ Customise Color tool currently disabled
-
+    #region Colour
+   
     /// <summary>
     /// Translates normlaised expression values into a colour gradient
     /// </summary>
@@ -723,7 +699,78 @@ public class SpotDrawer : MonoBehaviour
         setColour();
     }
 
+    private void setColour()
+    {
+        for (int i = 0; i < spots.Length; i++)
+        {
+            if (spots[i].HighlightGroup == -1)
+            {
+                try
+                {
+                    colors[i] = colVals[i];
+                    spots[i].ExpVal = (float)normalised[i];
+                    if (copy){
+                        try
+                        {
+                            Copycolors[i] = colValsCopy[i];
+                        }catch(Exception )
+                        {
+                        }
+                    }
 
+                }
+                catch (Exception)
+                {
+                    colors[i] = Color.clear;
+                    if (copy)
+                    {
+
+                        Copycolors[i] = Color.clear;
+                    }
+                }
+            }
+            else
+            {
+                colors[i] = hl_colors[spots[i].HighlightGroup];
+                Copycolors[i] = colors[i];
+                
+            }
+        }
+
+        SetMeshBuffers();
+    }
+
+    private void setColourFromUpload()
+    {
+        if (firstGeneSelected)
+        {
+            for (int i = 0; i < spots.Length; i++)
+            {
+                if (spots[i].HighlightGroup != -1)
+                {
+                    colors[i] = hl_colors[spots[i].HighlightGroup];
+
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < spots.Length; i++)
+            {
+                if (spots[i].HighlightGroup != -1)
+                {
+                    colors[i] = hl_colors[spots[i].HighlightGroup];
+
+                }
+                else
+                {
+                    colors[i] = Color.grey;
+                }
+            }
+        }
+        SetMeshBuffers();
+    }
+    
     public void skipColourGradient(List<double> norm, List<Color> clusterColour)
     {
         firstSelect = true;
@@ -955,7 +1002,9 @@ public class SpotDrawer : MonoBehaviour
     {
         colourcopy = !colourcopy;
     }
-    //###################################################################################################################
+    #endregion
+
+    #region Location Identification, Lasso, Slice movement
     //Spot identification and lasso tool function
 
     /// <summary>
@@ -1163,7 +1212,9 @@ public class SpotDrawer : MonoBehaviour
         SetMeshBuffers();
     }
 
-    //###################################################################################################################
+    #endregion
+
+    #region Side-By-Side
     //Side-by-Side feature (Creating duplicate of the current slice to show different gene expression patterns next to each other
 
     /// <summary>
@@ -1219,9 +1270,9 @@ public class SpotDrawer : MonoBehaviour
         mergePanel.SetActive(false);
         setColour();
     }
+    #endregion
 
-    //###################################################################################################################
-    //Special Read functions
+    #region Special Read
 
     /// <summary>
     /// Used to read the special values from the hdf file
@@ -1327,15 +1378,61 @@ public class SpotDrawer : MonoBehaviour
             dd.gameObject.SetActive(false);
         }
     }
+    #endregion
 
-    //###################################################################################################################
-    //Export Feature
+    #region Export
+
+    public void SaveSession()
+    {
+        string geneName = lastGene;
+        int[] highlighted = new int[spots.Length];
+
+        for(int i=0; i< spots.Length; i++)
+        {
+            highlighted[i] = spots[i].HighlightGroup;
+        }
+
+        float[] camerPosition = {
+                Camera.main.transform.position.x, 
+                Camera.main.transform.position.y, 
+                Camera.main.transform.position.z};
+
+        float[] cameraRotation = {
+                Camera.main.transform.rotation.eulerAngles.x,
+                Camera.main.transform.rotation.eulerAngles.y,
+                Camera.main.transform.rotation.eulerAngles.z};
+
+        SelectionData data = new SelectionData();
+
+        data.geneName = geneName;
+        data.highlighted = highlighted;
+        data.cameraPosition = camerPosition;
+        data.camerRotation = cameraRotation;
+
+        // Serialize the data to JSON
+        string jsonData = JsonUtility.ToJson(data);
+
+        // Write the JSON data to a file
+        File.WriteAllText(Application.dataPath + "/save_selection_data.json", jsonData);
+
+        callDataForExport();
+    }
 
     /// <summary>
     /// Export function TBD
     /// </summary>
     public void callDataForExport()
     {
+        try
+        {
+            this.gameObject.GetComponent<ExportManager>().CloseConnection();
+        }
+        catch (Exception)
+        {
+            //Writer was not started before.
+        }
+
+        this.gameObject.GetComponent<ExportManager>().writeHeader();
         List<string> dataEntry = new List<string>();
 
         foreach (SpotWrapper mw in spots)
@@ -1351,13 +1448,77 @@ public class SpotDrawer : MonoBehaviour
             this.gameObject.GetComponent<ExportManager>().printLine(dataEntry);
             dataEntry.Clear();
         }
-
+        this.gameObject.GetComponent<ExportManager>().CloseConnection();
     }
 
+    public void ContinueSession()
+    {
+        string savePath = Application.dataPath + "/save_selection_data.json";
 
-    //###################################################################################################################
-    //Set Methods and Other
+        string geneName;
+        int[] highlighted;
+        float[] cameraPosition;
+        float[] cameraRotation;
 
+        if (File.Exists(savePath))
+        {
+            // Read the JSON string from the save path
+            string jsonData = File.ReadAllText(savePath);
+
+            // Convert the JSON string back into a data container class
+            SelectionData data = JsonUtility.FromJson<SelectionData>(jsonData);
+
+            geneName = data.geneName;
+            highlighted = data.highlighted;
+            cameraPosition = data.cameraPosition;
+            cameraRotation = data.camerRotation;
+
+            Camera.main.transform.rotation = Quaternion.Euler(cameraRotation[0], cameraRotation[1], cameraRotation[2]);
+            Camera.main.transform.position = new Vector3(cameraPosition[0], cameraPosition[1], cameraPosition[2]);
+
+            acm.resetGene(geneName);
+
+            try
+            {
+                gameObject.GetComponent<ExportManager>().uploadGroupSelection();
+            }
+            catch (Exception)
+            {
+                //no ROis were seleceted.
+            }
+
+        }
+    }
+
+    private void SetSRTMethod(string srtMethod)
+    {
+        switch (srtMethod)
+        {
+            case "visium":  
+                dfm.visium = true;
+                break;
+            case "xenium":
+                dfm.xenium = true;
+                break;
+            case "merfish":
+                dfm.merfish = true;
+                break;
+            case "stomics":
+                dfm.stomics = true;
+                break;
+            case "tomoseq":
+                dfm.tomoseq = true;
+                break;
+            case "c18":
+                dfm.c18_visium = true;
+                break;
+            default: break;
+        }
+    }
+
+    #endregion
+
+    # region Set Methods and Other
     /// <summary>
     /// Set min.threshold for gene expressionvalues that should be visualised. Passes on information to tomo-seq technique if used
     /// </summary>
@@ -1406,7 +1567,6 @@ public class SpotDrawer : MonoBehaviour
         else writeInfo("Original: " + lastGene + ",\n Clone: " + lastGeneCopy);
     }
 
-
     /// <summary>
     /// Write information to Sidepanel
     /// </summary>
@@ -1420,7 +1580,6 @@ public class SpotDrawer : MonoBehaviour
         GameObject text = Instantiate(TMPpro_text, sidePanel.transform);
 
         text.GetComponent<TMP_Text>().text = info_text;
-
     }
 
     /// <summary>
@@ -1438,7 +1597,6 @@ public class SpotDrawer : MonoBehaviour
     {
         showGenesExpressed = !showGenesExpressed;
     }
-
 
     public void reloadGroups(List<string> barcodes, List<int> ids)
     {
@@ -1458,40 +1616,7 @@ public class SpotDrawer : MonoBehaviour
 
         setColourFromUpload();
     }
-
-    private SpotWrapper[] spots;
-    private SpotWrapper[] spotsCopy;
-    private Transform symbolTransform;
-    private Matrix4x4 matrix;
-    private MaterialPropertyBlock mpb;
-    private int batchCounter = 0;
-
-    //Rotation variables
-    private Vector3 currentEulerAngles;
-    private int delta = 0;
-    private float cube_z;
-
-    //Initialise variables
-    private int startSpotdrawerCount = 0;
-    private bool firstSelect = false;
-    private bool firstGeneSelected = false;
-
-    //spots variables
-    private ComputeBuffer meshPropertiesBuffer;
-    private ComputeBuffer argsBuffer;
-    private Mesh mesh;
-    private int count = 0;
-    private bool colourInit;
-
-    //Side-byside - copy feature 
-    private bool newColoursCopy;
-    private bool copy;
-    private bool colourcopy;
-
-    private Color[] colors;
-    private Color[] Copycolors;
-
-    private Material material;
+    #endregion
 
     /// <summary>
     /// Passed to the shader over our material's compute buffer.
@@ -1502,10 +1627,14 @@ public class SpotDrawer : MonoBehaviour
         public Vector4 color;
     }
 
-    private Action OnDraw;
-    private Canvas canvas;
-    private DataOrigin dataOrigin;
-    private Dictionary<(int, int), int> coordToIndex;
-    public int xAdjust;
-    public int yAdjust;
+    [System.Serializable]
+    private class SelectionData
+    {
+        public string geneName;
+        public int[] highlighted;
+        public float[] cameraPosition;
+        public float[] camerRotation;
+
+    }
+
 }

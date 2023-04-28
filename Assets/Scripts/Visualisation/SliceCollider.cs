@@ -79,6 +79,8 @@ public class SliceCollider : MonoBehaviour
 
     private void adjustHEStainImage(GameObject sliceCollider, string datasetName, Vector2 minVec, Vector2 maxVec)
     {
+        dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
+
         GameObject imagePlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
         imagePlane.name = "StainImageObject";
 

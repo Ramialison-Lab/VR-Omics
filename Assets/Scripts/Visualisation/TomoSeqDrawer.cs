@@ -263,7 +263,7 @@ public class TomoSeqDrawer : MonoBehaviour
         symbolSelect = cubeSymb;
 
         startSpotDrawer(tempx, tempy, tempz);
-        gameObject.GetComponent<DataTransferManager>().adjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(90,0,0));
+        gameObject.GetComponent<DataTransferManager>().AdjustCamera(tempx.Min(), tempx.Max(), tempy.Min(), tempy.Max(), tempz.Min(), new Vector3(90,0,0));
 
         Vector3 camera_position = Camera.main.transform.position;
 

@@ -37,6 +37,7 @@ public class DataTransfer : MonoBehaviour
     public bool stomics = false;
     public bool merfish = false;
     public bool objectUsed = false;
+    public bool continueSession = false;
     //datapaths
     public string stomicsPath;
     public string APPath;
@@ -183,5 +184,14 @@ public class DataTransfer : MonoBehaviour
     {
         objectUsed = false;
         objData.Clear();
+    }
+
+    /// <summary>
+    /// Continue Session from SaveFile
+    /// </summary>
+    public void ContinueSession()
+    {
+        continueSession = true;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 }

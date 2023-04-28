@@ -42,21 +42,23 @@ public class ExportManager : MonoBehaviour
     private string filePath;
     private string filePathScreenshot;
     public TMP_Text text;
-    
 
     private void Start()
     {
-        filePath = Application.dataPath + "/Assets/ROI_export";
+        filePath = Application.dataPath + "/Assets/ROI_export/exported_spotlist.csv";
         filePathScreenshot = Application.dataPath + "/Assets/Screenshots/";
-
+#if UNITY_EDITOR
+        filePath = Application.dataPath + "/ROI_export/exported_spotlist.csv";
+        filePathScreenshot = Application.dataPath + "/Screenshots/";
+#endif
         camera = Camera.main;
         sh = GameObject.Find("ScriptHolder");
         geneText = GameObject.Find("geneNameText");
 
     }
+
     public void printCSV()
     {
-        writeHeader();
         sh.GetComponent<SpotDrawer>().callDataForExport();
     }
 
@@ -65,21 +67,23 @@ public class ExportManager : MonoBehaviour
         writer.WriteLine(dataEntry[0] + "," + dataEntry[1] + "," + dataEntry[2] + "," +  dataEntry[3] + "," + dataEntry[4]);
     }
 
-    private void writeHeader()
+    public void writeHeader()
     {
-        string str = string.Format("{0}/exported_spotlist.csv",
-                             filePath);
+        string str = string.Format(filePath);
 
         writer = new StreamWriter(str);
 
         writer.WriteLine("Group" +','+ "Barcode" + "," + "Expressionvalue" + "," + "Row" + "," + "Col" + "," + "Dataset" + "," + "Unique_ID");
     }
 
+    public void CloseConnection()
+    {
+        writer.Close();
+    }
     public void newLine()
     {
         writer.WriteLine();
     }
-
 
     public static string ScreenShotName(string path,int width, int height, string gene)
     {
@@ -134,15 +138,18 @@ public class ExportManager : MonoBehaviour
 
     public void uploadGroupSelection()
     {
+        filePath = Application.dataPath + "/Assets/ROI_export/exported_spotlist.csv";
+        filePathScreenshot = Application.dataPath + "/Assets/Screenshots/";
+#if UNITY_EDITOR
+        filePath = Application.dataPath + "/ROI_export/exported_spotlist.csv";
+        filePathScreenshot = Application.dataPath + "/Screenshots/";
+#endif
         var barcodes = new List<string>();
         var ids = new List<int>();
         string[] lines;
-#if UNITY_STANDALONE_WIN
-        lines = File.ReadAllLines(Application.dataPath + "/Assets/ROI_export/exported_spotlist.csv");
-#endif
-#if UNITY_EDITOR
-        lines = File.ReadAllLines(Application.dataPath + "/exported_spotlist.csv");
-#endif
+
+        lines = File.ReadAllLines(filePath);
+
         lines = lines.Skip(1).ToArray();
         foreach (string line in lines)
         {
@@ -156,6 +163,6 @@ public class ExportManager : MonoBehaviour
             }
         }
 
-        sh.GetComponent<SpotDrawer>().reloadGroups(barcodes, ids);
+        gameObject.GetComponent<SpotDrawer>().reloadGroups(barcodes, ids);
     }
 }

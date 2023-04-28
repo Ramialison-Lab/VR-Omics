@@ -44,7 +44,7 @@ public class AutoCompleteManager : MonoBehaviour
     public GameObject viewPortGo;
 
 
-    private void Start()
+    private void Awake()
     {
        dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
        sm = GameObject.Find("ScriptHolder").GetComponent<SearchManager>();
@@ -111,12 +111,14 @@ public class AutoCompleteManager : MonoBehaviour
     /// <param name="x">the name of the gene to be shown as button description</param>
     private void populateResultBtns(string geneName)
     {
+        Awake();
         //GameObject btn = Instantiate(btnPrefab, viewPortGo.transform);
         GameObject btn = Instantiate(btnPrefab);
         btn.transform.rotation = Quaternion.Euler(0, 0, 0);
 
         btn.transform.SetParent(scrollView.transform);
         btn.transform.localPosition = new Vector3(0, 0, 0);
+        
         if (dfm.svgGenes.Contains(geneName)) { btn.GetComponent<Image>().color = Color.cyan; }
         btn.GetComponentInChildren<TMP_Text>().fontSize = 14;
         btn.GetComponentInChildren<TMP_Text>().text = geneName;
@@ -140,7 +142,8 @@ public class AutoCompleteManager : MonoBehaviour
     {
         TMP_Text tmp_txt = btn.GetComponentInChildren<TMP_Text>();
         InputGameObject.GetComponent<TMP_InputField>().text = tmp_txt.text;
-
+        sd.lastGeneName(tmp_txt.text.ToString());
+            
         //TBD indexof genenames transfer to read hdf
 
         sd.resetNormalisedValues();
@@ -155,6 +158,31 @@ public class AutoCompleteManager : MonoBehaviour
         }
         else if (dfm.xenium) sm.readXeniumExpression(tmp_txt.text);
         else if (dfm.merfish) sm.readMerfishExpression(tmp_txt.text);
+    }
+
+    /// <summary>
+    /// Reset geneName used for Save/Load file.
+    /// </summary>
+    /// <param name="geneName">Gene name to apply.</param>
+    public void resetGene(string geneName)
+    {
+        Awake();
+        InputGameObject.GetComponent<TMP_InputField>().text = geneName;
+
+        //TBD indexof genenames transfer to read hdf
+
+        sd.resetNormalisedValues();
+        GetComponent<ReadClusterInformation>().resetClusterInfoPanel();
+        if (dfm.c18_visium) sm.readC18Expression(geneName);
+        else if (dfm.visium) sm.readExpressionList(geneName);
+        else if (dfm.tomoseq) tsd.runSearchTomo(geneName);
+        else if (dfm.stomics)
+        {
+            int pos = geneNames.IndexOf(geneName);
+            sm.readStomicsExpression(geneName, pos);
+        }
+        else if (dfm.xenium) sm.readXeniumExpression(geneName);
+        else if (dfm.merfish) sm.readMerfishExpression(geneName);
     }
 
     /// <summary>

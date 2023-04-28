@@ -31,6 +31,7 @@ using UnityEngine.UI;
 public class DataTransferManager : MonoBehaviour
 {
     //bools
+    public bool continueSession = false;
     public bool visium = false;
     public bool stomics = false;
     public bool tomoseq = false;
@@ -46,7 +47,7 @@ public class DataTransferManager : MonoBehaviour
     public GameObject svgBtn;
     public GameObject svgContentPanel;
     public GameObject btnPrefab;
-    private SpotDrawer sp;
+    private SpotDrawer sd;
     public DataTransfer df;
     public SliceCollider sc;
     public GameObject[] disableBtn = new GameObject[3];
@@ -125,11 +126,11 @@ public class DataTransferManager : MonoBehaviour
     public LogFileController logfile;
     public string current_directory;
 
-    void Start()
+    void Awake()
     {
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
-        sp = scriptHolder.GetComponent<SpotDrawer>();
+        sd = scriptHolder.GetComponent<SpotDrawer>();
         fr = scriptHolder.GetComponent<FileReader>();
         sc = scriptHolder.GetComponent<SliceCollider>();
         sm = scriptHolder.GetComponent<SearchManager>();
@@ -143,21 +144,25 @@ public class DataTransferManager : MonoBehaviour
         } catch (Exception) { }
         logfile = new LogFileController();
 
-        pipelineConnected();
+        PipelineConnected();
     }
 
     /// <summary>
     /// Visium - This function starts the Visium process, reads all related datapaths and creates the required lists to call the SpotDrawer script
     /// </summary>
-    private void startVisium()
+    private void StartVisium()
     {
         int count = 0;                                              // counting which dataset is used
         int geneNameDictionary_Counter = 0;
         int positionListCounter = 0;
         int jsonListCounter = 0;
         int tissueImageCounter = 0;
-         
-        List<string> shortList = new List<string>();                //List for names of slices from datasetnames
+
+        string[] dfPaths = df.pathList.ToArray();
+
+        string srtMethod = "visium";
+
+                List<string> shortList = new List<string>();                //List for names of slices from datasetnames
         geneNameDictionary = new List<string>[df.pathList.Count];   //Dicitonary of all gene names
         positionList = new string[df.pathList.Count];               //Datapaths to tissue_possition lists
         jsonFilePaths = new string[df.pathList.Count];              //Datapaths to json files containing the H&E scale factors
@@ -174,7 +179,7 @@ public class DataTransferManager : MonoBehaviour
             hdf5datapaths.AddRange(Directory.GetFiles(x, "*.h5"));
             csvGeneExpPaths.AddRange(Directory.GetFiles(x, "*filtered_transposed.csv"));
 
-            checkForFigures(allDirectories);
+            CheckForFigures(allDirectories);
             foreach (string s in allDirectories)
             {
                 if (s.Split("\\").Last() == "tissue_positions_list.csv")
@@ -338,21 +343,24 @@ public class DataTransferManager : MonoBehaviour
 
             count++;
         }
-        checkForSVGData();
-        adjustCamera(minX, maxX, minY, maxY, minZ, new Vector3(0, 0, 0));
-        sp.Min = new Vector2(minX, minY);
-        sp.Max = new Vector2(maxX, maxY);
+
+        SaveData(dfPaths, srtMethod, geneNamesDistinct.ToArray());
+
+        CheckForSVGData();
+        AdjustCamera(minX, maxX, minY, maxY, minZ, new Vector3(0, 0, 0));
+        sd.Min = new Vector2(minX, minY);
+        sd.Max = new Vector2(maxX, maxY);
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
-
-        sp.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, dataset_names); 
+        
+        sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, dataset_names); 
     }
 
 
     /// <summary>
     /// Xenium - This function starts the Xenium process, reads all related datapaths and creates the required lists to call the SpotDrawer script
     /// </summary>
-    private void startXenium()
+    private void StartXenium()
     {
         string[] files = Directory.GetFiles(df.xeniumPath, "*gene_transposed_counts.csv");
         xeniumCounts = files[0];
@@ -373,7 +381,7 @@ public class DataTransferManager : MonoBehaviour
         }
 
         string[] allDirectories = Directory.GetFiles(df.xeniumPath, "*", SearchOption.AllDirectories);
-        checkForFigures(allDirectories);
+        CheckForFigures(allDirectories);
 
         x_coordinates = new float[lines.Length];
         y_coordinates = new float[lines.Length];
@@ -405,18 +413,23 @@ public class DataTransferManager : MonoBehaviour
             XeniumGeneNames.Add(values[0]);
         }
 
-        sp.Min = new Vector2(minX, minY);
-        sp.Max = new Vector2(maxX, maxY);
-        sp.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
+        sd.Min = new Vector2(minX, minY);
+        sd.Max = new Vector2(maxX, maxY);
+        sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
 
-        adjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, minZ, new Vector3(0, 0, 0));
+        string srtMethod = "xenium";
+        string[] dfPaths = new string[1];
+        dfPaths[0] = df.xeniumPath;
+        SaveData(dfPaths, srtMethod, XeniumGeneNames.ToArray());
+
+        AdjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, minZ, new Vector3(0, 0, 0));
         // scriptHolder.GetComponent<XeniumDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell);
     }
 
     /// <summary>
     /// MERFISH - This function starts the Merfish process, reads all related datapaths and creates the required lists to call the SpotDrawer script
     /// </summary>
-    private void startMerfish()
+    private void StartMerfish()
     {
         //Searching for Files in the directory
         string[] files = Directory.GetFiles(df.merfishPath, "*metadata_processed.csv");
@@ -439,7 +452,7 @@ public class DataTransferManager : MonoBehaviour
 
         //checking for all image files
         string[] allDirectories = Directory.GetFiles(df.merfishPath, "*", SearchOption.AllDirectories);
-        checkForFigures(allDirectories);
+        CheckForFigures(allDirectories);
         
         //Read csv header of metadata file for positions
         int csv_position_x_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "spatial_x");
@@ -492,17 +505,23 @@ public class DataTransferManager : MonoBehaviour
             MerfishGeneNames.Add(values[0]);
         }
 
-        sp.Min = new Vector2(minX, minY);
-        sp.Max = new Vector2(maxX, maxY);
-        sp.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
-        adjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, 0, new Vector3(0, 0, 0));
+        sd.Min = new Vector2(minX, minY);
+        sd.Max = new Vector2(maxX, maxY);
+
+        string srtMethod = "merfish";
+        string[] dfPaths = new string[1];
+        dfPaths[0] = df.merfishPath;
+        SaveData(dfPaths, srtMethod, MerfishGeneNames.ToArray());
+
+        sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
+        AdjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, 0, new Vector3(0, 0, 0));
     }
 
     /// <summary>
     /// Visium - C18 heart - This function starts the embedded Demo of the heart data based on the publication Asp et al. https://doi.org/10.1016/j.cell.2019.11.025 There dataset is available under https://github.com/MickanAsp/Developmental_heart
     /// The heart object was created using Blender based on the github source
     /// </summary>
-    private void startC18()
+    private void StartC18()
     {
         geneC18Path = current_directory + "/Assets/Datasets/C18heart/C18genesTranspose.csv";
         coordsC18 = current_directory + "Assets/Datasets/C18heart/C18heart.csv";
@@ -554,17 +573,17 @@ public class DataTransferManager : MonoBehaviour
             if (z < minZ) minZ = z;
         }
 
-        adjustCamera(minX, maxX, maxY, minY, minZ, new Vector3(0, 0, 0));
+        AdjustCamera(minX, maxX, maxY, minY, minZ, new Vector3(0, 0, 0));
 
-        sp.Min = new Vector2(minX, minY);
-        sp.Max = new Vector2(maxX, maxY);
-        sp.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
+        sd.Min = new Vector2(minX, minY);
+        sd.Max = new Vector2(maxX, maxY);
+        sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
     }
 
     /// <summary>
     /// Tomo-Seq - This function reads the required datapaths for the tomo-seq data and generates a grid accordingly, data spots are removed based on their expression value of the 3d reconstructed matrix file
     /// </summary>
-    private void startTomoSeq()
+    private void StartTomoSeq()
     {
         // transfer from pipeline
         // TBD LINKPATH
@@ -592,7 +611,7 @@ public class DataTransferManager : MonoBehaviour
     /// <summary>
     /// STOmics - This function starts the STOmics process, reads all related datapaths and creates the required lists to call the SpotDrawer script
     /// </summary>
-    private void startStomics()
+    private void StartStomics()
     {
         // Old: not transposed file, bad performance
         // string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\1_Include\\L3_b_count_normal_stereoseq.h5ad";
@@ -612,21 +631,26 @@ public class DataTransferManager : MonoBehaviour
         stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
         //checking for all image files
         string[] allDirectories = Directory.GetFiles(stomicsDataPath, "*", SearchOption.AllDirectories);
-        checkForFigures(allDirectories);
+        CheckForFigures(allDirectories);
 
         for (int i =0; i< stomicsZ.Count; i++)
         {
             stomicsZ[i] = stomicsZ[i] * 50;
         }
 
-        sp.Min = new Vector2(stomicsX.Min(), stomicsY.Min());
-        sp.Max = new Vector2(stomicsX.Max(), stomicsY.Max());
-        adjustCamera(sp.Min.x, sp.Max.x, sp.Min.y, sp.Max.y, stomicsZ.Min(), new Vector3(0, 0, 0));
+        sd.Min = new Vector2(stomicsX.Min(), stomicsY.Min());
+        sd.Max = new Vector2(stomicsX.Max(), stomicsY.Max());
+        AdjustCamera(sd.Min.x, sd.Max.x, sd.Min.y, sd.Max.y, stomicsZ.Min(), new Vector3(0, 0, 0));
 
-        sp.StartDrawer(stomicsX.ToArray(), stomicsY.ToArray(), stomicsZ.ToArray(), stomicsSpotId.ToArray(), new string[] { }); 
+        string srtMethod = "stomics";
+        string[] dfPaths = new string[1];
+        dfPaths[0] = df.stomicsPath;
+        SaveData(dfPaths, srtMethod, stomicsGeneNames.ToArray());
+
+        sd.StartDrawer(stomicsX.ToArray(), stomicsY.ToArray(), stomicsZ.ToArray(), stomicsSpotId.ToArray(), new string[] { }); 
     }
 
-    private void startOther()
+    private void StartOther()
     {
 
         otherMatrixPath = df.otherMatrixPath;
@@ -667,10 +691,10 @@ public class DataTransferManager : MonoBehaviour
             if (z < minZ) minZ = z;
         }
 
-        adjustCamera(minX, maxX, maxY, minY, minZ, new Vector3(0, 0, 0));
-        sp.Min = new Vector2(minX, minY);
-        sp.Max = new Vector2(maxX, maxY);
-        sp.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
+        AdjustCamera(minX, maxX, maxY, minY, minZ, new Vector3(0, 0, 0));
+        sd.Min = new Vector2(minX, minY);
+        sd.Max = new Vector2(maxX, maxY);
+        sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
     }
 
     /// <summary>
@@ -682,7 +706,7 @@ public class DataTransferManager : MonoBehaviour
     /// <param name="H_max">Maximum height anchor point of the visualised dataset</param>
     /// <param name="depthValue">Minimum depth of the dataset as closest point to the camera</param>
     /// <param name="rotation">Rotation value to the camera, usual new Vector3(0,0,0)</param>
-    public void adjustCamera(float W_min, float W_max, float H_min, float H_max, float depthValue, Vector3 rotation)
+    public void AdjustCamera(float W_min, float W_max, float H_min, float H_max, float depthValue, Vector3 rotation)
     {
         var x = (W_min + W_max) / 2;
         var y = (H_min + H_max) / 2;
@@ -692,12 +716,12 @@ public class DataTransferManager : MonoBehaviour
         Camera.main.transform.eulerAngles = rotation;
     }
 
-    public void updateCamera(Vector3 position)
+    public void UpdateCamera(Vector3 position)
     {
         Camera.main.transform.position = new Vector3(position.x, position.y, Camera.main.transform.position.z);
     }
 
-    private void loadObject()
+    private void LoadObject()
     {
         string path = df.objData[0];
 
@@ -710,7 +734,7 @@ public class DataTransferManager : MonoBehaviour
     }
 
 
-    private void checkForFigures(string[] allDirectories)
+    private void CheckForFigures(string[] allDirectories)
     {
         try
         {
@@ -732,7 +756,7 @@ public class DataTransferManager : MonoBehaviour
         }
     }
 
-    private void checkForSVGData()
+    private void CheckForSVGData()
     {
 
         //string svgpath = "C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\";
@@ -798,57 +822,150 @@ public class DataTransferManager : MonoBehaviour
         //}
     }
 
+
+
     /// <summary>
     /// Selecting the correct pipeline for the SRT technique choosen.
     /// </summary>
-    private void pipelineConnected()
+    private void PipelineConnected()
     {
         df = scriptHolderPipeline.GetComponent<DataTransfer>();
         current_directory = df.current_directory;
 
         if (df.c18)
         {
-            sp.visium = true;
+            sd.visium = true;
             c18_visium = true;
             sc.objectUsed = true;
-            startC18();
+            StartC18();
         }
         else if (df.visium || df.visiumMultiple)
         {
-            sp.visium = true;
+            sd.visium = true;
             visium = true;
-            startVisium();
+            StartVisium();
         }
         else if (df.tomoseq)
         {
             tomoseq = true;
-            startTomoSeq();
+            StartTomoSeq();
         }
         else if (df.stomics)
         {
             stomics = true;
-            startStomics();
+            StartStomics();
         }
         else if (df.xenium)
         {
             xenium = true;
-            startXenium();
+            StartXenium();
         }
         else if (df.merfish)
         {
             merfish = true;
-            startMerfish();
+            StartMerfish();
         }
         else if (df.other)
         {
             other = true;
-            startOther();
+            StartOther();
         }
-        if (df.objectUsed)
+        else if (df.objectUsed)
         {
-            loadObject();
+            LoadObject();
         }
-        bfm.setFunction(df);
+        else if (df.continueSession)
+        {
+            continueSession = true;
+            ContinueSession();
+        }
+        bfm.SetFunction(df);
+    }
+
+    #region Save Data
+    private void SaveData(string[] datapaths, string srtMethod, string[] geneNamesDistinct)
+    {
+        SessionData data = new SessionData();
+        data.srtMethod = srtMethod;
+        data.datapaths = datapaths;
+        data.geneNamesDistinct = geneNamesDistinct;
+
+        string jsonData = JsonUtility.ToJson(data);
+
+        // Write the JSON data to a file
+        File.WriteAllText(Application.dataPath + "/save_session_data.json", jsonData);
+    }
+
+    private void ContinueSession()
+    {
+        string savePath = Application.dataPath + "/save_session_data.json";
+
+        string srtMethod;
+        string[] datapaths;
+        string[] geneNamesDistinct;
+
+        if (File.Exists(savePath))
+        {
+            // Read the JSON string from the save path
+            string jsonData = File.ReadAllText(savePath);
+
+            // Convert the JSON string back into a data container class
+            SessionData data = JsonUtility.FromJson<SessionData>(jsonData);
+
+            srtMethod = data.srtMethod;
+            datapaths = data.datapaths;
+            geneNamesDistinct = data.geneNamesDistinct;
+
+            List<string> dataPathList = new List<string>(datapaths);
+            switch (srtMethod)
+            {
+                case "visium":
+                    visium = true;            
+                    df.pathList = dataPathList;
+                    StartVisium();
+                    break;
+                case "xenium":
+                    xenium = true;
+                    df.xeniumPath = dataPathList[0];
+                    StartXenium();
+                    break;
+                case "merfish":
+                    merfish = true;
+                    df.merfishPath = dataPathList[0];
+                    StartMerfish();
+                    break;
+                case "stomics":
+                    stomics = true;
+                    df.stomicsPath = dataPathList[0];
+                    StartStomics();
+                    break;
+                case "tomoseq":
+                    tomoseq = true;
+                    StartTomoSeq();
+                    break;
+                case "c18":
+                    c18_visium = true;
+                    StartC18();
+                    break;
+                default: break;
+            }
+
+            sm.ContinueSession(srtMethod, geneNamesDistinct);
+
+        }
+
+        //TODO: add try for no session data saved
+        sd.ContinueSession();
+
+    }
+    #endregion
+
+    [System.Serializable]
+    private class SessionData
+    {
+        public string srtMethod;
+        public string[] datapaths;
+        public string[] geneNamesDistinct;
     }
 
 }

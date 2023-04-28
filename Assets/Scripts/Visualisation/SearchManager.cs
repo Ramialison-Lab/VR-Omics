@@ -51,29 +51,40 @@ public class SearchManager : MonoBehaviour
     private ReadGeneInformation rgi;
 
     //TBD LINKPATH
-    public string geneNamesC18; 
+    public string geneNamesC18;
 
-    private void Start(){   
+    private void Awake()
+    {
         //Access variables
         try { df = GameObject.Find("ScriptHolderPipeline").GetComponent<DataTransfer>(); } catch (Exception) { }
         dfm = gameObject.GetComponent<DataTransferManager>();
         acm = gameObject.GetComponent<AutoCompleteManager>();
         tmd = gameObject.GetComponent<TomoSeqDrawer>();
         sd = gameObject.GetComponent<SpotDrawer>();
-        rgi = GetComponent<ReadGeneInformation>();
+        rgi = gameObject.GetComponent<ReadGeneInformation>();
         geneNamesC18 = Application.dataPath + "/Assets/Datasets/C18heart/C18_genelist.csv";
 
 #if UNITY_EDITOR
         geneNamesC18 = Application.dataPath + "/Datasets/C18heart/C18_genelist.csv";
 #endif
 
-        // Creating list of genes for search bar
-        if (dfm.c18_visium)
+    }
+
+    private void Start()
+    {
+        selectMethod();
+    }
+    public void selectMethod()
+    {
+        if (dfm.continueSession)
+        {
+        }
+        else if (dfm.c18_visium)
         {
             string[] lines = File.ReadAllLines(geneNamesC18);
-            foreach(string line in lines)
+            foreach (string line in lines)
             {
-                
+
                 List<string> values = new List<string>();
                 values = line.Split(',').ToList();
                 if (values[1] != "") geneNames.Add(values[1].Substring(1));
@@ -110,7 +121,7 @@ public class SearchManager : MonoBehaviour
         {
             string[] lines = File.ReadAllLines(dfm.otherMetaPath);
 
-            if(dfm.otherCSVCols[4] == 1)
+            if (dfm.otherCSVCols[4] == 1)
             {
                 lines = lines.Skip(1).ToArray();
             }
@@ -121,7 +132,14 @@ public class SearchManager : MonoBehaviour
                 values = line.Split(',').ToList();
                 geneNames.Add(values[0]);
             }
+            acm.setGeneNameList(geneNames);
         }
+    }
+
+    public void ContinueSession(string srtMethod, string[] geneNamesDistinct)
+    {
+        Awake();
+        acm.setGeneNameList(new List<string>(geneNamesDistinct));
     }
 
     public void readVisiumScaleFactor(string path) 
@@ -227,6 +245,7 @@ public class SearchManager : MonoBehaviour
     /// <param name="searchGene">The gene to be read.</param>
     internal void readXeniumExpression(string searchGene)
     {
+        Awake();
         try
         {
             rgi.readGeneInformation(searchGene);
@@ -331,12 +350,13 @@ public class SearchManager : MonoBehaviour
     /// <param name="geneName"></param>
     public void readExpressionList(string geneName)
     {
+        Awake();
         int x = 0;
         sd.clearBatchcounter();
         //for each dataset selected
         foreach (string datapath in dfm.csvGeneExpPaths)
         {
-            List<string> listOFNames = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>().geneNameDictionary[x];
+            List<string> listOFNames = dfm.geneNameDictionary[x];
             searchGene(datapath, listOFNames.IndexOf(geneName), geneName);
             x++; 
         }
@@ -456,17 +476,18 @@ public class SearchManager : MonoBehaviour
 
     public void searchGene(string datapath, int pos, string gn)
     {
+        Awake();
         StartCoroutine(search(datapath, pos, gn));
         if (resultExpression.Max() == 0)
         {
-            GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setAllZeroColour(normalised);
+            sd.setAllZeroColour(normalised);
         }
         else
         {
-            GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().setColors(normalised);
+            sd.setColors(normalised);
         }
 
-        GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().lastGeneName(gn);
+        sd.lastGeneName(gn);
     }
 
     //private void sortFunctionEnsemble()
