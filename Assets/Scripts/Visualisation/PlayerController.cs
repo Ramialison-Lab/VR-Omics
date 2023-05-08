@@ -33,12 +33,12 @@ public class PlayerController : MonoBehaviour
     private bool down = false;
     public GameObject IF;
     public GameObject menuCanvas;
-    public float speed = 1.5f;
+    public float speed = 5;
     Vector2 mousepos;
     DataTransferManager dfm;
     SliceCollider sc;
 
-    public float moveSpeed = 0.1f;
+    public float moveSpeed = 1f;
 
     private bool isMoving = false;
     private Vector3 lastPosition;
@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
             if (zoomInput != 0.0f) // Check if there is any zoom input
             {
                 Camera.main.fieldOfView -= zoomInput * zoomSpeed; // Adjust the camera's field of view based on the zoom input
-                Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, 10.0f, 60.0f); // Clamp the camera's field of view to a minimum of 10 and a maximum of 60 degrees
+                //Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, 0f, 60.0f); // Clamp the camera's field of view to a minimum of 10 and a maximum of 60 degrees
             }
 
             if (Input.GetKey(KeyCode.Q)) sc.prepareRotation(1);
@@ -96,7 +96,7 @@ public class PlayerController : MonoBehaviour
             if (Input.GetMouseButton(1)) // Check if middle mouse button is pressed
             {
                 float rotateAmount = Input.GetAxis("Mouse X") * moveSpeed;
-                Camera.main.transform.Rotate(0, -rotateAmount*5,0);
+                Camera.main.transform.Rotate(0, -rotateAmount*10,0);
             }
 
             if (up)

@@ -214,10 +214,11 @@ public class TomoSeqDrawer : MonoBehaviour
     /// </summary>
     public void generateGrid()
     {
-        //read CSV files and checks for size
+        //read CSV files, get GenePAnel and checks for size
         getCSVData();
 
-        // OUT Overwrite for ripplyMat
+        int size = Math.Min(lr_size, Math.Min(ap_size, vd_size));
+
         lr_size = 50;
         vd_size = 50;
         ap_size = 50;
@@ -295,7 +296,7 @@ public class TomoSeqDrawer : MonoBehaviour
     private void getCSVData()
     {
         var lines = File.ReadAllLines(ap_path);
-        ap_size = lines[0].Split(',').Length-1;
+        ap_size = lines[0].Split(',').Length-2;
 
         foreach (string line in lines)
         {
@@ -306,7 +307,7 @@ public class TomoSeqDrawer : MonoBehaviour
         }     
                
         lines = File.ReadAllLines(vd_path);
-        vd_size = lines[0].Split(',').Length-1;
+        vd_size = lines[0].Split(',').Length-2;
 
         foreach (string line in lines)
         {
@@ -317,7 +318,7 @@ public class TomoSeqDrawer : MonoBehaviour
         }
 
         lines = File.ReadAllLines(lr_path);
-        lr_size = lines[0].Split(',').Length - 1;
+        lr_size = lines[0].Split(',').Length - 2;
 
         foreach (string line in lines)
         {

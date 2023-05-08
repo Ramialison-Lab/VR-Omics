@@ -591,14 +591,15 @@ public class DataTransferManager : MonoBehaviour
         string ap_path = df.APPath;
         string vd_path = df.VDPath;
         string lr_path = df.LRPath;
+        tomoGeneDirectory = df.tomoGenePath;
 
         //TODO: Remove this for final build
 #if UNITY_EDITOR
         if(ap_path =="") ap_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_AP.csv";
         if (vd_path == "") vd_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_VD.csv";
         if (lr_path == "") lr_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_LR.csv";
+        tomoGeneDirectory = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\geneFiles";
 #endif
-        tomoGeneDirectory = df.tomoGenePath;
 
         //string ap_path = df.APPath;
         //string vd_path = df.VDPath;

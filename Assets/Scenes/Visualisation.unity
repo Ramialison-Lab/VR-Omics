@@ -2779,7 +2779,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1202353252}
         m_TargetAssemblyTypeName: MenuCanvas, Assembly-CSharp
-        m_MethodName: setC18heartObjTransp
+        m_MethodName: SetC18heartObjTransp
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 206459355}
@@ -3576,7 +3576,7 @@ MonoBehaviour:
   verticalSpeed: 2
   IF: {fileID: 914573081}
   menuCanvas: {fileID: 1202353247}
-  speed: 1
+  speed: 5
   moveSpeed: 0.1
   zoomSpeed: 1
   scaleFactor: 10
@@ -13932,6 +13932,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65f91acdc97124a4b8f75371d6aa166e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  continueSession: 0
   visium: 0
   stomics: 0
   tomoseq: 0
