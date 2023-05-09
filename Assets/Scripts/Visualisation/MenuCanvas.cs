@@ -317,7 +317,7 @@ public class MenuCanvas : MonoBehaviour
     {
         void DoSetSize(SpotDrawer.SpotWrapper[] spots, SpotDrawer.SpotWrapper[] spotsCopy)
         {
-            GameObject go = dfm.tomoseq ? GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>().getSelectedSymbol() : GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().symbolSelect;
+            GameObject go = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().symbolSelect;
 
             go.transform.localScale *= value_i_minus_one * slider.value;
             value_i_minus_one = 1f / slider.value;

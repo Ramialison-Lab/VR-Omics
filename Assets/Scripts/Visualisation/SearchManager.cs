@@ -45,7 +45,6 @@ public class SearchManager : MonoBehaviour
     public FileReader fr;
     private DataTransferManager dfm;
     private AutoCompleteManager acm;
-    private TomoSeqDrawer tmd;
     private SpotDrawer sd;
     private DataTransfer df;
     private ReadGeneInformation rgi;
@@ -59,7 +58,6 @@ public class SearchManager : MonoBehaviour
         try { df = GameObject.Find("ScriptHolderPipeline").GetComponent<DataTransfer>(); } catch (Exception) { }
         dfm = gameObject.GetComponent<DataTransferManager>();
         acm = gameObject.GetComponent<AutoCompleteManager>();
-        tmd = gameObject.GetComponent<TomoSeqDrawer>();
         sd = gameObject.GetComponent<SpotDrawer>();
         rgi = gameObject.GetComponent<ReadGeneInformation>();
         geneNamesC18 = Application.dataPath + "/Assets/Datasets/C18heart/C18_genelist.csv";
@@ -99,7 +97,7 @@ public class SearchManager : MonoBehaviour
         }
         else if (dfm.tomoseq)
         {
-            geneNames.AddRange(tmd.getGeneNames());
+            geneNames.AddRange(dfm.getTomoGenePanel());
             acm.setGeneNameList(geneNames);
         }
         else if (dfm.stomics)
@@ -488,6 +486,79 @@ public class SearchManager : MonoBehaviour
         }
 
         sd.lastGeneName(gn);
+    }
+
+    public void applyGeneExpressionTomo(string geneName)
+    {
+        //try
+        {
+            List<float> geneExpList = new List<float>();
+
+            string path = this.gameObject.GetComponent<DataTransferManager>().tomoGeneDirectory + "/" + geneName.ToLower() + ".txt";
+
+            //TBD LINKPATH
+            string[] lines = File.ReadAllLines(path);
+            //string[] lines = File.ReadAllLines("Assets/Datasets/zebrafish_bitmasks/10ss_3dbitmask.txt");
+            foreach (string line in lines)
+            {
+                string[] values = line.Split(' ');
+
+                foreach (string c in values)
+                {
+                    geneExpList.Add(float.Parse(c));
+                }
+            }
+
+            List<float> tempx = new List<float>();
+            List<float> tempy = new List<float>();
+            List<float> tempz = new List<float>();
+            List<string> locations = new List<string>();
+
+            int total = dfm.tomoSize * dfm.tomoSize * dfm.tomoSize;
+
+            //TBD using bitmask
+            int[] bitMask = new int[total];
+
+            int count = 0;
+
+            for (int z = 0; z < dfm.tomoSize; z++)
+            {
+                for (int y = 0; y < dfm.tomoSize; y++)
+                {
+                    for (int x = 0; x < dfm.tomoSize; x++)
+                    {
+                        if (geneExpList[count] != 0)
+                        {
+                            tempx.Add(x);
+                            tempy.Add(y);
+                            tempz.Add(z);
+                            locations.Add("");
+                        }
+                        count++;
+                    }
+                }
+            }
+
+            sd.StartDrawer(tempx.ToArray(), tempy.ToArray(), tempz.ToArray(), locations.ToArray(), new string[] { });
+
+            List<float> nonZero = new List<float>();
+
+            foreach (float x in geneExpList)
+            {
+                if (x != 0)
+                {
+                    nonZero.Add(x);
+                }
+            }
+
+            var max = nonZero.Max();
+            var min = nonZero.Min();
+            var range = (double)(max - min);
+
+            List<double> normalisedVal = nonZero.Select(i => 1 * (i - min) / range).ToList();
+            sd.setColors(normalisedVal);
+        }
+        //catch (Exception e) { }
     }
 
     //private void sortFunctionEnsemble()
