@@ -160,8 +160,6 @@ namespace VROmics.Main
             maincamera.GetComponent<CharacterController>().enabled = true;
             PlayerController pc = maincamera.GetComponent<PlayerController>();
             pc.enabled = true;
-            pc.IF = GameObject.Find("SearchIF");
-            pc.menuCanvas = GameObject.Find("MainMenuPanel");
 
             { //Configure Canvas (TODO refactor?)
                 GameObject Canvas = GameObject.Find("PythonBindCanvas");

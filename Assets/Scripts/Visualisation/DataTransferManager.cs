@@ -683,6 +683,7 @@ public class DataTransferManager : MonoBehaviour
 
         sd.StartDrawer(tempx.ToArray(), tempy.ToArray(), tempz.ToArray(), locations.ToArray(), new string[] { });
         Camera.main.transform.position = new Vector3(0, 0, -10);
+        sd.setSymbol("Cube");
 
 
         //  scriptHolder.GetComponent<TomoSeqDrawer>().setDataPaths(ap_path, vd_path, lr_path);

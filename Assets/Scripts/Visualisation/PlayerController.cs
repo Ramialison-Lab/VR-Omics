@@ -23,108 +23,95 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public CharacterController _controller;
-    public float _speed = 10;
-    public float _rotationSpeed = 180;
-    public float horizontalSpeed = 2.0F;
-    public float verticalSpeed = 2.0F;
-    private Vector3 rotation;
-    private bool up = false;
-    private bool down = false;
-    public GameObject IF;
-    public GameObject menuCanvas;
-    public float speed = 5;
-    Vector2 mousepos;
+
+    //Access Variables
+    AutoCompleteManager acm;
     DataTransferManager dfm;
     SliceCollider sc;
+    public CharacterController _controller;
 
-    public float moveSpeed = 1f;
+    //Bools
+    private bool moveForward = false;
+    private bool moveBackward = false;
+    private bool up = false;
+    private bool down = false;
 
-    private bool isMoving = false;
-    private Vector3 lastPosition;
-    public float zoomSpeed = 1.0f;
-    public int  scaleFactor = 10;
-
-    [SerializeField] private float sensitivity = 1.0f;
-
+    //Movement variables
+    [SerializeField] private float _speed = 10;
+    [SerializeField] private float speed = 5;
+    [SerializeField] private float moveSpeedCamera = 5f;
+    [SerializeField] private float moveSpeed = 1f;
+    [SerializeField] private float zoomSpeed = 1.0f;
+    [SerializeField] private float sensitivity = 2.0f;
     private float xRotation = 0.0f;
     private float yRotation = 0.0f;
 
-    private void LateUpdate()
-    {
-        mousepos = Input.mousePosition;
-    }
 
     private void Start()
     {
         dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
         sc = GameObject.Find("ScriptHolder").GetComponent<SliceCollider>();
+        acm = GameObject.Find("ScriptHolder").GetComponent<AutoCompleteManager>();
     }
 
     public void Update()
     {
-        if (!GameObject.Find("ScriptHolder").GetComponent<AutoCompleteManager>().InputFocused())
+        if (acm.InputFocused())
         {
-            //KEYINPUT
-            Vector3 move = new Vector3(Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed * (1), Input.GetAxisRaw("Vertical") * Time.deltaTime * speed *(1), 0);
-            move = this.transform.TransformDirection(move);
-            _controller.Move(move * _speed);
-
-            float zoomInput = Input.GetAxis("Mouse ScrollWheel"); // Get the zoom input from the mouse scroll wheel
-
-            if (zoomInput != 0.0f) // Check if there is any zoom input
-            {
-                Camera.main.fieldOfView -= zoomInput * zoomSpeed; // Adjust the camera's field of view based on the zoom input
-                //Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, 0f, 60.0f); // Clamp the camera's field of view to a minimum of 10 and a maximum of 60 degrees
-            }
-
-            if (Input.GetKey(KeyCode.Q)) sc.prepareRotation(1);
-            if(Input.GetKey(KeyCode.E)) sc.prepareRotation(-1);
-
-
-            // Old Camera rotation by right click
-            //if (Input.GetMouseButtonDown(2))
-            //{
-            //    isMoving = true;
-            //    lastPosition = Input.mousePosition;
-
-            //}
-            //if (Input.GetMouseButtonUp(2)) // Check if right mouse button is released
-            //{
-            //    isMoving = false;
-            //}
-            //if (isMoving)
-            //{
-            //    Vector3 delta = Input.mousePosition - lastPosition;
-            //    transform.Translate(-delta.x * moveSpeed, -delta.y * moveSpeed, 0);
-            //    lastPosition = Input.mousePosition;
-            //}
-            if (Input.GetMouseButton(1))
-            {
-                rotateCamera();
-            }
-
-            if (Input.GetMouseButton(1)) // Check if middle mouse button is pressed
-            {
-                float rotateAmount = Input.GetAxis("Mouse X") * moveSpeed;
-                Camera.main.transform.Rotate(0, -rotateAmount*10,0);
-            }
-
-            if (up)
-            {
-                if(dfm.tomoseq) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 100 * Time.deltaTime * speed);
-                else transform.position = new Vector3(transform.position.x, transform.position.y + 100 * Time.deltaTime * speed, transform.position.z);
-
-            }
-            if (down)
-            {
-                if (dfm.tomoseq) transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 100 * Time.deltaTime * speed);
-                else transform.position = new Vector3(transform.position.x, transform.position.y - 100 * Time.deltaTime * speed, transform.position.z);
-
-            }
+            return;
         }
 
+        // Movement
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        float verticalInput = Input.GetAxisRaw("Vertical");
+        Vector3 move = new Vector3(horizontalInput, verticalInput, 0) * Time.deltaTime * speed;
+        move = transform.TransformDirection(move);
+        _controller.Move(move * _speed);
 
+        // Zoom
+        float zoomInput = Input.GetAxis("Mouse ScrollWheel");
+        if (Mathf.Abs(zoomInput) > 0.0f)
+        {
+            Camera.main.transform.position += Camera.main.transform.forward * zoomInput * zoomSpeed;
+        }
+
+        // Rotation
+        if (Input.GetKey(KeyCode.Q))
+        {
+            sc.prepareRotation(1);
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            sc.prepareRotation(-1);
+        }
+        if (Input.GetMouseButton(1))
+        {
+            rotateCamera();
+            float rotateAmount = Input.GetAxis("Mouse X") * moveSpeed;
+            Camera.main.transform.Rotate(0, -rotateAmount * 10, 0);
+        }
+
+        // Up/Down movement
+        if (up)
+        {
+            float upSpeed = dfm.tomoseq ? 100 : 0;
+            transform.position += Vector3.up * Time.deltaTime * speed * upSpeed;
+        }
+        if (down)
+        {
+            float downSpeed = dfm.tomoseq ? -100 : 0;
+            transform.position += Vector3.up * Time.deltaTime * speed * downSpeed;
+        }
+
+        // Move forward/backward
+        if (moveForward)
+        {
+            transform.position += transform.up * moveSpeedCamera * Time.deltaTime;
+        }
+        else if (moveBackward)
+        {
+            transform.position -= transform.up * moveSpeedCamera * Time.deltaTime;
+        }
     }
 
     private void rotateCamera()
