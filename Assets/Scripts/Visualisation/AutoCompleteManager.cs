@@ -38,7 +38,6 @@ public class AutoCompleteManager : MonoBehaviour
     // Access variables
     private DataTransferManager dfm;
     private SearchManager sm;
-    private TomoSeqDrawer tsd;
     private SpotDrawer sd;
     private TMP_InputField tmp_input;
     public GameObject viewPortGo;
@@ -48,7 +47,6 @@ public class AutoCompleteManager : MonoBehaviour
     {
        dfm = GameObject.Find("ScriptHolder").GetComponent<DataTransferManager>();
        sm = GameObject.Find("ScriptHolder").GetComponent<SearchManager>();
-       tsd = GameObject.Find("ScriptHolder").GetComponent<TomoSeqDrawer>();
        sd = GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>();
        tmp_input = InputGameObject.GetComponent<TMP_InputField>();
     }
@@ -150,11 +148,11 @@ public class AutoCompleteManager : MonoBehaviour
         GetComponent<ReadClusterInformation>().resetClusterInfoPanel();
         if (dfm.c18_visium) sm.readC18Expression(tmp_txt.text);
         else if (dfm.visium) sm.readExpressionList(tmp_txt.text);
-        else if (dfm.tomoseq) tsd.runSearchTomo(tmp_txt.text);
+        else if (dfm.tomoseq) sm.applyGeneExpressionTomo(tmp_txt.text);
         else if (dfm.stomics)
         {
             int pos = geneNames.IndexOf(tmp_txt.text);
-            sm.readStomicsExpression(tmp_txt.text, pos);   
+            sm.readStomicsExpression(tmp_txt.text, pos);
         }
         else if (dfm.xenium) sm.readXeniumExpression(tmp_txt.text);
         else if (dfm.merfish) sm.readMerfishExpression(tmp_txt.text);
@@ -175,7 +173,7 @@ public class AutoCompleteManager : MonoBehaviour
         GetComponent<ReadClusterInformation>().resetClusterInfoPanel();
         if (dfm.c18_visium) sm.readC18Expression(geneName);
         else if (dfm.visium) sm.readExpressionList(geneName);
-        else if (dfm.tomoseq) tsd.runSearchTomo(geneName);
+        else if (dfm.tomoseq) sm.applyGeneExpressionTomo(geneName);
         else if (dfm.stomics)
         {
             int pos = geneNames.IndexOf(geneName);

@@ -1526,8 +1526,6 @@ public class SpotDrawer : MonoBehaviour
     public void SetMinThreshold(float minThreshVal)
     {
         minThresh = minThreshVal;
-        if (gameObject.GetComponent<DataTransferManager>().tomoseq)
-            gameObject.GetComponent<TomoSeqDrawer>().setMinThresh(minThreshVal);
     }
 
     /// <summary>

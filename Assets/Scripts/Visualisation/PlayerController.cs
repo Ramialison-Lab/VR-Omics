@@ -44,6 +44,12 @@ public class PlayerController : MonoBehaviour
     private Vector3 lastPosition;
     public float zoomSpeed = 1.0f;
     public int  scaleFactor = 10;
+
+    [SerializeField] private float sensitivity = 1.0f;
+
+    private float xRotation = 0.0f;
+    private float yRotation = 0.0f;
+
     private void LateUpdate()
     {
         mousepos = Input.mousePosition;
@@ -76,21 +82,26 @@ public class PlayerController : MonoBehaviour
             if(Input.GetKey(KeyCode.E)) sc.prepareRotation(-1);
 
 
-            if (Input.GetMouseButtonDown(2))
-            {
-                isMoving = true;
-                lastPosition = Input.mousePosition;
+            // Old Camera rotation by right click
+            //if (Input.GetMouseButtonDown(2))
+            //{
+            //    isMoving = true;
+            //    lastPosition = Input.mousePosition;
 
-            }
-            if (Input.GetMouseButtonUp(2)) // Check if right mouse button is released
+            //}
+            //if (Input.GetMouseButtonUp(2)) // Check if right mouse button is released
+            //{
+            //    isMoving = false;
+            //}
+            //if (isMoving)
+            //{
+            //    Vector3 delta = Input.mousePosition - lastPosition;
+            //    transform.Translate(-delta.x * moveSpeed, -delta.y * moveSpeed, 0);
+            //    lastPosition = Input.mousePosition;
+            //}
+            if (Input.GetMouseButton(1))
             {
-                isMoving = false;
-            }
-            if (isMoving)
-            {
-                Vector3 delta = Input.mousePosition - lastPosition;
-                transform.Translate(-delta.x * moveSpeed, -delta.y * moveSpeed, 0);
-                lastPosition = Input.mousePosition;
+                rotateCamera();
             }
 
             if (Input.GetMouseButton(1)) // Check if middle mouse button is pressed
@@ -114,5 +125,18 @@ public class PlayerController : MonoBehaviour
         }
 
 
+    }
+
+    private void rotateCamera()
+    {
+        float mouseX = Input.GetAxis("Mouse X") * sensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * sensitivity;
+
+        xRotation += mouseY;
+        yRotation += mouseX;
+
+        xRotation = Mathf.Clamp(xRotation, -90.0f, 90.0f);
+
+        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0.0f);
     }
 }

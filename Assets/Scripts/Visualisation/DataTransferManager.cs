@@ -118,6 +118,8 @@ public class DataTransferManager : MonoBehaviour
 
     //Tomoseq
     public string tomoGeneDirectory;
+    public List<string> tomoGenePanel = new List<string>();
+    public int tomoSize = 50;
 
     //Other
     public string otherMatrixPath;
@@ -591,6 +593,7 @@ public class DataTransferManager : MonoBehaviour
         string ap_path = df.APPath;
         string vd_path = df.VDPath;
         string lr_path = df.LRPath;
+        string bitmask_path = df.tomoBitmaskPath;
         tomoGeneDirectory = df.tomoGenePath;
 
         //TODO: Remove this for final build
@@ -598,15 +601,97 @@ public class DataTransferManager : MonoBehaviour
         if(ap_path =="") ap_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_AP.csv";
         if (vd_path == "") vd_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_VD.csv";
         if (lr_path == "") lr_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_LR.csv";
+        bitmask_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\15ss_3dbitmask.txt";
         tomoGeneDirectory = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\geneFiles";
 #endif
+        string[] lines = File.ReadAllLines(bitmask_path); 
+        tomoSize = lines.Length;
+        List<float> geneExpList = new List<float>();
 
-        //string ap_path = df.APPath;
-        //string vd_path = df.VDPath;
-        //string lr_path = df.LRPath;
+        //Read Bitmask for 3D image
+        foreach (string line in lines)
+        {
+            string[] values = line.Split(' ');
 
-        scriptHolder.GetComponent<TomoSeqDrawer>().setDataPaths(ap_path, vd_path, lr_path);
-        scriptHolder.GetComponent<TomoSeqDrawer>().generateGrid();
+            foreach (string c in values)
+            {
+                geneExpList.Add(float.Parse(c));
+            }
+        }
+
+        //generate a grid and apply coordiantes based on bitmask
+        List<float> tempx = new List<float>();
+        List<float> tempy = new List<float>();
+        List<float> tempz = new List<float>();
+
+        int total = tomoSize * tomoSize* tomoSize;
+
+        //TBD using bitmask
+        int[] bitMask = new int[total];
+
+        int count = 0;
+        List<string> locations = new List<string>();
+
+        for (int z = 0; z < tomoSize; z++)
+        {
+            for (int y = 0; y < tomoSize; y++)
+            {
+                for (int x = 0; x < tomoSize; x++)
+                {
+                    if (geneExpList[count] != 0)
+                    {
+                        tempx.Add(x);
+                        tempy.Add(y);
+                        tempz.Add(z);
+                        locations.Add("");
+                    }
+                    count++;
+                }
+            }
+        }
+
+        //Generate Gene Panel from 3CSV files
+        List<string> APgenes = new List<string>();
+        List<string> VDgenes = new List<string>();
+        List<string> LRgenes = new List<string>();
+
+        lines = File.ReadAllLines(ap_path);
+        foreach (string line in lines)
+        {
+            string[] values = line.Split(',');
+            APgenes.Add(values[1]);
+        }
+
+        lines = File.ReadAllLines(vd_path);
+        foreach (string line in lines)
+        {
+            string[] values = line.Split(',');
+            VDgenes.Add(values[1]);
+        }
+
+        lines = File.ReadAllLines(lr_path);
+        foreach (string line in lines)
+        {
+            string[] values = line.Split(',');
+            LRgenes.Add(values[1]);
+        }
+
+        tomoGenePanel = APgenes.Union(VDgenes.Union(LRgenes.ToList())).ToList();
+
+
+        //Reset Camera origin
+
+        sd.StartDrawer(tempx.ToArray(), tempy.ToArray(), tempz.ToArray(), locations.ToArray(), new string[] { });
+        Camera.main.transform.position = new Vector3(0, 0, -10);
+
+
+        //  scriptHolder.GetComponent<TomoSeqDrawer>().setDataPaths(ap_path, vd_path, lr_path);
+        // scriptHolder.GetComponent<TomoSeqDrawer>().generateGrid();
+    }
+
+    public List<string> getTomoGenePanel()
+    {
+        return tomoGenePanel;
     }
 
     /// <summary>

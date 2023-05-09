@@ -145,6 +145,7 @@ public class UIManager : MonoBehaviour
     public TMP_InputField tomoVDfield;
     public TMP_InputField tomoLRfield;
     public TMP_InputField tomoGenefield;
+    public TMP_InputField tomoBitmaskfield;
     public TMP_InputField merfishTMPField;                      //Load for visualisation
     public TMP_InputField merfish_counts_LoadTMP;               //Process 
     public TMP_InputField merfish_meta_LoadTMP;                 //Process
@@ -161,6 +162,7 @@ public class UIManager : MonoBehaviour
     public string VDPath;
     public string LRPath;
     public string tomoGenePath;
+    public string tomoBitmaskPath;
     public string xeniumMatrix;
     public string xeniumPath;
     public string merfishPath;
@@ -966,6 +968,11 @@ public class UIManager : MonoBehaviour
     {
         StartCoroutine(selectBrowseFile("tomoGene", tomoGenefield));
     }
+
+    public void selectTomoBitmask()
+    {
+        StartCoroutine(selectBrowseFile("tomoBitmask", tomoBitmaskfield));
+    }
     #endregion
 
     #region File Browser
@@ -1021,6 +1028,9 @@ public class UIManager : MonoBehaviour
                     break;
                 case "tomoGene":
                     tomoGenePath = res;
+                    break;                   
+                case "tomoBitmask":
+                    tomoBitmaskPath = res;
                     break;              
                 case "xeniumPath":
                     xeniumPath = res;
