@@ -141,6 +141,7 @@ public class UIManager : MonoBehaviour
     public TMP_InputField xenium_cells_csv_TMP;
     public TMP_InputField stomicsPathField;
     public TMP_InputField stomicsPathProcessField;
+    public TMP_InputField tomoDirectoryfield;
     public TMP_InputField tomoAPfield;
     public TMP_InputField tomoVDfield;
     public TMP_InputField tomoLRfield;
@@ -162,7 +163,8 @@ public class UIManager : MonoBehaviour
     public string VDPath;
     public string LRPath;
     public string tomoGenePath;
-    public string tomoBitmaskPath;
+    public string tomoBitmaskPath = "";
+    public string tomoDirectoryPath;
     public string xeniumMatrix;
     public string xeniumPath;
     public string merfishPath;
@@ -949,6 +951,11 @@ public class UIManager : MonoBehaviour
         StartCoroutine(selectBrowseFile("otherMeta", otherMetaLoadTMP));
     }
 
+    public void selectTomoDirectory()
+    {
+        StartCoroutine(selectBrowseFile("tomoDirectiory", tomoDirectoryfield));
+    }
+
     public void selectTomoAP()
     {
         StartCoroutine(selectBrowseFile("AP", tomoAPfield));
@@ -1032,6 +1039,9 @@ public class UIManager : MonoBehaviour
                 case "tomoBitmask":
                     tomoBitmaskPath = res;
                     break;              
+                case "tomoDirectiory":
+                    tomoDirectoryPath = res;
+                    break;                
                 case "xeniumPath":
                     xeniumPath = res;
                     break;

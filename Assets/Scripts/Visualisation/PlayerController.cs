@@ -124,6 +124,7 @@ public class PlayerController : MonoBehaviour
 
         xRotation = Mathf.Clamp(xRotation, -90.0f, 90.0f);
 
-        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0.0f);
+        //transform.rotation = Quaternion.Euler(xRotation, yRotation, 0.0f);
+        transform.rotation = Quaternion.Euler(xRotation, 0, yRotation);
     }
 }

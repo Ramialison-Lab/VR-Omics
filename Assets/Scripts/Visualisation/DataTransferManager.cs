@@ -589,35 +589,63 @@ public class DataTransferManager : MonoBehaviour
     {
         // transfer from pipeline
         // TBD LINKPATH
-
+        bool bitmaskIncluded = false;
         string ap_path = df.APPath;
         string vd_path = df.VDPath;
         string lr_path = df.LRPath;
         string bitmask_path = df.tomoBitmaskPath;
+        string tomoDirectoryPath = df.tomoDirectoryPath;
         tomoGeneDirectory = df.tomoGenePath;
 
-        //TODO: Remove this for final build
-#if UNITY_EDITOR
-        if(ap_path =="") ap_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_AP.csv";
-        if (vd_path == "") vd_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_VD.csv";
-        if (lr_path == "") lr_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_LR.csv";
-        bitmask_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\15ss_3dbitmask.txt";
-        tomoGeneDirectory = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\geneFiles";
-#endif
-        string[] lines = File.ReadAllLines(bitmask_path); 
-        tomoSize = lines.Length;
-        List<float> geneExpList = new List<float>();
-
-        //Read Bitmask for 3D image
-        foreach (string line in lines)
+        if(tomoDirectoryPath != "")
         {
-            string[] values = line.Split(' ');
-
-            foreach (string c in values)
+            string[] allDirectories = Directory.GetFiles(tomoDirectoryPath, "*", SearchOption.AllDirectories);
+            
+            foreach(string str in allDirectories)
             {
-                geneExpList.Add(float.Parse(c));
+                if (str.Contains("_AP.csv")) ap_path = str;
+                else if (str.Contains("_VD.csv")) vd_path = str;
+                else if (str.Contains("_LR.csv")) lr_path = str;
+                else if (str.Contains("_bitmask.txt")) bitmask_path = str;
+                else if (str.Contains("GeneFiles"))
+                {
+                    int index = str.IndexOf("GeneFiles");
+
+                    if (index != -1)
+                    {
+                        tomoGeneDirectory = str.Substring(0, index + "GeneFiles".Length);
+                    }
+                }
             }
         }
+
+        //TODO: Remove this for final build
+//#if UNITY_EDITOR
+//        if (ap_path == "") ap_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_AP.csv";
+//        if (vd_path == "") vd_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_VD.csv";
+//        if (lr_path == "") lr_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\zf15ss_LR.csv";
+//        bitmask_path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\15ss_3dbitmask.txt";
+//        tomoGeneDirectory = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Tomo_seq\\Tomo\\geneFiles";
+//#endif
+        tomoSize = 50;
+        List<float> geneExpList = new List<float>();
+        if(bitmask_path != "")
+        {
+            bitmaskIncluded = true;
+            string[] tomoLines = File.ReadAllLines(bitmask_path); 
+            tomoSize = tomoLines.Length;
+            //Read Bitmask for 3D image
+            foreach (string line in tomoLines)
+            {
+                string[] values = line.Split(' ');
+
+                foreach (string c in values)
+                {
+                    geneExpList.Add(float.Parse(c));
+                }
+            }
+        }
+
 
         //generate a grid and apply coordiantes based on bitmask
         List<float> tempx = new List<float>();
@@ -638,7 +666,17 @@ public class DataTransferManager : MonoBehaviour
             {
                 for (int x = 0; x < tomoSize; x++)
                 {
-                    if (geneExpList[count] != 0)
+                    if (bitmaskIncluded)
+                    {
+                        if (geneExpList[count] != 0)
+                        {
+                            tempx.Add(x);
+                            tempy.Add(y);
+                            tempz.Add(z);
+                            locations.Add("");
+                        }
+                    }
+                    else
                     {
                         tempx.Add(x);
                         tempy.Add(y);
@@ -655,7 +693,7 @@ public class DataTransferManager : MonoBehaviour
         List<string> VDgenes = new List<string>();
         List<string> LRgenes = new List<string>();
 
-        lines = File.ReadAllLines(ap_path);
+        string[] lines = File.ReadAllLines(ap_path);
         foreach (string line in lines)
         {
             string[] values = line.Split(',');

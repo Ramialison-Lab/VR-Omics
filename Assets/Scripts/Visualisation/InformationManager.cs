@@ -56,6 +56,16 @@ public class InformationManager : MonoBehaviour
                 break;            
             case "tomoseq_Info":
                 infoText = "More information on the natue of the tomo data and how to reconstruct the gene files can be found here: https://doi.org/10.1016/j.cell.2014.09.038";
+                break;            
+            case "tomo_directory_info":
+                infoText = "This load option allows reading a single folder as input for the Visualiser. Ensure the following files are included and named accoridingly \n " +
+                    "AP count matrix with the ending _AP.csv \n" +
+                    "VD count matrix with the ending _VD.csv \n" +
+                    "LR count matrix with the ending _LR.csv \n" +
+                    "A folder containing all reconstructed gene Files as .txt format \n" +
+                    "(optional) bitmask in .txt format with the ending _bitmask.txt \n" +
+                    "Ensure there are no other files in the directory with any of the file name endings as mentioned above."
+                    ;
                 break;
         }
         setInfoPanelActive(infoText);

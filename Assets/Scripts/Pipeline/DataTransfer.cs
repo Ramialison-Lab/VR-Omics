@@ -45,6 +45,7 @@ public class DataTransfer : MonoBehaviour
     public string LRPath;
     public string tomoGenePath;
     public string tomoBitmaskPath;
+    public string tomoDirectoryPath;
     public string visiumPath;
     public string xeniumMatrix;
     public string xeniumGenePanelPath;
@@ -97,6 +98,7 @@ public class DataTransfer : MonoBehaviour
         LRPath = ui.LRPath;
         tomoGenePath = ui.tomoGenePath;
         tomoBitmaskPath = ui.tomoBitmaskPath;
+        tomoDirectoryPath = ui.tomoDirectoryPath;
 
         startVisualisationScene();
     }
