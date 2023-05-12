@@ -62,7 +62,7 @@ public class InformationManager : MonoBehaviour
                     "AP count matrix with the ending _AP.csv \n" +
                     "VD count matrix with the ending _VD.csv \n" +
                     "LR count matrix with the ending _LR.csv \n" +
-                    "A folder containing all reconstructed gene Files as .txt format \n" +
+                    "A folder containing all reconstructed gene Files as .txt format named \"GeneFiles\" \n" +
                     "(optional) bitmask in .txt format with the ending _bitmask.txt \n" +
                     "Ensure there are no other files in the directory with any of the file name endings as mentioned above."
                     ;
