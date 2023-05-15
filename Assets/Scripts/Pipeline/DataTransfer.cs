@@ -36,6 +36,7 @@ public class DataTransfer : MonoBehaviour
     public bool tomoseq = false;
     public bool stomics = false;
     public bool merfish = false;
+    public bool nanostring = false;
     public bool objectUsed = false;
     public bool continueSession = false;
     //datapaths
@@ -54,6 +55,7 @@ public class DataTransfer : MonoBehaviour
     public string merfishGenePath;
     public string merfishMetaPath;
     public string merfishPath;
+    public string nanostringPath;
     public string otherMatrixPath;
     public string otherMetaPath;
     public List<string> pathList;
@@ -142,6 +144,16 @@ public class DataTransfer : MonoBehaviour
     {
         xenium = true;
         xeniumPath = ui.xeniumPath;
+        startVisualisationScene();
+    }    
+    
+    /// <summary>
+    /// Start Nanostring in Visualiser
+    /// </summary>
+    public void startNanostring()
+    {
+        nanostring = true;
+        nanostringPath = ui.nanostringPath;
         startVisualisationScene();
     }
 

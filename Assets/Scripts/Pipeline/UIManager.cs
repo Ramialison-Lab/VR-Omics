@@ -63,6 +63,7 @@ public class UIManager : MonoBehaviour
     public GameObject stomicsProcessPanel;
     public GameObject merfishProcessPanel;
     public GameObject merfishLoadPanel;
+    public GameObject nanostringLoadPanel;
     public GameObject otherLoadPanel;
     public GameObject loadingPanel;
     public GameObject objectLoadPanel;
@@ -95,6 +96,7 @@ public class UIManager : MonoBehaviour
     //Sidebar expand menu variables
     private bool expMenuVisium = false;
     private bool expMenuMerfish = false;
+    private bool expMenuNanostring = false;
     private bool expMenuXen = false;
     private bool expMenuTomo = false;
     private bool expMenuStomics = false;
@@ -106,12 +108,14 @@ public class UIManager : MonoBehaviour
     public GameObject mainExpandStomics;
     public GameObject mainExpandOther;
     public GameObject mainExpandMerfish;
+    public GameObject mainExpandNanostring;
 
     public GameObject expandBtnActivePanelVisium;
     public GameObject expandBtnActivePanelXenium;
     public GameObject expandBtnActivePanelTomo;
     public GameObject expandBtnActivePanelStomics;
     public GameObject expandBtnActivePanelMerfish;
+    public GameObject expandBtnActivePanelNanostring;
     public GameObject expandBtnActivePanelOther;
 
     //Rotation slice
@@ -151,6 +155,7 @@ public class UIManager : MonoBehaviour
     public TMP_InputField merfish_counts_LoadTMP;               //Process 
     public TMP_InputField merfish_meta_LoadTMP;                 //Process
     public TMP_InputField merfish_transform_LoadTMP;            //Process
+    public TMP_InputField nanostringTMPField;            //Process
     public TMP_InputField visium_from_local_TMP;            //Process
     public TMP_InputField otherMatLoadTMP;
     public TMP_InputField otherMetaLoadTMP;
@@ -176,6 +181,7 @@ public class UIManager : MonoBehaviour
     private string merfish_counts_file = "";
     private string merfish_meta_file = "";
     private string merfish_transformation_file = "";
+    public string nanostringPath;
     public string objectPath;
     public string visium_local_path;
 
@@ -254,6 +260,19 @@ public class UIManager : MonoBehaviour
         if (fpc.files_Checked)
         {
             df.startXenium();
+        }
+    }    
+    
+    /// <summary>
+    /// Starting Nanostring
+    /// </summary>
+    public void startNanostring()
+    {
+        //TODO: Add File Names for Nanostring
+        //fpc.checkNanostringPath(xeniumPath);
+        //if (fpc.files_Checked)
+        {
+            df.startNanostring();
         }
     }
 
@@ -360,6 +379,9 @@ public class UIManager : MonoBehaviour
                 break;
             case "ProcessMerfishBtn":
                 merfishProcessPanel.SetActive(true);
+                break;                     
+            case "LoadNanostringBtn":
+                nanostringLoadPanel.SetActive(true);
                 break;
             case "LoadOtherBtn":
                 otherLoadPanel.SetActive(true);
@@ -488,6 +510,21 @@ public class UIManager : MonoBehaviour
             expandBtnActivePanelMerfish.SetActive(false);
         }
         expMenuMerfish = !expMenuMerfish;
+    }    
+    
+    public void toggleExpandMenuNanostring()
+    {
+        if (!expMenuNanostring)
+        {
+            expandPanelOut(mainExpandNanostring);
+            expandBtnActivePanelNanostring.SetActive(true);
+        }
+        else
+        {
+            mainExpandNanostring.transform.localPosition = new Vector2(mainExpandNanostring.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandNanostring.GetComponent<RectTransform>().transform.localPosition.y);
+            expandBtnActivePanelNanostring.SetActive(false);
+        }
+        expMenuNanostring = !expMenuNanostring;
     }
 
     public void toggleExpandMenuTomoSeq()
@@ -886,6 +923,7 @@ public class UIManager : MonoBehaviour
     {
         StartCoroutine(selectBrowseFile("xeniumPath", xeniumTMPField));
     }
+
     public void Select_Xenium_Cell_Feature_h5()
     {
         StartCoroutine(selectBrowseFile("xeniumFeatMatrix", xenium_feature_matrix_h5_TMP));
@@ -980,6 +1018,11 @@ public class UIManager : MonoBehaviour
     {
         StartCoroutine(selectBrowseFile("tomoBitmask", tomoBitmaskfield));
     }
+
+    public void selectNanostringPath()
+    {
+        StartCoroutine(selectBrowseFile("nanostringPath", nanostringTMPField));
+    }
     #endregion
 
     #region File Browser
@@ -1071,6 +1114,9 @@ public class UIManager : MonoBehaviour
                     break;                
                 case "visiumFromLocal":
                     visium_local_path = res;
+                    break;                
+                case "nanostringPath":
+                    nanostringPath = res;
                     break;
                 case "object":
                     objectPath = res;

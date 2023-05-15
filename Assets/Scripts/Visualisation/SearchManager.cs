@@ -114,6 +114,11 @@ public class SearchManager : MonoBehaviour
         {
             geneNames.AddRange(dfm.MerfishGeneNames);
             acm.setGeneNameList(geneNames);
+        }        
+        else if (dfm.nanostring)
+        {
+            geneNames.AddRange(dfm.NanostringGeneNames);
+            acm.setGeneNameList(geneNames);
         }
         else if (dfm.other)
         {
@@ -238,7 +243,7 @@ public class SearchManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Reads gene from STOmics data 
+    /// Reads gene from Xenium data 
     /// </summary>
     /// <param name="searchGene">The gene to be read.</param>
     internal void readXeniumExpression(string searchGene)
@@ -253,6 +258,8 @@ public class SearchManager : MonoBehaviour
         int x = genes.IndexOf(searchGene);
 
         string[] lines = File.ReadAllLines(dfm.xeniumCounts);
+        //TODO: add check for header csv
+
         lines = lines.Skip(1).ToArray();
 
         List<string> values = new List<string>();
@@ -265,6 +272,39 @@ public class SearchManager : MonoBehaviour
         }
         normaliseAndDraw(readList);
     }
+
+    /// <summary>
+    /// Reads gene from Nanostring data 
+    /// </summary>
+    /// <param name="searchGene">The gene to be read.</param>
+    internal void readNanostringExpression(string searchGene)
+    {
+        Awake();
+        try
+        {
+            rgi.readGeneInformation(searchGene);
+        }
+        catch (Exception e) { }
+        var genes = dfm.NanostringGeneNames;
+
+        int x = genes.IndexOf(searchGene);
+
+        string[] lines = File.ReadAllLines(dfm.nanostringCounts);
+        //TODO: add check for header csv
+        lines = lines.Skip(1).ToArray();
+
+        List<string> values = new List<string>();
+        values = lines[x].Split(',').ToList();
+        List<float> readList = new List<float>();
+
+        for (int i = 0; i < values.Count; i++)
+        {
+            if (i > 0) readList.Add(float.Parse(values[i]));
+        }
+        normaliseAndDraw(readList);
+    }
+
+
 
     /// <summary>
     /// Reads gene from C18 heart databasae demo embedded.

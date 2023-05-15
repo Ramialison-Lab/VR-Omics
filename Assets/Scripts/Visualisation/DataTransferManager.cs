@@ -37,6 +37,7 @@ public class DataTransferManager : MonoBehaviour
     public bool tomoseq = false;
     public bool xenium = false;
     public bool merfish = false;
+    public bool nanostring = false;
     public bool c18_visium = false;
     public bool other = false;
 
@@ -115,6 +116,12 @@ public class DataTransferManager : MonoBehaviour
     public List<string> MerfishGeneNames = new List<string>();
     public string merfishGenelist;
     public string merfishCoords;
+
+    //Nanostring
+    public List<string> NanostringGeneNames = new List<string>();
+    public string nanostringCounts;
+    public string nanostringCoords;
+    public string nanostringGenePanelPath;
 
     //Tomoseq
     public string tomoGeneDirectory;
@@ -517,6 +524,83 @@ public class DataTransferManager : MonoBehaviour
 
         sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
         AdjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, 0, new Vector3(0, 0, 0));
+    }
+
+    /// <summary>
+    /// Nanostring - This function starts the Nanostring process, reads all related datapaths and creates the required lists to call the SpotDrawer script
+    /// </summary>
+    public void StartNanostring()
+    {
+        string[] files = Directory.GetFiles(df.nanostringPath, "*gene_transposed_counts.csv");
+        nanostringCounts = files[0];        
+        files = Directory.GetFiles(df.nanostringPath, "*panel.csv");
+        string nanostringGenePanel= files[0];
+        files = Directory.GetFiles(df.nanostringPath, "*meta_data.csv");
+        nanostringCoords = files[0];
+        files = Directory.GetFiles(df.nanostringPath, "gene_information.csv");
+        nanostringGenePanelPath = files[0];
+        try
+        {
+            //TODO: Add Moran REsults/SVG for Nanostring
+            files = Directory.GetFiles(df.nanostringPath, "*results.csv");
+            moran_results = files[0];
+        }
+        catch (Exception) { }
+
+        string[] lines = File.ReadAllLines(nanostringCoords);
+        if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
+        {
+            lines = lines.Skip(1).ToArray();
+        }
+
+        string[] allDirectories = Directory.GetFiles(df.nanostringPath, "*", SearchOption.AllDirectories);
+        CheckForFigures(allDirectories);
+
+        x_coordinates = new float[lines.Length];
+        y_coordinates = new float[lines.Length];
+        z_coordinates = new float[lines.Length];
+        location_names = new string[lines.Length];
+
+        float minX, maxX, minY, maxY, minZ;
+        minX = maxX = minY = maxY = minZ = 0;
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string[] values = lines[i].Split(',');
+            float x = x_coordinates[i] = float.Parse(values[3])/100;
+            float y = y_coordinates[i] = float.Parse(values[4])/100;
+            float z = z_coordinates[i] = 0;
+            location_names[i] = values[0];
+
+            // Find min and max
+            if (x < minX) minX = x;
+            else if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            else if (y > maxY) maxY = y;
+            if (z < minZ) minZ = z;
+        }
+
+
+        //TODO read gene from count file 
+        string[] linesGn = File.ReadAllLines(nanostringCounts);
+        foreach (string line in linesGn)
+        {
+            string[] values = line.Split(',');
+
+            NanostringGeneNames.Add(values[0]);
+        }
+
+        sd.Min = new Vector2(minX, minY);
+        sd.Max = new Vector2(maxX, maxY);
+        sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
+
+        string srtMethod = "nanostring";
+        string[] dfPaths = new string[1];
+        dfPaths[0] = df.nanostringPath;
+        SaveData(dfPaths, srtMethod, NanostringGeneNames.ToArray());
+
+        AdjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, minZ, new Vector3(0, 0, 0));
+        Camera.main.transform.position = new Vector3(150, 1500, -175);
+        // scriptHolder.GetComponent<XeniumDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell);
     }
 
     /// <summary>
@@ -989,6 +1073,11 @@ public class DataTransferManager : MonoBehaviour
         {
             merfish = true;
             StartMerfish();
+        }
+        else if (df.nanostring)
+        {
+            nanostring = true;
+            StartNanostring();
         }
         else if (df.other)
         {

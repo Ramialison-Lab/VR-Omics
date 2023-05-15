@@ -156,6 +156,7 @@ public class AutoCompleteManager : MonoBehaviour
         }
         else if (dfm.xenium) sm.readXeniumExpression(tmp_txt.text);
         else if (dfm.merfish) sm.readMerfishExpression(tmp_txt.text);
+        else if (dfm.nanostring) sm.readNanostringExpression(tmp_txt.text);
     }
 
     /// <summary>
@@ -174,6 +175,7 @@ public class AutoCompleteManager : MonoBehaviour
         if (dfm.c18_visium) sm.readC18Expression(geneName);
         else if (dfm.visium) sm.readExpressionList(geneName);
         else if (dfm.tomoseq) sm.applyGeneExpressionTomo(geneName);
+        else if (dfm.nanostring) sm.readNanostringExpression(geneName);
         else if (dfm.stomics)
         {
             int pos = geneNames.IndexOf(geneName);
