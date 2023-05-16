@@ -489,7 +489,7 @@ public class SpotDrawer : MonoBehaviour
 
         symbolSelect = sphereSymb;
         if(dfm.c18_visium) symbolSelect.transform.localScale = new Vector3(10, 10, 10);
-
+        else if(dfm.nanostring) symbolSelect.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         else symbolSelect.transform.localScale = new Vector3(1, 1, 1);
 
         // xcoords, ycoords, and zcoords, are the 3D coordinates for each spot

@@ -598,7 +598,7 @@ public class DataTransferManager : MonoBehaviour
         dfPaths[0] = df.nanostringPath;
         SaveData(dfPaths, srtMethod, NanostringGeneNames.ToArray());
 
-        AdjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, minZ, new Vector3(0, 0, 0));
+        //AdjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, minZ, new Vector3(0, 0, 0));
         Camera.main.transform.position = new Vector3(150, 1500, -175);
         // scriptHolder.GetComponent<XeniumDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell);
     }
@@ -1160,6 +1160,11 @@ public class DataTransferManager : MonoBehaviour
                 case "c18":
                     c18_visium = true;
                     StartC18();
+                    break;
+                case "nanostring":
+                    nanostring = true;
+                    df.nanostringPath = dataPathList[0];
+                    StartNanostring();
                     break;
                 default: break;
             }

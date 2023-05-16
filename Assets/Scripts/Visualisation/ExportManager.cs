@@ -127,7 +127,6 @@ public class ExportManager : MonoBehaviour
         panel.SetActive(true);
         makeScreenshot = true;
         panel.SetActive(false);
-
     }
     
     public void setOutputPath(string path)
