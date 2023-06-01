@@ -94,13 +94,18 @@ public class SliceCollider : MonoBehaviour
 
         string imagePath = dfm.current_directory + "/Assets/Images/Error_Images/spatial_file_not_found.png";
 
+#if UNITY_EDITOR_OSX
+        int index = datasetName.LastIndexOf("/");
+#else
         int index = datasetName.LastIndexOf("\\");
+#endif
         string path = "";
         if (index >= 0)
         {
             path = datasetName.Substring(0, index);
         }
         //can't find the spatial image from directory
+
         string[] files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
         try
         {
@@ -116,7 +121,7 @@ public class SliceCollider : MonoBehaviour
         Texture2D sampleTexture = new Texture2D(2, 2);
         bool isLoaded = sampleTexture.LoadImage(byteArray);
 
-        #region Scaling H&E image
+#region Scaling H&E image
 
         //imagePlane.transform.localPosition = new Vector3(imagePlane.transform.localPosition.x, imagePlane.transform.localPosition.y + 0.054f, imagePlane.transform.localPosition.z);
         // Debug.Log("Raw size: " + sampleTexture.width + " x " + sampleTexture.height);
@@ -221,7 +226,7 @@ public class SliceCollider : MonoBehaviour
         //imagePlane.transform.localScale = new Vector3(imagePlane.transform.localScale.x * scaleWidth, imagePlane.transform.localScale.y * scaleHeight, imagePlane.transform.localScale.z);
 
         countSFs++;
-        #endregion
+#endregion
 
         imagePlane.GetComponent<Renderer>().material.mainTexture = sampleTexture;
         imagePlane.AddComponent<HAndEImageManager>();

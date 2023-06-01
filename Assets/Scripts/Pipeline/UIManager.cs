@@ -32,7 +32,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+#if !UNITY_EDITOR_OSX
 using VROmics.Main;
+#endif
 
 public class UIManager : MonoBehaviour
 {
@@ -1199,7 +1201,12 @@ public class UIManager : MonoBehaviour
                             string[] files = Directory.GetFiles(FileBrowser.Result[i], "*", SearchOption.AllDirectories);
                             foreach (string s in files)
                             {
+#if UNITY_EDITOR_OSX
+                                if (s.Split("/").Last() == "tissue_hires_image.png") byteArray = File.ReadAllBytes(s);
+#else
+
                                 if (s.Split("\\").Last() == "tissue_hires_image.png") byteArray = File.ReadAllBytes(s);
+#endif
                             }
                         }
                         catch (Exception){}
@@ -1528,7 +1535,7 @@ public class UIManager : MonoBehaviour
 #endregion
 
     // 3D object
-    #region 3D object
+#region 3D object
     /// <summary>
     /// Resets all Inputfields and deletes the objects that have been passed to the DataTransfer script
     /// </summary>
@@ -1563,12 +1570,13 @@ public class UIManager : MonoBehaviour
 #endregion
 
     // Additional functions
-    #region VR Settings
+#region VR Settings
     /// <summary>
     /// Trigger HMD detection manually.
     /// </summary>
     public void EnterVR(Transform EnterVRTransform)
     {
+#if !UNITY_EDITOR_OSX
         GameObject activeIconGameObject = EnterVRTransform.GetChild(1).gameObject;
         if (activeIconGameObject.activeSelf)
         {
@@ -1579,6 +1587,7 @@ public class UIManager : MonoBehaviour
             StartCoroutine(EntrypointVR.Instance.DetectHMD());
 
         activeIconGameObject.SetActive(!activeIconGameObject.activeSelf);
+#endif
     }
 
     /// <summary>
@@ -1597,5 +1606,5 @@ public class UIManager : MonoBehaviour
     {
         df.ContinueSession();
     }
-    #endregion
+#endregion
 }

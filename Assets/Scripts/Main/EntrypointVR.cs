@@ -20,6 +20,9 @@
 * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/*
+#if !UNITY_EDITOR_OSX
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,7 +33,7 @@ using UnityEngine.XR.Interaction.Toolkit.UI;
 
 namespace VROmics.Main
 {
-
+#if !UNITY_EDITOR_OSX
     /// <summary>
     /// This represents the entrypoint from the initial Desktop configuration to a VR, interactable reconfiguration.
     /// The reconfiguration is executed automatically, given conditions are met.
@@ -277,8 +280,11 @@ namespace VROmics.Main
         public bool IsDetectingHMD { get; set; }
         private static Dictionary<Canvas, bool> RecenterStatus = new Dictionary<Canvas, bool>();
 
-        #region Visualization Canvas
+#region Visualization Canvas
         private SpotDrawer SpotDrawer;
-        #endregion
+#endregion
     }
+#endif
 }
+#endif
+*/

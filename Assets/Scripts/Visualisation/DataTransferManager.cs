@@ -164,7 +164,8 @@ public class DataTransferManager : MonoBehaviour
 
         string srtMethod = "visium";
 
-                List<string> shortList = new List<string>();                //List for names of slices from datasetnames
+        List<string> shortList = new List<string>();                //List for names of slices from datasetnames
+        List<string> genePanels = new List<string>();               //Datapaths to genePanel files
         geneNameDictionary = new List<string>[df.pathList.Count];   //Dicitonary of all gene names
         positionList = new string[df.pathList.Count];               //Datapaths to tissue_possition lists
         jsonFilePaths = new string[df.pathList.Count];              //Datapaths to json files containing the H&E scale factors
@@ -180,15 +181,26 @@ public class DataTransferManager : MonoBehaviour
             visiumMetaFiles.AddRange(Directory.GetFiles(x, "*metadata.csv"));
             hdf5datapaths.AddRange(Directory.GetFiles(x, "*.h5"));
             csvGeneExpPaths.AddRange(Directory.GetFiles(x, "*filtered_transposed.csv"));
+            genePanels.AddRange(Directory.GetFiles(x, "genePanel.csv"));
 
             CheckForFigures(allDirectories);
             foreach (string s in allDirectories)
             {
+#if UNITY_EDITOR_OSX
+                if (s.Split("/").Last() == "tissue_positions_list.csv")
+                {
+                    positionList[positionListCounter] = s;
+                    positionListCounter++;
+                }
+#else
+
                 if (s.Split("\\").Last() == "tissue_positions_list.csv")
                 {
                     positionList[positionListCounter] = s;
                     positionListCounter++;
                 }
+#endif
+
                 if (s.Contains("scalefactors_json.json") && !s.Contains("meta"))
                 {
                     jsonFilePaths[jsonListCounter] = s;
@@ -224,10 +236,14 @@ public class DataTransferManager : MonoBehaviour
         foreach (string p in hdf5datapaths)
         {
             int visiumScaleFactor = 1;
+
+#if UNITY_EDITOR_OSX
+            shortList.Add(p.Split('/').Last());
+#else
             shortList.Add(p.Split('\\').Last());
+#endif
             //reads barcodes and row and col positions and create merged list of coordinates
             //fr.calcCoords(p);
-
             //Read position of all locations that are detected on tissue
             string[] lines = File.ReadAllLines(positionList[positionListCounter]);
             positionListCounter++;
@@ -331,17 +347,39 @@ public class DataTransferManager : MonoBehaviour
             }
 
             SpotNameDictionary.Add(location_names.ToList());
-            fr.readGeneNames(p);
+
+            geneNameDictionary[geneNameDictionary_Counter] = new List<string>();
+
+            string[] genePanelLines = File.ReadAllLines(genePanels[count]);
+            genePanelLines = genePanelLines.Skip(1).ToArray();
+            foreach ( string str in genePanelLines)
+            {
+                string[] values = str.Split(',');
+
+                geneNameDictionary[geneNameDictionary_Counter].Add(values[0]);
+            }
+
+            geneNamesDistinct.AddRange(geneNameDictionary[geneNameDictionary_Counter]);
+            geneNameDictionary_Counter++;
+
+            geneNamesDistinct = geneNamesDistinct.Distinct().ToList();
+
+
+#if !UNITY_EDITOR_OSX
+
+            fr.readGeneNames(p);s
             geneNameDictionary[geneNameDictionary_Counter] = new List<string>();
             foreach (string x in fr.geneNames)
             {
                 geneNameDictionary[geneNameDictionary_Counter].Add(x);
             }
-
             geneNameDictionary_Counter++;
-
             geneNamesDistinct.AddRange(fr.geneNames);
             geneNamesDistinct = geneNamesDistinct.Distinct().ToList();
+
+#endif
+
+
 
             count++;
         }
@@ -1007,7 +1045,7 @@ public class DataTransferManager : MonoBehaviour
         bfm.SetFunction(df);
     }
 
-    #region Save Data
+#region Save Data
     private void SaveData(string[] datapaths, string srtMethod, string[] geneNamesDistinct)
     {
         SessionData data = new SessionData();
@@ -1083,7 +1121,7 @@ public class DataTransferManager : MonoBehaviour
         sd.ContinueSession();
 
     }
-    #endregion
+#endregion
 
     [System.Serializable]
     private class SessionData

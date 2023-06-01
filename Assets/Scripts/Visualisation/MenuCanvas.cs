@@ -23,11 +23,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using VROmics.Main;
 using System.IO;
 using System.Linq;
 using System.Diagnostics;
 using System;
+
+#if !UNITY_EDITOR_OSX
+using VROmics.Main;
+#endif
 
 public class MenuCanvas : MonoBehaviour
 {
@@ -79,14 +82,16 @@ public class MenuCanvas : MonoBehaviour
 
         Camera.main.backgroundColor = Color.black;
 
+#if !UNITY_EDITOR_OSX
         if (EntrypointVR.Instance.IsDetectingHMD || EntrypointVR.Instance.VR)
         {
             GameObject.Find("Enter VR").transform.GetChild(1).gameObject.SetActive(true);
         }
+#endif
     }
 
     //Functions for lasso tool for location selection
-    #region Lasso
+#region Lasso
     /// <summary>
     /// Toggles lasso mode for selection of single locations in the Visualiser.
     /// </summary>
@@ -122,10 +127,10 @@ public class MenuCanvas : MonoBehaviour
     {
         return lasso;
     }
-    #endregion
+#endregion
 
     //Functions related to H&E stain image overlay
-    #region H&E
+#region H&E
     /// <summary>
     /// Toogle H&E overlay mode
     /// </summary>
@@ -155,10 +160,10 @@ public class MenuCanvas : MonoBehaviour
             obj.GetComponent<HAndEImageManager>().setAlpha(slider.GetComponent<Slider>().value, transparentMat);
         }
     }
-    #endregion
+#endregion
 
     //Functions for threshold sliders
-    #region Threshold
+#region Threshold
     /// <summary>
     /// Setting threshold for gene expression values.
     /// Any location in the dataset with a gene expression value below the threshold will be turned off. 
@@ -180,10 +185,10 @@ public class MenuCanvas : MonoBehaviour
     {
         sd.maxTresh = slider.GetComponent<Slider>().value;
     }
-    #endregion
+#endregion
 
     //ImageViewer related functions to show png files in Visualiser
-    #region ImageViewer
+#region ImageViewer
     /// <summary>
     /// Opens the default image viewer on the computer, with the currently shown image. 
     /// </summary>
@@ -276,10 +281,10 @@ public class MenuCanvas : MonoBehaviour
         SetFigure(figurePaths[figuresCount]);
     }
 
-    #endregion
+#endregion
 
     //Single functions for canvas related operations
-    #region Other
+#region Other
     /// <summary>
     /// Toogle background colour in Visualiser from black to white
     /// </summary>
@@ -366,10 +371,11 @@ public class MenuCanvas : MonoBehaviour
     {
         sd.SaveSession();
     }
-    #endregion
+#endregion
 
+#if !UNITY_EDITOR_OSX
     //HMD related settings
-    #region HMD
+#region HMD
     /// <summary>
     /// Trigger HMD detection manually.
     /// </summary>
@@ -386,5 +392,6 @@ public class MenuCanvas : MonoBehaviour
 
         activeIconGameObject.SetActive(!activeIconGameObject.activeSelf);
     }
-    #endregion
+#endregion
+#endif
 }

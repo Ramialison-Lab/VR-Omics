@@ -26,8 +26,11 @@ using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
-using VROmics.Main;
 using VROmics.Visualisation;
+
+#if !UNITY_EDITOR_OSX
+using VROmics.Main;
+#endif
 
 
 public class SpotDrawer : MonoBehaviour
@@ -207,8 +210,9 @@ public class SpotDrawer : MonoBehaviour
         if (copy) // align o.y with o_copy.y
             o.y = dataOrigin.OriginCopy.y;
         var Mc = Matrix4x4.TRS(o, canvas.transform.rotation, canvas.transform.localScale);
+#if !UNITY_EDITOR_OSX
         float s_w = EntrypointVR.Instance.VR ? 0.004f : 1f;
-
+#endif
         /////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////
@@ -575,7 +579,7 @@ public class SpotDrawer : MonoBehaviour
         StartCoroutine(InitializeShaderBuffers());
     }
 
-    #region Colour
+#region Colour
    
     /// <summary>
     /// Translates normlaised expression values into a colour gradient
@@ -1002,9 +1006,9 @@ public class SpotDrawer : MonoBehaviour
     {
         colourcopy = !colourcopy;
     }
-    #endregion
+#endregion
 
-    #region Location Identification, Lasso, Slice movement
+#region Location Identification, Lasso, Slice movement
     //Spot identification and lasso tool function
 
     /// <summary>
@@ -1212,9 +1216,9 @@ public class SpotDrawer : MonoBehaviour
         SetMeshBuffers();
     }
 
-    #endregion
+#endregion
 
-    #region Side-By-Side
+#region Side-By-Side
     //Side-by-Side feature (Creating duplicate of the current slice to show different gene expression patterns next to each other
 
     /// <summary>
@@ -1270,9 +1274,9 @@ public class SpotDrawer : MonoBehaviour
         mergePanel.SetActive(false);
         setColour();
     }
-    #endregion
+#endregion
 
-    #region Special Read
+#region Special Read
 
     /// <summary>
     /// Used to read the special values from the hdf file
@@ -1378,9 +1382,9 @@ public class SpotDrawer : MonoBehaviour
             dd.gameObject.SetActive(false);
         }
     }
-    #endregion
+#endregion
 
-    #region Export
+#region Export
 
     public void SaveSession()
     {
@@ -1516,9 +1520,9 @@ public class SpotDrawer : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
-    # region Set Methods and Other
+#region Set Methods and Other
     /// <summary>
     /// Set min.threshold for gene expressionvalues that should be visualised. Passes on information to tomo-seq technique if used
     /// </summary>
@@ -1614,7 +1618,7 @@ public class SpotDrawer : MonoBehaviour
 
         setColourFromUpload();
     }
-    #endregion
+#endregion
 
     /// <summary>
     /// Passed to the shader over our material's compute buffer.

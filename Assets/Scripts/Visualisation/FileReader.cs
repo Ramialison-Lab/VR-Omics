@@ -162,7 +162,7 @@ public class FileReader : MonoBehaviour
     IEnumerator readVarLengthString(string filePath, string dataSetName, List<string> strs)
     {
         long fileId = H5F.open(filePath, H5F.ACC_RDONLY);
-
+        Debug.Log(fileId);
         long attrId = H5D.open(fileId, dataSetName);
         long typeId = H5D.get_type(attrId);
         long spaceId = H5D.get_space(attrId);
