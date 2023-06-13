@@ -3571,15 +3571,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _controller: {fileID: 245421343}
   _speed: 20
-  _rotationSpeed: 10
-  horizontalSpeed: 2
-  verticalSpeed: 2
-  IF: {fileID: 914573081}
-  menuCanvas: {fileID: 1202353247}
   speed: 5
+  moveSpeedCamera: 5
   moveSpeed: 0.1
   zoomSpeed: 1
-  scaleFactor: 10
+  sensitivity: 2
 --- !u!143 &245421343
 CharacterController:
   m_ObjectHideFlags: 0
@@ -13938,6 +13934,7 @@ MonoBehaviour:
   tomoseq: 0
   xenium: 0
   merfish: 0
+  nanostring: 0
   c18_visium: 0
   other: 0
   svgBtn: {fileID: 829294127}
@@ -13997,7 +13994,13 @@ MonoBehaviour:
   MerfishGeneNames: []
   merfishGenelist: 
   merfishCoords: 
+  NanostringGeneNames: []
+  nanostringCounts: 
+  nanostringCoords: 
+  nanostringGenePanelPath: 
   tomoGeneDirectory: 
+  tomoGenePanel: []
+  tomoSize: 50
   otherMatrixPath: 
   otherMetaPath: 
   otherCSVCols: 

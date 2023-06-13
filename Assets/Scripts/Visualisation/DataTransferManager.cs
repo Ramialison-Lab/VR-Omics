@@ -62,7 +62,13 @@ public class DataTransferManager : MonoBehaviour
     float[] y_coordinates;
     float[] z_coordinates;
     string[] location_names;
-    string[] dataset_names;
+    string[] dataset_names;    
+    
+    List<float> x_coordinatesList;
+    List<float> y_coordinatesList;
+    List<float> z_coordinatesList;
+    List<string> location_namesList;
+    List<string> dataset_namesList;
     public List<GameObject> figureBtns = new List<GameObject>(4);
 
     //Lists
@@ -134,7 +140,7 @@ public class DataTransferManager : MonoBehaviour
     public LogFileController logfile;
     public string current_directory;
 
-    void Awake()
+    void Start()
     {
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
@@ -160,6 +166,14 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void StartVisium()
     {
+
+        location_namesList = new List<string>();
+        dataset_namesList = new List<string>();
+        x_coordinatesList = new List<float>();
+        y_coordinatesList = new List<float>();
+        z_coordinatesList = new List<float>();
+
+        int counterForMultiple = 0;
         int count = 0;                                              // counting which dataset is used
         int geneNameDictionary_Counter = 0;
         int positionListCounter = 0;
@@ -182,6 +196,7 @@ public class DataTransferManager : MonoBehaviour
         //Find the respective files from the Visium dataset repository
         foreach (string x in df.pathList)
         {
+
             string[] allDirectories = Directory.GetFiles(x, "*", SearchOption.AllDirectories);
 
             visiumMetaFiles.AddRange(Directory.GetFiles(x, "*metadata.csv"));
@@ -303,6 +318,7 @@ public class DataTransferManager : MonoBehaviour
                 }
             }
 
+            location_namesList.AddRange(location_names);
             for (int i = 0; i < row.Length; i++)
             {
                 float x, y ,z;
@@ -318,6 +334,11 @@ public class DataTransferManager : MonoBehaviour
                 else if (y > maxY) maxY = y;
                 if (z < minZ) minZ = z;
             }
+
+            x_coordinatesList.AddRange(x_coordinates);
+            y_coordinatesList.AddRange(y_coordinates);
+            z_coordinatesList.AddRange(z_coordinates);
+            dataset_namesList.AddRange(dataset_names);
 
             datasetSizes[count] = row.Length;
             //TODO: read scalefactor for adjustment
@@ -374,7 +395,7 @@ public class DataTransferManager : MonoBehaviour
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
         
-        sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, dataset_names); 
+        sd.StartDrawer(x_coordinatesList.ToArray(), y_coordinatesList.ToArray(), z_coordinatesList.ToArray(), location_namesList.ToArray(), dataset_namesList.ToArray()); 
     }
 
 
