@@ -19,14 +19,13 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+using Dummiesman;   //library to load obj during runtime
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using Dummiesman;   //library to load obj during runtime
-using UnityEngine.UI;
 
 public class DataTransferManager : MonoBehaviour
 {
@@ -166,12 +165,13 @@ public class DataTransferManager : MonoBehaviour
         int positionListCounter = 0;
         int jsonListCounter = 0;
         int tissueImageCounter = 0;
+        bool isRawData = true;
 
         string[] dfPaths = df.pathList.ToArray();
 
         string srtMethod = "visium";
 
-                List<string> shortList = new List<string>();                //List for names of slices from datasetnames
+        List<string> shortList = new List<string>();                //List for names of slices from datasetnames
         geneNameDictionary = new List<string>[df.pathList.Count];   //Dicitonary of all gene names
         positionList = new string[df.pathList.Count];               //Datapaths to tissue_possition lists
         jsonFilePaths = new string[df.pathList.Count];              //Datapaths to json files containing the H&E scale factors
@@ -195,17 +195,27 @@ public class DataTransferManager : MonoBehaviour
                 {
                     positionList[positionListCounter] = s;
                     positionListCounter++;
+                    isRawData = false;
                 }
                 if (s.Contains("scalefactors_json.json") && !s.Contains("meta"))
                 {
                     jsonFilePaths[jsonListCounter] = s;
+                    isRawData = false;
+
                 }
                 if (s.Contains("tissue_hires_image.png") && !s.Contains("meta"))
                 {
                     tissueImagePath[tissueImageCounter] = s;
                     tissueImageCounter++;
+                    isRawData = false;
+
                 }
             }
+        }
+
+        if (isRawData)
+        {
+            //TOOD: Add data handling if Visium Raw Data is used 
         }
 
         //calculate dimensions of H&E image
@@ -215,6 +225,7 @@ public class DataTransferManager : MonoBehaviour
         //disable sideBySide features for more than one visium slice
         if (hdf5datapaths.Count > 1)
         {
+
             foreach (GameObject go in disableBtn)
             {
                 go.SetActive(false);
@@ -276,6 +287,7 @@ public class DataTransferManager : MonoBehaviour
 
             foreach (string s in lines)
             {
+
                 string[] values = s.Split(',');
                 //if on tissue
                 if (values[1] == "1")

@@ -45,6 +45,8 @@ public class ExportManager : MonoBehaviour
 
     private void Start()
     {
+        resWidth = Screen.width;
+        resHeight = Screen.height;
         filePath = Application.dataPath + "/Assets/ROI_export/exported_spotlist.csv";
         filePathScreenshot = Application.dataPath + "/Assets/Screenshots/";
 #if UNITY_EDITOR
@@ -141,7 +143,7 @@ public class ExportManager : MonoBehaviour
         filePathScreenshot = Application.dataPath + "/Assets/Screenshots/";
 #if UNITY_EDITOR
         filePath = Application.dataPath + "/ROI_export/exported_spotlist.csv";
-        filePathScreenshot = Application.dataPath + "/Screenshots/";
+        filePathScreenshot = Application.dataPath + "Assets/Screenshots/";
 #endif
         var barcodes = new List<string>();
         var ids = new List<int>();

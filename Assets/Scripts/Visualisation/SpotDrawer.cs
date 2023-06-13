@@ -496,6 +496,7 @@ public class SpotDrawer : MonoBehaviour
         // spotBarcodes is the unique identifier of a spot in one dataset (They can occur in other datasets, layers though)
         // dataset is the name of the dataset for ech slice
         // for each coordinate passed
+
         spots = new SpotWrapper[xcoords.Length];
         for (int i = 0; i < xcoords.Length; i++)
         {
