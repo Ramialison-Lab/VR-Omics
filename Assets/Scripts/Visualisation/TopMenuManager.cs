@@ -19,52 +19,51 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TopMenuManager : MonoBehaviour
 {
-    private Vector3 PosA;
-    private Vector3 PosB;    
-    private Vector3 PosABtn;
-    private Vector3 PosBBtn;
+    private Vector3 startPos;
+    private Vector3 endPos;
+    private Vector3 startBtnPos;
+    private Vector3 endBtnPos;
     private float duration = 0.2f;
     private float elapsedTime;
     private bool move = false;
     private bool up = true;
+
     public GameObject topMenubtn;
 
-    void Update()
+    private void Update()
     {
         if (move)
         {
             elapsedTime += Time.deltaTime;
             float complete = elapsedTime / duration;
 
-            transform.position = Vector3.Lerp(PosA, PosB, complete);
-            topMenubtn.transform.position = Vector3.Lerp(PosABtn, PosBBtn, complete);
+            transform.position = Vector3.Lerp(startPos, endPos, complete);
+            topMenubtn.transform.position = Vector3.Lerp(startBtnPos, endBtnPos, complete);
         }
-        if (PosA == PosB) move = false;
+
+        if (Mathf.Approximately(transform.position.y, endPos.y))
+        {
+            move = false;
+        }
     }
 
-    public void togglePanel() {
+    public void TogglePanel()
+    {
         elapsedTime = 0;
-        if (up)
-        {
-            PosB = new Vector3(transform.position.x, transform.position.y - 50, transform.position.z);
-            PosBBtn = new Vector3(topMenubtn.transform.position.x, topMenubtn.transform.position.y - 50, topMenubtn.transform.position.z);
-            up = false;
-        }
-        else
-        {
-            PosB = new Vector3(transform.position.x, transform.position.y + 50, transform.position.z) ;
-            PosBBtn = new Vector3(topMenubtn.transform.position.x, topMenubtn.transform.position.y + 50, topMenubtn.transform.position.z);
-            up = true;
-        }
-        PosA = transform.position;
-        PosABtn = topMenubtn.transform.position;
+        int direction = up ? -50 : 50;
+
+        startPos = transform.position;
+        startBtnPos = topMenubtn.transform.position;
+
+        endPos = startPos + new Vector3(0, direction, 0);
+        endBtnPos = startBtnPos + new Vector3(0, direction, 0);
+
+        up = !up;
         move = true;
-    
     }
 }
+
