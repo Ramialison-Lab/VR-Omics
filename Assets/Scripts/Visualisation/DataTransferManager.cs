@@ -203,10 +203,9 @@ public class DataTransferManager : MonoBehaviour
             hdf5datapaths.AddRange(Directory.GetFiles(x, "*.h5"));
             csvGeneExpPaths.AddRange(Directory.GetFiles(x, "*filtered_transposed.csv"));
 
-            CheckForFigures(allDirectories);
             foreach (string s in allDirectories)
             {
-                if (s.Split("\\").Last() == "tissue_positions_list.csv")
+                if (s.Contains("tissue_positions_list.csv"))
                 {
                     positionList[positionListCounter] = s;
                     positionListCounter++;
@@ -226,6 +225,7 @@ public class DataTransferManager : MonoBehaviour
 
                 }
             }
+
         }
 
         if (isRawData)
@@ -404,6 +404,13 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void StartXenium()
     {
+        string[] allDirectories = Directory.GetFiles(df.xeniumPath, "*", SearchOption.AllDirectories);
+
+        string xeniumCounts = FindFilePath(allDirectories, "*gene_transposed_counts.csv");
+        string xeniumCoords = FindFilePath(allDirectories, "*processed_cells.csv");
+        string xeniumGenePanelPath = FindFilePath(allDirectories, "*feature_matrix.csv");
+        string moran_results = FindFilePath(allDirectories, "*results.csv");
+
         string[] files = Directory.GetFiles(df.xeniumPath, "*gene_transposed_counts.csv");
         xeniumCounts = files[0];
         files = Directory.GetFiles(df.xeniumPath, "*processed_cells.csv");
@@ -422,7 +429,6 @@ public class DataTransferManager : MonoBehaviour
             lines = lines.Skip(1).ToArray();
         }
 
-        string[] allDirectories = Directory.GetFiles(df.xeniumPath, "*", SearchOption.AllDirectories);
         CheckForFigures(allDirectories);
 
         x_coordinates = new float[lines.Length];
@@ -473,27 +479,16 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void StartMerfish()
     {
-        //Searching for Files in the directory
-        string[] files = Directory.GetFiles(df.merfishPath, "*metadata_processed.csv");
-        merfishCoords = files[0];
-        files = Directory.GetFiles(df.merfishPath, "*gene_transposed_processed.csv");
-        merfishGenelist = files[0];
-       
-        //seraching for optional Moran Results file
-        try
-        {
-            files = Directory.GetFiles(df.merfishPath, "*results.csv");
-            moran_results = files[0];
-        }
-        catch (Exception e) { }
-
+        string[] allDirectories = Directory.GetFiles(df.merfishPath, "*", SearchOption.AllDirectories);
+        string merfishCoords = FindFilePath(allDirectories, "*metadata_processed.csv");
+        string merfishGenelist = FindFilePath(allDirectories, "*gene_transposed_processed.csv");
+        string moran_results = FindFilePath(allDirectories, "*results.csv");
         /*
          * Reading coordinate files  
         */
         string[] lines = File.ReadAllLines(merfishCoords);
 
         //checking for all image files
-        string[] allDirectories = Directory.GetFiles(df.merfishPath, "*", SearchOption.AllDirectories);
         CheckForFigures(allDirectories);
         
         //Read csv header of metadata file for positions
@@ -1136,6 +1131,18 @@ public class DataTransferManager : MonoBehaviour
             ContinueSession();
         }
         bfm.SetFunction(df);
+    }
+
+    private string FindFilePath(string[] files, string searchPattern)
+    {
+        foreach (string file in files)
+        {
+            if (Path.GetFileName(file).Contains(searchPattern))
+            {
+                return file;
+            }
+        }
+        return null; // File not found
     }
 
     #region Save Data
