@@ -563,31 +563,41 @@ public class DataTransferManager : MonoBehaviour
     /// Nanostring - This function starts the Nanostring process, reads all related datapaths and creates the required lists to call the SpotDrawer script
     /// </summary>
     public void StartNanostring()
-    {
-        string[] files = Directory.GetFiles(df.nanostringPath, "*gene_transposed_counts.csv");
-        nanostringCounts = files[0];        
-        files = Directory.GetFiles(df.nanostringPath, "*panel.csv");
-        string nanostringGenePanel= files[0];
-        files = Directory.GetFiles(df.nanostringPath, "*meta_data.csv");
-        nanostringCoords = files[0];
-        files = Directory.GetFiles(df.nanostringPath, "gene_information.csv");
-        nanostringGenePanelPath = files[0];
-        try
+    {        
+        
+        string[] allDirectories = Directory.GetFiles(df.nanostringPath, "*", SearchOption.AllDirectories);
+        string nanostringGenePanel = "";
+
+        foreach (string str in allDirectories)
         {
-            //TODO: Add Moran REsults/SVG for Nanostring
-            files = Directory.GetFiles(df.nanostringPath, "*results.csv");
-            moran_results = files[0];
+            if (str.Contains("gene_transposed_counts.csv"))
+            {
+                nanostringCounts = str;
+            }
+            if (str.Contains("panel.csv"))
+            {
+                nanostringGenePanel = str;
+            }
+            if (str.Contains("meta_data.csv"))
+            {
+                nanostringCoords = str;
+            }
+            if (str.Contains("gene_information.csv"))
+            {
+                nanostringGenePanelPath = str;
+            }
+            if (str.Contains("results.csv")){
+                moran_results = str;
+            }
         }
-        catch (Exception) { }
+
+        CheckForFigures(allDirectories);
 
         string[] lines = File.ReadAllLines(nanostringCoords);
         if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
         {
             lines = lines.Skip(1).ToArray();
         }
-
-        string[] allDirectories = Directory.GetFiles(df.nanostringPath, "*", SearchOption.AllDirectories);
-        CheckForFigures(allDirectories);
 
         x_coordinates = new float[lines.Length];
         y_coordinates = new float[lines.Length];
@@ -611,7 +621,6 @@ public class DataTransferManager : MonoBehaviour
             else if (y > maxY) maxY = y;
             if (z < minZ) minZ = z;
         }
-
 
         //TODO read gene from count file 
         string[] linesGn = File.ReadAllLines(nanostringCounts);
