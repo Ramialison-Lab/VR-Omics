@@ -281,6 +281,9 @@ public class ReadClusterInformation : MonoBehaviour
         double[] tempNormalised = null;
         Color[] tempColor = null;
 
+        normalised = new List<double>();
+        clusterColour = new List<Color>();
+
         foreach (string path in dfm.visiumMetaFiles)
         {
           
@@ -315,21 +318,21 @@ public class ReadClusterInformation : MonoBehaviour
             generateClusterLegend(clusterValues.Max(), clusterValues.Min());
 
             //for each column in columns[] add 3 off the colours and change the text 
-
+            normalised.AddRange(tempNormalised);
+            clusterColour.AddRange(tempColor);
         }
 
-        normalised = new List<double>(tempNormalised);
-        clusterColour = new List<Color>(tempColor);
 
-        try
-        {
+
+        //try
+        //{
             sd.skipColourGradient(normalised, clusterColour);
-        }catch(Exception e)
-        {
-            Debug.Log(e);
+        //}catch(Exception e)
+        //{
+        //    Debug.Log(e);
 
-            dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
-        }
+        //    dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
+        //}
 
     }
 

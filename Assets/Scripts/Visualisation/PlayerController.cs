@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float speed = 5;
     [SerializeField] private float moveSpeedCamera = 5f;
     [SerializeField] private float moveSpeed = 1f;
-    [SerializeField] private float zoomSpeed = 1.0f;
+    [SerializeField] private float zoomSpeed = 10.0f;
     [SerializeField] private float sensitivity = 2.0f;
     private float xRotation = 0.0f;
     private float yRotation = 0.0f;
@@ -125,6 +125,6 @@ public class PlayerController : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, -90.0f, 90.0f);
 
         //transform.rotation = Quaternion.Euler(xRotation, yRotation, 0.0f);
-        transform.rotation = Quaternion.Euler(xRotation, 0, yRotation);
+        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
     }
 }
