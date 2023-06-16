@@ -63,6 +63,9 @@ public class MenuCanvas : MonoBehaviour
     private bool svgShown = false;
     public GameObject svgPanel;
 
+    //SaveFile
+    public GameObject savePanel;
+
     //Other
     public GameObject c18heart; 
     public Material transparentMat;
@@ -365,7 +368,17 @@ public class MenuCanvas : MonoBehaviour
     public void SaveSession()
     {
         sd.SaveSession();
+        SaveInfo();
     }
+
+    private void SaveInfo()
+    {
+        savePanel.SetActive(true);
+        TMP_Text text = savePanel.GetComponentInChildren<TMP_Text>();
+
+        text.text = "The file has been saved!";
+    }
+
     #endregion
 
     //HMD related settings
