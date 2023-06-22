@@ -158,7 +158,6 @@ public class UMAPManager : MonoBehaviour
         x_coordinates = x_coordinates_spatial;
         y_coordinates = y_coordinates_spatial;
         z_coordinates = z_coordinates_spatial;
-
         StartSpotDrawer();
     }
 
