@@ -19,14 +19,13 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+using Dummiesman;   //library to load obj during runtime
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using Dummiesman;   //library to load obj during runtime
-using UnityEngine.UI;
 
 public class DataTransferManager : MonoBehaviour
 {
@@ -37,6 +36,7 @@ public class DataTransferManager : MonoBehaviour
     public bool tomoseq = false;
     public bool xenium = false;
     public bool merfish = false;
+    public bool nanostring = false;
     public bool c18_visium = false;
     public bool other = false;
 
@@ -56,13 +56,20 @@ public class DataTransferManager : MonoBehaviour
     public ButtonFunctionManager bfm;
     public MenuCanvas mc;
     public JSONReader jr;
+    public UMAPManager umapm;
 
     //Universal
     float[] x_coordinates;
     float[] y_coordinates;
     float[] z_coordinates;
     string[] location_names;
-    string[] dataset_names;
+    string[] dataset_names;    
+    
+    List<float> x_coordinatesList;
+    List<float> y_coordinatesList;
+    List<float> z_coordinatesList;
+    List<string> location_namesList;
+    List<string> dataset_namesList;
     public List<GameObject> figureBtns = new List<GameObject>(4);
 
     //Lists
@@ -77,6 +84,7 @@ public class DataTransferManager : MonoBehaviour
     public List<string> geneNamesDistinct;
     public List<List<string>> SpotNameDictionary = new List<List<string>>();
     public List<string>[] geneNameDictionary;
+    public string[] obsmPath;
 
     //Visium
     public bool addHAndEImg = false;
@@ -116,6 +124,12 @@ public class DataTransferManager : MonoBehaviour
     public string merfishGenelist;
     public string merfishCoords;
 
+    //Nanostring
+    public List<string> NanostringGeneNames = new List<string>();
+    public string nanostringCounts;
+    public string nanostringCoords;
+    public string nanostringGenePanelPath;
+
     //Tomoseq
     public string tomoGeneDirectory;
     public List<string> tomoGenePanel = new List<string>();
@@ -128,7 +142,7 @@ public class DataTransferManager : MonoBehaviour
     public LogFileController logfile;
     public string current_directory;
 
-    void Awake()
+    void Start()
     {
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
         scriptHolder = GameObject.Find("ScriptHolder");
@@ -140,6 +154,7 @@ public class DataTransferManager : MonoBehaviour
         bfm = scriptHolder.GetComponent<ButtonFunctionManager>();
         mc = GameObject.Find("MainMenuPanel").GetComponent<MenuCanvas>();
         jr = scriptHolder.GetComponent<JSONReader>();
+        umapm = scriptHolder.GetComponent<UMAPManager>();
 
         try { 
             df = scriptHolderPipeline.GetComponent<DataTransfer>();
@@ -154,51 +169,75 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void StartVisium()
     {
+
+        location_namesList = new List<string>();
+        dataset_namesList = new List<string>();
+        x_coordinatesList = new List<float>();
+        y_coordinatesList = new List<float>();
+        z_coordinatesList = new List<float>();
+
+        int counterForMultiple = 0;
         int count = 0;                                              // counting which dataset is used
         int geneNameDictionary_Counter = 0;
         int positionListCounter = 0;
         int jsonListCounter = 0;
         int tissueImageCounter = 0;
+        bool isRawData = true;
 
         string[] dfPaths = df.pathList.ToArray();
 
         string srtMethod = "visium";
 
-                List<string> shortList = new List<string>();                //List for names of slices from datasetnames
+        List<string> shortList = new List<string>();                //List for names of slices from datasetnames
         geneNameDictionary = new List<string>[df.pathList.Count];   //Dicitonary of all gene names
         positionList = new string[df.pathList.Count];               //Datapaths to tissue_possition lists
         jsonFilePaths = new string[df.pathList.Count];              //Datapaths to json files containing the H&E scale factors
         datasetSizes = new int[df.pathList.Count];                  //Size of locations of the datasets
-        scaleFactors = new float[df.pathList.Count];                //scaleFactors of H&E stain image used to calculate size 
+        scaleFactors = new float[df.pathList.Count];
+        obsmPath = new string[df.pathList.Count]; 
+        //scaleFactors of H&E stain image used to calculate size 
         string[] tissueImagePath = new string[df.pathList.Count];   //Data paths to the tissue images (H&E stain image)
 
         //Find the respective files from the Visium dataset repository
         foreach (string x in df.pathList)
         {
+
             string[] allDirectories = Directory.GetFiles(x, "*", SearchOption.AllDirectories);
 
             visiumMetaFiles.AddRange(Directory.GetFiles(x, "*metadata.csv"));
             hdf5datapaths.AddRange(Directory.GetFiles(x, "*.h5"));
             csvGeneExpPaths.AddRange(Directory.GetFiles(x, "*filtered_transposed.csv"));
-
-            CheckForFigures(allDirectories);
             foreach (string s in allDirectories)
             {
-                if (s.Split("\\").Last() == "tissue_positions_list.csv")
+                if (s.Contains("tissue_positions_list.csv") && !s.Contains("meta"))
                 {
                     positionList[positionListCounter] = s;
                     positionListCounter++;
+                    isRawData = false;
                 }
                 if (s.Contains("scalefactors_json.json") && !s.Contains("meta"))
                 {
                     jsonFilePaths[jsonListCounter] = s;
+                    isRawData = false;
+
                 }
                 if (s.Contains("tissue_hires_image.png") && !s.Contains("meta"))
                 {
                     tissueImagePath[tissueImageCounter] = s;
                     tissueImageCounter++;
+                    isRawData = false;
+
+                }if (s.Contains("obsm.csv") && !s.Contains("meta"))
+                {
+                    obsmPath[0] = s;
                 }
             }
+
+        }
+
+        if (isRawData)
+        {
+            //TOOD: Add data handling if Visium Raw Data is used 
         }
 
         //calculate dimensions of H&E image
@@ -208,6 +247,7 @@ public class DataTransferManager : MonoBehaviour
         //disable sideBySide features for more than one visium slice
         if (hdf5datapaths.Count > 1)
         {
+
             foreach (GameObject go in disableBtn)
             {
                 go.SetActive(false);
@@ -269,6 +309,7 @@ public class DataTransferManager : MonoBehaviour
 
             foreach (string s in lines)
             {
+
                 string[] values = s.Split(',');
                 //if on tissue
                 if (values[1] == "1")
@@ -284,6 +325,7 @@ public class DataTransferManager : MonoBehaviour
                 }
             }
 
+            location_namesList.AddRange(location_names);
             for (int i = 0; i < row.Length; i++)
             {
                 float x, y ,z;
@@ -299,6 +341,11 @@ public class DataTransferManager : MonoBehaviour
                 else if (y > maxY) maxY = y;
                 if (z < minZ) minZ = z;
             }
+
+            x_coordinatesList.AddRange(x_coordinates);
+            y_coordinatesList.AddRange(y_coordinates);
+            z_coordinatesList.AddRange(z_coordinates);
+            dataset_namesList.AddRange(dataset_names);
 
             datasetSizes[count] = row.Length;
             //TODO: read scalefactor for adjustment
@@ -354,8 +401,8 @@ public class DataTransferManager : MonoBehaviour
         sd.Max = new Vector2(maxX, maxY);
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
-        
-        sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, dataset_names); 
+        umapm.SetCoordinatesForUMAP(x_coordinatesList.ToArray(), y_coordinatesList.ToArray(), z_coordinatesList.ToArray(), location_namesList.ToArray(), dataset_namesList.ToArray());
+        sd.StartDrawer(x_coordinatesList.ToArray(), y_coordinatesList.ToArray(), z_coordinatesList.ToArray(), location_namesList.ToArray(), dataset_namesList.ToArray()); 
     }
 
 
@@ -364,6 +411,25 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void StartXenium()
     {
+        string[] allDirectories = Directory.GetFiles(df.xeniumPath, "*", SearchOption.AllDirectories);
+
+        xeniumCounts = "";
+        xeniumCoords = "";
+        xeniumGenePanelPath = "";
+        moran_results = "";
+        obsmPath = new string[1];
+
+        foreach (string str in allDirectories)
+        {
+            if (str.Contains("gene_transposed_counts.csv") && !str.Contains("meta")) xeniumCounts = str;
+            if (str.Contains("processed_cells.csv") && !str.Contains("meta")) xeniumCoords = str;
+            if (str.Contains("feature_matrix.csv") && !str.Contains("meta")) xeniumGenePanelPath = str;
+            if (str.Contains("results.csv") && !str.Contains("meta")) moran_results = str;               
+            if (str.Contains("obsm.csv") && !str.Contains("meta")) obsmPath[0] = str;               
+        }
+
+        Debug.Log(xeniumCounts);
+
         string[] files = Directory.GetFiles(df.xeniumPath, "*gene_transposed_counts.csv");
         xeniumCounts = files[0];
         files = Directory.GetFiles(df.xeniumPath, "*processed_cells.csv");
@@ -382,7 +448,6 @@ public class DataTransferManager : MonoBehaviour
             lines = lines.Skip(1).ToArray();
         }
 
-        string[] allDirectories = Directory.GetFiles(df.xeniumPath, "*", SearchOption.AllDirectories);
         CheckForFigures(allDirectories);
 
         x_coordinates = new float[lines.Length];
@@ -417,6 +482,7 @@ public class DataTransferManager : MonoBehaviour
 
         sd.Min = new Vector2(minX, minY);
         sd.Max = new Vector2(maxX, maxY);
+        umapm.SetCoordinatesForUMAP(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
         sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
 
         string srtMethod = "xenium";
@@ -433,27 +499,16 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void StartMerfish()
     {
-        //Searching for Files in the directory
-        string[] files = Directory.GetFiles(df.merfishPath, "*metadata_processed.csv");
-        merfishCoords = files[0];
-        files = Directory.GetFiles(df.merfishPath, "*gene_transposed_processed.csv");
-        merfishGenelist = files[0];
-       
-        //seraching for optional Moran Results file
-        try
-        {
-            files = Directory.GetFiles(df.merfishPath, "*results.csv");
-            moran_results = files[0];
-        }
-        catch (Exception e) { }
-
+        string[] allDirectories = Directory.GetFiles(df.merfishPath, "*", SearchOption.AllDirectories);
+        string merfishCoords = FindFilePath(allDirectories, "*metadata_processed.csv");
+        string merfishGenelist = FindFilePath(allDirectories, "*gene_transposed_processed.csv");
+        string moran_results = FindFilePath(allDirectories, "*results.csv");
         /*
          * Reading coordinate files  
         */
         string[] lines = File.ReadAllLines(merfishCoords);
 
         //checking for all image files
-        string[] allDirectories = Directory.GetFiles(df.merfishPath, "*", SearchOption.AllDirectories);
         CheckForFigures(allDirectories);
         
         //Read csv header of metadata file for positions
@@ -517,6 +572,92 @@ public class DataTransferManager : MonoBehaviour
 
         sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
         AdjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, 0, new Vector3(0, 0, 0));
+    }
+
+    /// <summary>
+    /// Nanostring - This function starts the Nanostring process, reads all related datapaths and creates the required lists to call the SpotDrawer script
+    /// </summary>
+    public void StartNanostring()
+    {        
+        
+        string[] allDirectories = Directory.GetFiles(df.nanostringPath, "*", SearchOption.AllDirectories);
+        string nanostringGenePanel = "";
+
+        foreach (string str in allDirectories)
+        {
+            if (str.Contains("gene_transposed_counts.csv"))
+            {
+                nanostringCounts = str;
+            }
+            if (str.Contains("panel.csv"))
+            {
+                nanostringGenePanel = str;
+            }
+            if (str.Contains("meta_data.csv"))
+            {
+                nanostringCoords = str;
+            }
+            if (str.Contains("gene_information.csv"))
+            {
+                nanostringGenePanelPath = str;
+            }
+            if (str.Contains("results.csv")){
+                moran_results = str;
+            }
+        }
+
+        CheckForFigures(allDirectories);
+
+        string[] lines = File.ReadAllLines(nanostringCoords);
+        if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
+        {
+            lines = lines.Skip(1).ToArray();
+        }
+
+        x_coordinates = new float[lines.Length];
+        y_coordinates = new float[lines.Length];
+        z_coordinates = new float[lines.Length];
+        location_names = new string[lines.Length];
+
+        float minX, maxX, minY, maxY, minZ;
+        minX = maxX = minY = maxY = minZ = 0;
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string[] values = lines[i].Split(',');
+            float x = x_coordinates[i] = float.Parse(values[3])/100;
+            float y = y_coordinates[i] = float.Parse(values[4])/100;
+            float z = z_coordinates[i] = 0;
+            location_names[i] = values[0];
+
+            // Find min and max
+            if (x < minX) minX = x;
+            else if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            else if (y > maxY) maxY = y;
+            if (z < minZ) minZ = z;
+        }
+
+        //TODO read gene from count file 
+        string[] linesGn = File.ReadAllLines(nanostringCounts);
+        foreach (string line in linesGn)
+        {
+            string[] values = line.Split(',');
+
+            NanostringGeneNames.Add(values[0]);
+        }
+
+        sd.Min = new Vector2(minX, minY);
+        sd.Max = new Vector2(maxX, maxY);
+        sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
+
+        string srtMethod = "nanostring";
+        string[] dfPaths = new string[1];
+        dfPaths[0] = df.nanostringPath;
+        SaveData(dfPaths, srtMethod, NanostringGeneNames.ToArray());
+
+        //AdjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, minZ, new Vector3(0, 0, 0));
+        Camera.main.transform.position = new Vector3(150, 1500, -175);
+        // scriptHolder.GetComponent<XeniumDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell);
     }
 
     /// <summary>
@@ -990,6 +1131,11 @@ public class DataTransferManager : MonoBehaviour
             merfish = true;
             StartMerfish();
         }
+        else if (df.nanostring)
+        {
+            nanostring = true;
+            StartNanostring();
+        }
         else if (df.other)
         {
             other = true;
@@ -1005,6 +1151,18 @@ public class DataTransferManager : MonoBehaviour
             ContinueSession();
         }
         bfm.SetFunction(df);
+    }
+
+    private string FindFilePath(string[] files, string searchPattern)
+    {
+        foreach (string file in files)
+        {
+            if (Path.GetFileName(file).Contains(searchPattern))
+            {
+                return file;
+            }
+        }
+        return null; // File not found
     }
 
     #region Save Data
@@ -1071,6 +1229,11 @@ public class DataTransferManager : MonoBehaviour
                 case "c18":
                     c18_visium = true;
                     StartC18();
+                    break;
+                case "nanostring":
+                    nanostring = true;
+                    df.nanostringPath = dataPathList[0];
+                    StartNanostring();
                     break;
                 default: break;
             }

@@ -80,4 +80,21 @@ public static class CSVHeaderInformation
 
         return hasHeader;
     }
+
+    //Return column number of field
+    public static int CheckForColumnNumber(string name, string header)
+    {
+        string[] values = header.Split(',');
+        int column = -1;
+
+        for(int i =0; i< values.Length; i++)
+        {
+            if(values[i] == name)
+            {
+                column = i;
+            }
+        }
+
+        return column;
+    }
 }

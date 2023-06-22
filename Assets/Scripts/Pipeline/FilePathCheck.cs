@@ -21,10 +21,15 @@ public class FilePathCheck : MonoBehaviour
     };
 
     private string[] xenium_Files =
-{
-        "gene_transposed_counts.csv",
-        "processed_cells.csv",
-        "feature_matrix.csv",
+    {
+            "gene_transposed_counts.csv",
+            "processed_cells.csv",
+            "feature_matrix.csv",
+    };    
+    
+    //TODO: Need to be filled with Nanostring File names
+    private string[] nanostring_Files =
+    {
     };
 
     private bool CheckForFiles(string[] directories, string filename)
@@ -73,6 +78,42 @@ public class FilePathCheck : MonoBehaviour
     }
 
     public void checkXeniumPath(string path)
+    {
+        foreach (GameObject go in GameObject.FindGameObjectsWithTag("fileChecker"))
+        {
+            Destroy(go);
+        }
+        bool all_found = true;
+
+        string[] allDirectories = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+
+        foreach (string file in xenium_Files)
+        {
+
+            bool file_found = CheckForFiles(allDirectories, file);
+
+            if (file_found)
+            {
+                GameObject check_temp = GameObject.Instantiate(check_template, GameObject.Find("Xenium_Container").transform);
+                check_temp.GetComponentInChildren<TMP_Text>().text = file;
+            }
+            else
+            {
+                GameObject cross_temp = GameObject.Instantiate(cross_template, GameObject.Find("Xenium_Container").transform);
+                cross_temp.GetComponentInChildren<TMP_Text>().text = file;
+                all_found = false;
+            }
+        }
+
+        if (all_found) files_Checked = true;
+
+    }
+
+    /// <summary>
+    /// TODO: Not in use yet!
+    /// </summary>
+    /// <param name="path"></param>
+    public void checkNanostringPath(string path)
     {
         foreach (GameObject go in GameObject.FindGameObjectsWithTag("fileChecker"))
         {

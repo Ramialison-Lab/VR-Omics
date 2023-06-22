@@ -19,60 +19,66 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SideMenuExpandManager : MonoBehaviour
 {
+    [SerializeField] private GameObject sideMenubtn;
+    [SerializeField] private GameObject CoordinateResetPanel;
+
+    private Transform myTransform;
+    private Transform sideMenubtnTransform;
+    private Transform CoordinateResetPanelTransform;
+
     private Vector3 PosA;
     private Vector3 PosB;
     private Vector3 PosABtn;
-    private Vector3 PosBBtn;    
+    private Vector3 PosBBtn;
     private Vector3 PosA_Coord;
     private Vector3 PosB_Coord;
+
     private float duration = 0.2f;
     private float elapsedTime;
     private bool move = false;
     private bool up = true;
-    public GameObject sideMenubtn;
-    public GameObject CoordinateResetPanel;
 
-    void Update()
+    private void Awake()
+    {
+        myTransform = transform;
+        sideMenubtnTransform = sideMenubtn.transform;
+        CoordinateResetPanelTransform = CoordinateResetPanel.transform;
+    }
+
+    private void Update()
     {
         if (move)
         {
-            elapsedTime += Time.deltaTime;
+            elapsedTime += Time.unscaledDeltaTime;
             float complete = elapsedTime / duration;
 
-            transform.position = Vector3.Lerp(PosA, PosB, complete);
-            sideMenubtn.transform.position = Vector3.Lerp(PosABtn, PosBBtn, complete);
-            CoordinateResetPanel.transform.position = Vector3.Lerp(PosA_Coord, PosB_Coord, complete);
+            myTransform.position = Vector3.Lerp(PosA, PosB, complete);
+            sideMenubtnTransform.position = Vector3.Lerp(PosABtn, PosBBtn, complete);
+            CoordinateResetPanelTransform.position = Vector3.Lerp(PosA_Coord, PosB_Coord, complete);
+
+            if (Mathf.Approximately(PosA.x, PosB.x) && Mathf.Approximately(PosA.y, PosB.y) && Mathf.Approximately(PosA.z, PosB.z))
+            {
+                move = false;
+            }
         }
-        if (PosA == PosB) move = false;
     }
 
-    public void togglePanel()
+    public void TogglePanel()
     {
         elapsedTime = 0;
-        if (up)
-        {
-            PosB = new Vector3(transform.position.x-150, transform.position.y, transform.position.z);
-            PosBBtn = new Vector3(sideMenubtn.transform.position.x-150, sideMenubtn.transform.position.y, sideMenubtn.transform.position.z);
-            PosB_Coord = new Vector3(CoordinateResetPanel.transform.position.x - 150, CoordinateResetPanel.transform.position.y, CoordinateResetPanel.transform.position.z);
-            up = false;
-        }
-        else
-        {
-            PosB = new Vector3(transform.position.x +150, transform.position.y, transform.position.z);
-            PosBBtn = new Vector3(sideMenubtn.transform.position.x+150, sideMenubtn.transform.position.y, sideMenubtn.transform.position.z);
-            PosB_Coord = new Vector3(CoordinateResetPanel.transform.position.x+150, CoordinateResetPanel.transform.position.y, CoordinateResetPanel.transform.position.z);
-            up = true;
-        }
-        PosA = transform.position;
-        PosABtn = sideMenubtn.transform.position;
-        PosA_Coord = CoordinateResetPanel.transform.position;
+        up = !up;
+        int direction = up ? 150 : -150;
+        PosB = new Vector3(myTransform.position.x + direction, myTransform.position.y, myTransform.position.z);
+        PosBBtn = new Vector3(sideMenubtnTransform.position.x + direction, sideMenubtnTransform.position.y, sideMenubtnTransform.position.z);
+        PosB_Coord = new Vector3(CoordinateResetPanelTransform.position.x + direction, CoordinateResetPanelTransform.position.y, CoordinateResetPanelTransform.position.z);
+        PosA = myTransform.position;
+        PosABtn = sideMenubtnTransform.position;
+        PosA_Coord = CoordinateResetPanelTransform.position;
         move = true;
-
     }
 }
+

@@ -71,6 +71,10 @@ public class ReadClusterInformation : MonoBehaviour
             if (dfm.merfish)
             {
                 readMerfishCluster();
+            }            
+            if (dfm.nanostring)
+            {
+                readNanostringCluster();
             }
             //TODO: check Visium multiple
         }
@@ -181,14 +185,48 @@ public class ReadClusterInformation : MonoBehaviour
         List<Color> clusterColour = new List<Color>();
 
         string[] lines = File.ReadAllLines(dfm.xeniumCoords);
+        int leidenCol = CSVHeaderInformation.CheckForColumnNumber("leiden", lines[0]);
+
         lines = lines.Skip(1).ToArray();
         for(int i=0; i<lines.Length; i++)
         {
 
             string[] values = lines[i].Split(',');
 
-            normalised.Add(int.Parse(values[20]));
-            clusterColour.Add(defaultColours[int.Parse(values[20])]);
+            normalised.Add(int.Parse(values[leidenCol]));
+            clusterColour.Add(defaultColours[int.Parse(values[leidenCol])]);
+        }
+
+        generateClusterLegend((int)normalised.Max(), (int)normalised.Min());
+
+        try
+        {
+            sd.skipColourGradient(normalised, clusterColour);
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+
+            dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
+        }
+
+    }    
+    
+    private void readNanostringCluster()
+    {
+
+        List<double> normalised = new List<double>();
+        List<Color> clusterColour = new List<Color>();
+
+        string[] lines = File.ReadAllLines(dfm.nanostringCoords);
+        lines = lines.Skip(1).ToArray();
+        for(int i=0; i<lines.Length; i++)
+        {
+
+            string[] values = lines[i].Split(',');
+
+            normalised.Add(int.Parse(values[30]));
+            clusterColour.Add(defaultColours[int.Parse(values[30])]);
         }
 
         generateClusterLegend((int)normalised.Max(), (int)normalised.Min());
@@ -245,6 +283,9 @@ public class ReadClusterInformation : MonoBehaviour
         double[] tempNormalised = null;
         Color[] tempColor = null;
 
+        normalised = new List<double>();
+        clusterColour = new List<Color>();
+
         foreach (string path in dfm.visiumMetaFiles)
         {
           
@@ -279,21 +320,21 @@ public class ReadClusterInformation : MonoBehaviour
             generateClusterLegend(clusterValues.Max(), clusterValues.Min());
 
             //for each column in columns[] add 3 off the colours and change the text 
-
+            normalised.AddRange(tempNormalised);
+            clusterColour.AddRange(tempColor);
         }
 
-        normalised = new List<double>(tempNormalised);
-        clusterColour = new List<Color>(tempColor);
 
-        try
-        {
+
+        //try
+        //{
             sd.skipColourGradient(normalised, clusterColour);
-        }catch(Exception e)
-        {
-            Debug.Log(e);
+        //}catch(Exception e)
+        //{
+        //    Debug.Log(e);
 
-            dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
-        }
+        //    dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
+        //}
 
     }
 
