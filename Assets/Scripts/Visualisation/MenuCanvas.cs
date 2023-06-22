@@ -52,6 +52,9 @@ public class MenuCanvas : MonoBehaviour
     public GameObject sunicon;
     private bool darkmode = true;
 
+    //UMAP
+    private bool umap = false;
+
     //H&E image option
     public GameObject contextMenuHandESelection;
     public GameObject activationPanelHandE;
@@ -86,6 +89,51 @@ public class MenuCanvas : MonoBehaviour
         {
             GameObject.Find("Enter VR").transform.GetChild(1).gameObject.SetActive(true);
         }
+    }
+
+    //UMAP + tsne feature
+
+    public GameObject dd;
+
+    public void SwitchMode()
+    {
+        string mode = dd.GetComponent<TMP_Dropdown>().options[dd.GetComponent<TMP_Dropdown>().value].text;
+
+        try
+        {
+            switch (mode)
+            {
+                case "Spatial":
+                    SwitchSpatial();
+                    break;
+                case "t-SNE":
+                    SwitchTSNE();
+                    break;
+                case "UMAP":
+                    SwitchUMAP();
+                    break;
+            }
+        }catch(Exception e)
+        {
+            dfm.logfile.Log(e, "Couldn't switch between different modes. Most likely, the coordiantes couldn't be found. Check the obsm.csv file for the neeeded columns umap or t-sne.");
+        }
+    }
+
+    private void SwitchTSNE()
+    {
+        GameObject.Find("ScriptHolder").GetComponent<UMAPManager>().SwitchTSNE();
+    }
+
+    private void SwitchSpatial()
+    {
+        GameObject.Find("ScriptHolder").GetComponent<UMAPManager>().SwitchSpatial();
+
+    }
+
+    private void SwitchUMAP()
+    {
+            GameObject.Find("ScriptHolder").GetComponent<UMAPManager>().SwitchUmap();
+
     }
 
     //Functions for lasso tool for location selection

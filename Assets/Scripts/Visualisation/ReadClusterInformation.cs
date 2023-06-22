@@ -185,14 +185,16 @@ public class ReadClusterInformation : MonoBehaviour
         List<Color> clusterColour = new List<Color>();
 
         string[] lines = File.ReadAllLines(dfm.xeniumCoords);
+        int leidenCol = CSVHeaderInformation.CheckForColumnNumber("leiden", lines[0]);
+
         lines = lines.Skip(1).ToArray();
         for(int i=0; i<lines.Length; i++)
         {
 
             string[] values = lines[i].Split(',');
 
-            normalised.Add(int.Parse(values[20]));
-            clusterColour.Add(defaultColours[int.Parse(values[20])]);
+            normalised.Add(int.Parse(values[leidenCol]));
+            clusterColour.Add(defaultColours[int.Parse(values[leidenCol])]);
         }
 
         generateClusterLegend((int)normalised.Max(), (int)normalised.Min());

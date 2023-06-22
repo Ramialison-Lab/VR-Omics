@@ -56,6 +56,7 @@ public class DataTransferManager : MonoBehaviour
     public ButtonFunctionManager bfm;
     public MenuCanvas mc;
     public JSONReader jr;
+    public UMAPManager umapm;
 
     //Universal
     float[] x_coordinates;
@@ -83,6 +84,7 @@ public class DataTransferManager : MonoBehaviour
     public List<string> geneNamesDistinct;
     public List<List<string>> SpotNameDictionary = new List<List<string>>();
     public List<string>[] geneNameDictionary;
+    public string[] obsmPath;
 
     //Visium
     public bool addHAndEImg = false;
@@ -152,6 +154,7 @@ public class DataTransferManager : MonoBehaviour
         bfm = scriptHolder.GetComponent<ButtonFunctionManager>();
         mc = GameObject.Find("MainMenuPanel").GetComponent<MenuCanvas>();
         jr = scriptHolder.GetComponent<JSONReader>();
+        umapm = scriptHolder.GetComponent<UMAPManager>();
 
         try { 
             df = scriptHolderPipeline.GetComponent<DataTransfer>();
@@ -190,7 +193,9 @@ public class DataTransferManager : MonoBehaviour
         positionList = new string[df.pathList.Count];               //Datapaths to tissue_possition lists
         jsonFilePaths = new string[df.pathList.Count];              //Datapaths to json files containing the H&E scale factors
         datasetSizes = new int[df.pathList.Count];                  //Size of locations of the datasets
-        scaleFactors = new float[df.pathList.Count];                //scaleFactors of H&E stain image used to calculate size 
+        scaleFactors = new float[df.pathList.Count];
+        obsmPath = new string[df.pathList.Count]; 
+        //scaleFactors of H&E stain image used to calculate size 
         string[] tissueImagePath = new string[df.pathList.Count];   //Data paths to the tissue images (H&E stain image)
 
         //Find the respective files from the Visium dataset repository
@@ -202,10 +207,9 @@ public class DataTransferManager : MonoBehaviour
             visiumMetaFiles.AddRange(Directory.GetFiles(x, "*metadata.csv"));
             hdf5datapaths.AddRange(Directory.GetFiles(x, "*.h5"));
             csvGeneExpPaths.AddRange(Directory.GetFiles(x, "*filtered_transposed.csv"));
-
             foreach (string s in allDirectories)
             {
-                if (s.Contains("tissue_positions_list.csv"))
+                if (s.Contains("tissue_positions_list.csv") && !s.Contains("meta"))
                 {
                     positionList[positionListCounter] = s;
                     positionListCounter++;
@@ -223,6 +227,9 @@ public class DataTransferManager : MonoBehaviour
                     tissueImageCounter++;
                     isRawData = false;
 
+                }if (s.Contains("obsm.csv") && !s.Contains("meta"))
+                {
+                    obsmPath[0] = s;
                 }
             }
 
@@ -394,7 +401,7 @@ public class DataTransferManager : MonoBehaviour
         sd.Max = new Vector2(maxX, maxY);
         sel_DropD.ClearOptions();
         sel_DropD.AddOptions(shortList);
-        
+        umapm.SetCoordinatesForUMAP(x_coordinatesList.ToArray(), y_coordinatesList.ToArray(), z_coordinatesList.ToArray(), location_namesList.ToArray(), dataset_namesList.ToArray());
         sd.StartDrawer(x_coordinatesList.ToArray(), y_coordinatesList.ToArray(), z_coordinatesList.ToArray(), location_namesList.ToArray(), dataset_namesList.ToArray()); 
     }
 
@@ -406,10 +413,22 @@ public class DataTransferManager : MonoBehaviour
     {
         string[] allDirectories = Directory.GetFiles(df.xeniumPath, "*", SearchOption.AllDirectories);
 
-        string xeniumCounts = FindFilePath(allDirectories, "*gene_transposed_counts.csv");
-        string xeniumCoords = FindFilePath(allDirectories, "*processed_cells.csv");
-        string xeniumGenePanelPath = FindFilePath(allDirectories, "*feature_matrix.csv");
-        string moran_results = FindFilePath(allDirectories, "*results.csv");
+        xeniumCounts = "";
+        xeniumCoords = "";
+        xeniumGenePanelPath = "";
+        moran_results = "";
+        obsmPath = new string[1];
+
+        foreach (string str in allDirectories)
+        {
+            if (str.Contains("gene_transposed_counts.csv") && !str.Contains("meta")) xeniumCounts = str;
+            if (str.Contains("processed_cells.csv") && !str.Contains("meta")) xeniumCoords = str;
+            if (str.Contains("feature_matrix.csv") && !str.Contains("meta")) xeniumGenePanelPath = str;
+            if (str.Contains("results.csv") && !str.Contains("meta")) moran_results = str;               
+            if (str.Contains("obsm.csv") && !str.Contains("meta")) obsmPath[0] = str;               
+        }
+
+        Debug.Log(xeniumCounts);
 
         string[] files = Directory.GetFiles(df.xeniumPath, "*gene_transposed_counts.csv");
         xeniumCounts = files[0];
@@ -463,6 +482,7 @@ public class DataTransferManager : MonoBehaviour
 
         sd.Min = new Vector2(minX, minY);
         sd.Max = new Vector2(maxX, maxY);
+        umapm.SetCoordinatesForUMAP(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
         sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
 
         string srtMethod = "xenium";
