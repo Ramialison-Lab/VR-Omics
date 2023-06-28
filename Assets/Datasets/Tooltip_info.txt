@@ -1,0 +1,43 @@
+SideBySideBtn,Duplicate the dataset
+ExportBtn,Save selected ROIs
+LoadGroups,Load saved ROIs
+HnEBtn,Show H&E overlay
+LassoBtn,Show Selection tool options
+LightBtn,Change background colour
+LockedBtn,Unlock slice rotation
+UnlockedBtn,Lock slice rotation
+SearchWithToggle,Search Genes containing the input
+SearchIF,Enter a gene name
+CopySlider,Apply selection to the copy slice
+C18HeartSlider,Set the transparency of the heart object
+SelectionDropdown,Choose active dataset
+PassThroughBtn,Allows spot selection through slices
+0,Activate Group 1
+1,Activate Group 2
+2,Activate Group 3
+3,Activate Group 4
+LassoAddorRemoveToggle,Toggle to add or remove spots from selection
+CSVBtn,Export selection as CSV file
+ImageBtn,Export an image of the current view
+ColorThresholdMin,Set minimal threshold for expression
+SphereSizeSlider,Set the size of the symbol
+SettingBtn,Open settings menu
+UnselectLassoBtn,Undo all selections
+SVGBtn,Show spatially variable genes list
+ScreenshotBtn,Create image of current view. CTRL + K
+ObjectGroupBtn,Show 3D object movement options
+Move-3dObjectBtn,"Move 3d object using F,T,G,H keys and Shift, CTRL+M"
+RotateObjectBtn,"Rotate 3d object using F,T,G,H keys and Shift, CTRL+R"
+ResizeObjectBtn,"Resize 3d object using F,T,G,H keys and Shift, CTRL+L"
+ClusterBtn,Visualize cluster information
+FiguresBtn,Show output plots
+SphereBtn,Change location symbol to cubes
+CubeBtn,Change location symbol to spheres
+resetCameraBtn,Reset view
+GeneIsOnSlider,Toggle binary gene expression 
+EnterVRBtn,Switch to VR visualisation
+ToggleGradientSizeBtn,Expand the Gradient Legend
+OpacityBtn,Adjust opacity of H&E stain image
+FiguresBtn,Open figure viewer
+SymbolHolder,Toggle location symbol
+SaveBtn,Save current session
