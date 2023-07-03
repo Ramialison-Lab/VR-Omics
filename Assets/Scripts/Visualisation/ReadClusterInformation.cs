@@ -41,7 +41,8 @@ public class ReadClusterInformation : MonoBehaviour
     public Color[] defaultColours;
     private bool clusterActive= false;
     List<Color> clusterColour = new List<Color>();
-
+    List<Color> colorBackup= new List<Color>();
+    List<double> normalisedBackup= new List<double>();
 
     private void Start()
     {
@@ -52,6 +53,8 @@ public class ReadClusterInformation : MonoBehaviour
 
     public void readCluster()
     {
+        colorBackup = new List<Color>();
+        normalisedBackup = new List<double>();
         if (!clusterActive)
         {
             clusterActive = true;
@@ -96,7 +99,6 @@ public class ReadClusterInformation : MonoBehaviour
         {
             
             string[] values = line.Split(',');
-            Debug.Log(values[8]);
             if (values[8].Contains("RV"))
             {
                 clusterColour.Add(Color.red);
@@ -288,7 +290,6 @@ public class ReadClusterInformation : MonoBehaviour
 
         foreach (string path in dfm.visiumMetaFiles)
         {
-          
 
             // read the meta file with the cluster information
             string[] lines = File.ReadAllLines(path);
@@ -323,18 +324,51 @@ public class ReadClusterInformation : MonoBehaviour
             normalised.AddRange(tempNormalised);
             clusterColour.AddRange(tempColor);
         }
+            addDatasets(normalised, clusterColour);
 
-
-
-        //try
-        //{
+        try
+        {
             sd.skipColourGradient(normalised, clusterColour);
-        //}catch(Exception e)
-        //{
-        //    Debug.Log(e);
+        }catch(Exception e)
+        {
+            Debug.Log(e);
 
-        //    dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
-        //}
+            dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
+        }
+
+    }
+
+    private int currentSelection = -1;
+
+    public void SelectCluster(Button btn)
+    {
+        if(currentSelection == int.Parse(btn.name)){
+            sd.skipColourGradient(normalisedBackup, colorBackup);
+            currentSelection = -1;
+        }
+        else
+        {
+
+        List<double> newNormalised = new List<double>();
+        List<Color> newColour = new List<Color>();
+        //set all colours to grey except the one selected
+        for(int i = 0; i< normalisedBackup.Count; i++)
+        {
+            
+            if(btn.name == normalisedBackup[i].ToString())
+            {
+                newNormalised.Add((int)normalisedBackup[i]);
+                newColour.Add(colorBackup[i]);
+            }
+            else
+            {
+                newNormalised.Add(0);
+                newColour.Add(Color.black);
+            }
+        }
+        currentSelection = int.Parse(btn.name);
+        sd.skipColourGradient(newNormalised, newColour);
+        }
 
     }
 
@@ -366,6 +400,12 @@ public class ReadClusterInformation : MonoBehaviour
             {
                 GameObject clusterCont = Instantiate(clusterContainer, columns[columnCounter].transform);
                 RawImage img = clusterCont.GetComponentInChildren<RawImage>();
+                Button btn = clusterCont.GetComponentInChildren<Button>();
+                btn.name = i.ToString();
+                btn.GetComponent<Button>().onClick.AddListener(delegate
+                {
+                    SelectCluster(btn);
+                });
                 clusterCont.GetComponentInChildren<TMP_Text>().text = "Cluster " + i;
                 img.color = createDefaultColours()[i];
                 //if (dfm.c18_visium) img.color = clusterColour[i];
@@ -376,6 +416,12 @@ public class ReadClusterInformation : MonoBehaviour
                 columnCounter++;
                 nextColCount = 0;
                 GameObject clusterCont = Instantiate(clusterContainer, columns[columnCounter].transform);
+                Button btn = clusterCont.GetComponentInChildren<Button>();
+                btn.name = i.ToString();
+                btn.GetComponent<Button>().onClick.AddListener(delegate
+                {
+                    SelectCluster(btn);
+                });
                 RawImage img = clusterCont.GetComponentInChildren<RawImage>();
                 clusterCont.GetComponentInChildren<TMP_Text>().text = "Cluster " + i;
                 img.color = createDefaultColours()[i];
@@ -432,6 +478,12 @@ public class ReadClusterInformation : MonoBehaviour
 
 
         return defaultClusterColours; 
+    }
+
+    private void addDatasets(List<double> normalised, List<Color> colour)
+    {
+        colorBackup = colour;
+        normalisedBackup = normalised;
     }
 
     public void resetClusterInfoPanel()

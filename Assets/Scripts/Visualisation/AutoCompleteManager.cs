@@ -34,7 +34,6 @@ public class AutoCompleteManager : MonoBehaviour
     public GameObject scrollView;
     public GameObject InputContainsToggle;
     public List<GameObject> tempBtns;
-
     // Access variables
     private DataTransferManager dfm;
     private SearchManager sm;
