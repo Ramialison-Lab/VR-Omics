@@ -141,7 +141,9 @@ public class DataTransferManager : MonoBehaviour
     public int[] otherCSVCols;
     public LogFileController logfile;
     public string current_directory;
-
+    [SerializeField] string META_ENDING_CSV = "csv.meta";
+    [SerializeField] string META_ENDING_PNG = "png.meta";
+    [SerializeField] string META_ENDING_JSON = "json.meta";
     void Start()
     {
         scriptHolderPipeline = GameObject.Find("ScriptHolderPipeline");
@@ -209,25 +211,25 @@ public class DataTransferManager : MonoBehaviour
             csvGeneExpPaths.AddRange(Directory.GetFiles(x, "*filtered_transposed.csv"));
             foreach (string s in allDirectories)
             {
-                if (s.Contains("tissue_positions_list.csv") && !s.Contains("meta"))
+                if (s.Contains("tissue_positions_list.csv") && !s.Contains(META_ENDING_CSV))
                 {
                     positionList[positionListCounter] = s;
                     positionListCounter++;
                     isRawData = false;
                 }
-                if (s.Contains("scalefactors_json.json") && !s.Contains("meta"))
+                if (s.Contains("scalefactors_json.json") && !s.Contains(META_ENDING_JSON))
                 {
                     jsonFilePaths[jsonListCounter] = s;
                     isRawData = false;
 
                 }
-                if (s.Contains("tissue_hires_image.png") && !s.Contains("meta"))
+                if (s.Contains("tissue_hires_image.png") && !s.Contains(META_ENDING_PNG))
                 {
                     tissueImagePath[tissueImageCounter] = s;
                     tissueImageCounter++;
                     isRawData = false;
 
-                }if (s.Contains("obsm.csv") && !s.Contains("meta"))
+                }if (s.Contains("obsm.csv") && !s.Contains(META_ENDING_CSV))
                 {
                     obsmPath[0] = s;
                 }
@@ -421,14 +423,12 @@ public class DataTransferManager : MonoBehaviour
 
         foreach (string str in allDirectories)
         {
-            if (str.Contains("gene_transposed_counts.csv") && !str.Contains("meta")) xeniumCounts = str;
-            if (str.Contains("processed_cells.csv") && !str.Contains("meta")) xeniumCoords = str;
-            if (str.Contains("feature_matrix.csv") && !str.Contains("meta")) xeniumGenePanelPath = str;
-            if (str.Contains("results.csv") && !str.Contains("meta")) moran_results = str;               
-            if (str.Contains("obsm.csv") && !str.Contains("meta")) obsmPath[0] = str;               
+            if (str.Contains("gene_transposed_counts.csv") && !str.Contains(META_ENDING_CSV)) xeniumCounts = str;
+            if (str.Contains("processed_cells.csv") && !str.Contains(META_ENDING_CSV)) xeniumCoords = str;
+            if (str.Contains("feature_matrix.csv") && !str.Contains(META_ENDING_CSV)) xeniumGenePanelPath = str;
+            if (str.Contains("results.csv") && !str.Contains(META_ENDING_CSV)) moran_results = str;               
+            if (str.Contains("obsm.csv") && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;               
         }
-
-        Debug.Log(xeniumCounts);
 
         string[] files = Directory.GetFiles(df.xeniumPath, "*gene_transposed_counts.csv");
         xeniumCounts = files[0];
@@ -500,9 +500,16 @@ public class DataTransferManager : MonoBehaviour
     private void StartMerfish()
     {
         string[] allDirectories = Directory.GetFiles(df.merfishPath, "*", SearchOption.AllDirectories);
-        string merfishCoords = FindFilePath(allDirectories, "*metadata_processed.csv");
-        string merfishGenelist = FindFilePath(allDirectories, "*gene_transposed_processed.csv");
-        string moran_results = FindFilePath(allDirectories, "*results.csv");
+
+        foreach (string str in allDirectories)
+        {
+            if (str.Contains("metadata_processed.csv") && !str.Contains(META_ENDING_CSV)) merfishCoords = str;
+            if (str.Contains("gene_transposed_processed.csv") && !str.Contains(META_ENDING_CSV)) merfishGenelist = str;
+            if (str.Contains("results.csv") && !str.Contains(META_ENDING_CSV)) moran_results = str;
+            if (str.Contains("obsm.csv") && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;
+        }
+
+
         /*
          * Reading coordinate files  
         */
@@ -1007,7 +1014,7 @@ public class DataTransferManager : MonoBehaviour
             List<string> figure_Paths = new List<string>();
             foreach(string x in allDirectories)
             {
-                if (x.Contains(".png") && !x.Contains("meta"))
+                if (x.Contains(".png") && !x.Contains(META_ENDING_PNG))
                 {
                     figure_Paths.Add(x);
                 }

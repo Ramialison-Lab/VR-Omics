@@ -43,6 +43,7 @@ public class ReadClusterInformation : MonoBehaviour
     List<Color> clusterColour = new List<Color>();
     List<Color> colorBackup= new List<Color>();
     List<double> normalisedBackup= new List<double>();
+    private int currentSelection = -1;
 
     private void Start()
     {
@@ -51,43 +52,57 @@ public class ReadClusterInformation : MonoBehaviour
         defaultColours = createDefaultColours();
     }
 
+
+    /// <summary>
+    /// Check which Cluster Technique is used
+    /// </summary>
     public void readCluster()
     {
+        if (clusterActive)
+            return;
+
+        clusterActive = true;
+
         colorBackup = new List<Color>();
         normalisedBackup = new List<double>();
-        if (!clusterActive)
+
+        if (clusterPanel.activeSelf == false)
+            clusterPanel.SetActive(true);
+
+        if (dfm.c18_visium)
         {
-            clusterActive = true;
-            if (clusterPanel.activeSelf == false) clusterPanel.SetActive(true);
-            if (dfm.c18_visium)
-            {
-                readC18Cluster();
-            }
-            if (dfm.visium && !dfm.c18_visium)
-            {
-                readVisiumCluster();
-            }
-            if (dfm.xenium)
-            {
-                readXeniumCluster();
-            }            
-            if (dfm.merfish)
-            {
-                readMerfishCluster();
-            }            
-            if (dfm.nanostring)
-            {
-                readNanostringCluster();
-            }
-            //TODO: check Visium multiple
+            readC18Cluster();
+            return;
+        }
+
+        if (dfm.visium && !dfm.c18_visium)
+        {
+            readVisiumCluster();
+            return;
+        }
+
+        if (dfm.xenium)
+        {
+            readXeniumCluster();
+            return;
+        }
+
+        if (dfm.merfish)
+        {
+            readMerfishCluster();
+            return;
+        }
+
+        if (dfm.nanostring)
+        {
+            readNanostringCluster();
+            return;
         }
     }
 
+
     public void readC18Areas()
     {
-        // TBD LINKPATH
-
-        //string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
         string[] lines = File.ReadAllLines(dfm.coordsC18);
         lines = lines.Skip(1).ToArray();
 
@@ -119,67 +134,9 @@ public class ReadClusterInformation : MonoBehaviour
         sd.skipColourGradient(normalised, clusterColour);
     }
 
-    public void readC18Cluster()
-    {
-        var cluster = dfm.c18cluster;
-        List<double> normalised = new List<double>();
-        foreach (string s in cluster)
-        {
-            switch (s.Substring(1, s.Length - 2))
-            {
-                case ("NA"):
-                    normalised.Add(0);
-                    clusterColour.Add(Color.clear);
-                    break;
-                case ("#fd8d3c"):
-                    normalised.Add(0);
-                    clusterColour.Add(new Color(253 / rgb, 141 / rgb, 60 / rgb));
-                    break;
-                case ("#41b6c4"):
-                    normalised.Add(0.125);
-                    clusterColour.Add(new Color(65 / rgb, 182 / rgb, 196 / rgb));
-                    break;
-                case ("#225ea8"):
-                    normalised.Add(0.25);
-                    clusterColour.Add(new Color(34 / rgb, 94 / rgb, 168 / rgb));
-                    break;
-                case ("#d3d3d3"):
-                    normalised.Add(0.375);
-                    clusterColour.Add(new Color(211 / rgb, 211 / rgb, 211 / rgb));
-                    break;
-                case ("#9e9ac8"):
-                    normalised.Add(0.5);
-                    clusterColour.Add(new Color(158 / rgb, 154 / rgb, 200 / rgb));
-                    break;
-                case ("#e31a1c"):
-                    normalised.Add(0.625);
-                    clusterColour.Add(new Color(227 / rgb, 26 / rgb, 26 / rgb));
-                    break;
-                case ("#c2e699"):
-                    normalised.Add(0.75);
-                    clusterColour.Add(new Color(194 / rgb, 230 / rgb, 153 / rgb));
-                    break;
-                case ("#238443"):
-                    normalised.Add(0.875);
-                    clusterColour.Add(new Color(35 / rgb, 132 / rgb, 67 / rgb));
-                    break;
-                case ("#ffffb2"):
-                    normalised.Add(1);
-                    clusterColour.Add(new Color(255 / rgb, 255 / rgb, 178 / rgb));
-                    break;
-                default:
-                    normalised.Add(0);
-                    clusterColour.Add(Color.clear);
-                    break;
-            }
-        }
-        generateClusterLegend(8, 0);
-
-        sd.skipColourGradient(normalised, clusterColour);
-        //sd.setColors(normalised);
-
-    }
-
+    /// <summary>
+    /// Read Xenium Cluster Data
+    /// </summary>
     private void readXeniumCluster()
     {
 
@@ -201,6 +158,7 @@ public class ReadClusterInformation : MonoBehaviour
 
         generateClusterLegend((int)normalised.Max(), (int)normalised.Min());
 
+        addDatasets(normalised, clusterColour);
         try
         {
             sd.skipColourGradient(normalised, clusterColour);
@@ -214,6 +172,9 @@ public class ReadClusterInformation : MonoBehaviour
 
     }    
     
+    /// <summary>
+    /// Read Nanostring cluster data
+    /// </summary>
     private void readNanostringCluster()
     {
 
@@ -232,6 +193,7 @@ public class ReadClusterInformation : MonoBehaviour
         }
 
         generateClusterLegend((int)normalised.Max(), (int)normalised.Min());
+        addDatasets(normalised, clusterColour);
 
         try
         {
@@ -245,9 +207,12 @@ public class ReadClusterInformation : MonoBehaviour
         }
 
     }
+
+    /// <summary>
+    /// Read Merfish Cluster Data
+    /// </summary>
     private void readMerfishCluster()
     {
-
         List<double> normalised = new List<double>();
         List<Color> clusterColour = new List<Color>();
 
@@ -262,6 +227,7 @@ public class ReadClusterInformation : MonoBehaviour
         }
 
         generateClusterLegend((int)normalised.Max(), (int)normalised.Min());
+        addDatasets(normalised, clusterColour);
 
         try
         {
@@ -276,6 +242,9 @@ public class ReadClusterInformation : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Read Cluster Information for Visium Data
+    /// </summary>
     private void readVisiumCluster()
     {
 
@@ -338,37 +307,36 @@ public class ReadClusterInformation : MonoBehaviour
 
     }
 
-    private int currentSelection = -1;
-
     public void SelectCluster(Button btn)
     {
+
+
         if(currentSelection == int.Parse(btn.name)){
             sd.skipColourGradient(normalisedBackup, colorBackup);
             currentSelection = -1;
         }
         else
         {
+            List<double> newNormalised = new List<double>();
+            List<Color> newColour = new List<Color>();
 
-        List<double> newNormalised = new List<double>();
-        List<Color> newColour = new List<Color>();
-        //set all colours to grey except the one selected
-        for(int i = 0; i< normalisedBackup.Count; i++)
-        {
-            
-            if(btn.name == normalisedBackup[i].ToString())
+            //set all colours to grey except the one selected
+            for(int i = 0; i< normalisedBackup.Count; i++)
             {
-                newNormalised.Add((int)normalisedBackup[i]);
-                newColour.Add(colorBackup[i]);
+                if(btn.name == normalisedBackup[i].ToString())
+                {
+                    newNormalised.Add((int)normalisedBackup[i]);
+                    newColour.Add(colorBackup[i]);
+                }
+                else
+                {
+                    newNormalised.Add(0);
+                    newColour.Add(Color.clear);
+                }
             }
-            else
-            {
-                newNormalised.Add(0);
-                newColour.Add(Color.black);
+            currentSelection = int.Parse(btn.name);
+            sd.skipColourGradient(newNormalised, newColour);
             }
-        }
-        currentSelection = int.Parse(btn.name);
-        sd.skipColourGradient(newNormalised, newColour);
-        }
 
     }
 
@@ -431,16 +399,82 @@ public class ReadClusterInformation : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Read c18 heart cluster data
+    /// </summary>
+    public void readC18Cluster()
+    {
+        var cluster = dfm.c18cluster;
+        List<double> normalised = new List<double>();
+        foreach (string s in cluster)
+        {
+            switch (s.Substring(1, s.Length - 2))
+            {
+                case ("NA"):
+                    normalised.Add(0);
+                    clusterColour.Add(Color.clear);
+                    break;
+                case ("#fd8d3c"):
+                    normalised.Add(0);
+                    clusterColour.Add(createDefaultColours()[0]);
+                    break;
+                case ("#41b6c4"):
+                    normalised.Add(1);
+                    clusterColour.Add(createDefaultColours()[1]);
+                    break;
+                case ("#225ea8"):
+                    normalised.Add(2);
+                    clusterColour.Add(createDefaultColours()[2]);
+                    break;
+                case ("#d3d3d3"):
+                    normalised.Add(3);
+                    clusterColour.Add(createDefaultColours()[3]);
+                    break;
+                case ("#9e9ac8"):
+                    normalised.Add(4);
+                    clusterColour.Add(createDefaultColours()[4]);
+                    break;
+                case ("#e31a1c"):
+                    normalised.Add(5);
+                    clusterColour.Add(createDefaultColours()[5]);
+                    break;
+                case ("#c2e699"):
+                    normalised.Add(6);
+                    clusterColour.Add(createDefaultColours()[6]);
+                    break;
+                case ("#238443"):
+                    normalised.Add(7);
+                    clusterColour.Add(createDefaultColours()[7]);
+                    break;
+                case ("#ffffb2"):
+                    normalised.Add(8);
+                    clusterColour.Add(createDefaultColours()[8]);
+                    break;
+                default:
+                    normalised.Add(0);
+                    clusterColour.Add(Color.clear);
+                    break;
+            }
+        }
+        generateClusterLegend(8, 0);
+
+        addDatasets(normalised, clusterColour);
+        sd.skipColourGradient(normalised, clusterColour);
+        //sd.setColors(normalised);
+
+    }
+
     private Color[] createDefaultColours()
     {
         Color[] defaultClusterColours = new Color[40];
 
-        defaultClusterColours[0] = new Color(253 / rgb, 141 / rgb, 60 / rgb);  
-        defaultClusterColours[1] = new Color(65 / rgb, 182 / rgb, 196 / rgb);
+        defaultClusterColours[0] = new Color(65 / rgb, 182 / rgb, 196 / rgb);
+        defaultClusterColours[1] = new Color(227 / rgb, 26 / rgb, 26 / rgb);
         defaultClusterColours[2] = new Color(211 / rgb, 211 / rgb, 211 / rgb);
-        defaultClusterColours[3] = new Color(158 / rgb, 154 / rgb, 200 / rgb);
-        defaultClusterColours[4] = new Color(227 / rgb, 26 / rgb, 26 / rgb);
-        defaultClusterColours[5] = new Color(194 / rgb, 230 / rgb, 153 / rgb);
+        defaultClusterColours[3] = new Color(253 / rgb, 141 / rgb, 60 / rgb);  
+        defaultClusterColours[4] = new Color(194 / rgb, 230 / rgb, 153 / rgb);
+        defaultClusterColours[5] = new Color(158 / rgb, 154 / rgb, 200 / rgb);
         defaultClusterColours[6] = new Color(35 / rgb, 132 / rgb, 67 / rgb);
         defaultClusterColours[7] = new Color(34 / rgb, 94 / rgb, 168 / rgb);
         defaultClusterColours[8] = new Color(255 / rgb, 255 / rgb, 178 / rgb);
