@@ -331,7 +331,7 @@ public class ReadClusterInformation : MonoBehaviour
                 else
                 {
                     newNormalised.Add(0);
-                    newColour.Add(Color.clear);
+                    newColour.Add(new Color(0f, 0f, 0f, 0f));
                 }
             }
             currentSelection = int.Parse(btn.name);
@@ -468,51 +468,32 @@ public class ReadClusterInformation : MonoBehaviour
     private Color[] createDefaultColours()
     {
         Color[] defaultClusterColours = new Color[40];
+        string filePath = Path.Combine(Application.dataPath, "Parameter_files", "rgb.txt");
+        float rgb = 255f; 
 
-        defaultClusterColours[0] = new Color(65 / rgb, 182 / rgb, 196 / rgb);
-        defaultClusterColours[1] = new Color(227 / rgb, 26 / rgb, 26 / rgb);
-        defaultClusterColours[2] = new Color(211 / rgb, 211 / rgb, 211 / rgb);
-        defaultClusterColours[3] = new Color(253 / rgb, 141 / rgb, 60 / rgb);  
-        defaultClusterColours[4] = new Color(194 / rgb, 230 / rgb, 153 / rgb);
-        defaultClusterColours[5] = new Color(158 / rgb, 154 / rgb, 200 / rgb);
-        defaultClusterColours[6] = new Color(35 / rgb, 132 / rgb, 67 / rgb);
-        defaultClusterColours[7] = new Color(34 / rgb, 94 / rgb, 168 / rgb);
-        defaultClusterColours[8] = new Color(255 / rgb, 255 / rgb, 178 / rgb);
-        defaultClusterColours[9] = new Color(23 / rgb, 11 / rgb, 60 / rgb);
-        defaultClusterColours[10] = new Color(165 / rgb, 182 / rgb, 196 / rgb);
-        defaultClusterColours[11] = new Color(121 / rgb, 150 / rgb, 11 / rgb);
-        defaultClusterColours[12] = new Color(158 / rgb, 15 / rgb, 200 / rgb);
-        defaultClusterColours[13] = new Color(127 / rgb, 26 / rgb, 26 / rgb);
-        defaultClusterColours[14] = new Color(194 / rgb, 30 / rgb, 253 / rgb);
-        defaultClusterColours[15] = new Color(135 / rgb, 132 / rgb, 67 / rgb);
-        defaultClusterColours[16] = new Color(34 / rgb, 194 / rgb, 168 / rgb);
-        defaultClusterColours[17] = new Color(155 / rgb, 255 / rgb, 178 / rgb);
-        defaultClusterColours[18] = new Color(53 / rgb, 141 / rgb, 6 / rgb);
-        defaultClusterColours[19] = new Color(65 / rgb, 82 / rgb, 16 / rgb);
-        defaultClusterColours[20] = new Color(111 / rgb, 211 / rgb, 11 / rgb);
-        defaultClusterColours[21] = new Color(158 / rgb, 154 / rgb, 0 / rgb);
-        defaultClusterColours[22] = new Color(1 / rgb, 226 / rgb, 26 / rgb);
-        defaultClusterColours[23] = new Color(19 / rgb, 230 / rgb, 153 / rgb);
-        defaultClusterColours[24] = new Color(35 / rgb, 32 / rgb, 67 / rgb);
-        defaultClusterColours[25] = new Color(34 / rgb, 194 / rgb, 168 / rgb);
-        defaultClusterColours[26] = new Color(255 / rgb, 155 / rgb, 178 / rgb);
-        defaultClusterColours[27] = new Color(255 / rgb, 55 / rgb, 178 / rgb);
-        defaultClusterColours[28] = new Color(127 / rgb, 32 / rgb, 178 / rgb);
-        defaultClusterColours[29] = new Color(25 / rgb, 5 / rgb, 78 / rgb);
-        defaultClusterColours[30] = new Color(11 / rgb, 21 / rgb, 211 / rgb);
-        defaultClusterColours[31] = new Color(50 / rgb, 11 / rgb, 66 / rgb);
-        defaultClusterColours[32] = new Color(200 / rgb, 200 / rgb, 211 / rgb);
-        defaultClusterColours[33] = new Color(111 / rgb, 111 / rgb, 111 / rgb);
-        defaultClusterColours[34] = new Color(80 / rgb, 40 / rgb, 88 / rgb);
-        defaultClusterColours[35] = new Color(20 / rgb, 4 / rgb, 110 / rgb);
-        defaultClusterColours[36] = new Color(2 / rgb, 211 / rgb, 11 / rgb);
-        defaultClusterColours[37] = new Color(111 / rgb, 55 / rgb, 11 / rgb);
-        defaultClusterColours[38] = new Color(111 / rgb, 75 / rgb, 121 / rgb);
-        defaultClusterColours[39] = new Color(240 / rgb, 240 / rgb, 11 / rgb);
+        // Read the CSV file
+        using (StreamReader reader = new StreamReader(filePath))
+        {
+            int index = 0;
+            string line;
+            while ((line = reader.ReadLine()) != null && index < defaultClusterColours.Length)
+            {
+                string[] rgbValues = line.Split(',');
+                if (rgbValues.Length >= 3 && float.TryParse(rgbValues[0], out float r) && float.TryParse(rgbValues[1], out float g) && float.TryParse(rgbValues[2], out float b))
+                {
+                    defaultClusterColours[index] = new Color(r / rgb, g / rgb, b / rgb);
+                }
+                else
+                {
+                    Debug.LogError("Invalid RGB values in CSV file at index: " + index);
+                }
 
-
-        return defaultClusterColours; 
+                index++;
+            }
+        }
+        return defaultClusterColours;
     }
+
 
     private void addDatasets(List<double> normalised, List<Color> colour)
     {

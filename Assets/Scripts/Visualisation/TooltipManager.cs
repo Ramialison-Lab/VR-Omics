@@ -38,7 +38,7 @@ public class TooltipManager : MonoBehaviour
 
     private void Start()
     {
-        string filePath = Path.Combine(Application.dataPath, "Datasets/Tooltip_info.txt");
+        string filePath = Path.Combine(Application.dataPath, "Parameter_Files/Tooltip_info.txt");
         ReadCSVFile(filePath);
     }
 
