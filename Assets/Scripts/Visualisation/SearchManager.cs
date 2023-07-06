@@ -52,6 +52,8 @@ public class SearchManager : MonoBehaviour
     //TBD LINKPATH
     public string geneNamesC18;
 
+    public GameObject noExpressionValuePanel;
+
     private void Awake()
     {
         //Access variables
@@ -516,9 +518,12 @@ public class SearchManager : MonoBehaviour
     {
         Awake();
         StartCoroutine(search(datapath, pos, gn));
+
+        foreach (float x in resultExpression) Debug.Log(x);
         if (resultExpression.Max() == 0)
         {
-            sd.setAllZeroColour(normalised);
+            noExpressionValuePanel.SetActive(true);
+            //sd.setAllZeroColour(normalised);
         }
         else
         {

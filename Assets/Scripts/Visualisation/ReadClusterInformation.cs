@@ -307,6 +307,10 @@ public class ReadClusterInformation : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Handles if one Cluster is selected and disables all other Clusters visually
+    /// </summary>
+    /// <param name="btn"></param>
     public void SelectCluster(Button btn)
     {
 
@@ -340,6 +344,11 @@ public class ReadClusterInformation : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Generating the Legend for the Clusters with interactive Buttons
+    /// </summary>
+    /// <param name="cl_max"></param>
+    /// <param name="cl_min"></param>
     private void generateClusterLegend(int cl_max, int cl_min)
     {
         //define how many clusters are used 

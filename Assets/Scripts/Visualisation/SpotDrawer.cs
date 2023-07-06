@@ -56,6 +56,8 @@ public class SpotDrawer : MonoBehaviour
     public GameObject mergePanel;
     public GameObject sidePanel;
     public GameObject TMPpro_text;
+    public GameObject sideSelection;
+    public GameObject selectGenePanel;
 
     //Colorgradient
     public GameObject colourGradientObject;
@@ -1223,8 +1225,16 @@ public class SpotDrawer : MonoBehaviour
     /// </summary>
     public void sideBySide(GameObject panel)
     {
+        if(!firstSelect)
+        {
+            selectGenePanel.SetActive(true);
+            return;
+        }
         if (panel.activeSelf) panel.SetActive(false);
         else panel.SetActive(true);
+
+        if (sideSelection.activeSelf) sideSelection.SetActive(false);
+        else sideSelection.SetActive(true);
         copy = !copy;
 
         GetComponent<ButtonFunctionManager>().ToggleCopySlider();
