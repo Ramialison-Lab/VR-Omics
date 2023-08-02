@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -22,6 +21,9 @@ public class UMAPManager : MonoBehaviour
     public float[] z_coordinates_tsne;
     public string[] location_names;
     public string[] dataset_names;
+
+    private Vector2 middlePoint;
+    bool move = false;
 
     bool firstUMAP = true;
     bool firstTSNE = true;
@@ -97,7 +99,9 @@ public class UMAPManager : MonoBehaviour
         z_coordinates = z_coordinates_umap;
 
         StartSpotDrawer();
-       
+        move = true;
+        middlePoint = CalculateMiddlePoint(x_coordinates_umap, y_coordinates_umap);
+
     }
 
     /// <summary>
@@ -148,6 +152,9 @@ public class UMAPManager : MonoBehaviour
         z_coordinates = z_coordinates_tsne;
 
         StartSpotDrawer();
+
+        move = true;
+        middlePoint = CalculateMiddlePoint(x_coordinates_tsne, y_coordinates_tsne);
     }
 
     /// <summary>
@@ -158,7 +165,11 @@ public class UMAPManager : MonoBehaviour
         x_coordinates = x_coordinates_spatial;
         y_coordinates = y_coordinates_spatial;
         z_coordinates = z_coordinates_spatial;
+
         StartSpotDrawer();
+
+        move = true;
+        middlePoint = CalculateMiddlePoint(x_coordinates, y_coordinates);
     }
 
     /// <summary>
@@ -169,5 +180,38 @@ public class UMAPManager : MonoBehaviour
         //TODO: ensure to reset Cluster
         sd = gameObject.GetComponent<SpotDrawer>();
         sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, dataset_names);
+    }
+
+    /// <summary>
+    /// Calculate Vec2 middlepoint
+    /// </summary>
+    /// <param name="xCoordinates"></param>
+    /// <param name="yCoordinates"></param>
+    /// <returns></returns>
+    private Vector2 CalculateMiddlePoint(float[] xCoordinates, float[] yCoordinates)
+    {
+        if (xCoordinates.Length != yCoordinates.Length || xCoordinates.Length == 0)
+        {
+            throw new ArgumentException("The input arrays should have the same non-zero length.");
+        }
+
+        // Calculate the average of x and y coordinates
+        float xSum = xCoordinates.Sum();
+        float ySum = yCoordinates.Sum();
+        float xAverage = xSum / xCoordinates.Length;
+        float yAverage = ySum / yCoordinates.Length;
+
+        // Create a Vector2 using the calculated averages
+        Vector2 middlePoint = new Vector2(xAverage, yAverage);
+        return middlePoint;
+    }
+
+    private void LateUpdate()
+    {
+        if (move)
+        {
+            Camera.main.transform.position = new Vector3(middlePoint.x, middlePoint.y, Camera.main.transform.position.z);
+            move = false;
+        }
     }
 }

@@ -224,9 +224,11 @@ public class SpotDrawer : MonoBehaviour
         ///This SECTION CREATES NEW TEMPLATE SLICECOLLIDER → POSITION STILL OFF
         ///
         if (!sliceDrawer)
-        {
-            
+        {       
+            //if not SliceCollider was generated before
             sliceDrawer = true;
+            
+            //Save spots locations
             Vector3[] positions = new Vector3[spots.Length];
             for (int i=0; i< spots.Length; i++){
 
@@ -252,12 +254,15 @@ public class SpotDrawer : MonoBehaviour
             YMax = positions[0].y;
             YMin = positions[spots.Length-1].y;
 
+            //Saves top right and bottom left corner coordinates
             Vector2 maxvec = new Vector2(XMax, YMax);
             Vector2 minvec = new Vector2(XMin, YMin);
 
+            //Generate Cube as slicecollider
             GameObject sliceCollider = GameObject.CreatePrimitive(PrimitiveType.Cube);
             sliceCollider.name = "SliceCollider";
 
+            //Calculate middle of both Vectors
             Vector2 middle = Vector2.Lerp(maxvec, minvec, 0.5f);
             middle = new Vector2(middle.x * s.h, middle.y *s.v);
 
