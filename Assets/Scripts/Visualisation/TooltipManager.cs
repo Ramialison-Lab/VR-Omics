@@ -38,7 +38,12 @@ public class TooltipManager : MonoBehaviour
 
     private void Start()
     {
-        string filePath = Path.Combine(Application.dataPath, "Parameter_Files/Tooltip_info.txt");
+
+        string filePath = Path.Combine(Application.dataPath, "Resources/Parameter_Files/Tooltip_info.txt");
+
+#if UNITY_EDITOR
+        filePath = Path.Combine(Application.dataPath, "Parameter_Files/Tooltip_info.txt");
+#endif
         ReadCSVFile(filePath);
     }
 

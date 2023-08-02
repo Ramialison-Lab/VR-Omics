@@ -519,7 +519,6 @@ public class SearchManager : MonoBehaviour
         Awake();
         StartCoroutine(search(datapath, pos, gn));
 
-        foreach (float x in resultExpression) Debug.Log(x);
         if (resultExpression.Max() == 0)
         {
             noExpressionValuePanel.SetActive(true);

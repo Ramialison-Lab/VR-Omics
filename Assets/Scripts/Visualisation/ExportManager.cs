@@ -47,8 +47,8 @@ public class ExportManager : MonoBehaviour
     {
         resWidth = Screen.width;
         resHeight = Screen.height;
-        filePath = Application.dataPath + "/Assets/ROI_export/exported_spotlist.csv";
-        filePathScreenshot = Application.dataPath + "/Assets/Screenshots/";
+        filePath = Application.dataPath + "/Resources/ROI_export/exported_spotlist.csv";
+        filePathScreenshot = Application.dataPath + "/Resources/Screenshots/";
 #if UNITY_EDITOR
         filePath = Application.dataPath + "/ROI_export/exported_spotlist.csv";
         filePathScreenshot = Application.dataPath + "/Screenshots/";

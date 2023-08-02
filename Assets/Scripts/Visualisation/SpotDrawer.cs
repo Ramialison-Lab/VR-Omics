@@ -58,6 +58,8 @@ public class SpotDrawer : MonoBehaviour
     public GameObject TMPpro_text;
     public GameObject sideSelection;
     public GameObject selectGenePanel;
+    public GameObject twoGeneSlider;
+    public GameObject twoGenesLegend;
 
     //Colorgradient
     public GameObject colourGradientObject;
@@ -72,11 +74,13 @@ public class SpotDrawer : MonoBehaviour
     public bool passThrough;
 
     //Other
+    private bool selectTwo = false; //select a two genes at the same time
+    private bool allowTwoGenes = false; //select a two genes at the same time
     public float minThresh = 0f;
     public float maxTresh = 0f;
     public float clickoffset = 0.25f;
     public bool visium;
-    private bool showGenesExpressed;
+    private bool binary =false; //binary gene is on mode
     private string lastGene;
     private string lastGeneCopy;
     public List<GameObject> activepanels = new List<GameObject>(4);
@@ -210,6 +214,8 @@ public class SpotDrawer : MonoBehaviour
             o.y = dataOrigin.OriginCopy.y;
         var Mc = Matrix4x4.TRS(o, canvas.transform.rotation, canvas.transform.localScale);
         float s_w = EntrypointVR.Instance.VR ? 0.004f : 1f;
+
+        twoGeneSlider.SetActive(binary ? true : false);
 
         /////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////
@@ -590,10 +596,22 @@ public class SpotDrawer : MonoBehaviour
     {
         try
         {
-            if (showGenesExpressed)
+
+            if (binary)
             {
-                if (normValues[i] > minThresh) return Color.green;
-                else return Color.clear;
+                if (!selectTwo)
+                {
+                    if (normValues[i] > minThresh) return Color.green;
+                    else return Color.clear;
+                }
+                else if(selectTwo)
+                {
+                    if (previousList[i] > normValues[i]) return Color.green;
+                    else if (previousList[i] < normValues[i]) return Color.red;
+                    else if (previousList[i] == normValues[i]) return Color.white;
+
+                    else return Color.clear;
+                }
             }
 
             if ((float)normValues[i] < minThresh)
@@ -668,17 +686,25 @@ public class SpotDrawer : MonoBehaviour
         catch (Exception e) { dfm.logfile.Log(e,"The gene was not expressed throughout the whole tissue slide. This caused an error with the normalisation of the values."); }
     }
 
+    private List<double> lastList;
+    private List<double> previousList;
+
+
     /// <summary>
     /// Navigates normalised values for the original or side-by-side copy to the color gradient evaluation
     /// </summary>
     /// <param name="normalise"></param>
     public void setColors(List<double> normalise)
     {
+
+        previousList = lastList; // Save the previous list
+        lastList = normalise; // Update the last list with the new list
+
+        normalised.AddRange(normalise);
         firstSelect = true;
         firstGeneSelected = true;
         if (!colourcopy)
         {
-            normalised.AddRange(normalise);
 
             colVals.Clear();
             if (normalise.Count < spots.Length) batchCounter = batchCounter + normalise.Count;
@@ -700,6 +726,12 @@ public class SpotDrawer : MonoBehaviour
             }
         }
         setColour();
+    }
+
+    public void SelectTwoGenes()
+    {
+        selectTwo = !selectTwo;
+        twoGenesLegend.SetActive(selectTwo ? true : false);
     }
 
     private void setColour()
@@ -1604,7 +1636,7 @@ public class SpotDrawer : MonoBehaviour
     /// </summary>
     public void toggleShowGenesExpressed()
     {
-        showGenesExpressed = !showGenesExpressed;
+        binary = !binary;
     }
 
     public void reloadGroups(List<string> barcodes, List<int> ids)

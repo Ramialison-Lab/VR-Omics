@@ -477,7 +477,11 @@ public class ReadClusterInformation : MonoBehaviour
     private Color[] createDefaultColours()
     {
         Color[] defaultClusterColours = new Color[40];
-        string filePath = Path.Combine(Application.dataPath, "Parameter_files", "rgb.txt");
+        string filePath = Path.Combine(Application.dataPath, "Resources" ,"Parameter_files", "rgb.txt");
+
+#if UNITY_EDITOR
+        filePath = Path.Combine(Application.dataPath, "Parameter_files", "rgb.txt");
+#endif
         float rgb = 255f; 
 
         // Read the CSV file

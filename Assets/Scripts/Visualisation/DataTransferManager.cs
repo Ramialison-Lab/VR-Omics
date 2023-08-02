@@ -205,6 +205,7 @@ public class DataTransferManager : MonoBehaviour
         {
 
             string[] allDirectories = Directory.GetFiles(x, "*", SearchOption.AllDirectories);
+            CheckForFigures(allDirectories);
 
             visiumMetaFiles.AddRange(Directory.GetFiles(x, "*metadata.csv"));
             hdf5datapaths.AddRange(Directory.GetFiles(x, "*.h5"));
@@ -897,19 +898,25 @@ public class DataTransferManager : MonoBehaviour
 
         //stomicsDataPath = df.stomicsPath;
         stomicsDataPath = df.stomicsPath;
-        stomicsSpotId = fr.readH5StringVar(stomicsDataPath, "var/_index", stomicsSpotId);
-        stomicsGeneNames = fr.readH5StringVar(stomicsDataPath, "obs/geneID", stomicsGeneNames);
-        stomicsX = fr.readH5Float(stomicsDataPath, "var/new_x");
-        stomicsY = fr.readH5Float(stomicsDataPath, "var/new_y");
-        stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
-        //checking for all image files
-        string[] allDirectories = Directory.GetFiles(stomicsDataPath, "*", SearchOption.AllDirectories);
-        CheckForFigures(allDirectories);
-
-        for (int i =0; i< stomicsZ.Count; i++)
+        Debug.Log(stomicsDataPath);
+        stomicsSpotId = fr.readH5StringVar(stomicsDataPath, "obs/_index", stomicsSpotId);
+        stomicsGeneNames = fr.readH5StringVar(stomicsDataPath, "var/_index", stomicsGeneNames);
+        stomicsX = fr.readH5Float(stomicsDataPath, "obs/x");
+        stomicsY = fr.readH5Float(stomicsDataPath, "obs/y");
+        
+        foreach(float x in stomicsX)
         {
-            stomicsZ[i] = stomicsZ[i] * 50;
+            stomicsZ.Add(0);
         }
+        //stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
+        //checking for all image files
+       // string[] allDirectories = Directory.GetFiles(stomicsDataPath, "*", SearchOption.AllDirectories);
+       // CheckForFigures(allDirectories);
+
+        //for (int i =0; i< stomicsZ.Count; i++)
+        //{
+        //    stomicsZ[i] = stomicsZ[i] * 50;
+        //}
 
         sd.Min = new Vector2(stomicsX.Min(), stomicsY.Min());
         sd.Max = new Vector2(stomicsX.Max(), stomicsY.Max());
