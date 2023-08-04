@@ -63,6 +63,8 @@ public class UIManager : MonoBehaviour
     public GameObject stomicsProcessPanel;
     public GameObject merfishProcessPanel;
     public GameObject merfishLoadPanel;
+    public GameObject slideseqv2ProcessPanel;
+    public GameObject slideseqv2LoadPanel;
     public GameObject nanostringLoadPanel;
     public GameObject otherLoadPanel;
     public GameObject loadingPanel;
@@ -100,6 +102,7 @@ public class UIManager : MonoBehaviour
     private bool expMenuXen = false;
     private bool expMenuTomo = false;
     private bool expMenuStomics = false;
+    private bool expMenuSlideSeqV2 = false;
     private bool expMenuOther = false;
 
     public GameObject mainExpandPanelVisium;
@@ -109,6 +112,7 @@ public class UIManager : MonoBehaviour
     public GameObject mainExpandOther;
     public GameObject mainExpandMerfish;
     public GameObject mainExpandNanostring;
+    public GameObject mainExpandSlideSeqV2;
 
     public GameObject expandBtnActivePanelVisium;
     public GameObject expandBtnActivePanelXenium;
@@ -117,6 +121,7 @@ public class UIManager : MonoBehaviour
     public GameObject expandBtnActivePanelMerfish;
     public GameObject expandBtnActivePanelNanostring;
     public GameObject expandBtnActivePanelOther;
+    public GameObject expandBtnActivePanelSlideSeqV2;
 
     //Rotation slice
     public List<int> rotationValues;
@@ -155,7 +160,8 @@ public class UIManager : MonoBehaviour
     public TMP_InputField merfish_counts_LoadTMP;               //Process 
     public TMP_InputField merfish_meta_LoadTMP;                 //Process
     public TMP_InputField merfish_transform_LoadTMP;            //Process
-    public TMP_InputField nanostringTMPField;            //Process
+    public TMP_InputField nanostringTMPField;            
+    public TMP_InputField slideseqV2TMPField;            
     public TMP_InputField visium_from_local_TMP;            //Process
     public TMP_InputField otherMatLoadTMP;
     public TMP_InputField otherMetaLoadTMP;
@@ -182,6 +188,7 @@ public class UIManager : MonoBehaviour
     private string merfish_meta_file = "";
     private string merfish_transformation_file = "";
     public string nanostringPath;
+    public string slideseqv2Path;
     public string objectPath;
     public string visium_local_path;
 
@@ -273,6 +280,19 @@ public class UIManager : MonoBehaviour
         //if (fpc.files_Checked)
         {
             df.startNanostring();
+        }
+    }    
+    
+    /// <summary>
+    /// Starting Slide-seqV2
+    /// </summary>
+    public void startSlideSeqV2()
+    {
+        //TODO: Add File Names for Nanostring
+        //fpc.checkNanostringPath(xeniumPath);
+        //if (fpc.files_Checked)
+        {
+            df.startSlideSeqV2();
         }
     }
 
@@ -379,6 +399,12 @@ public class UIManager : MonoBehaviour
                 break;
             case "ProcessMerfishBtn":
                 merfishProcessPanel.SetActive(true);
+                break;               
+            case "LoadSlideSeqV2Btn":
+                slideseqv2LoadPanel.SetActive(true);
+                break;
+            case "ProcessSlideSeqV2Btn":
+                slideseqv2ProcessPanel.SetActive(true);
                 break;                     
             case "LoadNanostringBtn":
                 nanostringLoadPanel.SetActive(true);
@@ -525,6 +551,21 @@ public class UIManager : MonoBehaviour
             expandBtnActivePanelNanostring.SetActive(false);
         }
         expMenuNanostring = !expMenuNanostring;
+    }
+
+    public void toggleExpandMenuSlideSeqV2()
+    {
+        if (!expMenuSlideSeqV2)
+        {
+            expandPanelOut(mainExpandSlideSeqV2);
+            expandBtnActivePanelSlideSeqV2.SetActive(true);
+        }
+        else
+        {
+            mainExpandSlideSeqV2.transform.localPosition = new Vector2(mainExpandSlideSeqV2.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandSlideSeqV2.GetComponent<RectTransform>().transform.localPosition.y);
+            expandBtnActivePanelSlideSeqV2.SetActive(false);
+        }
+        expMenuSlideSeqV2 = !expMenuSlideSeqV2;
     }
 
     public void toggleExpandMenuTomoSeq()
@@ -1022,6 +1063,11 @@ public class UIManager : MonoBehaviour
     public void selectNanostringPath()
     {
         StartCoroutine(selectBrowseFile("nanostringPath", nanostringTMPField));
+    }    
+    
+    public void selectSlideSeqV2Path()
+    {
+        StartCoroutine(selectBrowseFile("slideseqv2Path", slideseqV2TMPField));
     }
     #endregion
 
@@ -1117,6 +1163,9 @@ public class UIManager : MonoBehaviour
                     break;                
                 case "nanostringPath":
                     nanostringPath = res;
+                    break;                
+                case "slideseqv2Path":
+                    slideseqv2Path = res;
                     break;
                 case "object":
                     objectPath = res;

@@ -98,6 +98,12 @@ public class ReadClusterInformation : MonoBehaviour
             readNanostringCluster();
             return;
         }
+        
+        if (dfm.slideseqv2)
+        {
+            readSlideSeqV2Cluster();
+            return;
+        }
     }
 
 
@@ -190,6 +196,43 @@ public class ReadClusterInformation : MonoBehaviour
 
             normalised.Add(int.Parse(values[30]));
             clusterColour.Add(defaultColours[int.Parse(values[30])]);
+        }
+
+        generateClusterLegend((int)normalised.Max(), (int)normalised.Min());
+        addDatasets(normalised, clusterColour);
+
+        try
+        {
+            sd.skipColourGradient(normalised, clusterColour);
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+
+            dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
+        }
+
+    }    
+    
+    
+    /// <summary>
+    /// Read SlideSeqV2 cluster data
+    /// </summary>
+    private void readSlideSeqV2Cluster()
+    {
+
+        List<double> normalised = new List<double>();
+        List<Color> clusterColour = new List<Color>();
+
+        string[] lines = File.ReadAllLines(dfm.slideseqv2Coords);
+        lines = lines.Skip(1).ToArray();
+        for(int i=0; i<lines.Length; i++)
+        {
+
+            string[] values = lines[i].Split(',');
+
+            normalised.Add(int.Parse(values[16]));
+            clusterColour.Add(defaultColours[int.Parse(values[16])]);
         }
 
         generateClusterLegend((int)normalised.Max(), (int)normalised.Min());

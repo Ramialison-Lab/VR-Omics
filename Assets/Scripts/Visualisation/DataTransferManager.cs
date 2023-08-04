@@ -37,6 +37,7 @@ public class DataTransferManager : MonoBehaviour
     public bool xenium = false;
     public bool merfish = false;
     public bool nanostring = false;
+    public bool slideseqv2 = false;
     public bool c18_visium = false;
     public bool other = false;
 
@@ -129,6 +130,13 @@ public class DataTransferManager : MonoBehaviour
     public string nanostringCounts;
     public string nanostringCoords;
     public string nanostringGenePanelPath;
+
+    //SlideSeqV2
+    public List<string> SlideSeqV2GeneNames = new List<string>();
+    public string slideseqv2Counts;
+    public string slideseqv2Coords;
+    public string slideseqv2GenePanelPath;
+    public string slideseqv2GenePanel;
 
     //Tomoseq
     public string tomoGeneDirectory;
@@ -510,6 +518,7 @@ public class DataTransferManager : MonoBehaviour
             if (str.Contains("obsm.csv") && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;
         }
 
+        Debug.Log(obsmPath[0]);
 
         /*
          * Reading coordinate files  
@@ -549,6 +558,7 @@ public class DataTransferManager : MonoBehaviour
             x_coordinates[i] = x;
             y_coordinates[i] = y;
             z_coordinates[i] = 0;
+
             location_names[i] = values[0];
 
             // Find min and max
@@ -665,6 +675,90 @@ public class DataTransferManager : MonoBehaviour
 
         //AdjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, minZ, new Vector3(0, 0, 0));
         Camera.main.transform.position = new Vector3(150, 1500, -175);
+        // scriptHolder.GetComponent<XeniumDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell);
+    }
+
+    public void StartSlideSeqV2()
+    {
+
+        string[] allDirectories = Directory.GetFiles(df.slideseqv2Path, "*", SearchOption.AllDirectories);
+
+        foreach (string str in allDirectories)
+        {
+            if (str.Contains("gene_transposed_counts.csv"))
+            {
+                slideseqv2Counts = str;
+            }
+            //if (str.Contains("panel.csv"))
+            //{
+            //    nanostringGenePanel = str;
+            //}
+            if (str.Contains("meta_data.csv"))
+            {
+                slideseqv2Coords = str;
+            }
+            if (str.Contains("genepanel.csv"))
+            {
+                slideseqv2GenePanel = str;
+            }
+            //if (str.Contains("results.csv"))
+            //{
+            //    moran_results = str;
+            //}
+        }
+
+        CheckForFigures(allDirectories);
+
+        string[] lines = File.ReadAllLines(slideseqv2Coords);
+        if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
+        {
+            lines = lines.Skip(1).ToArray();
+        }
+
+        x_coordinates = new float[lines.Length];
+        y_coordinates = new float[lines.Length];
+        z_coordinates = new float[lines.Length];
+        location_names = new string[lines.Length];
+
+        float minX, maxX, minY, maxY, minZ;
+        minX = maxX = minY = maxY = minZ = 0;
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string[] values = lines[i].Split(',');
+            float x = x_coordinates[i] = float.Parse(values[2])/10;
+            float y = y_coordinates[i] = float.Parse(values[3])/10;
+            float z = z_coordinates[i] = 0;
+            location_names[i] = values[0];
+
+            // Find min and max
+            if (x < minX) minX = x;
+            else if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            else if (y > maxY) maxY = y;
+            if (z < minZ) minZ = z;
+        }
+
+        //TODO read gene from count file 
+        string[] linesGn = File.ReadAllLines(slideseqv2Counts);
+        foreach (string line in linesGn)
+        {
+            string[] values = line.Split(',');
+
+            SlideSeqV2GeneNames.Add(values[0]);
+        }
+
+        sd.Min = new Vector2(minX, minY);
+        sd.Max = new Vector2(maxX, maxY);
+        sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
+
+        string srtMethod = "slideseqv2";
+        string[] dfPaths = new string[1];
+        dfPaths[0] = df.slideseqv2Path;
+        SaveData(dfPaths, srtMethod, SlideSeqV2GeneNames.ToArray());
+
+        //AdjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, minZ, new Vector3(0, 0, 0));
+        Camera.main.transform.position = new Vector3(230, 275, -400);
         // scriptHolder.GetComponent<XeniumDrawer>().startSpotDrawer(xeniumX, xeniumY, xeniumZ, xeniumCell);
     }
 
@@ -1149,6 +1243,11 @@ public class DataTransferManager : MonoBehaviour
         {
             nanostring = true;
             StartNanostring();
+        }        
+        else if (df.slideseqv2)
+        {
+            slideseqv2 = true;
+            StartSlideSeqV2();
         }
         else if (df.other)
         {
@@ -1163,7 +1262,7 @@ public class DataTransferManager : MonoBehaviour
         {
             continueSession = true;
             ContinueSession();
-        }
+        }        
         bfm.SetFunction(df);
     }
 

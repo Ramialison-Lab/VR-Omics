@@ -4234,7 +4234,7 @@ MonoBehaviour:
   speed: 5
   moveSpeedCamera: 5
   moveSpeed: 0.1
-  zoomSpeed: 1
+  zoomSpeed: 10
   sensitivity: 2
 --- !u!143 &245421343
 CharacterController:

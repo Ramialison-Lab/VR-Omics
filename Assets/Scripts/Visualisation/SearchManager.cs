@@ -116,10 +116,15 @@ public class SearchManager : MonoBehaviour
         {
             geneNames.AddRange(dfm.MerfishGeneNames);
             acm.setGeneNameList(geneNames);
-        }        
+        }
         else if (dfm.nanostring)
         {
             geneNames.AddRange(dfm.NanostringGeneNames);
+            acm.setGeneNameList(geneNames);
+        }
+        else if (dfm.slideseqv2)
+        {
+            geneNames.AddRange(dfm.SlideSeqV2GeneNames);
             acm.setGeneNameList(geneNames);
         }
         else if (dfm.other)
@@ -304,6 +309,55 @@ public class SearchManager : MonoBehaviour
             if (i > 0) readList.Add(float.Parse(values[i]));
         }
         normaliseAndDraw(readList);
+    }    
+    
+    
+    /// <summary>
+    /// Reads gene from Slide-SeqV2 data 
+    /// </summary>
+    /// <param name="searchGene">The gene to be read.</param>
+    internal void readSlideSeqV2Expression(string searchGene)
+    {
+        Awake();
+        try
+        {
+            rgi.readGeneInformation(searchGene);
+        }
+        catch (Exception e) { }
+        var genes = dfm.SlideSeqV2GeneNames;
+
+        //Read the genepanel
+        string[] genepanel = File.ReadAllLines(dfm.slideseqv2GenePanel);
+        int position = -1;
+
+        //Find index of the searched gene
+        for(int i =0; i< genepanel.Length; i++)
+        {
+            if(genepanel[i].ToLower() == searchGene.ToLower())
+            {
+                position = i;
+            }
+        }
+
+        //If gene was found read the count matrix
+        if(position != -1)
+        {
+            string[] lines = File.ReadAllLines(dfm.slideseqv2Counts);
+            lines = lines.Skip(1).ToArray();
+
+            List<string> values = new List<string>();
+            //Look for the row with the gene index
+            values = lines[position].Split(',').ToList();
+            List<float> readList = new List<float>();
+
+            for (int i = 0; i < values.Count; i++)
+            {
+                if (i > 0) readList.Add(float.Parse(values[i]));
+            }
+            normaliseAndDraw(readList);
+        }
+
+
     }
 
 

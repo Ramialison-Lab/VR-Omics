@@ -59,8 +59,10 @@ public class UMAPManager : MonoBehaviour
 
         if (firstUMAP)
         {
+
             dfm = gameObject.GetComponent<DataTransferManager>();
             //TODO: adapt not only [0]
+
             string[] lines = File.ReadAllLines(dfm.obsmPath[0]);
 
             int x_position = CSVHeaderInformation.CheckForColumnNumber("X_umap1", lines[0]);
@@ -99,9 +101,11 @@ public class UMAPManager : MonoBehaviour
         z_coordinates = z_coordinates_umap;
 
         StartSpotDrawer();
-        move = true;
-        middlePoint = CalculateMiddlePoint(x_coordinates_umap, y_coordinates_umap);
-
+        if (dfm.visium)
+        {
+            move = true;
+            middlePoint = CalculateMiddlePoint(x_coordinates_tsne, y_coordinates_tsne);
+        }
     }
 
     /// <summary>
@@ -153,8 +157,11 @@ public class UMAPManager : MonoBehaviour
 
         StartSpotDrawer();
 
-        move = true;
-        middlePoint = CalculateMiddlePoint(x_coordinates_tsne, y_coordinates_tsne);
+        if (dfm.visium)
+        {
+            move = true;
+            middlePoint = CalculateMiddlePoint(x_coordinates_tsne, y_coordinates_tsne);
+        }
     }
 
     /// <summary>
@@ -168,8 +175,11 @@ public class UMAPManager : MonoBehaviour
 
         StartSpotDrawer();
 
-        move = true;
-        middlePoint = CalculateMiddlePoint(x_coordinates, y_coordinates);
+        if (dfm.visium)
+        {
+            move = true;
+            middlePoint = CalculateMiddlePoint(x_coordinates_tsne, y_coordinates_tsne);
+        }
     }
 
     /// <summary>
