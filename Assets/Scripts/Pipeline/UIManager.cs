@@ -1415,7 +1415,6 @@ public class UIManager : MonoBehaviour
     /// <param name="toggle"></param>
     public void toggleListener(GameObject toggle)
     {
-        UnityEngine.Debug.Log("called");
         foreach (RawImage imag in images)
         {
             if (imag.name == toggle.GetComponentInChildren<Text>().text)

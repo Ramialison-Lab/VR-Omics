@@ -83,3 +83,4 @@ Assets/save_session_data.json
 Assets/NetMQ/LogFiles.meta
 Assets/NetMQ/LogFiles/*
 *.meta
+Assets/save_session_data.json
