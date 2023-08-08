@@ -569,10 +569,9 @@ public class DataTransferManager : MonoBehaviour
 
         //Read gene names from gene list → Always column 0 
         string[] linesGn = File.ReadAllLines(merfishGenelist);
-        if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(linesGn[0], linesGn[1]))
-        {
-            linesGn = linesGn.Skip(1).ToArray();
-        }
+
+        linesGn = linesGn.Skip(1).ToArray();
+
         foreach (string line in linesGn)
         {
             string[] values = line.Split(',');
