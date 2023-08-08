@@ -302,7 +302,6 @@ public class ReadClusterInformation : MonoBehaviour
 
         foreach (string path in dfm.visiumMetaFiles)
         {
-
             // read the meta file with the cluster information
             string[] lines = File.ReadAllLines(path);
             lines = lines.Skip(1).ToArray();
@@ -316,9 +315,8 @@ public class ReadClusterInformation : MonoBehaviour
             for (int i = 0; i < lines.Length; i++)
             {
                 string[] values = lines[i].Split(',');
-                try
-                {
-                    clusterValues[i] = int.Parse(values[15]);
+                try {
+                    clusterValues[i] = int.Parse(values[17]);
                     tempNormalised[i] = (double)clusterValues[i];
                     tempColor[i] = defaultColours[clusterValues[i]];
 

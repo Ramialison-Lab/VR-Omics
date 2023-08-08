@@ -70,6 +70,7 @@ public class DataTransferManager : MonoBehaviour
     List<float> y_coordinatesList;
     List<float> z_coordinatesList;
     List<string> location_namesList;
+    public List<string> genePanel;
     List<string> dataset_namesList;
     public List<GameObject> figureBtns = new List<GameObject>(4);
 
@@ -94,6 +95,7 @@ public class DataTransferManager : MonoBehaviour
     public List<string> visiumMetaFiles;
     public string[] positionList;
     public string[] jsonFilePaths;
+    public string[] genePanelPath;
     public float[] scaleFactors;
     public int[] datasetSizes;
 
@@ -190,6 +192,7 @@ public class DataTransferManager : MonoBehaviour
         int count = 0;                                              // counting which dataset is used
         int geneNameDictionary_Counter = 0;
         int positionListCounter = 0;
+        int genePanelCounter = 0;
         int jsonListCounter = 0;
         int tissueImageCounter = 0;
         bool isRawData = true;
@@ -202,6 +205,7 @@ public class DataTransferManager : MonoBehaviour
         geneNameDictionary = new List<string>[df.pathList.Count];   //Dicitonary of all gene names
         positionList = new string[df.pathList.Count];               //Datapaths to tissue_possition lists
         jsonFilePaths = new string[df.pathList.Count];              //Datapaths to json files containing the H&E scale factors
+        genePanelPath = new string[df.pathList.Count];              //Datapaths to json files containing the H&E scale factors
         datasetSizes = new int[df.pathList.Count];                  //Size of locations of the datasets
         scaleFactors = new float[df.pathList.Count];
         obsmPath = new string[df.pathList.Count]; 
@@ -211,8 +215,8 @@ public class DataTransferManager : MonoBehaviour
         //Find the respective files from the Visium dataset repository
         foreach (string x in df.pathList)
         {
-
             string[] allDirectories = Directory.GetFiles(x, "*", SearchOption.AllDirectories);
+
             CheckForFigures(allDirectories);
 
             visiumMetaFiles.AddRange(Directory.GetFiles(x, "*metadata.csv"));
@@ -238,9 +242,15 @@ public class DataTransferManager : MonoBehaviour
                     tissueImageCounter++;
                     isRawData = false;
 
-                }if (directory.Contains("obsm.csv") && !directory.Contains(META_ENDING_CSV))
+                }
+                if (directory.Contains("obsm.csv") && !directory.Contains(META_ENDING_CSV))
                 {
                     obsmPath[0] = directory;
+                }
+                if (directory.Contains("genePanel.csv") && !directory.Contains(META_ENDING_CSV))
+                {
+                    genePanelPath[genePanelCounter] = directory;
+                    genePanelCounter++;
                 }
             }
 
@@ -264,6 +274,17 @@ public class DataTransferManager : MonoBehaviour
             }
         }
 
+
+        string[] panellines = File.ReadAllLines(genePanelPath[count]).Skip(1).ToArray();
+        string[] genePan = new string[panellines.Length];
+        for (int i = 0; i < panellines.Length; i++)
+        {
+            string[] values = panellines[i].Split(',');
+            genePan[i] = values[0];
+        }
+
+        genePanel.AddRange(genePan);
+
         //Reading spotlist values, reading min and max values of the location positions
         float minX, maxX, minY, maxY, minZ;
         minX = maxX = minY = maxY = minZ = 0;
@@ -279,58 +300,33 @@ public class DataTransferManager : MonoBehaviour
             //fr.calcCoords(p);
 
             //Read position of all locations that are detected on tissue
-            string[] lines = File.ReadAllLines(positionList[positionListCounter]);
+            string[] lines = File.ReadAllLines(visiumMetaFiles[positionListCounter]);
+
+            lines = lines.Skip(1).ToArray();
+
+            int numberOfSpots = lines.Length;
+
+            long[] row = new long[numberOfSpots];
+            long[] col = new long[numberOfSpots];
+            location_names = new string[numberOfSpots];
+            dataset_names = new string[numberOfSpots];
+            x_coordinates = new float[numberOfSpots];
+            y_coordinates = new float[numberOfSpots];
+            z_coordinates = new float[numberOfSpots];
+
+            string[] linesPosList = File.ReadAllLines(positionList[positionListCounter]);
             positionListCounter++;
-            if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
-            {
-                lines = lines.Skip(1).ToArray();
-            }
-            int inTissueSize = 0;
 
-            for (int i = 0; i < lines.Length; i++)
+            for (int i =0; i< lines.Length; i++)
             {
+
                 string[] values = lines[i].Split(',');
-                if (values[1] == "1")
                 {
-                    inTissueSize++;
-                }
-            }
 
-            long[] row = new long[inTissueSize];
-            long[] col = new long[inTissueSize];
-            location_names = new string[inTissueSize];
-            dataset_names = new string[inTissueSize];
-            x_coordinates = new float[inTissueSize];
-            y_coordinates = new float[inTissueSize];
-            z_coordinates = new float[inTissueSize];
+                    col[i] = -2 * (long.Parse(values[2]));
+                    row[i] = long.Parse(values[3]);
 
-            List<string> referenceSpotList = new List<string>();
-            string[] refLines = File.ReadAllLines(visiumMetaFiles[count]);
-            if(CSVHeaderInformation.CheckForHeaderInCSV_without_header(refLines[0], refLines[1]))
-            {
-                refLines = refLines.Skip(1).ToArray();           
-            }
-
-            foreach (string s in refLines)
-            {
-                string[] values = s.Split(',');
-                referenceSpotList.Add(values[0]);
-            }
-
-            foreach (string s in lines)
-            {
-
-                string[] values = s.Split(',');
-                //if on tissue
-                if (values[1] == "1")
-                {
-                    int original_Pos = referenceSpotList.IndexOf(values[0]);
-
-                    //columns are switched
-                    col[original_Pos] = -2 * (long.Parse(values[2]));
-                    row[original_Pos] = long.Parse(values[3]);
-
-                    location_names[original_Pos] = values[0];
+                    location_names[i] = values[0];
                     //tissueCount++;
                 }
             }

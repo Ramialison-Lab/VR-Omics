@@ -451,7 +451,7 @@ public class SearchManager : MonoBehaviour
         foreach (string datapath in dfm.csvGeneExpPaths)
         {
             List<string> listOFNames = dfm.geneNameDictionary[x];
-            searchGene(datapath, listOFNames.IndexOf(geneName), geneName);
+            searchGene(datapath, geneName);
             x++; 
         }
     }
@@ -542,24 +542,43 @@ public class SearchManager : MonoBehaviour
         }
     }
 
-    IEnumerator search(string dp, int pos, string gn)
+    IEnumerator search(string dp, string geneName)
     {
-        //Reading gene expression file on position of gene
-        string line;
+        List<string> resultExpressionString = new List<string>();
 
-        using (StreamReader file = new StreamReader(dp))
-        {
-            for (int i = 0; i < pos-1; i++)
-            {
-                file.ReadLine();
-            }
+        int pos = -1;
 
-            line = file.ReadLine();
-        }
-        var x = line.Split(',').ToList();
+        pos = dfm.genePanel.IndexOf(geneName);
 
-        resultExpression = x.Select(float.Parse).ToList();
-        var max = resultExpression.Max();
+        string[] lines = File.ReadAllLines(dp);
+        lines = lines.Skip(1).ToArray();
+
+        resultExpressionString = lines[pos].Split(',').ToList();
+
+        //for (int i =0; i<lines.Length; i++)
+        //{
+        //    string[] values = lines[i].Split(',');
+        //    if(values[0].ToLower() == geneName.ToLower())
+        //    {
+        //        resultExpressionString = values.ToList();
+        //    }
+        //}
+
+        ////Reading gene expression file on position of gene
+        //string line;
+
+        //using (StreamReader file = new StreamReader(dp))
+        //{
+        //    for (int i = 0; i < pos-1; i++)
+        //    {
+        //        file.ReadLine();
+        //    }
+
+        //    line = file.ReadLine();
+        //}
+
+        resultExpression = resultExpressionString.Skip(1).Select(float.Parse).ToList(); var max = resultExpression.Max();
+        
         var min = resultExpression.Min();
         var range = (double)(max - min);
         normalised
@@ -568,10 +587,10 @@ public class SearchManager : MonoBehaviour
         yield return null;
     }
 
-    public void searchGene(string datapath, int pos, string gn)
+    public void searchGene(string datapath, string geneName)
     {
         Awake();
-        StartCoroutine(search(datapath, pos, gn));
+        StartCoroutine(search(datapath, geneName));
 
         if (resultExpression.Max() == 0)
         {
@@ -583,7 +602,7 @@ public class SearchManager : MonoBehaviour
             sd.setColors(normalised);
         }
 
-        sd.lastGeneName(gn);
+        sd.lastGeneName(geneName);
     }
 
     public void applyGeneExpressionTomo(string geneName)
