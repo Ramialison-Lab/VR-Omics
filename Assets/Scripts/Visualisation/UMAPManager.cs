@@ -56,6 +56,8 @@ public class UMAPManager : MonoBehaviour
     /// </summary>
     public void SwitchUmap()
     {
+        int x_position = -1;
+        int y_position = -1;
 
         if (firstUMAP)
         {
@@ -65,8 +67,14 @@ public class UMAPManager : MonoBehaviour
 
             string[] lines = File.ReadAllLines(dfm.obsmPath[0]);
 
-            int x_position = CSVHeaderInformation.CheckForColumnNumber("X_umap1", lines[0]);
-            int y_position = CSVHeaderInformation.CheckForColumnNumber("X_umap2", lines[0]);
+            x_position = CSVHeaderInformation.CheckForColumnNumber("X_umap1", lines[0]);
+            y_position = CSVHeaderInformation.CheckForColumnNumber("X_umap2", lines[0]);
+
+            if (dfm.slideseqv2)
+            {
+                x_position = 0;
+                y_position = 0;
+            }
 
             lines = lines.Skip(1).ToArray();
 
@@ -113,6 +121,7 @@ public class UMAPManager : MonoBehaviour
     /// </summary>
     public void SwitchTSNE()
     {
+        if (dfm.slideseqv2) return;
         if (firstTSNE)
         {
             dfm = gameObject.GetComponent<DataTransferManager>();

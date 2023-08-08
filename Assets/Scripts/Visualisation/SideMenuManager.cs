@@ -43,7 +43,7 @@ public class SideMenuManager : MonoBehaviour
         foreach (GameObject go in GameObject.FindGameObjectsWithTag("sidePanelText")){
             Destroy(go);
         }
-        int datasetId = dfm.hdf5datapaths.IndexOf(Dataset);
+        int datasetId = dfm.visium_datapapths.IndexOf(Dataset);
         writeInfo(SpotName);
         //writeInfo("Dataset: " + Dataset.Split('\\').Last());
         writeInfo("Expressionvalue: " + expVal.ToString());

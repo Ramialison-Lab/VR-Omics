@@ -333,7 +333,7 @@ public class SearchManager : MonoBehaviour
         //Find index of the searched gene
         for(int i =0; i< genepanel.Length; i++)
         {
-            if(genepanel[i].ToLower() == searchGene.ToLower())
+            if (genepanel[i].ToLower() == searchGene.ToLower())
             {
                 position = i;
             }
@@ -462,7 +462,7 @@ public class SearchManager : MonoBehaviour
     /// <param name="geneName"></param>
     public void searchEnsembleId(string geneName)
     {
-        foreach (string p in dfm.hdf5datapaths)
+        foreach (string p in dfm.visium_datapapths)
         {
             fr.readGeneNames(p);
             geneNameList = fr.getGeneNameList();
@@ -491,7 +491,7 @@ public class SearchManager : MonoBehaviour
     public void querySbyte(string hdfpath)
     {
         List<float> readList;
-        foreach (string dp in dfm.hdf5datapaths)
+        foreach (string dp in dfm.visium_datapapths)
         {
             readList = fr.querySbytetoFloat(dp, hdfpath);
 
@@ -506,7 +506,7 @@ public class SearchManager : MonoBehaviour
     public void query64bitFloat(string hdfpath)
     {
         List<float> readList;
-        foreach (string dp in dfm.hdf5datapaths)
+        foreach (string dp in dfm.visium_datapapths)
         {
             readList = fr.queryFloat(dp, hdfpath);
 
@@ -521,7 +521,7 @@ public class SearchManager : MonoBehaviour
     public void query32bitFloat(string hdfpath)
     {
         List<float> readList;
-        foreach (string dp in dfm.hdf5datapaths)
+        foreach (string dp in dfm.visium_datapapths)
         {
             readList = fr.querf32Float(dp, hdfpath);
             normaliseAndDraw(readList);
@@ -535,7 +535,7 @@ public class SearchManager : MonoBehaviour
     public void queryInt(string hdfpath)
     {
         List<float> readList;
-        foreach (string dp in dfm.hdf5datapaths)
+        foreach (string dp in dfm.visium_datapapths)
         {
             readList = fr.query32BitInt(dp, hdfpath);
             normaliseAndDraw(readList);

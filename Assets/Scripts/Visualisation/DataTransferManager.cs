@@ -74,7 +74,7 @@ public class DataTransferManager : MonoBehaviour
     public List<GameObject> figureBtns = new List<GameObject>(4);
 
     //Lists
-    public List<string> hdf5datapaths;
+    public List<string> visium_datapapths;
     public List<string> csvGeneExpPaths;
     public List<string> svgGenes;
     public List<string> dataSetNames;
@@ -216,31 +216,31 @@ public class DataTransferManager : MonoBehaviour
             CheckForFigures(allDirectories);
 
             visiumMetaFiles.AddRange(Directory.GetFiles(x, "*metadata.csv"));
-            hdf5datapaths.AddRange(Directory.GetFiles(x, "*.h5"));
+            visium_datapapths.AddRange(Directory.GetFiles(x, "*.h5"));
             csvGeneExpPaths.AddRange(Directory.GetFiles(x, "*filtered_transposed.csv"));
-            foreach (string s in allDirectories)
+            foreach (string directory in allDirectories)
             {
-                if (s.Contains("tissue_positions_list.csv") && !s.Contains(META_ENDING_CSV))
+                if (directory.Contains("tissue_positions_list.csv") && !directory.Contains(META_ENDING_CSV))
                 {
-                    positionList[positionListCounter] = s;
+                    positionList[positionListCounter] = directory;
                     positionListCounter++;
                     isRawData = false;
                 }
-                if (s.Contains("scalefactors_json.json") && !s.Contains(META_ENDING_JSON))
+                if (directory.Contains("scalefactors_json.json") && !directory.Contains(META_ENDING_JSON))
                 {
-                    jsonFilePaths[jsonListCounter] = s;
+                    jsonFilePaths[jsonListCounter] = directory;
                     isRawData = false;
 
                 }
-                if (s.Contains("tissue_hires_image.png") && !s.Contains(META_ENDING_PNG))
+                if (directory.Contains("tissue_hires_image.png") && !directory.Contains(META_ENDING_PNG))
                 {
-                    tissueImagePath[tissueImageCounter] = s;
+                    tissueImagePath[tissueImageCounter] = directory;
                     tissueImageCounter++;
                     isRawData = false;
 
-                }if (s.Contains("obsm.csv") && !s.Contains(META_ENDING_CSV))
+                }if (directory.Contains("obsm.csv") && !directory.Contains(META_ENDING_CSV))
                 {
-                    obsmPath[0] = s;
+                    obsmPath[0] = directory;
                 }
             }
 
@@ -256,9 +256,8 @@ public class DataTransferManager : MonoBehaviour
         addHAndEImg = true;
 
         //disable sideBySide features for more than one visium slice
-        if (hdf5datapaths.Count > 1)
+        if (visium_datapapths.Count > 1)
         {
-
             foreach (GameObject go in disableBtn)
             {
                 go.SetActive(false);
@@ -272,10 +271,10 @@ public class DataTransferManager : MonoBehaviour
         positionListCounter = 0;
 
         // Reading datasets and creating merged List for all coordinates
-        foreach (string p in hdf5datapaths)
+        foreach (string datapath in visium_datapapths)
         {
             int visiumScaleFactor = 1;
-            shortList.Add(p.Split('\\').Last());
+            shortList.Add(datapath.Split('\\').Last());
             //reads barcodes and row and col positions and create merged list of coordinates
             //fr.calcCoords(p);
 
@@ -343,7 +342,7 @@ public class DataTransferManager : MonoBehaviour
                 x_coordinates[i] = x = row[i];
                 y_coordinates[i] = y = col[i];
                 z_coordinates[i] = z = visiumDepth;
-                dataset_names[i] = p;
+                dataset_names[i] = datapath;
 
                 // Find min and max
                 if (x < minX) minX = x;
@@ -389,7 +388,7 @@ public class DataTransferManager : MonoBehaviour
             }
 
             SpotNameDictionary.Add(location_names.ToList());
-            fr.readGeneNames(p);
+            fr.readGeneNames(datapath);
             geneNameDictionary[geneNameDictionary_Counter] = new List<string>();
             foreach (string x in fr.geneNames)
             {
@@ -434,7 +433,6 @@ public class DataTransferManager : MonoBehaviour
         {
             if (str.Contains("gene_transposed_counts.csv") && !str.Contains(META_ENDING_CSV)) xeniumCounts = str;
             if (str.Contains("processed_cells.csv") && !str.Contains(META_ENDING_CSV)) xeniumCoords = str;
-            if (str.Contains("feature_matrix.csv") && !str.Contains(META_ENDING_CSV)) xeniumGenePanelPath = str;
             if (str.Contains("results.csv") && !str.Contains(META_ENDING_CSV)) moran_results = str;               
             if (str.Contains("obsm.csv") && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;               
         }
@@ -481,7 +479,9 @@ public class DataTransferManager : MonoBehaviour
             if (z < minZ) minZ = z;
         }
 
-        string[] linesGn = File.ReadAllLines(xeniumGenePanelPath);
+        string[] linesGn = File.ReadAllLines(xeniumCounts);
+        linesGn = linesGn.Skip(1).ToArray();
+
         foreach (string line in linesGn)
         {
             string[] values = line.Split(',');
@@ -509,6 +509,7 @@ public class DataTransferManager : MonoBehaviour
     private void StartMerfish()
     {
         string[] allDirectories = Directory.GetFiles(df.merfishPath, "*", SearchOption.AllDirectories);
+        obsmPath = new string[1];
 
         foreach (string str in allDirectories)
         {
@@ -517,8 +518,6 @@ public class DataTransferManager : MonoBehaviour
             if (str.Contains("results.csv") && !str.Contains(META_ENDING_CSV)) moran_results = str;
             if (str.Contains("obsm.csv") && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;
         }
-
-        Debug.Log(obsmPath[0]);
 
         /*
          * Reading coordinate files  
@@ -682,10 +681,12 @@ public class DataTransferManager : MonoBehaviour
     {
 
         string[] allDirectories = Directory.GetFiles(df.slideseqv2Path, "*", SearchOption.AllDirectories);
+        obsmPath = new string[1];
+
 
         foreach (string str in allDirectories)
         {
-            if (str.Contains("gene_transposed_counts.csv"))
+            if (str.Contains("gene_transposed_counts.csv") && !str.Contains(META_ENDING_CSV))
             {
                 slideseqv2Counts = str;
             }
@@ -693,14 +694,16 @@ public class DataTransferManager : MonoBehaviour
             //{
             //    nanostringGenePanel = str;
             //}
-            if (str.Contains("meta_data.csv"))
+            if (str.Contains("metadata.csv") && !str.Contains(META_ENDING_CSV))
             {
                 slideseqv2Coords = str;
             }
-            if (str.Contains("genepanel.csv"))
+            if (str.Contains("genepanel.csv") && !str.Contains(META_ENDING_CSV))
             {
                 slideseqv2GenePanel = str;
             }
+            if (str.Contains("umap.csv") && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;
+
             //if (str.Contains("results.csv"))
             //{
             //    moran_results = str;

@@ -374,7 +374,14 @@ public class SliceCollider : MonoBehaviour
             //TBD not using name cube here
             if (hit.collider.gameObject.name == "SliceCollider")
             {
-                GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot(hit.point.x, hit.point.y, hit.collider.gameObject.GetComponent<DragObject>().getDatasetName(), hit.collider.gameObject);
+                string datasetName = "";
+                try
+                {
+                    datasetName = hit.collider.gameObject.GetComponent<DragObject>().getDatasetName();
+                }
+                catch (Exception) { }
+
+                GameObject.Find("ScriptHolder").GetComponent<SpotDrawer>().identifySpot(hit.point.x, hit.point.y, datasetName, hit.collider.gameObject);
             }
         }
     }
