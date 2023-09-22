@@ -1016,7 +1016,6 @@ public class DataTransferManager : MonoBehaviour
             stomicsZ.Add(0);
         }
 
-        Debug.Log(stomicsGeneNames.IndexOf("myod1"));
         //stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
         //checking for all image files
         // string[] allDirectories = Directory.GetFiles(stomicsDataPath, "*", SearchOption.AllDirectories);
