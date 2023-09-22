@@ -397,17 +397,23 @@ public class SpotDrawer : MonoBehaviour
 
     /// <summary>
     /// Adjusting to VR dimension change; new player location.
+    /// To be debugged Hieu 
     /// </summary>
     public void SetVRDimensions()
     {
+        //If Vr is active 
         inVR = true;
 
+        //disable soem features not available in VR
         this.gameObject.GetComponent<ButtonFunctionManager>().Disable_Buttons_For_VR();
 
+        //If using Visium data this part is hardcoded to change the total width/height/depth of the data so it appears in front of the user
         if (dfm.visium)
         {
-            // adjustments due to changed Dimesnions needed
+            // This is the sphere that symbolises one location of the spatial data
             symbolSelect.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
+
+            //For each data point in the spatial data hardcoded change the total size by 40 and move the data up
             for (int i = 0; i < spots.Length; i++)
             {
                 spots[i].Origin = new Vector3((spots[i].Origin.x / 40)-2, (spots[i].Origin.y / 40)+3, spots[i].Origin.z+3);
@@ -415,15 +421,19 @@ public class SpotDrawer : MonoBehaviour
             }
         }
 
+        //This is used for the C18 heart demo data
         else if (dfm.c18_visium)
         {
+            //this is the sphere for one location
             symbolSelect.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
+
+            //For each data point in the spatial data hardcoded change the total size by 40 and move the data up
             for (int i = 0; i < spots.Length; i++)
             {
-                spots[i].Origin = new Vector3((spots[i].Origin.x / 1.2f) + 700, (spots[i].Origin.y / 1.2f) + 700, (spots[i].Origin.z / 200) - 1);
-
+                spots[i].Origin = new Vector3((spots[i].Origin.x / 200 )+2, (spots[i].Origin.y / 200)+2.5f, (spots[i].Origin.z / 200));
             }
 
+            // This is modifying the 3D heart mesh to appear infront of the user
             c18Heart.transform.localScale = new Vector3(0.0041f, 0.005f, 0.004f);
             c18Heart.transform.rotation = Quaternion.Euler(-4.606f, -81.888f, -81.491f);
             c18Heart.transform.position = new Vector3(-0.176f, 1.007f, 2.716f);
@@ -438,6 +448,8 @@ public class SpotDrawer : MonoBehaviour
 
         //     }
         // }
+
+        //Modyfication for Merfish and xenium data
         else if (dfm.merfish || dfm.xenium)
         {
             symbolSelect.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
