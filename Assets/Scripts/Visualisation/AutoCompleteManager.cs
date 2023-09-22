@@ -157,6 +157,8 @@ public class AutoCompleteManager : MonoBehaviour
         else if (dfm.merfish) sm.readMerfishExpression(tmp_txt.text);
         else if (dfm.nanostring) sm.readNanostringExpression(tmp_txt.text);
         else if (dfm.slideseqv2) sm.readSlideSeqV2Expression(tmp_txt.text);
+        else if (dfm.other) sm.readOther();
+
     }
 
     /// <summary>

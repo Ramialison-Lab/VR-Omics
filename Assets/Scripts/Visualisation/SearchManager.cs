@@ -129,19 +129,20 @@ public class SearchManager : MonoBehaviour
         }
         else if (dfm.other)
         {
-            string[] lines = File.ReadAllLines(dfm.otherMetaPath);
+            //string[] lines = File.ReadAllLines(dfm.otherMetaPath);
+            //if (dfm.otherCSVCols[4] == 1)
+            //{
+            //    lines = lines.Skip(1).ToArray();
+            //}
 
-            if (dfm.otherCSVCols[4] == 1)
-            {
-                lines = lines.Skip(1).ToArray();
-            }
+            //foreach (string line in lines)
+            //{
+            //    List<string> values = new List<string>();
+            //    values = line.Split(',').ToList();
+            //    geneNames.Add(values[0]);
+            //}
 
-            foreach (string line in lines)
-            {
-                List<string> values = new List<string>();
-                values = line.Split(',').ToList();
-                geneNames.Add(values[0]);
-            }
+            geneNames.Add("myod1");
             acm.setGeneNameList(geneNames);
         }
     }
@@ -179,8 +180,9 @@ public class SearchManager : MonoBehaviour
     /// <param name="pos">The position of the gene in the list of genes. Refers to position in the list it is stored</param>
     public void readStomicsExpression(string geneName, int pos)
     {
+        pos = 1372;
         //LINKPATH
-        var Xdata = fr.readH5Float(dfm.stomicsDataPath, "X/data");
+        var Xdata = fr.readH5FloatExp(dfm.stomicsDataPath, "X/data");
         var indices = fr.query32BitInttoIntArray(dfm.stomicsDataPath, "X/indices");
         int[] indptr = fr.query32BitInttoIntArray(dfm.stomicsDataPath, "X/indptr");
 
@@ -448,12 +450,51 @@ public class SearchManager : MonoBehaviour
         int x = 0;
         sd.clearBatchcounter();
         //for each dataset selected
+
         foreach (string datapath in dfm.csvGeneExpPaths)
         {
             List<string> listOFNames = dfm.geneNameDictionary[x];
             searchGene(datapath, geneName);
             x++; 
         }
+    }
+
+    public void readOther()
+    {
+        Awake();
+        //TODO: this is currently reading only the ZF data from Lisa, pass the position of the gene name or the name and find it in the data
+        string path = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\Lisa_ZF_data\\six_slices\\myod1_expression.csv";
+        string[] lines = File.ReadAllLines(path);
+
+        lines = lines.Skip(1).ToArray();
+        List<double> normalised = new List<double>();
+        List<float> resultExpression = new List<float>();
+        foreach (string line in lines)
+        {
+            string[] values = line.Split(',');
+            resultExpression.Add(float.Parse(values[1]));
+        }
+
+        var max = resultExpression.Max();
+        var min = resultExpression.Min();
+        var range = (double)(max - min);
+        normalised
+            = resultExpression.Select(i => 1 * (i - min) / range)
+                .ToList();
+
+        if (max == 0)
+        {
+            sd.setAllZeroColour(normalised);
+        }
+        else if (max == min)
+        {
+            //TODO error handling if all expression values are the same
+        }
+        else
+        {
+            sd.setColors(normalised);
+        }
+
     }
 
     /// <summary>
@@ -548,42 +589,50 @@ public class SearchManager : MonoBehaviour
 
         int pos = -1;
 
-        pos = dfm.genePanel.IndexOf(geneName);
+        pos = dfm.genePanel.FindIndex(s => s.Equals(geneName, StringComparison.OrdinalIgnoreCase));
 
-        string[] lines = File.ReadAllLines(dp);
-        lines = lines.Skip(1).ToArray();
+        if (pos != -1)
+        {
+            string[] lines = File.ReadAllLines(dp);
+            lines = lines.Skip(1).ToArray();
 
-        resultExpressionString = lines[pos].Split(',').ToList();
+            resultExpressionString = lines[pos].Split(',').ToList();
 
-        //for (int i =0; i<lines.Length; i++)
-        //{
-        //    string[] values = lines[i].Split(',');
-        //    if(values[0].ToLower() == geneName.ToLower())
-        //    {
-        //        resultExpressionString = values.ToList();
-        //    }
-        //}
+            //for (int i =0; i<lines.Length; i++)
+            //{
+            //    string[] values = lines[i].Split(',');
+            //    if(values[0].ToLower() == geneName.ToLower())
+            //    {
+            //        resultExpressionString = values.ToList();
+            //    }
+            //}
 
-        ////Reading gene expression file on position of gene
-        //string line;
+            ////Reading gene expression file on position of gene
+            //string line;
 
-        //using (StreamReader file = new StreamReader(dp))
-        //{
-        //    for (int i = 0; i < pos-1; i++)
-        //    {
-        //        file.ReadLine();
-        //    }
+            //using (StreamReader file = new StreamReader(dp))
+            //{
+            //    for (int i = 0; i < pos-1; i++)
+            //    {
+            //        file.ReadLine();
+            //    }
 
-        //    line = file.ReadLine();
-        //}
+            //    line = file.ReadLine();
+            //}
 
-        resultExpression = resultExpressionString.Skip(1).Select(float.Parse).ToList(); var max = resultExpression.Max();
-        
-        var min = resultExpression.Min();
-        var range = (double)(max - min);
-        normalised
-            = resultExpression.Select(i => 1 * (i - min) / range)
-                .ToList();
+            resultExpression = resultExpressionString.Skip(1).Select(float.Parse).ToList(); 
+            
+            var max = resultExpression.Max();
+            var min = resultExpression.Min();
+            var range = (double)(max - min);
+            normalised
+                = resultExpression.Select(i => 1 * (i - min) / range)
+                    .ToList();
+        }
+        else
+        {
+            Debug.Log("Gene not found");
+        }
         yield return null;
     }
 

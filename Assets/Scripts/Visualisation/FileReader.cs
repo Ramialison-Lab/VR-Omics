@@ -205,6 +205,14 @@ public class FileReader : MonoBehaviour
         return x;
     }
 
+    public List<float> readH5FloatExp(string path, string dataset)
+    {
+        StartCoroutine(readFloatExp(path, dataset));
+
+        var x = floatArr.ToList();
+        return x;
+    }
+
     public float[,] stomicsExpVals;
 
     public float[,] read2DH5Float(string path, string dataset)
@@ -229,11 +237,19 @@ public class FileReader : MonoBehaviour
     //Reads float values from HDF5 dataset 
     IEnumerator readFloat(string path, string dataset)
     {
-
         // TBD not working use direct call 
         // floatArr  = H5Loader.LoadDataset<float>(path, dataset);
         floatArr = H5Loader.LoadFloatDataset(path, dataset);
         
+        yield return null;
+    }
+
+    IEnumerator readFloatExp(string path, string dataset)
+    {
+        // TBD not working use direct call 
+        // floatArr  = H5Loader.LoadDataset<float>(path, dataset);
+        floatArr = H5Loader.LoadFloatDataset(path, dataset);
+
         yield return null;
     }
 

@@ -221,7 +221,7 @@ public class DataTransferManager : MonoBehaviour
 
             visiumMetaFiles.AddRange(Directory.GetFiles(x, "*metadata.csv"));
             visium_datapapths.AddRange(Directory.GetFiles(x, "*.h5"));
-            csvGeneExpPaths.AddRange(Directory.GetFiles(x, "*filtered_transposed.csv"));
+            csvGeneExpPaths.AddRange(Directory.GetFiles(x, "*transposed.csv"));
             foreach (string directory in allDirectories)
             {
                 if (directory.Contains("tissue_positions_list.csv") && !directory.Contains(META_ENDING_CSV))
@@ -247,7 +247,7 @@ public class DataTransferManager : MonoBehaviour
                 {
                     obsmPath[0] = directory;
                 }
-                if (directory.Contains("genePanel.csv") && !directory.Contains(META_ENDING_CSV))
+                if (directory.Contains("gene_panel.csv") && !directory.Contains(META_ENDING_CSV))
                 {
                     genePanelPath[genePanelCounter] = directory;
                     genePanelCounter++;
@@ -322,9 +322,8 @@ public class DataTransferManager : MonoBehaviour
 
                 string[] values = lines[i].Split(',');
                 {
-
-                    col[i] = -2 * (long.Parse(values[2]));
-                    row[i] = long.Parse(values[3]);
+                    col[i] = -2 * (int)(double.Parse(values[2]));
+                    row[i] = (int)double.Parse(values[3]);
 
                     location_names[i] = values[0];
                     //tissueCount++;
@@ -445,7 +444,13 @@ public class DataTransferManager : MonoBehaviour
             moran_results = files[0];
         }catch(Exception) { }
 
+
+
         string[] lines = File.ReadAllLines(xeniumCoords);
+
+        int column_x = CSVHeaderInformation.CheckForColumnNumber("spatial_x", lines[0]);
+        int column_y = CSVHeaderInformation.CheckForColumnNumber("spatial_y", lines[0]);
+
         if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
         {
             lines = lines.Skip(1).ToArray();
@@ -462,8 +467,8 @@ public class DataTransferManager : MonoBehaviour
         for (int i = 0; i < lines.Length; i++)
         {
             string[] values = lines[i].Split(',');
-            float x = x_coordinates[i] = float.Parse(values[1]);
-            float y = y_coordinates[i] = float.Parse(values[2]);
+            float x = x_coordinates[i] = float.Parse(values[column_x]);
+            float y = y_coordinates[i] = float.Parse(values[column_y]);
             float z = z_coordinates[i] = 0;
             location_names[i] = values[0];
 
@@ -979,6 +984,13 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void StartStomics()
     {
+        //string hdfSpatialX = "obs/x";
+        string hdfSpatialX = "obs/spatial_x";
+        //string hdfSpatialY = "obs/y";
+        string hdfSpatialY = "obs/spatial_y";
+        //string hdfGenePanel = "var/_index";
+        string hdfGenePanel = "var/Gene";
+        string hdfSpotPanel = "obs/_index";
         // Old: not transposed file, bad performance
         // string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\1_Include\\L3_b_count_normal_stereoseq.h5ad";
         // Original files paths
@@ -990,25 +1002,37 @@ public class DataTransferManager : MonoBehaviour
 
         //stomicsDataPath = df.stomicsPath;
         stomicsDataPath = df.stomicsPath;
-        Debug.Log(stomicsDataPath);
-        stomicsSpotId = fr.readH5StringVar(stomicsDataPath, "obs/_index", stomicsSpotId);
-        stomicsGeneNames = fr.readH5StringVar(stomicsDataPath, "var/_index", stomicsGeneNames);
-        stomicsX = fr.readH5Float(stomicsDataPath, "obs/x");
-        stomicsY = fr.readH5Float(stomicsDataPath, "obs/y");
-        
-        foreach(float x in stomicsX)
+
+        stomicsSpotId = fr.readH5StringVar(stomicsDataPath, hdfSpotPanel, stomicsSpotId);
+
+        stomicsGeneNames = fr.readH5StringVar(stomicsDataPath, hdfGenePanel, stomicsGeneNames);
+
+        stomicsX = fr.readH5Float(stomicsDataPath, hdfSpatialX); 
+
+        stomicsY = fr.readH5Float(stomicsDataPath, hdfSpatialY);
+
+        foreach (float x in stomicsX)
         {
             stomicsZ.Add(0);
         }
+
+        Debug.Log(stomicsGeneNames.IndexOf("myod1"));
         //stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
         //checking for all image files
-       // string[] allDirectories = Directory.GetFiles(stomicsDataPath, "*", SearchOption.AllDirectories);
-       // CheckForFigures(allDirectories);
+        // string[] allDirectories = Directory.GetFiles(stomicsDataPath, "*", SearchOption.AllDirectories);
+        // CheckForFigures(allDirectories);
 
         //for (int i =0; i< stomicsZ.Count; i++)
         //{
         //    stomicsZ[i] = stomicsZ[i] * 50;
         //}
+        stomicsX = RemoveEverySecondValue(stomicsX);
+
+        // Remove every second value from stomicsY
+        stomicsY = RemoveEverySecondValue(stomicsY);
+
+        DivideListValuesBy10(stomicsX);
+        DivideListValuesBy10(stomicsY);
 
         sd.Min = new Vector2(stomicsX.Min(), stomicsY.Min());
         sd.Max = new Vector2(stomicsX.Max(), stomicsY.Max());
@@ -1021,13 +1045,36 @@ public class DataTransferManager : MonoBehaviour
 
         sd.StartDrawer(stomicsX.ToArray(), stomicsY.ToArray(), stomicsZ.ToArray(), stomicsSpotId.ToArray(), new string[] { }); 
     }
+    public static void DivideListValuesBy10(List<float> inputList)
+    {
+        for (int i = 0; i < inputList.Count; i++)
+        {
+            inputList[i] /= 10.0f;
+        }
+    }
+    public static List<T> RemoveEverySecondValue<T>(List<T> inputList)
+    {
+        // Create a new list to store the modified values
+        List<T> result = new List<T>();
+
+        for (int i = 0; i < inputList.Count; i += 2)
+        {
+            // Add values at even indices to the result list
+            result.Add(inputList[i]);
+        }
+
+        return result;
+    }
 
     private void StartOther()
     {
+        //TODO: uncomment this section and pass the files from UIManager
+        //otherMatrixPath = df.otherMatrixPath;
+        //otherMetaPath = df.otherMetaPath;
+        //otherCSVCols = df.otherCSVCols;
 
-        otherMatrixPath = df.otherMatrixPath;
-        otherMetaPath = df.otherMetaPath;
-        otherCSVCols = df.otherCSVCols;
+        //TOD: Remove this (Lisa ZF data)
+        otherMetaPath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Stomics\\Lisa_ZF_data\\six_slices\\spatial_coordinates.csv";
 
         //otherCSVCols 0 → X, 1 → Y, 2 → Z, 3 → Spot/Cell ID,
 
@@ -1037,23 +1084,32 @@ public class DataTransferManager : MonoBehaviour
         }
 
         string[] lines = File.ReadAllLines(otherMetaPath);
-        if (otherCSVCols[4] == 1)
-        {
+
+        // TODO: Add this back, or improve header reading
+        //if (otherCSVCols[4] == 1)
+        //{
             lines = lines.Skip(1).ToArray();
-        }
+        //}
+
         x_coordinates = new float[lines.Length];
         y_coordinates = new float[lines.Length];
         z_coordinates = new float[lines.Length];
+
         location_names = new string[lines.Length];
         float minX, maxX, minY, maxY, minZ;
         minX = maxX = minY = maxY = minZ = 0;
         for (int i = 0; i < lines.Length; i++)
         {
             string[] values = lines[i].Split(',');
-            float x = x_coordinates[i] = float.Parse(values[otherCSVCols[0]]);
-            float y = y_coordinates[i] = float.Parse(values[otherCSVCols[1]]);
-            float z = z_coordinates[i] = float.Parse(values[otherCSVCols[2]]);
-            location_names[i] = values[otherCSVCols[3]];
+            //TODO: uncomment this section to read generic data and not Lisa ZF
+            //float x = x_coordinates[i] = float.Parse(values[otherCSVCols[0]]);
+            //float y = y_coordinates[i] = float.Parse(values[otherCSVCols[1]]);            
+            float x = x_coordinates[i] = float.Parse(values[0])/10;
+            float y = y_coordinates[i] = float.Parse(values[1])/10;
+            //float z = z_coordinates[i] = float.Parse(values[otherCSVCols[2]]);
+            float z = 0;
+            //location_names[i] = values[otherCSVCols[3]];
+            location_names[i] = "";
 
             // Find min and max
             if (x < minX) minX = x;

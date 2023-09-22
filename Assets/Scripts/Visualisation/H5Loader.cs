@@ -43,8 +43,18 @@ namespace UnityH5Loader {
 
         [PublicAPI]
         public static float[] LoadFloatDataset(string filePath, string datasetName) {
-            double[] doubleArray = LoadDataset<double>(filePath, datasetName);
+            int[] doubleArray = LoadDataset<int>(filePath, datasetName);
+            //cast array to float
             float[] floatArray = doubleArray.Select(item => (float) item).ToArray();
+            return floatArray;
+        }
+
+        [PublicAPI]
+        public static float[] LoadFloatDatasetExp(string filePath, string datasetName)
+        {
+            double[] doubleArray = LoadDataset<double>(filePath, datasetName);
+            //cast array to float
+            float[] floatArray = doubleArray.Select(item => (float)item).ToArray();
             return floatArray;
         }
 
