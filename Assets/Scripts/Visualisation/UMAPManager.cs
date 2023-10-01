@@ -61,14 +61,18 @@ public class UMAPManager : MonoBehaviour
 
         if (firstUMAP)
         {
-
             dfm = gameObject.GetComponent<DataTransferManager>();
             //TODO: adapt not only [0]
-
             string[] lines = File.ReadAllLines(dfm.obsmPath[0]);
+
+            Debug.Log(lines[0]);
 
             x_position = CSVHeaderInformation.CheckForColumnNumber("X_umap1", lines[0]);
             y_position = CSVHeaderInformation.CheckForColumnNumber("X_umap2", lines[0]);
+
+            Debug.Log(x_position);
+            Debug.Log(y_position);
+
 
             if (dfm.slideseqv2)
             {

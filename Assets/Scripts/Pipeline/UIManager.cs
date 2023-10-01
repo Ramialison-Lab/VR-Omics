@@ -53,6 +53,7 @@ public class UIManager : MonoBehaviour
     public GameObject pipelinestepPanel;
     public GameObject contentPanel;
     public GameObject alignmentPanel;
+    public GameObject concatPanel;
     public GameObject pipelineParamPanel;
     public GameObject alignmentTogglePanel;
     public GameObject alignmentSelectionPanel;
@@ -89,6 +90,7 @@ public class UIManager : MonoBehaviour
     private bool skipFilter = false;
     private bool filterStep = false;
     private bool SVGStep = false;
+    private bool concatDatasets = false;
 
     //strings
     public String destinationPath;
@@ -372,12 +374,24 @@ public class UIManager : MonoBehaviour
             case "VisiumLoadBtn":
                 uploadpanel.SetActive(true);
                 break;
+            case "VisiumConcatBtn":
+                concatDatasets = true;
+                uploadpanel.SetActive(true);
+                break;
             case "VisiumPipelineBtn":
                 pipelinepanel.SetActive(true);
                 break;
             case "AlignmentBtn":
-                alignmentPanel.SetActive(true);
-                alignment();
+                if (concatDatasets)
+                {
+                    concatPanel.SetActive(true);
+                    ConcatDatasets();
+                }
+                else
+                {
+                    alignmentPanel.SetActive(true);
+                    alignment();
+                }
                 break;
             case "XeniumPreProcessBtn":
                 xeniumProcessPanel.SetActive(true);
@@ -1312,6 +1326,10 @@ public class UIManager : MonoBehaviour
                     transferDatapaths.Add(FileBrowser.Result[i]);
                     rotationValues.Add(0);
                     alignBtn.SetActive(true);
+                    if (concatDatasets)
+                    {
+                        alignBtn.GetComponentInChildren<TMP_Text>().text = "Concat";
+                    }
 
                     string filename = FileBrowser.Result[i];
                     slices[i].GetComponentInChildren<Text>().text = filename.Split('\\').Last();
@@ -1405,6 +1423,64 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Used to concatenate Visium datasets together
+    /// </summary>
+    private void ConcatDatasets()
+    {
+        List<Toggle> toggleList = new List<Toggle>();
+        float concatSpacing = 0.1f; // Adjust this value to control the spacing between images
+
+        // Get the size of the concatPanel
+        RectTransform concatPanelRect = concatPanel.GetComponent<RectTransform>();
+        Vector2 concatPanelSize = concatPanelRect.sizeDelta;
+
+        // Calculate the total width required for all images excluding spacing
+        float totalWidth = 0f;
+
+        foreach (GameObject gobj in slicesList)
+        {
+            RawImage imageObj = gobj.GetComponentInChildren<RawImage>();
+            Text textObj = gobj.GetComponentInChildren<Text>();
+            // Set the name of the image to the text of the corresponding GameObject
+            imageObj.name = textObj.text;
+
+            // Set the parent of the image to concatPanel
+            imageObj.transform.SetParent(concatPanel.transform);
+
+            // Get the original size of the image
+            Vector2 originalSize = imageObj.rectTransform.sizeDelta;
+
+            // Calculate the scale factors for width and height
+            float scaleFactorX = Mathf.Min(1f, concatPanelSize.x / originalSize.x);
+            float scaleFactorY = Mathf.Min(1f, concatPanelSize.y / originalSize.y);
+
+            // Use the minimum of the two scale factors to maintain aspect ratio
+            float scaleFactor = Mathf.Min(scaleFactorX, scaleFactorY);
+
+            // Set the scale of the image to make it smaller
+            imageObj.transform.localScale = new Vector3(scaleFactor*1.2f, scaleFactor*1.2f, 1f);
+
+            // Calculate the position to center the image within concatPanel
+            float offsetX = totalWidth + (originalSize.x * scaleFactor / 2f) + (concatSpacing * totalWidth) - (concatSpacing * (slicesList.Count - 1) / 2f) +20;
+            float offsetY = (-originalSize.y * scaleFactor / 2f )-25;
+
+            // Set the position of the image
+            imageObj.rectTransform.anchoredPosition = new Vector2(offsetX, offsetY);
+            images.Add(imageObj);
+            // Destroy the child object (if any)
+            foreach (Transform child in imageObj.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            // Update the total width
+            totalWidth += (originalSize.x * scaleFactor) + concatSpacing;
+        }
+        this.gameObject.GetComponent<ConcatManager>().SetImageList(images);
+    }
+
+
+    /// <summary>
     /// Aligning the tissue images for Visium upload
     /// </summary>
     public void alignment()
@@ -1422,7 +1498,6 @@ public class UIManager : MonoBehaviour
             images.Add(imageObj);
             //TBD set all same size
             imageObj.transform.localScale = new Vector3(imageObj.transform.localScale.x * 3.5f, imageObj.transform.localScale.y * 3.5f, imageObj.transform.localScale.z);
-
             //transform the rawimages results in an offsett needs to be aligned
             imageObj.GetComponent<RectTransform>().transform.localPosition = new Vector3(-350, 0, 0);
             Destroy(imageObj.transform.GetChild(0).gameObject);
@@ -1455,7 +1530,6 @@ public class UIManager : MonoBehaviour
             dropd.AddOptions(dpOptions);
             selectForRotation();
         }
-
     }
 
     /// <summary>
