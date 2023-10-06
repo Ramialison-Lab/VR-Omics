@@ -221,7 +221,10 @@ public class UIManager : MonoBehaviour
 
         df = gameObject.GetComponent<DataTransfer>();
         fpc = gameObject.GetComponent<FilePathCheck>();
+
+        UnwriteConcatStatus();
     }
+
 
     // Start Visualiser functions
     #region start Visualiser
@@ -1293,7 +1296,6 @@ public class UIManager : MonoBehaviour
                     slices[i] = Instantiate(sliceContainerPrefab, uploadpanel.transform);
                     // slices[i].transform.position = new Vector2(slices[i].transform.position.x, slices[i].transform.position.y + GameObject.FindGameObjectsWithTag("sliceContainer").Length * -300);
                     slices[i].transform.SetParent(contentPanel.transform);
-
                     byte[] byteArray;
 
                     try
@@ -1332,7 +1334,7 @@ public class UIManager : MonoBehaviour
                     }
 
                     string filename = FileBrowser.Result[i];
-                    slices[i].GetComponentInChildren<Text>().text = filename.Split('\\').Last();
+                    slices[i].GetComponentInChildren<Text>().text = filename;
                 }
             }
 
@@ -1477,6 +1479,7 @@ public class UIManager : MonoBehaviour
             totalWidth += (originalSize.x * scaleFactor) + concatSpacing;
         }
         this.gameObject.GetComponent<ConcatManager>().SetImageList(images);
+
     }
 
 
@@ -1766,4 +1769,18 @@ public class UIManager : MonoBehaviour
         df.ContinueSession();
     }
     #endregion
+
+
+    private void UnwriteConcatStatus()
+    {
+        if (!File.Exists(current_directory + "/PythonFiles/Concat_used_Visium.txt"))
+        {
+            // Create the file if it doesn't exist
+            using (StreamWriter write = File.CreateText(current_directory + "/PythonFiles/Concat_used_Visium.txt"))
+            {
+                write.WriteLine("false");
+                write.Close();
+            }
+        }
+    }
 }
