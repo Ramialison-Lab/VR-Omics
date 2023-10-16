@@ -58,6 +58,7 @@ public class DataTransferManager : MonoBehaviour
     public MenuCanvas mc;
     public JSONReader jr;
     public UMAPManager umapm;
+    private FilePathEndings fpe;
 
     //Universal
     float[] x_coordinates;
@@ -124,14 +125,14 @@ public class DataTransferManager : MonoBehaviour
 
     //Merfish
     public List<string> MerfishGeneNames = new List<string>();
-    public string merfishGenelist;
+    public string merfishCounts;
     public string merfishCoords;
 
     //Nanostring
     public List<string> NanostringGeneNames = new List<string>();
     public string nanostringCounts;
     public string nanostringCoords;
-    public string nanostringGenePanelPath;
+    public string nanostringGeneInformation;
 
     //SlideSeqV2
     public List<string> SlideSeqV2GeneNames = new List<string>();
@@ -167,6 +168,7 @@ public class DataTransferManager : MonoBehaviour
         mc = GameObject.Find("MainMenuPanel").GetComponent<MenuCanvas>();
         jr = scriptHolder.GetComponent<JSONReader>();
         umapm = scriptHolder.GetComponent<UMAPManager>();
+        fpe = scriptHolder.GetComponent<FilePathEndings>();
 
         try { 
             df = scriptHolderPipeline.GetComponent<DataTransfer>();
@@ -200,7 +202,7 @@ public class DataTransferManager : MonoBehaviour
         string[] dfPaths = df.pathList.ToArray();
 
         string srtMethod = "visium";
-
+        
         List<string> shortList = new List<string>();                //List for names of slices from datasetnames
         geneNameDictionary = new List<string>[df.pathList.Count];   //Dicitonary of all gene names
         positionList = new string[df.pathList.Count];               //Datapaths to tissue_possition lists
@@ -213,41 +215,43 @@ public class DataTransferManager : MonoBehaviour
         string[] tissueImagePath = new string[df.pathList.Count];   //Data paths to the tissue images (H&E stain image)
 
         //Find the respective files from the Visium dataset repository
-        foreach (string x in df.pathList)
+        foreach (string path in df.pathList)
         {
-            string[] allDirectories = Directory.GetFiles(x, "*", SearchOption.AllDirectories);
+            string[] allDirectories = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
 
             CheckForFigures(allDirectories);
 
-            visiumMetaFiles.AddRange(Directory.GetFiles(x, "*metadata.csv"));
-            visium_datapapths.AddRange(Directory.GetFiles(x, "*.h5"));
-            csvGeneExpPaths.AddRange(Directory.GetFiles(x, "*transposed.csv"));
+            visiumMetaFiles.AddRange(Directory.GetFiles(path, fpe.technologyFileNames["Visium"].locationMetadataCSV));
+            visium_datapapths.AddRange(Directory.GetFiles(path, fpe.technologyFileNames["Visium"].h5));
+            csvGeneExpPaths.AddRange(Directory.GetFiles(path, fpe.technologyFileNames["Visium"].geneCountCSV));
+
             foreach (string directory in allDirectories)
             {
-                if (directory.Contains("tissue_positions_list.csv") && !directory.Contains(META_ENDING_CSV))
+
+                if (directory.Contains(fpe.technologyFileNames["Visium"].tissuePositionListCSV) && !directory.Contains(META_ENDING_CSV))
                 {
                     positionList[positionListCounter] = directory;
                     positionListCounter++;
                     isRawData = false;
                 }
-                if (directory.Contains("scalefactors_json.json") && !directory.Contains(META_ENDING_JSON))
+                if (directory.Contains(fpe.technologyFileNames["Visium"].scalefactorsJSON) && !directory.Contains(META_ENDING_JSON))
                 {
                     jsonFilePaths[jsonListCounter] = directory;
                     isRawData = false;
 
                 }
-                if (directory.Contains("tissue_hires_image.png") && !directory.Contains(META_ENDING_PNG))
+                if (directory.Contains(fpe.technologyFileNames["Visium"].highresTissueImagePNG) && !directory.Contains(META_ENDING_PNG))
                 {
                     tissueImagePath[tissueImageCounter] = directory;
                     tissueImageCounter++;
                     isRawData = false;
 
                 }
-                if (directory.Contains("obsm.csv") && !directory.Contains(META_ENDING_CSV))
+                if (directory.Contains(fpe.technologyFileNames["Visium"].obsmCSV) && !directory.Contains(META_ENDING_CSV))
                 {
                     obsmPath[0] = directory;
                 }
-                if (directory.Contains("gene_panel.csv") && !directory.Contains(META_ENDING_CSV))
+                if (directory.Contains(fpe.technologyFileNames["Visium"].genePanelCSV) && !directory.Contains(META_ENDING_CSV))
                 {
                     genePanelPath[genePanelCounter] = directory;
                     genePanelCounter++;
@@ -262,7 +266,7 @@ public class DataTransferManager : MonoBehaviour
         }
 
         //calculate dimensions of H&E image
-        scaleFactors[count] = jr.readScaleFactor(jsonFilePaths[count]);
+        try { scaleFactors[count] = jr.readScaleFactor(jsonFilePaths[count]); } catch (Exception) { }
         addHAndEImg = true;
 
         //disable sideBySide features for more than one visium slice
@@ -273,8 +277,6 @@ public class DataTransferManager : MonoBehaviour
                 go.SetActive(false);
             }
         }
-
-
         string[] panellines = File.ReadAllLines(genePanelPath[count]).Skip(1).ToArray();
         string[] genePan = new string[panellines.Length];
         for (int i = 0; i < panellines.Length; i++)
@@ -426,25 +428,11 @@ public class DataTransferManager : MonoBehaviour
 
         foreach (string str in allDirectories)
         {
-            if (str.Contains("gene_transposed_counts.csv") && !str.Contains(META_ENDING_CSV)) xeniumCounts = str;
-            if (str.Contains("processed_cells.csv") && !str.Contains(META_ENDING_CSV)) xeniumCoords = str;
-            if (str.Contains("results.csv") && !str.Contains(META_ENDING_CSV)) moran_results = str;               
-            if (str.Contains("obsm.csv") && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;               
+            if (str.Contains(fpe.technologyFileNames["Xenium"].geneCountCSV) && !str.Contains(META_ENDING_CSV)) xeniumCounts = str;
+            if (str.Contains(fpe.technologyFileNames["Xenium"].locationMetadataCSV) && !str.Contains(META_ENDING_CSV)) xeniumCoords = str;
+            if (str.Contains(fpe.technologyFileNames["Xenium"].resultCSV) && !str.Contains(META_ENDING_CSV)) moran_results = str;               
+            if (str.Contains(fpe.technologyFileNames["Xenium"].obsmCSV) && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;               
         }
-
-        string[] files = Directory.GetFiles(df.xeniumPath, "*gene_transposed_counts.csv");
-        xeniumCounts = files[0];
-        files = Directory.GetFiles(df.xeniumPath, "*processed_cells.csv");
-        xeniumCoords = files[0];
-        files = Directory.GetFiles(df.xeniumPath, "*feature_matrix.csv");
-        xeniumGenePanelPath = files[0];
-        try
-        {
-            files = Directory.GetFiles(df.xeniumPath, "*results.csv");
-            moran_results = files[0];
-        }catch(Exception) { }
-
-
 
         string[] lines = File.ReadAllLines(xeniumCoords);
 
@@ -514,10 +502,10 @@ public class DataTransferManager : MonoBehaviour
 
         foreach (string str in allDirectories)
         {
-            if (str.Contains("metadata_processed.csv") && !str.Contains(META_ENDING_CSV)) merfishCoords = str;
-            if (str.Contains("gene_transposed_processed.csv") && !str.Contains(META_ENDING_CSV)) merfishGenelist = str;
-            if (str.Contains("results.csv") && !str.Contains(META_ENDING_CSV)) moran_results = str;
-            if (str.Contains("obsm.csv") && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;
+            if (str.Contains(fpe.technologyFileNames["Merfish"].locationMetadataCSV) && !str.Contains(META_ENDING_CSV)) merfishCoords = str;
+            if (str.Contains(fpe.technologyFileNames["Merfish"].geneCountCSV) && !str.Contains(META_ENDING_CSV)) merfishCounts = str;
+            if (str.Contains(fpe.technologyFileNames["Merfish"].resultCSV) && !str.Contains(META_ENDING_CSV)) moran_results = str;
+            if (str.Contains(fpe.technologyFileNames["Merfish"].obsmCSV) && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;
         }
 
         /*
@@ -569,7 +557,7 @@ public class DataTransferManager : MonoBehaviour
         }
 
         //Read gene names from gene list → Always column 0 
-        string[] linesGn = File.ReadAllLines(merfishGenelist);
+        string[] linesGn = File.ReadAllLines(merfishCounts);
 
         linesGn = linesGn.Skip(1).ToArray();
 
@@ -602,25 +590,11 @@ public class DataTransferManager : MonoBehaviour
 
         foreach (string str in allDirectories)
         {
-            if (str.Contains("gene_transposed_counts.csv"))
-            {
-                nanostringCounts = str;
-            }
-            if (str.Contains("panel.csv"))
-            {
-                nanostringGenePanel = str;
-            }
-            if (str.Contains("meta_data.csv"))
-            {
-                nanostringCoords = str;
-            }
-            if (str.Contains("gene_information.csv"))
-            {
-                nanostringGenePanelPath = str;
-            }
-            if (str.Contains("results.csv")){
-                moran_results = str;
-            }
+            if (str.Contains(fpe.technologyFileNames["Nanostring"].geneCountCSV)) nanostringCounts = str;
+            else if (str.Contains(fpe.technologyFileNames["Nanostring"].genePanelCSV)) nanostringGenePanel = str;
+            else if (str.Contains(fpe.technologyFileNames["Nanostring"].locationMetadataCSV)) nanostringCoords = str;
+            else if (str.Contains(fpe.technologyFileNames["Nanostring"].geneInformationCSV)) nanostringGeneInformation = str;
+            else if (str.Contains(fpe.technologyFileNames["Nanostring"].resultCSV)) moran_results = str;
         }
 
         CheckForFigures(allDirectories);
@@ -683,31 +657,15 @@ public class DataTransferManager : MonoBehaviour
         string[] allDirectories = Directory.GetFiles(df.slideseqv2Path, "*", SearchOption.AllDirectories);
         obsmPath = new string[1];
 
-
         foreach (string str in allDirectories)
         {
-            if (str.Contains("gene_transposed_counts.csv") && !str.Contains(META_ENDING_CSV))
+            if (!str.Contains(META_ENDING_CSV))
             {
-                slideseqv2Counts = str;
+                if (str.Contains(fpe.technologyFileNames["SlideSeqV2"].geneCountCSV)) slideseqv2Counts = str;
+                else if (str.Contains(fpe.technologyFileNames["SlideSeqV2"].locationMetadataCSV)) slideseqv2Coords = str;
+                else if (str.Contains(fpe.technologyFileNames["SlideSeqV2"].genePanelCSV)) slideseqv2GenePanel = str;
+                else if (str.Contains(fpe.technologyFileNames["SlideSeqV2"].obsmCSV)) obsmPath[0] = str;
             }
-            //if (str.Contains("panel.csv"))
-            //{
-            //    nanostringGenePanel = str;
-            //}
-            if (str.Contains("metadata.csv") && !str.Contains(META_ENDING_CSV))
-            {
-                slideseqv2Coords = str;
-            }
-            if (str.Contains("genepanel.csv") && !str.Contains(META_ENDING_CSV))
-            {
-                slideseqv2GenePanel = str;
-            }
-            if (str.Contains("umap.csv") && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;
-
-            //if (str.Contains("results.csv"))
-            //{
-            //    moran_results = str;
-            //}
         }
 
         CheckForFigures(allDirectories);

@@ -48,6 +48,7 @@ public class SearchManager : MonoBehaviour
     private SpotDrawer sd;
     private DataTransfer df;
     private ReadGeneInformation rgi;
+    private NotificationManager nm;
 
     //TBD LINKPATH
     public string geneNamesC18;
@@ -73,6 +74,7 @@ public class SearchManager : MonoBehaviour
     private void Start()
     {
         selectMethod();
+        nm = GameObject.Find("Notification_Banner").GetComponent<NotificationManager>();
     }
     public void selectMethod()
     {
@@ -233,7 +235,7 @@ public class SearchManager : MonoBehaviour
         int x = genes.IndexOf(searchGene);
         //LINKPATH
         //string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
-        string merfishData = dfm.merfishGenelist;
+        string merfishData = dfm.merfishCounts;
 
         string[] lines = File.ReadAllLines(merfishData);
         lines = lines.Skip(1).ToArray();
@@ -398,6 +400,7 @@ public class SearchManager : MonoBehaviour
         else if (max == min)
         {
             //TODO error handling if all expression values are the same
+            
         }
         else
         {
@@ -432,6 +435,8 @@ public class SearchManager : MonoBehaviour
         }
         else if (max == min && max != 0)
         {
+            nm.ShowNotificationBannerForDuration("The gene is not expressed.", 5);
+
             //TBD: handle all values the same but not 0
         }
         else
@@ -631,7 +636,8 @@ public class SearchManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Gene not found");
+            //Debug.Log("Gene not found");
+            nm.ShowNotificationBannerForDuration("Gene not found.", 5);
         }
         yield return null;
     }
@@ -639,12 +645,15 @@ public class SearchManager : MonoBehaviour
     public void searchGene(string datapath, string geneName)
     {
         Awake();
+
         StartCoroutine(search(datapath, geneName));
 
         if (resultExpression.Max() == 0)
         {
             noExpressionValuePanel.SetActive(true);
             //sd.setAllZeroColour(normalised);
+            nm.ShowNotificationBannerForDuration("The gene is not expressed.", 5);
+
         }
         else
         {

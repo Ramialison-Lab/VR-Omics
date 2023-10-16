@@ -11,11 +11,17 @@ public class ConcatManager : MonoBehaviour
     private RawImage clickedRawImage;
     private bool isDragging = false;
     private float rotationSpeed = 5.0f; // Adjust this value to control the rotation speed
+    private int[] rotationValues;
 
     public void SetImageList(List<RawImage> images)
     {
         imagesList = images;
         dragAndDrop = true;
+        rotationValues = new int[images.Count];
+        for(int i=0; i < rotationValues.Length; i++)
+        {
+            rotationValues[i] = 0;
+        }
     }
 
     private void Update()
@@ -55,7 +61,16 @@ public class ConcatManager : MonoBehaviour
 
             // Rotate the RawImage based on mouse wheel input
             float scroll = Input.GetAxis("Mouse ScrollWheel");
-            clickedRawImage.rectTransform.Rotate(Vector3.forward, scroll * rotationSpeed);
+            if (Input.GetMouseButtonDown(1))
+            {
+                clickedRawImage.rectTransform.Rotate(Vector3.forward, -90);
+                int index = imagesList.IndexOf(clickedRawImage);
+                rotationValues[index] = rotationValues[index] - 90;
+                if(rotationValues[index] <= -360)
+                {
+                    rotationValues[index] = 0;
+                }
+            }
         }
 
         // Stop dragging when the left mouse button is released
@@ -77,7 +92,6 @@ public class ConcatManager : MonoBehaviour
         Vector2[] imageDimensions = new Vector2[imagesList.Count];
         
         //Rotation to be updated
-        int rotation = 0;
         string concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_Visium.txt";
 
         if (!File.Exists(concat_directory))
@@ -108,7 +122,7 @@ public class ConcatManager : MonoBehaviour
             imageCoordinates[i] = image.rectTransform.position;
             imageDimensions[i] = image.rectTransform.sizeDelta;
 
-            string line = image.transform.ToString() + ", " + image.rectTransform.position + ", " + image.rectTransform.sizeDelta.x + ", " + image.rectTransform.sizeDelta.y + ", " + rotation.ToString();
+            string line = image.transform.ToString() + ", " + image.rectTransform.position + ", " + image.rectTransform.sizeDelta.x + ", " + image.rectTransform.sizeDelta.y + ", " + rotationValues[i].ToString();
 
             writer.WriteLine(line);
 
@@ -117,5 +131,6 @@ public class ConcatManager : MonoBehaviour
             writer.Close();
     }
 
+    //TODO: b bContinute withfilter param!
 }
 

@@ -253,7 +253,7 @@ public class UIManager : MonoBehaviour
         {
             foreach (string x in transferDatapaths)
             {
-                if (x.Split('\\').Last() == option.text)
+                if (option.text.Contains(x.Split('\\').Last()))
                 {
                     datapathVisium.Add(x);
                 }
