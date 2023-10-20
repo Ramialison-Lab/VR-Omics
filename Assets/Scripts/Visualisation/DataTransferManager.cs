@@ -1108,6 +1108,30 @@ public class DataTransferManager : MonoBehaviour
 
     private void LoadObject()
     {
+        //TODO: not working
+
+        //string path = df.objData[0];
+
+        ////GameObject loadedObject = new OBJLoader().Load(path);
+        //string filePath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Model.fbx";
+
+        //GameObject loadedObject = Resources.Load<GameObject>(path);
+        //Vector3 position = new Vector3(int.Parse(df.objData[1]), int.Parse(df.objData[2]), int.Parse(df.objData[3]));
+        //Vector3 rotation = new Vector3(int.Parse(df.objData[4]), int.Parse(df.objData[5]), int.Parse(df.objData[6]));
+
+        //if (loadedObject != null)
+        //{
+        //    // Instantiate the object
+        //    GameObject instantiatedObject = Instantiate(loadedObject, position, Quaternion.Euler(rotation));
+
+        //    // Parent it to this GameObject
+        //    instantiatedObject.transform.parent = transform;
+        //}
+        //else
+        //{
+        //    Debug.LogError("Failed to load the object from " + filePath);
+        //}
+
         string path = df.objData[0];
 
         GameObject loadedObject = new OBJLoader().Load(path);
@@ -1216,6 +1240,10 @@ public class DataTransferManager : MonoBehaviour
     {
         df = scriptHolderPipeline.GetComponent<DataTransfer>();
         current_directory = df.current_directory;
+        if (df.objectUsed)
+        {
+            LoadObject();
+        }
 
         if (df.c18)
         {
@@ -1265,10 +1293,7 @@ public class DataTransferManager : MonoBehaviour
             other = true;
             StartOther();
         }
-        else if (df.objectUsed)
-        {
-            LoadObject();
-        }
+
         else if (df.continueSession)
         {
             continueSession = true;

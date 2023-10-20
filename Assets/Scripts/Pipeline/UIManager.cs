@@ -638,6 +638,7 @@ public class UIManager : MonoBehaviour
 
     public TMP_InputField[] MerfishParameter;
     public Toggle merfish_longAnalysis;
+    public Toggle merfish_tsne_umap;
 
     /// <summary>
     /// Process Merfish data 
@@ -645,8 +646,10 @@ public class UIManager : MonoBehaviour
     public void processMerfish()
     {
         string longAnalysis = "0";
+        string tsne_umap = "0";
 
-        if (merfish_longAnalysis.isOn) longAnalysis = "1";
+        if (merfish_longAnalysis.isOn) longAnalysis = "1"; // SVGs Moran 
+        if (merfish_tsne_umap.isOn) tsne_umap = "1"; // SVGs Moran 
 
         //checking if paths were pasted without using the browse function
         if (merfish_counts_file == "" || merfish_counts_file != merfish_counts_LoadTMP.text) merfish_counts_file = merfish_counts_LoadTMP.text;
@@ -654,7 +657,7 @@ public class UIManager : MonoBehaviour
         if (merfish_transformation_file == "" || merfish_transformation_file != merfish_transform_LoadTMP.text) merfish_transformation_file = merfish_transform_LoadTMP.text;
 
         StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Merfish_param.txt", false);
-        string[] merfish_path_out = new string[10];
+        string[] merfish_path_out = new string[11];
         merfish_path_out[0] = merfish_counts_file;// counts_file;
         merfish_path_out[1] = merfish_meta_file;// meta_file;
         merfish_path_out[2] = merfish_transformation_file;// transformation_file;
@@ -665,6 +668,7 @@ public class UIManager : MonoBehaviour
         merfish_path_out[7] = longAnalysis;// long analysis;
         merfish_path_out[8] = MerfishParameter[3].text;// max_total_count_var;
         merfish_path_out[9] = MerfishParameter[4].text;// n_genes_by_counts;
+        merfish_path_out[10] = tsne_umap;// Toggle T-SNE & UMAP;
 
         foreach (string param in merfish_path_out)
         {
@@ -735,25 +739,29 @@ public class UIManager : MonoBehaviour
     private string xenium_cells_csv ="";
     public TMP_InputField[] xeniumParameters;
     public Toggle Xenium_longAnalysis;
+    public Toggle xenium_tsne_umap;
     /// <summary>
     /// Process Xenium data
     /// </summary>
     public void processXenium()
     {
         string longAnalysis = "0";
+        string tsne_umap = "0";
         if (Xenium_longAnalysis.isOn) longAnalysis = "1";
+        if (xenium_tsne_umap.isOn) tsne_umap = "1";
 
         if (xenium_cell_feature_h5 == "" || xenium_cell_feature_h5 != xenium_feature_matrix_h5_TMP.text) xenium_cell_feature_h5 = xenium_feature_matrix_h5_TMP.text;
         if (xenium_cells_csv == "" || xenium_cells_csv != xenium_cells_csv_TMP.text) xenium_cells_csv = xenium_cells_csv_TMP.text;
 
         StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Xenium_path.txt", false);
-        string[] xenium_path_out = new string[6];
+        string[] xenium_path_out = new string[7];
         xenium_path_out[0] = xenium_cell_feature_h5; //h5
         xenium_path_out[1] = "";// outputDirectory; //TODO: teste output
         xenium_path_out[2] = xenium_cells_csv;// gzip file;
         xenium_path_out[3] = xeniumParameters[0].text;// mincount; //default values
         xenium_path_out[4] = xeniumParameters[1].text;// mincells; //default values
         xenium_path_out[5] = longAnalysis;// long analysis;
+        xenium_path_out[5] = tsne_umap;// long analysis;
 
 
         foreach (string param in xenium_path_out)
