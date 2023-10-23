@@ -124,6 +124,7 @@ public class UIManager : MonoBehaviour
     public GameObject expandBtnActivePanelNanostring;
     public GameObject expandBtnActivePanelOther;
     public GameObject expandBtnActivePanelSlideSeqV2;
+    public GameObject[] activePanels;
 
     //Rotation slice
     public List<int> rotationValues;
@@ -1781,10 +1782,19 @@ public class UIManager : MonoBehaviour
 
     private void UnwriteConcatStatus()
     {
-        if (!File.Exists(current_directory + "/PythonFiles/Concat_used_Visium.txt"))
+        string path_to_concat = "";
+#if UNITY_EDITOR
+        path_to_concat = current_directory + "/PythonFiles/Concat_used_Visium.txt";
+#else
+        path_to_concat = current_directory + "Assets/PythonFiles/Concat_used_Visium.txt"
+
+#endif
+
+        if (!File.Exists(path_to_concat))
         {
             // Create the file if it doesn't exist
-            using (StreamWriter write = File.CreateText(current_directory + "/PythonFiles/Concat_used_Visium.txt"))
+
+            using (StreamWriter write = File.CreateText(path_to_concat))
             {
                 write.WriteLine("false");
                 write.Close();

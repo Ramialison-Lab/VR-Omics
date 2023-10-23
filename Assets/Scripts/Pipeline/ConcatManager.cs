@@ -90,9 +90,16 @@ public class ConcatManager : MonoBehaviour
         Vector2[] imageCoordinates = new Vector2[imagesList.Count];
         //Dimensions store (width, height)
         Vector2[] imageDimensions = new Vector2[imagesList.Count];
-        
+
         //Rotation to be updated
-        string concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_Visium.txt";
+        string concat_directory = "";
+
+#if UNITY_EDITOR
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_Visium.txt";
+#else
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "Assets/PythonFiles/Concat_Visium.txt";
+
+#endif
 
         if (!File.Exists(concat_directory))
         {
@@ -102,7 +109,14 @@ public class ConcatManager : MonoBehaviour
             }
         }
 
-        string concat_used_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_used_Visium.txt";
+        string concat_used_directory = "";
+#if UNITY_EDITOR
+        concat_used_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_used_Visium.txt";
+#else
+        concat_used_directory = this.gameObject.GetComponent<UIManager>().current_directory + "Assets/PythonFiles/Concat_used_Visium.txt";
+
+#endif
+        ;
 
         using (StreamWriter write = File.CreateText(concat_used_directory))
         {
