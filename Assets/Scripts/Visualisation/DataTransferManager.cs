@@ -220,7 +220,6 @@ public class DataTransferManager : MonoBehaviour
             string[] allDirectories = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
 
             CheckForFigures(allDirectories);
-
             visiumMetaFiles.AddRange(Directory.GetFiles(path, fpe.technologyFileNames["Visium"].locationMetadataCSV));
             visium_datapapths.AddRange(Directory.GetFiles(path, fpe.technologyFileNames["Visium"].h5));
             csvGeneExpPaths.AddRange(Directory.GetFiles(path, fpe.technologyFileNames["Visium"].geneCountCSV));
@@ -259,6 +258,7 @@ public class DataTransferManager : MonoBehaviour
             }
 
         }
+
 
         if (isRawData)
         {
@@ -433,11 +433,10 @@ public class DataTransferManager : MonoBehaviour
             if (str.Contains(fpe.technologyFileNames["Xenium"].resultCSV) && !str.Contains(META_ENDING_CSV)) moran_results = str;               
             if (str.Contains(fpe.technologyFileNames["Xenium"].obsmCSV) && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;               
         }
-
         string[] lines = File.ReadAllLines(xeniumCoords);
 
-        int column_x = CSVHeaderInformation.CheckForColumnNumber("spatial_x", lines[0]);
-        int column_y = CSVHeaderInformation.CheckForColumnNumber("spatial_y", lines[0]);
+        int column_x = CSVHeaderInformation.CheckForColumnNumber("x_centroid", lines[0]);
+        int column_y = CSVHeaderInformation.CheckForColumnNumber("y_centroid", lines[0]);
 
         if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
         {
@@ -456,7 +455,7 @@ public class DataTransferManager : MonoBehaviour
         {
             string[] values = lines[i].Split(',');
             float x = x_coordinates[i] = float.Parse(values[column_x]);
-            float y = y_coordinates[i] = float.Parse(values[column_y]);
+            float y = y_coordinates[i] = (-1) * float.Parse(values[column_y]);
             float z = z_coordinates[i] = 0;
             location_names[i] = values[0];
 
@@ -517,12 +516,33 @@ public class DataTransferManager : MonoBehaviour
         CheckForFigures(allDirectories);
         
         //Read csv header of metadata file for positions
-        int csv_position_x_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "spatial_x");
-        int csv_position_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "spatial_y");
+        int csv_position_min_x_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "min_x");
+        int csv_position_max_x_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "max_x");
+        int csv_position_min_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "min_y");
+        int csv_position_max_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "max_y");
+
         if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
         {
             lines = lines.Skip(1).ToArray();
         }
+
+        float[] middle_x_values = lines.Select(line =>
+        {
+            string[] parts = line.Split(',');
+            float min_x = float.Parse(parts[csv_position_min_x_values]);
+            float max_x = float.Parse(parts[csv_position_max_x_values]);
+            return (min_x + max_x) / 2.0f;
+        }).ToArray();
+
+        //Y values are flipped since upside down
+        float[] middle_y_values = lines.Select(line =>
+        {
+            string[] parts = line.Split(',');
+            float min_y = float.Parse(parts[csv_position_min_y_values]);
+            float max_y = float.Parse(parts[csv_position_max_y_values]);
+            return (-1) * (min_y + max_y) / 2.0f;
+        }).ToArray();
+
         //reading values from the first line of the csv file
         string[] lineone = lines[1].Split(',');
         float minX, maxX, minY, maxY, minZ;
@@ -540,11 +560,9 @@ public class DataTransferManager : MonoBehaviour
         for (int i = 0; i < lines.Length; i++)
         {
             string[] values = lines[i].Split(',');
-            float x = float.Parse(values[csv_position_x_values]);
-            float y = float.Parse(values[csv_position_y_values]);
 
-            x_coordinates[i] = x;
-            y_coordinates[i] = y;
+            float x = x_coordinates[i] = middle_x_values[i];
+            float y = y_coordinates[i] = middle_y_values[i];
             z_coordinates[i] = 0;
 
             location_names[i] = values[0];

@@ -16,15 +16,15 @@ public class FilePathCheck : MonoBehaviour
 
     private string[] merfish_Files =
     {
-        "metadata_processed.csv",
-        "gene_transposed_processed.csv",
+        "metadata.csv",
+        "genes_transposed.csv",
     };
 
     private string[] xenium_Files =
     {
-            "gene_transposed_counts.csv",
-            "processed_cells.csv",
-            "feature_matrix.csv",
+            "genes_transposed.csv",
+            "metadata.csv",
+            "gene_panel.csv",
     };    
     
     //TODO: Need to be filled with Nanostring File names

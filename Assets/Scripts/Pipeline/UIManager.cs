@@ -115,6 +115,8 @@ public class UIManager : MonoBehaviour
     public GameObject mainExpandMerfish;
     public GameObject mainExpandNanostring;
     public GameObject mainExpandSlideSeqV2;
+    public GameObject[] expandPanels;
+    Vector2 resetPosition;
 
     public GameObject expandBtnActivePanelVisium;
     public GameObject expandBtnActivePanelXenium;
@@ -145,26 +147,37 @@ public class UIManager : MonoBehaviour
     public GameObject visiumSuccessPanel;
     public GameObject distanceText;
 
-
     // TMP_Inputfield for datapaths
 
     public TMP_InputField xeniumTMPField;
     public TMP_InputField xenium_feature_matrix_h5_TMP;
     public TMP_InputField xenium_cells_csv_TMP;
+
     public TMP_InputField stomicsPathField;
     public TMP_InputField stomicsPathProcessField;
+    public TMP_InputField stomicsBinSize;
+    public TMP_InputField stomicsMinGene;
+    public TMP_InputField stomicsMinNGenesCount;
+    public TMP_InputField stomicsPCTCountMT;
+    public TMP_InputField stomicsMinCell;
+    public TMP_InputField stomicsNTopGenes;
+
     public TMP_InputField tomoDirectoryfield;
     public TMP_InputField tomoAPfield;
     public TMP_InputField tomoVDfield;
     public TMP_InputField tomoLRfield;
     public TMP_InputField tomoGenefield;
     public TMP_InputField tomoBitmaskfield;
+
     public TMP_InputField merfishTMPField;                      //Load for visualisation
     public TMP_InputField merfish_counts_LoadTMP;               //Process 
     public TMP_InputField merfish_meta_LoadTMP;                 //Process
     public TMP_InputField merfish_transform_LoadTMP;            //Process
+
     public TMP_InputField nanostringTMPField;            
-    public TMP_InputField slideseqV2TMPField;            
+
+    public TMP_InputField slideseqV2TMPField;       
+    
     public TMP_InputField visium_from_local_TMP;            //Process
     public TMP_InputField otherMatLoadTMP;
     public TMP_InputField otherMetaLoadTMP;
@@ -222,6 +235,8 @@ public class UIManager : MonoBehaviour
 
         df = gameObject.GetComponent<DataTransfer>();
         fpc = gameObject.GetComponent<FilePathCheck>();
+
+        resetPosition = expandPanels[0].transform.localPosition;
 
         UnwriteConcatStatus();
     }
@@ -470,17 +485,14 @@ public class UIManager : MonoBehaviour
         disableAllExpandBTnPanels();
 
         // Create an array of main expand panels and their corresponding boolean flags
-        GameObject[] mainExpandPanels = { mainExpandPanelVisium, mainExpandMerfish, mainExpandPanelXenium, mainExpandPanelTomo, mainExpandStomics, mainExpandOther };
-        bool[] expMenuFlags = { expMenuVisium, expMenuMerfish, expMenuXen, expMenuTomo, expMenuStomics, expMenuOther };
+        GameObject[] mainExpandPanels = expandPanels;
+        bool[] expMenuFlags = { expMenuVisium, expMenuMerfish, expMenuXen, expMenuTomo, expMenuStomics, expMenuOther, expMenuNanostring, expMenuSlideSeqV2 };
 
-        // Iterate through the main expand panels and update their positions based on their corresponding boolean flags
-        for (int i = 0; i < mainExpandPanels.Length; i++)
+
+
+        foreach (GameObject panel in expandPanels)
         {
-            if (expMenuFlags[i])
-            {
-                mainExpandPanels[i].transform.localPosition = new Vector2(mainExpandPanels[i].GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanels[i].GetComponent<RectTransform>().transform.localPosition.y);
-                expMenuFlags[i] = false;
-            }
+            panel.transform.localPosition = resetPosition;
         }
 
         panelToMove.transform.localPosition = new Vector2(panelToMove.GetComponent<RectTransform>().transform.localPosition.x + expandPanelOffset, panelToMove.GetComponent<RectTransform>().transform.localPosition.y);
@@ -491,12 +503,10 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void disableAllExpandBTnPanels()
     {
-        expandBtnActivePanelVisium.SetActive(false);
-        expandBtnActivePanelXenium.SetActive(false);
-        expandBtnActivePanelTomo.SetActive(false);
-        expandBtnActivePanelStomics.SetActive(false);
-        expandBtnActivePanelMerfish.SetActive(false);
-        expandBtnActivePanelOther.SetActive(false);
+        foreach(GameObject go in activePanels)
+        {
+            go.SetActive(false);
+        }
     }
 
     /// <summary>
@@ -511,126 +521,71 @@ public class UIManager : MonoBehaviour
     /// Toggle each ExpandMenu
     /// </summary>
     #region toggle Expand Menus
-    public void toggleExpandMenu()
+    public void ToggleExpandMenu(GameObject mainExpandPanel, GameObject expandBtnActivePanel, ref bool expMenu)
     {
-        if (!expMenuVisium)
+        if (!expMenu)
         {
-            expandPanelOut(mainExpandPanelVisium);
-            expandBtnActivePanelVisium.SetActive(true);
+            expandPanelOut(mainExpandPanel);
+            expandBtnActivePanel.SetActive(true);
         }
         else
         {
-            mainExpandPanelVisium.transform.localPosition = new Vector2(mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanelVisium.GetComponent<RectTransform>().transform.localPosition.y);
-            expandBtnActivePanelVisium.SetActive(false);
+            mainExpandPanel.transform.localPosition = new Vector2(mainExpandPanel.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanel.GetComponent<RectTransform>().transform.localPosition.y);
+            expandBtnActivePanel.SetActive(false);
         }
-        expMenuVisium = !expMenuVisium;
+
+        expMenuVisium = false;
+        expMenuMerfish = false;
+        expMenuNanostring = false;
+        expMenuXen = false;
+        expMenuTomo = false;
+        expMenuStomics = false;
+        expMenuSlideSeqV2 = false;
+        expMenuOther = false;
+
+        expMenu = !expMenu;
     }
 
-    public void toggleExpandMenuXenium()
+    public void ToggleExpandMenuVisium()
     {
-        if (!expMenuXen)
-        {
-            expandPanelOut(mainExpandPanelXenium);
-            expandBtnActivePanelXenium.SetActive(true);
-        }
-        else
-        {
-            mainExpandPanelXenium.transform.localPosition = new Vector2(mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanelXenium.GetComponent<RectTransform>().transform.localPosition.y);
-            expandBtnActivePanelXenium.SetActive(false);
-        }
-        expMenuXen = !expMenuXen;
+        ToggleExpandMenu(mainExpandPanelVisium, expandBtnActivePanelVisium, ref expMenuVisium);
     }
 
-    public void toggleExpandMenuMerfish()
+    public void ToggleExpandMenuXenium()
     {
-        if (!expMenuMerfish)
-        {
-            expandPanelOut(mainExpandMerfish);
-            expandBtnActivePanelMerfish.SetActive(true);
-        }
-        else
-        {
-            mainExpandMerfish.transform.localPosition = new Vector2(mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandMerfish.GetComponent<RectTransform>().transform.localPosition.y);
-            expandBtnActivePanelMerfish.SetActive(false);
-        }
-        expMenuMerfish = !expMenuMerfish;
-    }    
-    
-    public void toggleExpandMenuNanostring()
-    {
-        if (!expMenuNanostring)
-        {
-            expandPanelOut(mainExpandNanostring);
-            expandBtnActivePanelNanostring.SetActive(true);
-        }
-        else
-        {
-            mainExpandNanostring.transform.localPosition = new Vector2(mainExpandNanostring.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandNanostring.GetComponent<RectTransform>().transform.localPosition.y);
-            expandBtnActivePanelNanostring.SetActive(false);
-        }
-        expMenuNanostring = !expMenuNanostring;
+        ToggleExpandMenu(mainExpandPanelXenium, expandBtnActivePanelXenium, ref expMenuXen);
     }
 
-    public void toggleExpandMenuSlideSeqV2()
+    public void ToggleExpandMenuMerfish()
     {
-        if (!expMenuSlideSeqV2)
-        {
-            expandPanelOut(mainExpandSlideSeqV2);
-            expandBtnActivePanelSlideSeqV2.SetActive(true);
-        }
-        else
-        {
-            mainExpandSlideSeqV2.transform.localPosition = new Vector2(mainExpandSlideSeqV2.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandSlideSeqV2.GetComponent<RectTransform>().transform.localPosition.y);
-            expandBtnActivePanelSlideSeqV2.SetActive(false);
-        }
-        expMenuSlideSeqV2 = !expMenuSlideSeqV2;
+        ToggleExpandMenu(mainExpandMerfish, expandBtnActivePanelMerfish, ref expMenuMerfish);
     }
 
-    public void toggleExpandMenuTomoSeq()
+    public void ToggleExpandMenuNanostring()
     {
-        if (!expMenuTomo)
-        {
-            expandPanelOut(mainExpandPanelTomo);
-            expandBtnActivePanelTomo.SetActive(true);
-        }
-        else
-        {
-            mainExpandPanelTomo.transform.localPosition = new Vector2(mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanelTomo.GetComponent<RectTransform>().transform.localPosition.y);
-            expandBtnActivePanelTomo.SetActive(false);
-        }
-        expMenuTomo = !expMenuTomo;
+        ToggleExpandMenu(mainExpandNanostring, expandBtnActivePanelNanostring, ref expMenuNanostring);
     }
 
-    public void toggleExpandMenuStomics()
+    public void ToggleExpandMenuSlideSeqV2()
     {
-        if (!expMenuStomics)
-        {
-            expandPanelOut(mainExpandStomics);
-            expandBtnActivePanelStomics.SetActive(true);
-        }
-        else
-        {
-            mainExpandStomics.transform.localPosition = new Vector2(mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandStomics.GetComponent<RectTransform>().transform.localPosition.y);
-            expandBtnActivePanelStomics.SetActive(false);
-
-        }
-        expMenuStomics = !expMenuStomics;
+        ToggleExpandMenu(mainExpandSlideSeqV2, expandBtnActivePanelSlideSeqV2, ref expMenuSlideSeqV2);
     }
 
-    public void toggleExpandMenuOther()
+    public void ToggleExpandMenuTomoSeq()
     {
-        if (!expMenuOther)
-        {
-            expandPanelOut(mainExpandOther);
-            expandBtnActivePanelOther.SetActive(true);
-        }
-        else
-        {
-            mainExpandOther.transform.localPosition = new Vector2(mainExpandOther.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandOther.GetComponent<RectTransform>().transform.localPosition.y);
-            expandBtnActivePanelOther.SetActive(false);
-        }
-        expMenuOther = !expMenuOther;
+        ToggleExpandMenu(mainExpandPanelTomo, expandBtnActivePanelTomo, ref expMenuTomo);
     }
+
+    public void ToggleExpandMenuStomics()
+    {
+        ToggleExpandMenu(mainExpandStomics, expandBtnActivePanelStomics, ref expMenuStomics);
+    }
+
+    public void ToggleExpandMenuOther()
+    {
+        ToggleExpandMenu(mainExpandOther, expandBtnActivePanelOther, ref expMenuOther);
+    }
+
     #endregion
     #endregion
 
@@ -699,17 +654,21 @@ public class UIManager : MonoBehaviour
     public void processStomics()
     {
         StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Stomics_path.txt", false);
-        string[] stomics_path_out = new string[10];
+        string[] stomics_path_out = new string[13];
         stomics_path_out[0] = stomicsPath; // filename;
         stomics_path_out[1] = "";// outputDirectory;
-        stomics_path_out[2] = "";// min_gene;
-        stomics_path_out[3] = "";// min_n_genes_by_counts;
-        stomics_path_out[4] = "";// pct_counts_mt;
-        stomics_path_out[5] = "";// min_cell;
-        stomics_path_out[6] = "";// target_sum;
-        stomics_path_out[7] = "";// max_value tl.scale;
-        stomics_path_out[8] = "";// markers_num;
-        stomics_path_out[9] = "";// analysis_long;
+        stomics_path_out[2] = !string.IsNullOrEmpty(stomicsBinSize.text) ? stomicsBinSize.text : ""; //BinSize
+        stomics_path_out[3] = !string.IsNullOrEmpty(stomicsMinGene.text) ? stomicsMinGene.text : "";// Min Gene;
+        stomics_path_out[4] = "";// Max Gene;
+        stomics_path_out[5] = !string.IsNullOrEmpty(stomicsMinNGenesCount.text) ? stomicsMinNGenesCount.text : "";// Min Genes by count;
+        stomics_path_out[6] = "";// Max Genes by count;
+        stomics_path_out[7] = !string.IsNullOrEmpty(stomicsPCTCountMT.text) ? stomicsPCTCountMT.text : "";// PCT counts MT;
+        stomics_path_out[8] = !string.IsNullOrEmpty(stomicsMinCell.text) ? stomicsMinCell.text : "";// Min Cell;
+        stomics_path_out[9] = "";// Max Cell;
+        stomics_path_out[10] = "";// N top Genes;
+        stomics_path_out[11] = "";// Analysis Long;
+        stomics_path_out[12] = "";// Tsne_toggle;
+
         UnityEngine.Debug.Log(stomicsPath);
 
         foreach (string param in stomics_path_out)
@@ -762,8 +721,7 @@ public class UIManager : MonoBehaviour
         xenium_path_out[3] = xeniumParameters[0].text;// mincount; //default values
         xenium_path_out[4] = xeniumParameters[1].text;// mincells; //default values
         xenium_path_out[5] = longAnalysis;// long analysis;
-        xenium_path_out[5] = tsne_umap;// long analysis;
-
+        xenium_path_out[6] = tsne_umap;// long analysis;
 
         foreach (string param in xenium_path_out)
         {
@@ -786,6 +744,7 @@ public class UIManager : MonoBehaviour
         p.Start();
         //p.WaitForExit();
     }
+
     #endregion
 
     // Process Visium & Download data
@@ -1439,7 +1398,7 @@ public class UIManager : MonoBehaviour
     private void ConcatDatasets()
     {
         List<Toggle> toggleList = new List<Toggle>();
-        float concatSpacing = 0.1f; // Adjust this value to control the spacing between images
+        float concatSpacing = 0.2f; // Adjust this value to control the spacing between images
 
         // Get the size of the concatPanel
         RectTransform concatPanelRect = concatPanel.GetComponent<RectTransform>();
@@ -1469,7 +1428,7 @@ public class UIManager : MonoBehaviour
             float scaleFactor = Mathf.Min(scaleFactorX, scaleFactorY);
 
             // Set the scale of the image to make it smaller
-            imageObj.transform.localScale = new Vector3(scaleFactor*1.2f, scaleFactor*1.2f, 1f);
+            imageObj.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
 
             // Calculate the position to center the image within concatPanel
             float offsetX = totalWidth + (originalSize.x * scaleFactor / 2f) + (concatSpacing * totalWidth) - (concatSpacing * (slicesList.Count - 1) / 2f) +20;

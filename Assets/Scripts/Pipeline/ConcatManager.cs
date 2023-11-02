@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -22,10 +23,13 @@ public class ConcatManager : MonoBehaviour
         {
             rotationValues[i] = 0;
         }
+
     }
 
+    bool once = true;
     private void Update()
     {
+
         if (Input.GetMouseButtonDown(0) && !isDragging)
         {
             // Get the mouse click position in screen coordinates
@@ -59,9 +63,22 @@ public class ConcatManager : MonoBehaviour
                 clickedRawImage.rectTransform.position = mousePosition;
             }
 
-            // Rotate the RawImage based on mouse wheel input
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (Input.GetMouseButtonDown(1))
+            // If the clicked image overlaps with any other image
+            foreach (RawImage rawImage in imagesList)
+            {
+
+                if(rawImage != clickedRawImage)
+                {
+                    if (RectOverlap(rawImage.rectTransform, clickedRawImage.rectTransform) && rawImage != clickedRawImage)
+                    {
+                        clickedRawImage.transform.localPosition = CalculateSnapPosition(rawImage.rectTransform, clickedRawImage.rectTransform);
+
+                    }
+                }
+            }
+
+
+                if (Input.GetMouseButtonDown(1))
             {
                 clickedRawImage.rectTransform.Rotate(Vector3.forward, -90);
                 int index = imagesList.IndexOf(clickedRawImage);
@@ -69,7 +86,8 @@ public class ConcatManager : MonoBehaviour
                 if(rotationValues[index] <= -360)
                 {
                     rotationValues[index] = 0;
-                }
+                }           
+              
             }
         }
 
@@ -78,7 +96,127 @@ public class ConcatManager : MonoBehaviour
         {
             isDragging = false;
             clickedRawImage = null;
+
         }
+    }
+
+    private bool RectOverlap(RectTransform firstRect, RectTransform secondRect) // second is clicked image
+    {
+        
+        float first_x_min = firstRect.localPosition.x - firstRect.sizeDelta.x / 2; 
+        float first_x_max = firstRect.localPosition.x + firstRect.sizeDelta.x / 2;         
+        
+        float second_x_min = secondRect.localPosition.x - secondRect.sizeDelta.x / 2; 
+        float second_x_max = secondRect.localPosition.x + secondRect.sizeDelta.x / 2;
+
+        float first_y_min = firstRect.localPosition.y - firstRect.sizeDelta.y / 2;
+        float first_y_max = firstRect.localPosition.y + firstRect.sizeDelta.y / 2;
+
+        float second_y_max = secondRect.localPosition.y + secondRect.sizeDelta.y / 2;
+        float second_y_min = secondRect.localPosition.y - secondRect.sizeDelta.y / 2;
+
+
+        if((first_x_min <= second_x_min && second_x_min <= first_x_max))
+        {
+            if (first_y_min <= second_y_min && second_y_min <= first_y_max)
+            {
+                return true;
+            }
+            else if (first_y_min <= second_y_max && second_y_max <= first_y_max)
+            {
+                return true;
+            }
+        }
+        else if((first_x_min <= second_x_max && second_x_max <= first_x_max))
+        {
+            if (first_y_min <= second_y_min && second_y_min <= first_y_max)
+            {
+                return true;
+            }
+            else if (first_y_min <= second_y_max && second_y_max <= first_y_max)
+            {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    private Vector3 CalculateSnapPosition(RectTransform firstRect, RectTransform secondRect) //second is clicked
+    {
+        Vector3 snapVector = secondRect.localPosition;
+
+        float first_x_min = firstRect.localPosition.x - firstRect.sizeDelta.x / 2;
+        float first_x_max = firstRect.localPosition.x + firstRect.sizeDelta.x / 2;
+
+        float second_x_min = secondRect.localPosition.x - secondRect.sizeDelta.x / 2;
+        float second_x_max = secondRect.localPosition.x + secondRect.sizeDelta.x / 2;
+
+        float first_y_min = firstRect.localPosition.y - firstRect.sizeDelta.y / 2;
+        float first_y_max = firstRect.localPosition.y + firstRect.sizeDelta.y / 2;
+
+        float second_y_max = secondRect.localPosition.y + secondRect.sizeDelta.y / 2;
+        float second_y_min = secondRect.localPosition.y - secondRect.sizeDelta.y / 2;
+
+
+        if ((first_x_min <= second_x_min && second_x_min <= first_x_max))
+        {
+            if (first_y_min <= second_y_min && second_y_min <= first_y_max)
+            {
+                if (Math.Abs(second_x_min - first_x_max) > Math.Abs(first_y_max - second_y_min))
+                {
+                    snapVector = new Vector3(secondRect.localPosition.x, secondRect.localPosition.y + Math.Abs(first_y_max - second_y_min), 0);
+                }
+                else
+                {
+                    snapVector = new Vector3(secondRect.localPosition.x + Math.Abs(second_x_min - first_x_max), secondRect.localPosition.y, 0);
+                }
+                return snapVector;
+            }
+            else if (first_y_min <= second_y_max && second_y_max <= first_y_max)
+            {
+                if (Math.Abs(second_x_min - first_x_max) > Math.Abs(first_y_min - second_y_max))
+                {
+                    snapVector = new Vector3(secondRect.localPosition.x, secondRect.localPosition.y - Math.Abs(first_y_min - second_y_max), 0);
+                }
+                else
+                {
+                    snapVector = new Vector3(secondRect.localPosition.x + Math.Abs(second_x_min - first_x_max), secondRect.localPosition.y, 0);
+                }
+                return snapVector;
+            }
+        }
+        else if ((first_x_min <= second_x_max && second_x_max <= first_x_max))
+        {
+            if (first_y_min <= second_y_min && second_y_min <= first_y_max)
+            {
+                if (Math.Abs(second_x_max - first_x_min) > Math.Abs(first_y_max - second_y_min))
+                {
+                    snapVector = new Vector3(secondRect.localPosition.x, secondRect.localPosition.y + Math.Abs(first_y_max - second_y_min), 0);
+                }
+                else
+                {
+                    snapVector = new Vector3(secondRect.localPosition.x - Math.Abs(second_x_max - first_x_min), secondRect.localPosition.y, 0);
+                }
+                return snapVector;
+            }
+            else if (first_y_min <= second_y_max && second_y_max <= first_y_max)
+            {
+                if (Math.Abs(second_x_max - first_x_min) > Math.Abs(second_y_max - first_y_min))
+                {
+                    snapVector = new Vector3(secondRect.localPosition.x, secondRect.localPosition.y - Math.Abs(second_y_max - first_y_min), 0);
+                }
+                else
+                {
+                    snapVector = new Vector3(secondRect.localPosition.x - Math.Abs(second_x_max - first_x_min), secondRect.localPosition.y, 0);
+                }
+                return snapVector;
+            }
+        }
+
+
+        return snapVector;
     }
 
     /// <summary>
