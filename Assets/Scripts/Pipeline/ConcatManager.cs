@@ -4,9 +4,16 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System.Diagnostics;
 
 public class ConcatManager : MonoBehaviour
 {
+
+    public TMP_InputField[] concatParams;
+    public Toggle svgAnalysis;
+    public Toggle tsnetoggle;
+
     List<RawImage> imagesList = new List<RawImage>();
     bool dragAndDrop = false;
     private RawImage clickedRawImage;
@@ -215,10 +222,8 @@ public class ConcatManager : MonoBehaviour
             }
         }
 
-
         return snapVector;
     }
-
     /// <summary>
     /// Getting placement of slides and write output file to concat the datasets
     /// </summary>
@@ -281,8 +286,46 @@ public class ConcatManager : MonoBehaviour
         }
 
             writer.Close();
-    }
 
-    //TODO: b bContinute withfilter param!
+            string longAnalysis = "0";
+            string tsne_umap = "0";
+
+        if (svgAnalysis.isOn) longAnalysis = "1";
+        if (tsnetoggle.isOn) tsne_umap = "1";
+        string[] concat_path_out = new string[8];
+        string current_directory = gameObject.GetComponent<UIManager>().current_directory;
+        writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Visium_concat_param.txt", false);
+
+        concat_path_out[0] = concatParams[0].text; // Min count
+        concat_path_out[1] = concatParams[1].text; // Max count
+        concat_path_out[2] = concatParams[2].text; // MT count min
+        concat_path_out[3] = concatParams[3].text; // MT count max
+        concat_path_out[4] = concatParams[4].text; // Cell min
+        concat_path_out[5] = concatParams[5].text; // Cell max
+        concat_path_out[7] = longAnalysis; // SVG analysis toggle 
+        concat_path_out[8] = tsne_umap; // T-SNE toggle 
+
+        foreach (string param in concat_path_out)
+        {
+            writer.WriteLine(param);
+        }
+        writer.Close();
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        startInfo.FileName = current_directory + "Assets/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe";
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = false;
+        UnityEngine.Debug.Log("Visium Concat File load started.");
+
+
+        Process p = new Process
+        {
+            StartInfo = startInfo
+        };
+
+        p.Start();
+        p.WaitForExit();
+
+    }
 }
 
