@@ -16239,12 +16239,12 @@ MonoBehaviour:
   moran_results: 
   XeniumGeneNames: []
   MerfishGeneNames: []
-  merfishGenelist: 
+  merfishCounts: 
   merfishCoords: 
   NanostringGeneNames: []
   nanostringCounts: 
   nanostringCoords: 
-  nanostringGenePanelPath: 
+  nanostringGeneInformation: 
   SlideSeqV2GeneNames: []
   slideseqv2Counts: 
   slideseqv2Coords: 
@@ -26301,7 +26301,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20c8f7708e9a7484e9779c4dedd38447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textComponent: {fileID: 0}
 --- !u!1 &1904763890
 GameObject:
   m_ObjectHideFlags: 0

@@ -1745,7 +1745,7 @@ public class UIManager : MonoBehaviour
 #if UNITY_EDITOR
         path_to_concat = current_directory + "/PythonFiles/Concat_used_Visium.txt";
 #else
-        path_to_concat = current_directory + "Assets/PythonFiles/Concat_used_Visium.txt"
+        path_to_concat = current_directory + "Assets/PythonFiles/Concat_used_Visium.txt";
 
 #endif
 

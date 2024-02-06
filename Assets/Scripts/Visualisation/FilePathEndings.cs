@@ -60,11 +60,11 @@ public class FilePathEndings : MonoBehaviour
 
         technologyFileNames["Nanostring"] = new TechnologyFiles
         {
-            locationMetadataCSV = "_metadata.csv",
-            geneCountCSV = "_transposed.csv",
+            locationMetadataCSV = "metadata.csv",
+            geneCountCSV = "transposed.csv",
             obsmCSV = "obsm.csv",
-            genePanelCSV = "_gene_panel.csv",
-            resultCSV = "_results.csv",
+            genePanelCSV = "gene_panel.csv",
+            resultCSV = "results.csv",
             geneInformationCSV = "gene_information.csv",
         };
 

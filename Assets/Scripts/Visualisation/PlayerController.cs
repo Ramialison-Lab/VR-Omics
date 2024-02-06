@@ -76,14 +76,14 @@ public class PlayerController : MonoBehaviour
         }
 
         // Rotation
-        if (Input.GetKey(KeyCode.Q))
-        {
-            sc.prepareRotation(1);
-        }
-        if (Input.GetKey(KeyCode.E))
-        {
-            sc.prepareRotation(-1);
-        }
+        //if (Input.GetKey(KeyCode.Q))
+        //{
+        //    sc.prepareRotation(1);
+        //}
+        //if (Input.GetKey(KeyCode.E))
+        //{
+        //    sc.prepareRotation(-1);
+        //}
         if (Input.GetMouseButton(1))
         {
             rotateCamera();

@@ -168,7 +168,7 @@ public class DataTransferManager : MonoBehaviour
         mc = GameObject.Find("MainMenuPanel").GetComponent<MenuCanvas>();
         jr = scriptHolder.GetComponent<JSONReader>();
         umapm = scriptHolder.GetComponent<UMAPManager>();
-        fpe = scriptHolder.GetComponent<FilePathEndings>();
+        fpe = scriptHolderPipeline.GetComponent<FilePathEndings>();
 
         try { 
             df = scriptHolderPipeline.GetComponent<DataTransfer>();
@@ -608,11 +608,13 @@ public class DataTransferManager : MonoBehaviour
 
         foreach (string str in allDirectories)
         {
+
             if (str.Contains(fpe.technologyFileNames["Nanostring"].geneCountCSV)) nanostringCounts = str;
             else if (str.Contains(fpe.technologyFileNames["Nanostring"].genePanelCSV)) nanostringGenePanel = str;
             else if (str.Contains(fpe.technologyFileNames["Nanostring"].locationMetadataCSV)) nanostringCoords = str;
             else if (str.Contains(fpe.technologyFileNames["Nanostring"].geneInformationCSV)) nanostringGeneInformation = str;
             else if (str.Contains(fpe.technologyFileNames["Nanostring"].resultCSV)) moran_results = str;
+
         }
 
         CheckForFigures(allDirectories);

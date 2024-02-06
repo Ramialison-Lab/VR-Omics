@@ -74,7 +74,10 @@ public class SearchManager : MonoBehaviour
     private void Start()
     {
         selectMethod();
-        nm = GameObject.Find("Notification_Banner").GetComponent<NotificationManager>();
+        var notificationBanner = GameObject.Find("Notification_Banner");
+        nm = notificationBanner.GetComponent<NotificationManager>();
+        notificationBanner.SetActive(false);
+        
     }
     public void selectMethod()
     {
