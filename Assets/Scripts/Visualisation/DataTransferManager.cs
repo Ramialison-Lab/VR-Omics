@@ -223,10 +223,11 @@ public class DataTransferManager : MonoBehaviour
         {
             string[] allDirectories = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
 
+            string filepathSearchterm = "Visium";
 
             CheckForFigures(allDirectories);
 
-            string searchPattern = fpe.technologyFileNames["Visium"].locationMetadataCSV;
+            string searchPattern = fpe.technologyFileNames[filepathSearchterm].locationMetadataCSV;
             string[] files = Directory.GetFiles(path, searchPattern);
 
             // Print or log the files found
@@ -235,9 +236,9 @@ public class DataTransferManager : MonoBehaviour
                 Console.WriteLine(file);
             }
 
-            visiumMetaFiles.AddRange(Directory.GetFiles(path, fpe.technologyFileNames["Visium"].locationMetadataCSV));
-            visium_datapapths.AddRange(Directory.GetFiles(path, fpe.technologyFileNames["Visium"].h5));
-            csvGeneExpPaths.AddRange(Directory.GetFiles(path, fpe.technologyFileNames["Visium"].geneCountCSV));
+            visiumMetaFiles.AddRange(Directory.GetFiles(path, fpe.technologyFileNames[filepathSearchterm].locationMetadataCSV));
+            visium_datapapths.AddRange(Directory.GetFiles(path, fpe.technologyFileNames[filepathSearchterm].h5));
+            csvGeneExpPaths.AddRange(Directory.GetFiles(path, fpe.technologyFileNames[filepathSearchterm].geneCountCSV));
 
 
             foreach (string directory in allDirectories)
@@ -248,18 +249,18 @@ public class DataTransferManager : MonoBehaviour
                 }
 
 
-                if (directory.Contains(fpe.technologyFileNames["Visium"].tissuePositionListCSV) && !directory.Contains(META_ENDING_CSV))
+                if (directory.Contains(fpe.technologyFileNames[filepathSearchterm].tissuePositionListCSV) && !directory.Contains(META_ENDING_CSV))
                 {
                     positionList.Add(directory);
                     isRawData = false;
                 }
-                if (directory.Contains(fpe.technologyFileNames["Visium"].scalefactorsJSON) && !directory.Contains(META_ENDING_JSON))
+                if (directory.Contains(fpe.technologyFileNames[filepathSearchterm].scalefactorsJSON) && !directory.Contains(META_ENDING_JSON))
                 {
                     jsonFilePaths[jsonListCounter] = directory;
                     isRawData = false;
 
                 }
-                if (directory.Contains(fpe.technologyFileNames["Visium"].highresTissueImagePNG) && !directory.Contains(META_ENDING_PNG))
+                if (directory.Contains(fpe.technologyFileNames[filepathSearchterm].highresTissueImagePNG) && !directory.Contains(META_ENDING_PNG))
                 {
                     if (!jointData)
                     {
@@ -269,11 +270,11 @@ public class DataTransferManager : MonoBehaviour
                     }
 
                 }
-                if (directory.Contains(fpe.technologyFileNames["Visium"].obsmCSV) && !directory.Contains(META_ENDING_CSV))
+                if (directory.Contains(fpe.technologyFileNames[filepathSearchterm].obsmCSV) && !directory.Contains(META_ENDING_CSV))
                 {
                     obsmPath[0] = directory;
                 }
-                if (directory.Contains(fpe.technologyFileNames["Visium"].genePanelCSV) && !directory.Contains(META_ENDING_CSV))
+                if (directory.Contains(fpe.technologyFileNames[filepathSearchterm].genePanelCSV) && !directory.Contains(META_ENDING_CSV))
                 {
                     genePanelPath[genePanelCounter] = directory;
                     genePanelCounter++;
