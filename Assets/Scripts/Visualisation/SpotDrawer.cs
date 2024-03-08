@@ -548,7 +548,7 @@ public class SpotDrawer : MonoBehaviour
             string datasetn = "";
             try { datasetn = dataSet[i]; }
             catch (Exception) { }
-            if (dfm.stomics) datasetn = dfm.stomicsDataPath;
+            //if (dfm.stomics) datasetn = dfm.stomicsDataPath;
             mesh = symbolSelect.GetComponent<MeshFilter>().mesh;
             spots[i] = new SpotWrapper
             {

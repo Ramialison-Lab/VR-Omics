@@ -109,7 +109,7 @@ public class SearchManager : MonoBehaviour
         }
         else if (dfm.stomics)
         {
-            geneNames.AddRange(dfm.stomicsGeneNames);
+            geneNames.AddRange(dfm.StomicsGeneNames);
             acm.setGeneNameList(geneNames);
         }
         else if (dfm.xenium)
@@ -183,43 +183,74 @@ public class SearchManager : MonoBehaviour
     /// </summary>
     /// <param name="geneName">The genename as passed from searchbar</param>
     /// <param name="pos">The position of the gene in the list of genes. Refers to position in the list it is stored</param>
-    public void readStomicsExpression(string geneName, int pos)
+    public void readStomicsExpression(string searchGene, int pos)
     {
-        pos = 1372;
+
+        try
+        {
+            //write gene information to the sidepanel
+            rgi.readGeneInformation(searchGene);
+        }
+        catch (Exception e) { }
+
+        var genes = dfm.StomicsGeneNames;
+
+        int x = genes.IndexOf(searchGene);
         //LINKPATH
-        var Xdata = fr.readH5FloatExp(dfm.stomicsDataPath, "X/data");
-        var indices = fr.query32BitInttoIntArray(dfm.stomicsDataPath, "X/indices");
-        int[] indptr = fr.query32BitInttoIntArray(dfm.stomicsDataPath, "X/indptr");
+        //string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
+        string stomicsData = dfm.stomicsCounts;
 
-        int start = indptr[pos];
-        int end = indptr[pos + 1];
-        int cubesCount = dfm.stomicsSpotId.Count;
-        
-        List<int> indicesInterest = indices.Skip(start).Take(end - start).ToList();
-        expVals = new List<float>();
+        string[] lines = File.ReadAllLines(stomicsData);
+        lines = lines.Skip(1).ToArray();
 
-        for(int i=0; i<cubesCount; i++)
+        List<string> values = new List<string>();
+        values = lines[x].Split(',').ToList();
+        List<float> readList = new List<float>();
+
+        for (int i = 0; i < values.Count; i++)
         {
-            expVals.Add(0);
+            //Skip first value (geneName)
+            if (i > 0) readList.Add(float.Parse(values[i]));
         }
 
-        int counter = 0;
-        foreach(int x in indicesInterest)
-        {
-            expVals[x] = Xdata[counter];
-                counter++;
-        }
+        normaliseAndDraw(readList);
 
-        var max = expVals.Max();
-        var min = expVals.Min();
+        //OLD Versiom
+        //pos = 1372;
+        ////LINKPATH
+        //var Xdata = fr.readH5FloatExp(dfm.stomicsDataPath, "X/data");
+        //var indices = fr.query32BitInttoIntArray(dfm.stomicsDataPath, "X/indices");
+        //int[] indptr = fr.query32BitInttoIntArray(dfm.stomicsDataPath, "X/indptr");
 
-        var range = (double)(max - min);
-        var normalised
-            = expVals.Select(i => 1 * (i - min) / range)
-                .ToList();
+        //int start = indptr[pos];
+        //int end = indptr[pos + 1];
+        //int cubesCount = dfm.stomicsSpotId.Count;
 
-        sd.setColors(normalised);
-        sd.lastGeneName(geneName);
+        //List<int> indicesInterest = indices.Skip(start).Take(end - start).ToList();
+        //expVals = new List<float>();
+
+        //for(int i=0; i<cubesCount; i++)
+        //{
+        //    expVals.Add(0);
+        //}
+
+        //int counter = 0;
+        //foreach(int x in indicesInterest)
+        //{
+        //    expVals[x] = Xdata[counter];
+        //        counter++;
+        //}
+
+        //var max = expVals.Max();
+        //var min = expVals.Min();
+
+        //var range = (double)(max - min);
+        //var normalised
+        //    = expVals.Select(i => 1 * (i - min) / range)
+        //        .ToList();
+
+        //sd.setColors(normalised);
+        //sd.lastGeneName(geneName);
     }
 
     /// <summary>

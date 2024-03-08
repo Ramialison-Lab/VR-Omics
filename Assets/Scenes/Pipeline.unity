@@ -38777,8 +38777,8 @@ GameObject:
   - component: {fileID: 994948025}
   - component: {fileID: 994948026}
   - component: {fileID: 994948027}
-  - component: {fileID: 994948028}
   - component: {fileID: 994948029}
+  - component: {fileID: 994948028}
   m_Layer: 0
   m_Name: ScriptHolderPipeline
   m_TagString: Untagged
@@ -39163,7 +39163,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 994948017}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9aaa73f950ed162438cc504cd4656670, type: 3}
+  m_Script: {fileID: 11500000, guid: f26ac4b9e22747d4f9ed222645d0a930, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &995684546

@@ -133,7 +133,7 @@ public class SliceCollider : MonoBehaviour
         //Debug.Log(fullres_h);
 
 
-        string[] positionList = dfm.positionList;
+        List<string> positionList = dfm.positionList;
 
         string[] lines = File.ReadAllLines(positionList[countSFs]);
 

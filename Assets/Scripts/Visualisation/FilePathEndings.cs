@@ -58,6 +58,14 @@ public class FilePathEndings : MonoBehaviour
             resultCSV = "_results.csv",
         };
 
+        technologyFileNames["Stereoseq"] = new TechnologyFiles
+        {
+            locationMetadataCSV = "_metadata.csv",
+            geneCountCSV = "_transposed.csv",
+            obsmCSV = "obsm.csv",
+            genePanelCSV = "_gene_panel.csv",
+        };
+
         technologyFileNames["Nanostring"] = new TechnologyFiles
         {
             locationMetadataCSV = "metadata.csv",

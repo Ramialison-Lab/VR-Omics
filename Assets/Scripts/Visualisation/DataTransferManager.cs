@@ -94,19 +94,23 @@ public class DataTransferManager : MonoBehaviour
     private int visiumDepth = 0;
     public TMP_Dropdown sel_DropD; //Dropdown choosing active Slide in dataset
     public List<string> visiumMetaFiles;
-    public string[] positionList;
+    public List<string> positionList = new List<string>();
     public string[] jsonFilePaths;
     public string[] genePanelPath;
     public float[] scaleFactors;
     public int[] datasetSizes;
 
     //STOmics
-    public string stomicsDataPath;
-    public List<string> stomicsSpotId = new List<string>();
-    public List<string> stomicsGeneNames = new List<string>();
-    public List<float> stomicsX = new List<float>();
-    public List<float> stomicsY = new List<float>();
-    public List<float> stomicsZ = new List<float>();
+    public List<string> StomicsGeneNames = new List<string>();
+    public string stomicsCounts;
+    public string stomicsCoords;
+    //OLD Values
+    //public string stomicsDataPath;
+    //public List<string> stomicsSpotId = new List<string>();
+    //public List<string> stomicsGeneNames = new List<string>();
+    //public List<float> stomicsX = new List<float>();
+    //public List<float> stomicsY = new List<float>();
+    //public List<float> stomicsZ = new List<float>();
 
     //C18
     public GameObject c18Sphere;
@@ -198,14 +202,14 @@ public class DataTransferManager : MonoBehaviour
         int jsonListCounter = 0;
         int tissueImageCounter = 0;
         bool isRawData = true;
+        bool jointData = false;
 
         string[] dfPaths = df.pathList.ToArray();
 
         string srtMethod = "visium";
-        
+
         List<string> shortList = new List<string>();                //List for names of slices from datasetnames
         geneNameDictionary = new List<string>[df.pathList.Count];   //Dicitonary of all gene names
-        positionList = new string[df.pathList.Count];               //Datapaths to tissue_possition lists
         jsonFilePaths = new string[df.pathList.Count];              //Datapaths to json files containing the H&E scale factors
         genePanelPath = new string[df.pathList.Count];              //Datapaths to json files containing the H&E scale factors
         datasetSizes = new int[df.pathList.Count];                  //Size of locations of the datasets
@@ -219,18 +223,34 @@ public class DataTransferManager : MonoBehaviour
         {
             string[] allDirectories = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
 
+
             CheckForFigures(allDirectories);
+
+            string searchPattern = fpe.technologyFileNames["Visium"].locationMetadataCSV;
+            string[] files = Directory.GetFiles(path, searchPattern);
+
+            // Print or log the files found
+            foreach (string file in files)
+            {
+                Console.WriteLine(file);
+            }
+
             visiumMetaFiles.AddRange(Directory.GetFiles(path, fpe.technologyFileNames["Visium"].locationMetadataCSV));
             visium_datapapths.AddRange(Directory.GetFiles(path, fpe.technologyFileNames["Visium"].h5));
             csvGeneExpPaths.AddRange(Directory.GetFiles(path, fpe.technologyFileNames["Visium"].geneCountCSV));
 
+
             foreach (string directory in allDirectories)
             {
+                if (directory.Contains("joint_data_files"))
+                {
+                    jointData = true;
+                }
+
 
                 if (directory.Contains(fpe.technologyFileNames["Visium"].tissuePositionListCSV) && !directory.Contains(META_ENDING_CSV))
                 {
-                    positionList[positionListCounter] = directory;
-                    positionListCounter++;
+                    positionList.Add(directory);
                     isRawData = false;
                 }
                 if (directory.Contains(fpe.technologyFileNames["Visium"].scalefactorsJSON) && !directory.Contains(META_ENDING_JSON))
@@ -241,9 +261,12 @@ public class DataTransferManager : MonoBehaviour
                 }
                 if (directory.Contains(fpe.technologyFileNames["Visium"].highresTissueImagePNG) && !directory.Contains(META_ENDING_PNG))
                 {
-                    tissueImagePath[tissueImageCounter] = directory;
-                    tissueImageCounter++;
-                    isRawData = false;
+                    if (!jointData)
+                    {
+                        tissueImagePath[tissueImageCounter] = directory;
+                        tissueImageCounter++;
+                        isRawData = false;
+                    }
 
                 }
                 if (directory.Contains(fpe.technologyFileNames["Visium"].obsmCSV) && !directory.Contains(META_ENDING_CSV))
@@ -304,6 +327,11 @@ public class DataTransferManager : MonoBehaviour
             //Read position of all locations that are detected on tissue
             string[] lines = File.ReadAllLines(visiumMetaFiles[positionListCounter]);
 
+            if (jointData)
+            {
+                lines = File.ReadAllLines(obsmPath[positionListCounter]);
+            }
+
             lines = lines.Skip(1).ToArray();
 
             int numberOfSpots = lines.Length;
@@ -316,24 +344,47 @@ public class DataTransferManager : MonoBehaviour
             y_coordinates = new float[numberOfSpots];
             z_coordinates = new float[numberOfSpots];
 
-            string[] linesPosList = File.ReadAllLines(positionList[positionListCounter]);
+            //string[] linesPosList = File.ReadAllLines(positionList[positionListCounter]);
             positionListCounter++;
 
-            for (int i =0; i< lines.Length; i++)
+            int col_numb_x = 2;
+            int col_numb_y = 3;
+
+            if (!jointData)
             {
-
-                string[] values = lines[i].Split(',');
+                for (int i = 0; i < lines.Length; i++)
                 {
-                    col[i] = -2 * (int)(double.Parse(values[2]));
-                    row[i] = (int)double.Parse(values[3]);
 
-                    location_names[i] = values[0];
-                    //tissueCount++;
+                    string[] values = lines[i].Split(',');
+                    {
+                        col[i] = -2 * (int)(double.Parse(values[col_numb_x]));
+                        row[i] = (int)double.Parse(values[col_numb_y]);
+
+                        location_names[i] = values[0];
+                        //tissueCount++;
+                    }
                 }
             }
+            else
+            {
+                col_numb_x = 1;
+                col_numb_y = 2;
 
+                for (int i = 0; i < lines.Length; i++)
+                {
+
+                    string[] values = lines[i].Split(',');
+                    {
+                        col[i] = (int)(double.Parse(values[col_numb_x])/10);
+                        row[i] = (int)(double.Parse(values[col_numb_y])/10);
+
+                        location_names[i] = values[0];
+                        //tissueCount++;
+                    }
+                }
+            }
             location_namesList.AddRange(location_names);
-            for (int i = 0; i < row.Length; i++)
+            for (int i = 0; i < numberOfSpots; i++)
             {
                 float x, y ,z;
                 x_coordinates[i] = x = row[i];
@@ -962,65 +1013,150 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void StartStomics()
     {
-        //string hdfSpatialX = "obs/x";
-        string hdfSpatialX = "obs/spatial_x";
-        //string hdfSpatialY = "obs/y";
-        string hdfSpatialY = "obs/spatial_y";
-        //string hdfGenePanel = "var/_index";
-        string hdfGenePanel = "var/Gene";
-        string hdfSpotPanel = "obs/_index";
-        // Old: not transposed file, bad performance
-        // string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\1_Include\\L3_b_count_normal_stereoseq.h5ad";
-        // Original files paths
-        //stomicsSpotId = fr.readH5StringVar(datapath, "obs/_index", stomicsSpotId);
-        //stomicsGeneNames = fr.readH5StringVar(datapath, "var/geneID", stomicsGeneNames);
-        //stomicsX = fr.readH5Float(datapath, "obs/new_x");
-        //stomicsY = fr.readH5Float(datapath, "obs/new_y");
-        //stomicsZ = fr.readH5Float(datapath, "obs/new_z");
+        string[] allDirectories = Directory.GetFiles(df.stomicsPath, "*", SearchOption.AllDirectories);
+        obsmPath = new string[1];
+        string[] genePanelPath = new string[1];
 
-        //stomicsDataPath = df.stomicsPath;
-        stomicsDataPath = df.stomicsPath;
-
-        stomicsSpotId = fr.readH5StringVar(stomicsDataPath, hdfSpotPanel, stomicsSpotId);
-
-        stomicsGeneNames = fr.readH5StringVar(stomicsDataPath, hdfGenePanel, stomicsGeneNames);
-
-        stomicsX = fr.readH5Float(stomicsDataPath, hdfSpatialX); 
-
-        stomicsY = fr.readH5Float(stomicsDataPath, hdfSpatialY);
-
-        foreach (float x in stomicsX)
+        foreach (string str in allDirectories)
         {
-            stomicsZ.Add(0);
+            if (str.Contains(fpe.technologyFileNames["Stereoseq"].locationMetadataCSV) && !str.Contains(META_ENDING_CSV)) stomicsCoords = str;
+            if (str.Contains(fpe.technologyFileNames["Stereoseq"].geneCountCSV) && !str.Contains(META_ENDING_CSV)) stomicsCounts = str;
+            if (str.Contains(fpe.technologyFileNames["Stereoseq"].resultCSV) && !str.Contains(META_ENDING_CSV)) moran_results = str;
+            if (str.Contains(fpe.technologyFileNames["Stereoseq"].obsmCSV) && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;
+            if (str.Contains(fpe.technologyFileNames["Stereoseq"].genePanelCSV) && !str.Contains(META_ENDING_CSV)) genePanelPath[0] = str;
         }
 
-        //stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
+        /*
+         * Reading coordinate files  
+        */
+        string[] lines = File.ReadAllLines(stomicsCoords);
+
         //checking for all image files
-        // string[] allDirectories = Directory.GetFiles(stomicsDataPath, "*", SearchOption.AllDirectories);
-        // CheckForFigures(allDirectories);
+        CheckForFigures(allDirectories);
 
-        //for (int i =0; i< stomicsZ.Count; i++)
-        //{
-        //    stomicsZ[i] = stomicsZ[i] * 50;
-        //}
-        stomicsX = RemoveEverySecondValue(stomicsX);
+        //Read csv header of metadata file for positions
+        int csv_position_x_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "x");
+        int csv_position_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "y");
 
-        // Remove every second value from stomicsY
-        stomicsY = RemoveEverySecondValue(stomicsY);
+     //   if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
+        {
+            lines = lines.Skip(1).ToArray();
+        }
 
-        DivideListValuesBy10(stomicsX);
-        DivideListValuesBy10(stomicsY);
+        //reading values from the first line of the csv file
+        string[] lineone = lines[1].Split(',');
+        float minX, maxX, minY, maxY, minZ;
 
-        sd.Min = new Vector2(stomicsX.Min(), stomicsY.Min());
-        sd.Max = new Vector2(stomicsX.Max(), stomicsY.Max());
-        AdjustCamera(sd.Min.x, sd.Max.x, sd.Min.y, sd.Max.y, stomicsZ.Min(), new Vector3(0, 0, 0));
+        //Initialise with any value that really exisits in the dataset
+        minX = maxX = float.Parse(lineone[3]);
+        minY = maxY = float.Parse(lineone[4]);
+        minZ = 0;
+        //initialise arrays to total length of data set
+        x_coordinates = new float[lines.Length];
+        y_coordinates = new float[lines.Length];
+        z_coordinates = new float[lines.Length];
+        location_names = new string[lines.Length];
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string[] values = lines[i].Split(',');
+
+            float x = x_coordinates[i] = float.Parse(values[csv_position_x_values])/100;
+            float y = y_coordinates[i] = float.Parse(values[csv_position_y_values])/100;
+            z_coordinates[i] = 0;
+
+            location_names[i] = values[0];
+
+            // Find min and max
+            if (x < minX) minX = x;
+            else if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            else if (y > maxY) maxY = y;
+        }
+
+        //Read gene names from gene list → Always column 0
+        string[] linesGn = File.ReadAllLines(genePanelPath[0]);
+
+        linesGn = linesGn.Skip(1).ToArray();
+
+        foreach (string line in linesGn)
+        {
+            string[] values = line.Split(',');
+            StomicsGeneNames.Add(values[0]);
+        }
+
+        sd.Min = new Vector2(minX, minY);
+        sd.Max = new Vector2(maxX, maxY);
 
         string srtMethod = "stomics";
         string[] dfPaths = new string[1];
         dfPaths[0] = df.stomicsPath;
-        SaveData(dfPaths, srtMethod, stomicsGeneNames.ToArray());
+        SaveData(dfPaths, srtMethod, StomicsGeneNames.ToArray());
 
-        sd.StartDrawer(stomicsX.ToArray(), stomicsY.ToArray(), stomicsZ.ToArray(), stomicsSpotId.ToArray(), new string[] { }); 
+        sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
+        AdjustCamera(minX , maxX , minY , maxY , 0, new Vector3(0, 0, 0));
+        Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, -100);
+        //OLD VERSION 
+
+        ////string hdfSpatialX = "obs/x";
+        //string hdfSpatialX = "obs/spatial_x";
+        ////string hdfSpatialY = "obs/y";
+        //string hdfSpatialY = "obs/spatial_y";
+        ////string hdfGenePanel = "var/_index";
+        //string hdfGenePanel = "var/Gene";
+        //string hdfSpotPanel = "obs/_index";
+        //// Old: not transposed file, bad performance
+        //// string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\1_Include\\L3_b_count_normal_stereoseq.h5ad";
+        //// Original files paths
+        ////stomicsSpotId = fr.readH5StringVar(datapath, "obs/_index", stomicsSpotId);
+        ////stomicsGeneNames = fr.readH5StringVar(datapath, "var/geneID", stomicsGeneNames);
+        ////stomicsX = fr.readH5Float(datapath, "obs/new_x");
+        ////stomicsY = fr.readH5Float(datapath, "obs/new_y");
+        ////stomicsZ = fr.readH5Float(datapath, "obs/new_z");
+
+        ////stomicsDataPath = df.stomicsPath;
+        //stomicsDataPath = df.stomicsPath;
+
+        //stomicsSpotId = fr.readH5StringVar(stomicsDataPath, hdfSpotPanel, stomicsSpotId);
+
+        //stomicsGeneNames = fr.readH5StringVar(stomicsDataPath, hdfGenePanel, stomicsGeneNames);
+
+        //stomicsX = fr.readH5Float(stomicsDataPath, hdfSpatialX); 
+
+        //stomicsY = fr.readH5Float(stomicsDataPath, hdfSpatialY);
+
+        //foreach (float x in stomicsX)
+        //{
+        //    stomicsZ.Add(0);
+        //}
+
+        ////stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
+        ////checking for all image files
+        //// string[] allDirectories = Directory.GetFiles(stomicsDataPath, "*", SearchOption.AllDirectories);
+        //// CheckForFigures(allDirectories);
+
+        ////for (int i =0; i< stomicsZ.Count; i++)
+        ////{
+        ////    stomicsZ[i] = stomicsZ[i] * 50;
+        ////}
+        //stomicsX = RemoveEverySecondValue(stomicsX);
+
+        //// Remove every second value from stomicsY
+        //stomicsY = RemoveEverySecondValue(stomicsY);
+
+        //DivideListValuesBy10(stomicsX);
+        //DivideListValuesBy10(stomicsY);
+
+        //sd.Min = new Vector2(stomicsX.Min(), stomicsY.Min());
+        //sd.Max = new Vector2(stomicsX.Max(), stomicsY.Max());
+        //AdjustCamera(sd.Min.x, sd.Max.x, sd.Min.y, sd.Max.y, stomicsZ.Min(), new Vector3(0, 0, 0));
+
+        //string srtMethod = "stomics";
+        //string[] dfPaths = new string[1];
+        //dfPaths[0] = df.stomicsPath;
+        //SaveData(dfPaths, srtMethod, stomicsGeneNames.ToArray());
+
+        //sd.StartDrawer(stomicsX.ToArray(), stomicsY.ToArray(), stomicsZ.ToArray(), stomicsSpotId.ToArray(), new string[] { }); 
     }
     public static void DivideListValuesBy10(List<float> inputList)
     {

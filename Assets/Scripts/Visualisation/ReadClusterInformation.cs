@@ -93,6 +93,12 @@ public class ReadClusterInformation : MonoBehaviour
             return;
         }
 
+        if (dfm.stomics)
+        {
+            readStomicsCluster();
+            return;
+        }
+
         if (dfm.nanostring)
         {
             readNanostringCluster();
@@ -254,19 +260,59 @@ public class ReadClusterInformation : MonoBehaviour
     /// <summary>
     /// Read Merfish Cluster Data
     /// </summary>
+    private void readStomicsCluster()
+    {
+        List<double> normalised = new List<double>();
+        List<Color> clusterColour = new List<Color>();
+
+        string[] lines = File.ReadAllLines(dfm.stomicsCoords);
+
+        int leidenCol = CSVHeaderInformation.CheckForColumnNumber("leiden", lines[0]);
+        lines = lines.Skip(1).ToArray();
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+
+            string[] values = lines[i].Split(',');
+            normalised.Add(int.Parse(values[leidenCol]));
+            clusterColour.Add(defaultColours[int.Parse(values[leidenCol])]);
+        }
+
+        generateClusterLegend((int)normalised.Max(), (int)normalised.Min());
+        addDatasets(normalised, clusterColour);
+
+        try
+        {
+            sd.skipColourGradient(normalised, clusterColour);
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+
+            dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
+        }
+
+    }
+
+    /// <summary>
+    /// Read Merfish Cluster Data
+    /// </summary>
     private void readMerfishCluster()
     {
         List<double> normalised = new List<double>();
         List<Color> clusterColour = new List<Color>();
 
         string[] lines = File.ReadAllLines(dfm.merfishCoords);
+
+        int leidenCol = CSVHeaderInformation.CheckForColumnNumber("leiden", lines[0]);
         lines = lines.Skip(1).ToArray();
+
         for (int i = 0; i < lines.Length; i++)
         {
 
             string[] values = lines[i].Split(',');
-            normalised.Add(int.Parse(values[19]));
-            clusterColour.Add(defaultColours[int.Parse(values[19])]);
+            normalised.Add(int.Parse(values[leidenCol]));
+            clusterColour.Add(defaultColours[int.Parse(values[leidenCol])]);
         }
 
         generateClusterLegend((int)normalised.Max(), (int)normalised.Min());
@@ -290,61 +336,71 @@ public class ReadClusterInformation : MonoBehaviour
     /// </summary>
     private void readVisiumCluster()
     {
-
-        List<double> normalised = new List<double>();
-        List<Color> clusterColour = new List<Color>();
-
-        double[] tempNormalised = null;
-        Color[] tempColor = null;
-
-        normalised = new List<double>();
-        clusterColour = new List<Color>();
-
-        foreach (string path in dfm.visiumMetaFiles)
+        try
         {
-            // read the meta file with the cluster information
-            string[] lines = File.ReadAllLines(path);
-            lines = lines.Skip(1).ToArray();
+            List<double> normalised = new List<double>();
+            List<Color> clusterColour = new List<Color>();
 
-            //Create array for the read cluster values, normalised Values and an array with colours
-            int[] clusterValues = new int[lines.Length];
-            tempNormalised = new double[lines.Length];
-            tempColor = new Color[lines.Length];
+            double[] tempNormalised = null;
+            Color[] tempColor = null;
 
-            //read Cluster values and parse to int
-            for (int i = 0; i < lines.Length; i++)
+            normalised = new List<double>();
+            clusterColour = new List<Color>();
+
+            foreach (string path in dfm.visiumMetaFiles)
             {
-                string[] values = lines[i].Split(',');
-                try {
-                    clusterValues[i] = int.Parse(values[17]);
+                // read the meta file with the cluster information
+                string[] lines = File.ReadAllLines(path);
+                Debug.Log(path);
+
+                string[] headers = lines[0].Split(',');
+                int header_cluster = Array.IndexOf(headers, "clusters");
+
+                lines = lines.Skip(1).ToArray();
+
+                //Create array for the read cluster values, normalised Values and an array with colours
+                int[] clusterValues = new int[lines.Length];
+                tempNormalised = new double[lines.Length];
+                tempColor = new Color[lines.Length];
+
+                //read Cluster values and parse to int
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string[] values = lines[i].Split(',');
+                    //try {
+                    clusterValues[i] = int.Parse(values[header_cluster]);
                     tempNormalised[i] = (double)clusterValues[i];
                     tempColor[i] = defaultColours[clusterValues[i]];
 
-                }catch (Exception e){
-                    Debug.Log(e);
+                    //}
+                    //catch (Exception e){
+                    //    Debug.Log(e);
 
-                    dfm.logfile.Log(e, "The Cluster Values are not stored as full integer numbers, please ensure that the clusters are saved as full integer values to visualise the cluster information");
-                    return;
+                    //    dfm.logfile.Log(e, "The Cluster Values are not stored as full integer numbers, please ensure that the clusters are saved as full integer values to visualise the cluster information");
+                    //    return;
+                    //}
                 }
+
+                generateClusterLegend(clusterValues.Max(), clusterValues.Min());
+
+                //for each column in columns[] add 3 off the colours and change the text 
+                normalised.AddRange(tempNormalised);
+                clusterColour.AddRange(tempColor);
             }
-
-            generateClusterLegend(clusterValues.Max(), clusterValues.Min());
-
-            //for each column in columns[] add 3 off the colours and change the text 
-            normalised.AddRange(tempNormalised);
-            clusterColour.AddRange(tempColor);
-        }
             addDatasets(normalised, clusterColour);
 
-        try
-        {
-            sd.skipColourGradient(normalised, clusterColour);
-        }catch(Exception e)
-        {
-            Debug.Log(e);
+            try
+            {
+                sd.skipColourGradient(normalised, clusterColour);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
 
-            dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
+                dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
+            }
         }
+        catch (Exception e) { }
 
     }
 
@@ -517,7 +573,7 @@ public class ReadClusterInformation : MonoBehaviour
 
     private Color[] createDefaultColours()
     {
-        Color[] defaultClusterColours = new Color[40];
+        Color[] defaultClusterColours = new Color[100];
         string filePath = Path.Combine(Application.dataPath, "Resources" ,"Parameter_files", "rgb.txt");
 
 #if UNITY_EDITOR

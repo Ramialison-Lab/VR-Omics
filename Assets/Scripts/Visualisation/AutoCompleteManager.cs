@@ -150,7 +150,9 @@ public class AutoCompleteManager : MonoBehaviour
         else if (dfm.tomoseq) sm.applyGeneExpressionTomo(tmp_txt.text);
         else if (dfm.stomics)
         {
+
             int pos = geneNames.IndexOf(tmp_txt.text);
+
             sm.readStomicsExpression(tmp_txt.text, pos);
         }
         else if (dfm.xenium) sm.readXeniumExpression(tmp_txt.text);
@@ -181,6 +183,8 @@ public class AutoCompleteManager : MonoBehaviour
         else if (dfm.stomics)
         {
             int pos = geneNames.IndexOf(geneName);
+            Debug.Log(pos);
+
             sm.readStomicsExpression(geneName, pos);
         }
         else if (dfm.xenium) sm.readXeniumExpression(geneName);
