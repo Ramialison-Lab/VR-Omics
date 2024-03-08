@@ -30,7 +30,6 @@ public class ConcatManager : MonoBehaviour
         {
             rotationValues[i] = 0;
         }
-
     }
 
     bool once = true;
@@ -224,6 +223,7 @@ public class ConcatManager : MonoBehaviour
 
         return snapVector;
     }
+
     /// <summary>
     /// Getting placement of slides and write output file to concat the datasets
     /// </summary>
@@ -292,18 +292,24 @@ public class ConcatManager : MonoBehaviour
 
         if (svgAnalysis.isOn) longAnalysis = "1";
         if (tsnetoggle.isOn) tsne_umap = "1";
-        string[] concat_path_out = new string[8];
+        string[] concat_path_out = new string[14];
         string current_directory = gameObject.GetComponent<UIManager>().current_directory;
-        writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Visium_concat_param.txt", false);
+        writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Filter_param_upload.txt", false);
 
-        concat_path_out[0] = concatParams[0].text; // Min count
-        concat_path_out[1] = concatParams[1].text; // Max count
-        concat_path_out[2] = concatParams[2].text; // MT count min
-        concat_path_out[3] = concatParams[3].text; // MT count max
-        concat_path_out[4] = concatParams[4].text; // Cell min
-        concat_path_out[5] = concatParams[5].text; // Cell max
-        concat_path_out[7] = longAnalysis; // SVG analysis toggle 
-        concat_path_out[8] = tsne_umap; // T-SNE toggle 
+        concat_path_out[0] = ""; //Filepath
+        concat_path_out[1] = "1"; //Not skip filter
+        concat_path_out[2] = longAnalysis; //Not skip filter
+        concat_path_out[3] = current_directory + "Assets/PythonFiles/VisiumProcessed"; // Path, might be overwritten
+        concat_path_out[4] = 1.ToString(); //Create output plots
+
+        concat_path_out[5] = concatParams[0].text; // Min count
+        concat_path_out[6] = concatParams[1].text; // Max count
+        concat_path_out[7] = concatParams[2].text; // MT count min
+        concat_path_out[8] = concatParams[3].text; // MT count max
+        concat_path_out[9] = concatParams[4].text; // Cell min
+        concat_path_out[10] = concatParams[5].text; // Cell max
+        concat_path_out[11] = ""; // max_total_count 
+        concat_path_out[12] = "";// n_genes_by_counts
 
         foreach (string param in concat_path_out)
         {
