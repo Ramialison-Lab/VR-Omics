@@ -4081,7 +4081,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1052670662}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: toggleGraphCanvas
         m_Mode: 1
@@ -16011,7 +16011,6 @@ GameObject:
   - component: {fileID: 1052670668}
   - component: {fileID: 1052670669}
   - component: {fileID: 1052670656}
-  - component: {fileID: 1052670662}
   - component: {fileID: 1052670666}
   - component: {fileID: 1052670671}
   - component: {fileID: 1052670674}
@@ -16146,18 +16145,6 @@ MonoBehaviour:
   c18Heart: {fileID: 919132148981115591}
   testX: 0
   testY: 0
---- !u!114 &1052670662
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1052670655}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31da021c5ceef0247b03ac6c2ab786e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1052670663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16221,12 +16208,9 @@ MonoBehaviour:
   genePanelPath: []
   scaleFactors: []
   datasetSizes: 
-  stomicsDataPath: 
-  stomicsSpotId: []
-  stomicsGeneNames: []
-  stomicsX: []
-  stomicsY: []
-  stomicsZ: []
+  StomicsGeneNames: []
+  stomicsCounts: 
+  stomicsCoords: 
   c18Sphere: {fileID: 1796680520}
   c18heartObj: {fileID: 919132148981115591}
   heartTranspSlider: {fileID: 206459355}
@@ -16490,7 +16474,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1052670655}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f26ac4b9e22747d4f9ed222645d0a930, type: 3}
+  m_Script: {fileID: 11500000, guid: 9aaa73f950ed162438cc504cd4656670, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1083494033
@@ -20809,7 +20793,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1052670662}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: toggleFullScreenGraphCanvas
         m_Mode: 1

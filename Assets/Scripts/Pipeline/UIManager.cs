@@ -323,9 +323,10 @@ public class UIManager : MonoBehaviour
     public void startMerfish()
     {
 
-        fpc.checkMerfishPath(merfishPath);
+        //fpc.checkMerfishPath(merfishPath);
+        df.startMerfish();
 
-        if(fpc.files_Checked)
+        if (fpc.files_Checked)
         {
             df.startMerfish();
         }
