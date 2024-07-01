@@ -51,8 +51,8 @@ public class FilePathEndings : MonoBehaviour
 
         technologyFileNames["Merfish"] = new TechnologyFiles
         {
-            locationMetadataCSV = "_metadata_processed.csv",
-            geneCountCSV = "_transposed_processed.csv",
+            locationMetadataCSV = "_metadata.csv",
+            geneCountCSV = "_transposed.csv",
             obsmCSV = "obsm.csv",
             genePanelCSV = "_gene_panel.csv",
             resultCSV = "_results.csv",

@@ -172,7 +172,7 @@ public class DataTransferManager : MonoBehaviour
         mc = GameObject.Find("MainMenuPanel").GetComponent<MenuCanvas>();
         jr = scriptHolder.GetComponent<JSONReader>();
         umapm = scriptHolder.GetComponent<UMAPManager>();
-        fpe = scriptHolder.GetComponent<FilePathEndings>();
+        fpe = scriptHolderPipeline.GetComponent<FilePathEndings>();
 
         try { 
             df = scriptHolderPipeline.GetComponent<DataTransfer>();
