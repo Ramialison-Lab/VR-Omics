@@ -16006,6 +16006,7 @@ GameObject:
   - component: {fileID: 1052670667}
   - component: {fileID: 1052670672}
   - component: {fileID: 1052670665}
+  - component: {fileID: 1052670674}
   - component: {fileID: 1052670670}
   - component: {fileID: 1052670664}
   - component: {fileID: 1052670668}
@@ -16014,7 +16015,6 @@ GameObject:
   - component: {fileID: 1052670662}
   - component: {fileID: 1052670666}
   - component: {fileID: 1052670671}
-  - component: {fileID: 1052670674}
   m_Layer: 0
   m_Name: ScriptHolder
   m_TagString: Untagged
@@ -16221,12 +16221,9 @@ MonoBehaviour:
   genePanelPath: []
   scaleFactors: []
   datasetSizes: 
-  stomicsDataPath: 
-  stomicsSpotId: []
-  stomicsGeneNames: []
-  stomicsX: []
-  stomicsY: []
-  stomicsZ: []
+  StomicsGeneNames: []
+  stomicsCounts: 
+  stomicsCoords: 
   c18Sphere: {fileID: 1796680520}
   c18heartObj: {fileID: 919132148981115591}
   heartTranspSlider: {fileID: 206459355}
@@ -16490,7 +16487,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1052670655}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f26ac4b9e22747d4f9ed222645d0a930, type: 3}
+  m_Script: {fileID: 11500000, guid: aa5520dc17092b842ba7c3a0545b13b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1083494033

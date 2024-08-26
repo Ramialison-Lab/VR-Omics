@@ -612,7 +612,15 @@ public class UIManager : MonoBehaviour
         if (merfish_meta_file == "" || merfish_meta_file != merfish_meta_LoadTMP.text) merfish_meta_file = merfish_meta_LoadTMP.text;
         if (merfish_transformation_file == "" || merfish_transformation_file != merfish_transform_LoadTMP.text) merfish_transformation_file = merfish_transform_LoadTMP.text;
 
-        StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Merfish_param.txt", false);
+        string pathToMerfish;
+
+#if UNITY_EDITOR
+                pathToMerfish = "/PythonFiles/Merfish_param.txt";
+#else
+                pathToMerfish = "/Assets/PythonFiles/Merfish_param.txt";
+#endif
+
+        StreamWriter writer = new StreamWriter(current_directory + pathToMerfish, false);
         string[] merfish_path_out = new string[11];
         merfish_path_out[0] = merfish_counts_file;// counts_file;
         merfish_path_out[1] = merfish_meta_file;// meta_file;
@@ -633,7 +641,15 @@ public class UIManager : MonoBehaviour
         writer.Close();
 
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = current_directory + "/Assets/Scripts/Python_exe/exe_merfish/dist/Vizgen_pipeline.exe";
+
+        string pathToMerfishExe;
+#if UNITY_EDITOR
+        pathToMerfishExe = "/Scripts/Python_exe/exe_merfish/dist/Vizgen_pipeline.exe";
+#else
+        pathToMerfishExe = "/Assets/Scripts/Python_exe/exe_merfish/dist/Vizgen_pipeline.exe";
+#endif
+
+        startInfo.FileName = current_directory + pathToMerfishExe;
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = false;
         UnityEngine.Debug.Log("Merfish File load started.");
@@ -653,6 +669,14 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void processStomics()
     {
+        string pathToStomics;
+
+#if UNITY_EDITOR
+        pathToStomics = "/PythonFiles/Stomics_path.txt";
+#else
+            pathToStomics = "/Assets/PythonFiles/Stomics_path.txt";
+#endif
+
         StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Stomics_path.txt", false);
         string[] stomics_path_out = new string[13];
         stomics_path_out[0] = stomicsPath; // filename;
@@ -676,6 +700,13 @@ public class UIManager : MonoBehaviour
             writer.WriteLine(param);
         }
         writer.Close();
+
+        string pathToStomicsExe;
+#if UNITY_EDITOR
+        pathToStomicsExe = "/Scripts/Python_exe/exe_stomics/dist/Load_stomics.exe";
+#else
+        pathToStomicsExe = "/Assets/Scripts/Python_exe/exe_stomics/dist/Load_stomics.exe";
+#endif
 
         ProcessStartInfo startInfo = new ProcessStartInfo();
         startInfo.FileName = current_directory + "/Assets/Scripts/Python_exe/exe_stomics/dist/Load_stomics.exe";
@@ -713,7 +744,15 @@ public class UIManager : MonoBehaviour
         if (xenium_cell_feature_h5 == "" || xenium_cell_feature_h5 != xenium_feature_matrix_h5_TMP.text) xenium_cell_feature_h5 = xenium_feature_matrix_h5_TMP.text;
         if (xenium_cells_csv == "" || xenium_cells_csv != xenium_cells_csv_TMP.text) xenium_cells_csv = xenium_cells_csv_TMP.text;
 
-        StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Xenium_path.txt", false);
+        string pathToXenium;
+
+#if UNITY_EDITOR
+        pathToXenium = "/PythonFiles/Xenium_path.txt";
+#else
+            pathToXenium = "/Assets/PythonFiles/Xenium_path.txt";
+#endif
+
+        StreamWriter writer = new StreamWriter(current_directory + pathToXenium, false);
         string[] xenium_path_out = new string[7];
         xenium_path_out[0] = xenium_cell_feature_h5; //h5
         xenium_path_out[1] = "";// outputDirectory; //TODO: teste output
@@ -729,8 +768,15 @@ public class UIManager : MonoBehaviour
         }
         writer.Close();
 
+        string pathToXeniumExe;
+#if UNITY_EDITOR
+        pathToXeniumExe = "/Scripts/Python_exe/exe_xenium/dist/Load_xenium.exe";
+#else
+        pathToXeniumExe = "/Assets/Scripts/Python_exe/exe_xenium/dist/Load_xenium.exe";
+#endif
+
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = current_directory + "/Assets/Scripts/Python_exe/exe_xenium/dist/Load_xenium.exe";
+        startInfo.FileName = current_directory + pathToXeniumExe;
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = false;
         UnityEngine.Debug.Log("Xenium File load started.");
@@ -745,10 +791,10 @@ public class UIManager : MonoBehaviour
         //p.WaitForExit();
     }
 
-    #endregion
+#endregion
 
     // Process Visium & Download data
-    #region Download and Process Visium
+#region Download and Process Visium
     /// <summary>
     /// Start the Visium data download and processing the data using the Python AW
     /// </summary>
@@ -875,13 +921,13 @@ public class UIManager : MonoBehaviour
         // not SVG since skip filter true
         params_out[2] = "0";
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
 
             save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
-    #else
+#else
         save_params_run_step1(params_out, "/Assets/PythonFiles/Filter_param_upload.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy_upload\\dist\\Visium_upload.exe");
 
-    #endif
+#endif
     }
 
     /// <summary>
@@ -936,11 +982,11 @@ public class UIManager : MonoBehaviour
         expandPanel.SetActive(false);
     }
 
-    #endregion
+#endregion
 
     // Starting FileBrowser and selecting files for load and process
-    #region File Browser
-    #region Call File Browser
+#region File Browser
+#region Call File Browser
 
     /// <summary>
     /// Select the directory with Xenium files for loading to Visualiser
@@ -1054,9 +1100,9 @@ public class UIManager : MonoBehaviour
     {
         StartCoroutine(selectBrowseFile("slideseqv2Path", slideseqV2TMPField));
     }
-    #endregion
+#endregion
 
-    #region File Browser
+#region File Browser
     /// <summary>
     /// Open File Explorer to select file from local machine
     /// </summary>
@@ -1204,11 +1250,11 @@ public class UIManager : MonoBehaviour
     {
         StartCoroutine(selectDirectory());
     }
-    #endregion
-    #endregion
+#endregion
+#endregion
 
     // Visium upload and align sections
-    #region Visium Upload and Align Sections
+#region Visium Upload and Align Sections
     /// <summary>
     /// Filling the Visium downloadlist with the Literals of the available datasets from 10X Genomics
     /// </summary>
@@ -1667,7 +1713,7 @@ public class UIManager : MonoBehaviour
 #endregion
 
     // 3D object
-    #region 3D object
+#region 3D object
     /// <summary>
     /// Resets all Inputfields and deletes the objects that have been passed to the DataTransfer script
     /// </summary>
@@ -1702,7 +1748,7 @@ public class UIManager : MonoBehaviour
 #endregion
 
     // Additional functions
-    #region VR Settings
+#region VR Settings
     /// <summary>
     /// Trigger HMD detection manually.
     /// </summary>
@@ -1736,7 +1782,7 @@ public class UIManager : MonoBehaviour
     {
         df.ContinueSession();
     }
-    #endregion
+#endregion
 
 
     private void UnwriteConcatStatus()
