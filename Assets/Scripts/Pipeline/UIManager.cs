@@ -209,6 +209,8 @@ public class UIManager : MonoBehaviour
     public string visium_local_path;
 
     //Info other custom function
+    bool visium = false, merfish = false, stomics = false, xenium = false, cosmx = false, c18 = false, slideseq = false, tomo = false;
+
     public Slider other2Dslider;
     public bool other2D = false;
     public int[] otherCSVColumns;
@@ -249,6 +251,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void startVisium()
     {
+
         List<int> distances = new List<int>();
 
         string distString = distanceText.GetComponent<Text>().text;
@@ -264,19 +267,65 @@ public class UIManager : MonoBehaviour
         }
         catch (Exception e) { logfile.Log(e, "Count read the distance values of the slices. Make sure there is one distance value for two slides and the values are separated by commas."); }
 
-        List<string> datapathVisium = new List<string>();
+        List<string> datapathMultiSlice = new List<string>();
+
         foreach (Dropdown.OptionData option in dropd.options)
         {
-            foreach (string x in transferDatapaths)
+
+                    datapathMultiSlice.Add(option.text);
+
+        }
+
+            if (visium)
+                df.startMultipleVisium(datapathMultiSlice, rotationValues, distances);
+            else if (merfish)
+                concatenateMerfish(datapathMultiSlice, rotationValues, distances);
+    }
+    private void concatenateMerfish(List<string> datapathMultiSlice, List<int> rotationValues, List<int> distances)
+    {
+        // Rotation to be updated
+        string concat_directory = "";
+
+#if UNITY_EDITOR
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_Merfish.txt";
+#else
+    concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "Assets/PythonFiles/Concat_Merfish.txt";
+#endif
+
+        // Create the file if it doesn't exist
+        if (!File.Exists(concat_directory))
+        {
+            using (StreamWriter write = File.CreateText(concat_directory))
             {
-                if (option.text.Contains(x.Split('\\').Last()))
-                {
-                    datapathVisium.Add(x);
-                }
+                // File created, nothing written yet.
             }
-            df.startMultipleVisium(datapathVisium, rotationValues, distances);
+        }
+
+        // Fixing distance
+        if (distances.Count == 0)
+        {
+            foreach (string s in datapathMultiSlice)
+            {
+                distances.Add(1);
+            }
+        }
+        else if (distances.Count < datapathMultiSlice.Count)
+        {
+            distances.Add(0);
+        }
+
+        // Using 'using' statement to ensure StreamWriter is properly disposed of
+        using (StreamWriter writer = new StreamWriter(concat_directory, false))
+        {
+            writer.WriteLine("Datapath, Center, Height, Width, Rotation, Distance");
+            
+            for (int i = 0; i < datapathMultiSlice.Count; i++)
+            {
+                writer.WriteLine(datapathMultiSlice[i] + ",(0,0,0), 150.0, 150.0 " + rotationValues[i] + ", " + distances[i]);
+            }
         }
     }
+
 
     /// <summary>
     /// Starting Xenium
@@ -369,7 +418,6 @@ public class UIManager : MonoBehaviour
     }
 
     #endregion
-
     // Menu panel controls
     #region Menu panels
     /// <summary>
@@ -391,6 +439,7 @@ public class UIManager : MonoBehaviour
                 adjust_download_list();
                 break;
             case "VisiumLoadBtn":
+                visium = true;
                 uploadpanel.SetActive(true);
                 break;
             case "VisiumConcatBtn":
@@ -416,36 +465,55 @@ public class UIManager : MonoBehaviour
                 xeniumProcessPanel.SetActive(true);
                 break;
             case "XeniumLoadBtn":
+                SetTechsUsedFalse();
+                xenium = true;
                 xeniumLoadPanel.SetActive(true);
                 break;
             case "LoadTomoBtn":
+                SetTechsUsedFalse();
+                tomo = true;
                 tomoLoadPanel.SetActive(true);
                 break;
             case "LoadStomicsBtn":
+                SetTechsUsedFalse();
+                stomics = true;
                 stomicsLoadPanel.SetActive(true);
                 break;
             case "ProcessStomicsBtn":
                 stomicsProcessPanel.SetActive(true);
                 break;
+            case "ConcateMerfishBtn":
+                SetTechsUsedFalse();
+                merfish = true;
+                uploadpanel.SetActive(true);
+                break;
             case "LoadMerfishBtn":
+                SetTechsUsedFalse();
+                merfish = true;
                 merfishLoadPanel.SetActive(true);
                 break;
             case "ProcessMerfishBtn":
                 merfishProcessPanel.SetActive(true);
-                break;               
+                break;
             case "LoadSlideSeqV2Btn":
+                SetTechsUsedFalse();
+                slideseq = true;
                 slideseqv2LoadPanel.SetActive(true);
                 break;
             case "ProcessSlideSeqV2Btn":
                 slideseqv2ProcessPanel.SetActive(true);
-                break;                     
+                break;
             case "LoadNanostringBtn":
+                SetTechsUsedFalse();
+                cosmx = true;
                 nanostringLoadPanel.SetActive(true);
                 break;
             case "LoadOtherBtn":
                 otherLoadPanel.SetActive(true);
                 break;
             case "VisiumC18Btn":
+                SetTechsUsedFalse();
+                c18 = true;
                 startC18();
                 break;
             case "Load3DobjectBtn":
@@ -453,6 +521,19 @@ public class UIManager : MonoBehaviour
                 break;
         }
     }
+
+    private void SetTechsUsedFalse()
+    {
+        visium = false;
+        merfish = false;
+        stomics = false;
+        xenium = false;
+        cosmx = false;
+        c18 = false;
+        slideseq = false;
+        tomo = false;
+    }
+
 
     /// <summary>
     /// Unselect any panel to default
@@ -1596,8 +1677,15 @@ public class UIManager : MonoBehaviour
             slicesStore[i].transform.position = new Vector2(slicesStore[i].transform.position.x, slicesStore[i].transform.position.y + GameObject.FindGameObjectsWithTag("sliceContainer").Length * -300);
             slicesStore[i].transform.SetParent(contentPanel.transform);
 
+            string path_to_image = "";
+#if UNITY_EDITOR
+            path_to_image = current_directory + "Assets/spatial/tissue_hires_image.png";
+#else
+        path_to_image = current_directory + "spatial/tissue_hires_image.png";
+
+#endif
             //Read png image
-            byte[] byteArray = File.ReadAllBytes(@storePathForWarning[i] + "\\spatial\\tissue_hires_image.png");
+            byte[] byteArray = File.ReadAllBytes(@storePathForWarning[i] + path_to_image);
             Texture2D sampleTexture = new Texture2D(2, 2);
             bool isLoaded = sampleTexture.LoadImage(byteArray);
 
