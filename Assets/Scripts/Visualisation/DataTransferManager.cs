@@ -553,6 +553,12 @@ public class DataTransferManager : MonoBehaviour
 
         foreach (string str in allDirectories)
         {
+            if (str.Contains("figures_1") && !str.Contains(META_ENDING_CSV))
+            {
+                print("multi dataset");
+            }
+
+
             if (str.Contains(fpe.technologyFileNames["Merfish"].locationMetadataCSV) && !str.Contains(META_ENDING_CSV)) merfishCoords = str;
             if (str.Contains(fpe.technologyFileNames["Merfish"].geneCountCSV) && !str.Contains(META_ENDING_CSV)) merfishCounts = str;
             if (str.Contains(fpe.technologyFileNames["Merfish"].resultCSV) && !str.Contains(META_ENDING_CSV)) moran_results = str;
@@ -573,6 +579,7 @@ public class DataTransferManager : MonoBehaviour
         int csv_position_max_x_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "max_x");
         int csv_position_min_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "min_y");
         int csv_position_max_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "max_y");
+        int csv_position_z_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "z");
 
         if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
         {
@@ -596,6 +603,12 @@ public class DataTransferManager : MonoBehaviour
             return (-1) * (min_y + max_y) / 2.0f;
         }).ToArray();
 
+        float[] z_values = lines.Select(line =>
+        {
+            string[] parts = line.Split(',');
+            return float.Parse(parts[csv_position_z_values]);
+        }).ToArray();
+
         //reading values from the first line of the csv file
         string[] lineone = lines[1].Split(',');
         float minX, maxX, minY, maxY, minZ;
@@ -603,7 +616,7 @@ public class DataTransferManager : MonoBehaviour
         //Initialise with any value that really exisits in the dataset
         minX = maxX = float.Parse(lineone[3]);
         minY = maxY = float.Parse(lineone[4]);
-        minZ = 0;
+
         //initialise arrays to total length of data set
         x_coordinates = new float[lines.Length];
         y_coordinates = new float[lines.Length];
@@ -616,7 +629,7 @@ public class DataTransferManager : MonoBehaviour
 
             float x = x_coordinates[i] = middle_x_values[i];
             float y = y_coordinates[i] = middle_y_values[i];
-            z_coordinates[i] = 0;
+            z_coordinates[i] = z_values[i];
 
             location_names[i] = values[0];
 
