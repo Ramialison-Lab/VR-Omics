@@ -239,6 +239,8 @@ public class ConcatManager : MonoBehaviour
 
 #if UNITY_EDITOR
         concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_Visium.txt";
+#elif UNITY_STANDALONE_OSX
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/Assets/PythonFiles/Concat_Visium.txt";
 #else
         concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "Assets/PythonFiles/Concat_Visium.txt";
 
@@ -255,6 +257,8 @@ public class ConcatManager : MonoBehaviour
         string concat_used_directory = "";
 #if UNITY_EDITOR
         concat_used_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_used_Visium.txt";
+#elif UNITY_STANDALONE_OSX
+        concat_used_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/Assets/PythonFiles/Concat_used_Visium.txt";
 #else
         concat_used_directory = this.gameObject.GetComponent<UIManager>().current_directory + "Assets/PythonFiles/Concat_used_Visium.txt";
 

@@ -52,6 +52,9 @@ public class ExportManager : MonoBehaviour
 #if UNITY_EDITOR
         filePath = Application.dataPath + "/ROI_export/exported_spotlist.csv";
         filePathScreenshot = Application.dataPath + "/Screenshots/";
+#elif UNITY_STANDALONE_OSX
+        filePath = Application.dataPath + "/Assets/ROI_export/exported_spotlist.csv";
+        filePathScreenshot = Application.dataPath + "/Assets/Screenshots/";     
 #endif
         camera = Camera.main;
         sh = GameObject.Find("ScriptHolder");
@@ -144,6 +147,9 @@ public class ExportManager : MonoBehaviour
 #if UNITY_EDITOR
         filePath = Application.dataPath + "/ROI_export/exported_spotlist.csv";
         filePathScreenshot = Application.dataPath + "Assets/Screenshots/";
+#elif UNITY_STANDALONE_OSX
+        filePath = Application.dataPath + "/Assets/ROI_export/exported_spotlist.csv";
+        filePathScreenshot = Application.dataPath + "/Assets/Screenshots/";
 #endif
         var barcodes = new List<string>();
         var ids = new List<int>();

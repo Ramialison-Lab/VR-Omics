@@ -820,6 +820,9 @@ public class DataTransferManager : MonoBehaviour
 #if UNITY_EDITOR
         geneC18Path = Application.dataPath + "/Datasets/C18heart/C18genesTranspose.csv";
         coordsC18 = Application.dataPath + "/Datasets/C18heart/C18heart.csv";
+#elif UNITY_STANDALONE_OSX
+        geneC18Path = Application.dataPath + "/Assets/Datasets/C18heart/C18genesTranspose.csv";
+        coordsC18 = Application.dataPath + "/Assets/Datasets/C18heart/C18heart.csv";
 #endif
         //Setting object parameters for 3D heart used
         c18heartObj.SetActive(true);

@@ -288,8 +288,10 @@ public class UIManager : MonoBehaviour
 
 #if UNITY_EDITOR
         concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_Merfish.txt";
+#elif UNITY_STANDALONE_OSX
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/Assets/PythonFiles/Concat_Merfish.txt";   
 #else
-    concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "Assets/PythonFiles/Concat_Merfish.txt";
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "Assets/PythonFiles/Concat_Merfish.txt";
 #endif
 
         // Create the file if it doesn't exist
@@ -697,6 +699,8 @@ public class UIManager : MonoBehaviour
 
 #if UNITY_EDITOR
                 pathToMerfish = "/PythonFiles/Merfish_param.txt";
+#elif UNITY_STANDALONE_OSX
+                pathToMerfish = "/Assets/PythonFiles/Merfish_param.txt";
 #else
                 pathToMerfish = "/Assets/PythonFiles/Merfish_param.txt";
 #endif
@@ -900,6 +904,8 @@ public class UIManager : MonoBehaviour
             filterparam[0] = GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().options[GameObject.Find("DB_Dropdown").GetComponentInChildren<TMP_Dropdown>().value].text;
 #if UNITY_EDITOR
             save_params_run_step1(filterparam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
+#elif UNITY_STANDALONE_OSX
+            save_params_run_step1(filterparam, "/PythonFiles/Filter_param.txt", "/Assets/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
 #else
             save_params_run_step1(filterparam, "/Assets/PythonFiles/Filter_param.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy\\dist\\Visium_pipeline.exe");
 #endif
@@ -920,6 +926,8 @@ public class UIManager : MonoBehaviour
 #if UNITY_EDITOR
 
             save_params_run_step1(filterparam, "/PythonFiles/Filter_param.txt", "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
+#elif UNITY_STANDALONE_OSX
+            save_params_run_step1(filterparam, "/Assets/PythonFiles/Filter_param.txt", "/Assets/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe");
 #else
             save_params_run_step1(filterparam, "/Assets/PythonFiles/Filter_param.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy\\dist\\Visium_pipeline.exe");
 #endif
@@ -1004,7 +1012,9 @@ public class UIManager : MonoBehaviour
 
 #if UNITY_EDITOR
 
-            save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
+        save_params_run_step1(params_out, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
+#elif UNITY_STANDALONE_OSX
+        save_params_run_step1(params_out, "/Assets/PythonFiles/Filter_param_upload.txt", "/Assets/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
 #else
         save_params_run_step1(params_out, "/Assets/PythonFiles/Filter_param_upload.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy_upload\\dist\\Visium_upload.exe");
 
@@ -1044,6 +1054,8 @@ public class UIManager : MonoBehaviour
 
 #if UNITY_EDITOR
         save_params_run_step1(filterPipelineParam, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
+#elif UNITY_STANDALONE_OSX
+        save_params_run_step1(filterPipelineParam, "/Assets/PythonFiles/Filter_param_upload.txt", "/Assets/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
 #else
         save_params_run_step1(filterPipelineParam, "/Assets/PythonFiles/Filter_param_upload.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy_upload\\dist\\Visium_upload.exe");
 #endif
@@ -1680,6 +1692,8 @@ public class UIManager : MonoBehaviour
             string path_to_image = "";
 #if UNITY_EDITOR
             path_to_image = current_directory + "Assets/spatial/tissue_hires_image.png";
+#elif UNITY_STANDALONE_OSX
+            path_to_image = current_directory + "/Assets/spatial/tissue_hires_image.png";
 #else
         path_to_image = current_directory + "spatial/tissue_hires_image.png";
 
@@ -1878,6 +1892,8 @@ public class UIManager : MonoBehaviour
         string path_to_concat = "";
 #if UNITY_EDITOR
         path_to_concat = current_directory + "/PythonFiles/Concat_used_Visium.txt";
+#elif UNITY_STANDALONE_OSX
+        path_to_concat = current_directory + "/Assets/PythonFiles/Concat_used_Visium.txt";
 #else
         path_to_concat = current_directory + "Assets/PythonFiles/Concat_used_Visium.txt";
 

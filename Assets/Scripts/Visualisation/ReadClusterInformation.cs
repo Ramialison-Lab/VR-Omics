@@ -578,6 +578,8 @@ public class ReadClusterInformation : MonoBehaviour
 
 #if UNITY_EDITOR
         filePath = Path.Combine(Application.dataPath, "Parameter_files", "rgb.txt");
+#elif UNITY_STANDALONE_OSX
+        filePath = Path.Combine(Application.dataPath, "/Assets/Parameter_files", "rgb.txt");
 #endif
         float rgb = 255f; 
 
