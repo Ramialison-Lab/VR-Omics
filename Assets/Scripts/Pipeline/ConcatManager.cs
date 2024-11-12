@@ -291,50 +291,71 @@ public class ConcatManager : MonoBehaviour
 
             writer.Close();
 
-            string longAnalysis = "0";
-            string tsne_umap = "0";
+//            string longAnalysis = "0";
+//            string tsne_umap = "0";
 
-        if (svgAnalysis.isOn) longAnalysis = "1";
-        if (tsnetoggle.isOn) tsne_umap = "1";
-        string[] concat_path_out = new string[14];
-        string current_directory = gameObject.GetComponent<UIManager>().current_directory;
-        writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Filter_param_upload.txt", false);
+//        if (svgAnalysis.isOn) longAnalysis = "1";
+//        if (tsnetoggle.isOn) tsne_umap = "1";
+//        string[] concat_path_out = new string[16];
+//        string current_directory = gameObject.GetComponent<UIManager>().current_directory;
+//        string filter_param_path = "";
 
-        concat_path_out[0] = ""; //Filepath
-        concat_path_out[1] = "1"; //Not skip filter
-        concat_path_out[2] = longAnalysis; //Not skip filter
-        concat_path_out[3] = current_directory + "Assets/PythonFiles/VisiumProcessed"; // Path, might be overwritten
-        concat_path_out[4] = 1.ToString(); //Create output plots
+//#if UNITY_EDITOR
+//        filter_param_path = current_directory + "/PythonFiles/Filter_param_upload.txt";
+//#elif UNITY_STANDALONE_OSX
+//        filter_param_path = current_directory + "/Assets/PythonFiles/Filter_param_upload.txt";
+//#else
+//        filter_param_path = current_directory + "Assets/PythonFiles/Filter_param_upload.txt";
+//#endif
+//        writer = new StreamWriter(filter_param_path, false);
 
-        concat_path_out[5] = concatParams[0].text; // Min count
-        concat_path_out[6] = concatParams[1].text; // Max count
-        concat_path_out[7] = concatParams[2].text; // MT count min
-        concat_path_out[8] = concatParams[3].text; // MT count max
-        concat_path_out[9] = concatParams[4].text; // Cell min
-        concat_path_out[10] = concatParams[5].text; // Cell max
-        concat_path_out[11] = ""; // max_total_count 
-        concat_path_out[12] = "";// n_genes_by_counts
+//        concat_path_out[0] = ""; //Filepath
+//        concat_path_out[1] = "1"; //Not skip filter
+//        concat_path_out[2] = longAnalysis; //Not skip filter
+//        concat_path_out[3] = current_directory + "Assets/PythonFiles/VisiumProcessed"; // Path, might be overwritten
+//        concat_path_out[4] = 1.ToString(); //Create output plots
 
-        foreach (string param in concat_path_out)
-        {
-            writer.WriteLine(param);
-        }
-        writer.Close();
+//        concat_path_out[5] = concatParams[0].text; // Min count
+//        concat_path_out[6] = concatParams[1].text; // Max count
+//        concat_path_out[7] = concatParams[2].text; // MT count min
+//        concat_path_out[8] = concatParams[3].text; // MT count max
+//        concat_path_out[9] = concatParams[4].text; // Cell min
+//        concat_path_out[10] = concatParams[5].text; // Cell max
+//        concat_path_out[11] = ""; // max_total_count 
+//        concat_path_out[12] = "";// n_genes_by_counts
+//        concat_path_out[13] = "";// n_genes_by_counts
+//        concat_path_out[14] = "";// n_genes_by_counts
+//        concat_path_out[15] = "0.3";// n_genes_by_counts
 
-        ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = current_directory + "Assets/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe";
-        startInfo.UseShellExecute = false;
-        startInfo.CreateNoWindow = false;
-        UnityEngine.Debug.Log("Visium Concat File load started.");
+//        foreach (string param in concat_path_out)
+//        {
+//            writer.WriteLine(param);
+//        }
+//        writer.Close();
+
+//        ProcessStartInfo startInfo = new ProcessStartInfo();
+//        string visium_exe_path = current_directory + "Assets/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe";
+
+//#if UNITY_EDITOR
+//        visium_exe_path = current_directory + "/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe";
+//#elif UNITY_STANDALONE_OSX
+//        visium_exe_path = current_directory + "/Assets/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe";
+//#else
+//        visium_exe_path = current_directory + "Assets/Scripts/Python_exe/exe_scanpy/dist/Visium_pipeline.exe";
+//#endif
+//        startInfo.FileName = visium_exe_path;
+//        startInfo.UseShellExecute = false;
+//        startInfo.CreateNoWindow = false;
+//        UnityEngine.Debug.Log("Visium Concat File load started.");
 
 
-        Process p = new Process
-        {
-            StartInfo = startInfo
-        };
+//        Process p = new Process
+//        {
+//            StartInfo = startInfo
+//        };
 
-        p.Start();
-        p.WaitForExit();
+//        p.Start();
+//        p.WaitForExit();
 
     }
 }

@@ -437,6 +437,9 @@ public class DataTransferManager : MonoBehaviour
             }
 
             SpotNameDictionary.Add(location_names.ToList());
+#if UNITY_STANDALONE_OSX
+            geneNamesDistinct = genePanel;
+#else
             fr.readGeneNames(datapath);
             geneNameDictionary[geneNameDictionary_Counter] = new List<string>();
             foreach (string x in fr.geneNames)
@@ -448,11 +451,15 @@ public class DataTransferManager : MonoBehaviour
 
             geneNamesDistinct.AddRange(fr.geneNames);
             geneNamesDistinct = geneNamesDistinct.Distinct().ToList();
-
+#endif
             count++;
         }
 
+        //TODO: Save feature currently not working under Mac
+#if UNITY_STANDALONE_OSX
+#else
         SaveData(dfPaths, srtMethod, geneNamesDistinct.ToArray());
+#endif
 
         CheckForSVGData();
         AdjustCamera(minX, maxX, minY, maxY, minZ, new Vector3(0, 0, 0));
@@ -1488,7 +1495,7 @@ public class DataTransferManager : MonoBehaviour
         return null; // File not found
     }
 
-    #region Save Data
+#region Save Data
     private void SaveData(string[] datapaths, string srtMethod, string[] geneNamesDistinct)
     {
         SessionData data = new SessionData();
@@ -1569,7 +1576,7 @@ public class DataTransferManager : MonoBehaviour
         sd.ContinueSession();
 
     }
-    #endregion
+#endregion
 
     [System.Serializable]
     private class SessionData

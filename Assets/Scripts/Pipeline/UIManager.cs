@@ -70,6 +70,8 @@ public class UIManager : MonoBehaviour
     public GameObject otherLoadPanel;
     public GameObject loadingPanel;
     public GameObject objectLoadPanel;
+    public GameObject StagateResolution;
+    public TextMeshProUGUI stagateValue;
 
     //H&E stain background slice and Container
     public GameObject sliceRawImage;
@@ -433,7 +435,6 @@ public class UIManager : MonoBehaviour
             unselectAllPanels();
         }
         catch (Exception) { }
-
         switch (EventSystem.current.currentSelectedGameObject.name)
         {
             case "VisiumdownloadBtn":
@@ -1026,8 +1027,11 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void getFilterParamPipeline()
     {
-        //TODO: @Sabrina This function should point to visium_upload exe and we need to map the filterPipelineParam{} according to the process_Visium_from_local_no_filter() function
-        string[] filterPipelineParam = new string[14];
+        if (concatDatasets)
+        {
+            this.gameObject.GetComponent<ConcatManager>().StartConcatProcess();
+        }
+        string[] filterPipelineParam = new string[16];
         filterPipelineParam[0] = visium_local_path;
         //no skip filter
         filterPipelineParam[1] = "1";
@@ -1051,6 +1055,14 @@ public class UIManager : MonoBehaviour
         //TBD
         filterPipelineParam[11] = "";// max_total_count_var;
         filterPipelineParam[12] = "";// n_genes_by_counts;
+        filterPipelineParam[13] = "";
+        filterPipelineParam[14] = "";
+        filterPipelineParam[15] = StagateResolution.GetComponentInChildren<Slider>().value.ToString("0.00");
+
+    foreach(string s in filterPipelineParam)
+        {
+            UnityEngine.Debug.Log(s);
+        }
 
 #if UNITY_EDITOR
         save_params_run_step1(filterPipelineParam, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
@@ -1075,11 +1087,18 @@ public class UIManager : MonoBehaviour
         expandPanel.SetActive(false);
     }
 
-#endregion
+    public void UpdateStagateSliderValue()
+    {
+        Slider slider = StagateResolution.GetComponentInChildren<Slider>();
+
+        stagateValue.text = slider.value.ToString("0.00");
+    }
+
+    #endregion
 
     // Starting FileBrowser and selecting files for load and process
-#region File Browser
-#region Call File Browser
+    #region File Browser
+    #region Call File Browser
 
     /// <summary>
     /// Select the directory with Xenium files for loading to Visualiser

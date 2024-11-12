@@ -52,7 +52,7 @@ public class SearchManager : MonoBehaviour
 
     //TBD LINKPATH
     public string geneNamesC18;
-
+    private string application_datapath;
     public GameObject noExpressionValuePanel;
 
     private void Awake()
@@ -63,7 +63,9 @@ public class SearchManager : MonoBehaviour
         acm = gameObject.GetComponent<AutoCompleteManager>();
         sd = gameObject.GetComponent<SpotDrawer>();
         rgi = gameObject.GetComponent<ReadGeneInformation>();
-        geneNamesC18 = Application.dataPath + "/Assets/Datasets/C18heart/C18_genelist.csv";
+        application_datapath = Application.dataPath.Replace("VR-Omics_Data", "");
+        geneNamesC18 =  application_datapath + "/Assets/Datasets/C18heart/C18_genelist.csv";
+
 
 #if UNITY_EDITOR
         geneNamesC18 = Application.dataPath + "/Datasets/C18heart/C18_genelist.csv";
@@ -410,7 +412,7 @@ public class SearchManager : MonoBehaviour
         // TBD LINKPATH
 
         //string geneC18 = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Visium\\C18genesTranspose.csv";
-        string geneC18 = Application.dataPath + "/Assets/Datasets/C18heart/C18genesTranspose.csv";
+        string geneC18 = application_datapath + "/Assets/Datasets/C18heart/C18genesTranspose.csv";
 #if UNITY_EDITOR
         geneC18 = Application.dataPath + "/Datasets/C18heart/C18genesTranspose.csv";
 #endif
