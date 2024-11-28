@@ -27,8 +27,8 @@ using UnityEngine;
  * Mapping of functionPanels
  * 
  * 0    -   Selection Dropdown (showing Dataset)
- * 1    -   Not used
- * 2    -   Not used
+ * 1    -   Dropdown menu (log, cluster, gene_count etc.)
+ * 2    -   Dropdown spatial,t-sne,umap
  * 3    -   LassoBtn (ROI selection)
  * 4    -   TissueBtn (H&E stain)
  * 5    -   Export/Import Group
@@ -75,6 +75,8 @@ public class ButtonFunctionManager : MonoBehaviour
         {
             //C18
             functionPanels[0].SetActive(false);
+            functionPanels[1].SetActive(false);
+            functionPanels[2].SetActive(false);
             functionPanels[4].SetActive(false);
             functionPanels[5].SetActive(false);
             functionPanels[6].SetActive(false);

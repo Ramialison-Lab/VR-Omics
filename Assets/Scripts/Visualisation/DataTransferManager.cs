@@ -131,6 +131,7 @@ public class DataTransferManager : MonoBehaviour
     public List<string> MerfishGeneNames = new List<string>();
     public string merfishCounts;
     public string merfishCoords;
+    public bool merfish3D = false;
 
     //Nanostring
     public List<string> NanostringGeneNames = new List<string>();
@@ -229,12 +230,6 @@ public class DataTransferManager : MonoBehaviour
 
             string searchPattern = fpe.technologyFileNames[filepathSearchterm].locationMetadataCSV;
             string[] files = Directory.GetFiles(path, searchPattern);
-
-            // Print or log the files found
-            foreach (string file in files)
-            {
-                Console.WriteLine(file);
-            }
 
             visiumMetaFiles.AddRange(Directory.GetFiles(path, fpe.technologyFileNames[filepathSearchterm].locationMetadataCSV));
             visium_datapapths.AddRange(Directory.GetFiles(path, fpe.technologyFileNames[filepathSearchterm].h5));
@@ -555,16 +550,12 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void StartMerfish()
     {
+
         string[] allDirectories = Directory.GetFiles(df.merfishPath, "*", SearchOption.AllDirectories);
         obsmPath = new string[1];
 
         foreach (string str in allDirectories)
         {
-            if (str.Contains("figures_1") && !str.Contains(META_ENDING_CSV))
-            {
-                print("multi dataset");
-            }
-
 
             if (str.Contains(fpe.technologyFileNames["Merfish"].locationMetadataCSV) && !str.Contains(META_ENDING_CSV)) merfishCoords = str;
             if (str.Contains(fpe.technologyFileNames["Merfish"].geneCountCSV) && !str.Contains(META_ENDING_CSV)) merfishCounts = str;
@@ -588,6 +579,8 @@ public class DataTransferManager : MonoBehaviour
         int csv_position_max_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "max_y");
         int csv_position_z_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "z");
 
+        if (csv_position_z_values == -1) merfish3D = false;
+
         if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
         {
             lines = lines.Skip(1).ToArray();
@@ -610,11 +603,26 @@ public class DataTransferManager : MonoBehaviour
             return (-1) * (min_y + max_y) / 2.0f;
         }).ToArray();
 
-        float[] z_values = lines.Select(line =>
+        float[] z_values = new float[lines.Length];
+
+        if (merfish3D)
         {
-            string[] parts = line.Split(',');
-            return float.Parse(parts[csv_position_z_values]);
-        }).ToArray();
+            // Populate the array with values parsed from the csv file
+            z_values = lines.Select(line =>
+            {
+                string[] parts = line.Split(',');
+                return float.Parse(parts[csv_position_z_values]);
+            }).ToArray();
+        }
+        else
+        {
+            // If not 3D populate the z value with "0"
+            for (int i = 0; i < z_values.Length; i++)
+            {
+                z_values[i] = 0f;
+            }
+        }
+
 
         //reading values from the first line of the csv file
         string[] lineone = lines[1].Split(',');

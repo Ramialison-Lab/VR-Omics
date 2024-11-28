@@ -56,61 +56,70 @@ public class ReadClusterInformation : MonoBehaviour
     /// <summary>
     /// Check which Cluster Technique is used
     /// </summary>
-    public void readCluster()
+    public void readCluster(bool stagateUsed = false)
     {
         if (clusterActive)
             return;
 
-        clusterActive = true;
-
-        colorBackup = new List<Color>();
-        normalisedBackup = new List<double>();
-
-        if (clusterPanel.activeSelf == false)
-            clusterPanel.SetActive(true);
-
-        if (dfm.c18_visium)
+        try
         {
-            readC18Cluster();
-            return;
+            clusterActive = true;
+
+            colorBackup = new List<Color>();
+            normalisedBackup = new List<double>();
+
+            if (!clusterPanel.activeSelf)
+                clusterPanel.SetActive(true);
+
+            if (dfm.c18_visium)
+            {
+                readC18Cluster();
+                return;
+            }
+
+            if (dfm.visium && !dfm.c18_visium)
+            {
+                readVisiumCluster(stagateUsed);
+                return;
+            }
+
+            if (dfm.xenium)
+            {
+                readXeniumCluster();
+                return;
+            }
+
+            if (dfm.merfish)
+            {
+                readMerfishCluster();
+                return;
+            }
+
+            if (dfm.stomics)
+            {
+                readStomicsCluster();
+                return;
+            }
+
+            if (dfm.nanostring)
+            {
+                readNanostringCluster();
+                return;
+            }
+
+            if (dfm.slideseqv2)
+            {
+                readSlideSeqV2Cluster();
+                return;
+            }
         }
-
-        if (dfm.visium && !dfm.c18_visium)
+        finally
         {
-            readVisiumCluster();
-            return;
-        }
-
-        if (dfm.xenium)
-        {
-            readXeniumCluster();
-            return;
-        }
-
-        if (dfm.merfish)
-        {
-            readMerfishCluster();
-            return;
-        }
-
-        if (dfm.stomics)
-        {
-            readStomicsCluster();
-            return;
-        }
-
-        if (dfm.nanostring)
-        {
-            readNanostringCluster();
-            return;
-        }
-        
-        if (dfm.slideseqv2)
-        {
-            readSlideSeqV2Cluster();
-            return;
+            // Ensure `clusterActive` is reset to `false` even if an exception occurs
+            clusterActive = false;
         }
     }
+
 
 
     public void readC18Areas()
@@ -334,9 +343,9 @@ public class ReadClusterInformation : MonoBehaviour
     /// <summary>
     /// Read Cluster Information for Visium Data
     /// </summary>
-    private void readVisiumCluster()
+    private void readVisiumCluster(bool stagateUsed)
     {
-        try
+        
         {
             List<double> normalised = new List<double>();
             List<Color> clusterColour = new List<Color>();
@@ -351,11 +360,14 @@ public class ReadClusterInformation : MonoBehaviour
             {
                 // read the meta file with the cluster information
                 string[] lines = File.ReadAllLines(path);
-                Debug.Log(path);
 
                 string[] headers = lines[0].Split(',');
-                int header_cluster = Array.IndexOf(headers, "clusters");
+                int header_cluster = -1;
+                if(stagateUsed) header_cluster = Array.IndexOf(headers, "stagate-clusters");
+                else header_cluster = Array.IndexOf(headers, "clusters");
 
+
+                Debug.Log(header_cluster);
                 lines = lines.Skip(1).ToArray();
 
                 //Create array for the read cluster values, normalised Values and an array with colours
@@ -400,7 +412,6 @@ public class ReadClusterInformation : MonoBehaviour
                 dfm.logfile.Log(e, "Something went wrong, please check the logfile. Commonly the Cluster Values haven been stored as values that couldn't be parsed or the total number of cluster values does not match the number of spots");
             }
         }
-        catch (Exception e) { }
 
     }
 
@@ -448,6 +459,12 @@ public class ReadClusterInformation : MonoBehaviour
     /// <param name="cl_min"></param>
     private void generateClusterLegend(int cl_max, int cl_min)
     {
+        // Reset the cluster panel by clearing all its child elements
+        foreach (Transform child in clusterPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
         //define how many clusters are used 
         int numberOfClusters = (cl_max - cl_min) + 1;
         int numberOfRows = (int)Math.Ceiling((double)numberOfClusters / 3);

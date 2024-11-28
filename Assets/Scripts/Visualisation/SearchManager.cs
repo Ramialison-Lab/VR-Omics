@@ -448,7 +448,10 @@ public class SearchManager : MonoBehaviour
     {
         GetComponent<ReadClusterInformation>().readCluster();
     }
-
+    public void readStagateClusterInformation()
+    {
+        GetComponent<ReadClusterInformation>().readCluster(true);
+    }
 
     /// <summary>
     /// Normalisation of the list of expression values and passing it to SpotDrawer script to visualise onto model

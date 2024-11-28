@@ -1346,7 +1346,7 @@ public class SpotDrawer : MonoBehaviour
             {
                 case 2:
                     normalised.Clear();
-                    sm.querySbyte("obs/clusters");
+                    sm.queryInt("obs/clusters/codes");
                     break;
                 case 3:
                     normalised.Clear();

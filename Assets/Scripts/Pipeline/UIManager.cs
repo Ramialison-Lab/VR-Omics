@@ -243,6 +243,7 @@ public class UIManager : MonoBehaviour
         resetPosition = expandPanels[0].transform.localPosition;
 
         UnwriteConcatStatus();
+
     }
 
 
@@ -485,6 +486,11 @@ public class UIManager : MonoBehaviour
             case "ProcessStomicsBtn":
                 stomicsProcessPanel.SetActive(true);
                 break;
+            case "MergeMerfish3DBtn":
+                SetTechsUsedFalse();
+                merfish = true;
+                uploadpanel.SetActive(true);
+                break;            
             case "ConcateMerfishBtn":
                 SetTechsUsedFalse();
                 merfish = true;
@@ -605,29 +611,49 @@ public class UIManager : MonoBehaviour
     /// Toggle each ExpandMenu
     /// </summary>
     #region toggle Expand Menus
+    GameObject currentExpandedMenu = null; // Tracks the currently expanded menu
+    bool isMenuExpanded = false; // Tracks if any menu is currently expanded
+
     public void ToggleExpandMenu(GameObject mainExpandPanel, GameObject expandBtnActivePanel, ref bool expMenu)
     {
-        if (!expMenu)
+        // If the menu to be toggled is already expanded
+        if (expMenu)
         {
-            expandPanelOut(mainExpandPanel);
-            expandBtnActivePanel.SetActive(true);
+            mainExpandPanel.transform.localPosition = new Vector2(
+                mainExpandPanel.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset,
+                mainExpandPanel.GetComponent<RectTransform>().transform.localPosition.y);
+            expandBtnActivePanel.SetActive(false);
+            expMenu = false;
+            isMenuExpanded = false;
+            currentExpandedMenu = null;
         }
         else
         {
-            mainExpandPanel.transform.localPosition = new Vector2(mainExpandPanel.GetComponent<RectTransform>().transform.localPosition.x - expandPanelOffset, mainExpandPanel.GetComponent<RectTransform>().transform.localPosition.y);
-            expandBtnActivePanel.SetActive(false);
+            // Close the currently expanded menu if it exists
+            if (currentExpandedMenu != null && currentExpandedMenu != mainExpandPanel)
+            {
+                CloseCurrentMenu();
+            }
+
+            // Open the new menu
+            expandPanelOut(mainExpandPanel);
+            expandBtnActivePanel.SetActive(true);
+            expMenu = true;
+            isMenuExpanded = true;
+            currentExpandedMenu = mainExpandPanel;
         }
+    }
 
-        expMenuVisium = false;
-        expMenuMerfish = false;
-        expMenuNanostring = false;
-        expMenuXen = false;
-        expMenuTomo = false;
-        expMenuStomics = false;
-        expMenuSlideSeqV2 = false;
-        expMenuOther = false;
-
-        expMenu = !expMenu;
+    private void CloseCurrentMenu()
+    {
+        if (currentExpandedMenu == mainExpandPanelVisium) ToggleExpandMenu(mainExpandPanelVisium, expandBtnActivePanelVisium, ref expMenuVisium);
+        else if (currentExpandedMenu == mainExpandPanelXenium) ToggleExpandMenu(mainExpandPanelXenium, expandBtnActivePanelXenium, ref expMenuXen);
+        else if (currentExpandedMenu == mainExpandMerfish) ToggleExpandMenu(mainExpandMerfish, expandBtnActivePanelMerfish, ref expMenuMerfish);
+        else if (currentExpandedMenu == mainExpandNanostring) ToggleExpandMenu(mainExpandNanostring, expandBtnActivePanelNanostring, ref expMenuNanostring);
+        else if (currentExpandedMenu == mainExpandSlideSeqV2) ToggleExpandMenu(mainExpandSlideSeqV2, expandBtnActivePanelSlideSeqV2, ref expMenuSlideSeqV2);
+        else if (currentExpandedMenu == mainExpandPanelTomo) ToggleExpandMenu(mainExpandPanelTomo, expandBtnActivePanelTomo, ref expMenuTomo);
+        else if (currentExpandedMenu == mainExpandStomics) ToggleExpandMenu(mainExpandStomics, expandBtnActivePanelStomics, ref expMenuStomics);
+        else if (currentExpandedMenu == mainExpandOther) ToggleExpandMenu(mainExpandOther, expandBtnActivePanelOther, ref expMenuOther);
     }
 
     public void ToggleExpandMenuVisium()
@@ -669,6 +695,7 @@ public class UIManager : MonoBehaviour
     {
         ToggleExpandMenu(mainExpandOther, expandBtnActivePanelOther, ref expMenuOther);
     }
+
 
     #endregion
     #endregion
@@ -1377,6 +1404,8 @@ public class UIManager : MonoBehaviour
         wd = wd.Replace('\\', '/');
 #if UNITY_EDITOR
         string fileName = Application.dataPath + "/PythonFiles/list_of_file_names.txt";
+#elif UNITY_STANDALONE_OSX
+        string fileName = wd + "/Assets/PythonFiles/list_of_file_names.txt";
 #else
         string fileName = wd + "/Assets/PythonFiles/list_of_file_names.txt";
 #endif
