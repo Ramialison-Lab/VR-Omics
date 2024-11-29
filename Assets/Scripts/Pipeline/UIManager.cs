@@ -252,7 +252,7 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// Starting Visium
     /// </summary>
-    public void startVisium()
+    public void startProcess()
     {
 
         List<int> distances = new List<int>();
@@ -282,15 +282,15 @@ public class UIManager : MonoBehaviour
             if (visium)
                 df.startMultipleVisium(datapathMultiSlice, rotationValues, distances);
             else if (merfish)
-                concatenateMerfish(datapathMultiSlice, rotationValues, distances);
+                mergeMerfish3D(datapathMultiSlice, rotationValues, distances);
     }
-    private void concatenateMerfish(List<string> datapathMultiSlice, List<int> rotationValues, List<int> distances)
+    private void mergeMerfish3D(List<string> datapathMultiSlice, List<int> rotationValues, List<int> distances)
     {
         // Rotation to be updated
         string concat_directory = "";
 
 #if UNITY_EDITOR
-        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_Merfish.txt";
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_Merfish_3D.txt";
 #elif UNITY_STANDALONE_OSX
         concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/Assets/PythonFiles/Concat_Merfish.txt";   
 #else
@@ -322,13 +322,54 @@ public class UIManager : MonoBehaviour
         // Using 'using' statement to ensure StreamWriter is properly disposed of
         using (StreamWriter writer = new StreamWriter(concat_directory, false))
         {
-            writer.WriteLine("Datapath, Center, Height, Width, Rotation, Distance");
+            writer.WriteLine("Datapath, Distance");
             
             for (int i = 0; i < datapathMultiSlice.Count; i++)
             {
-                writer.WriteLine(datapathMultiSlice[i] + ",(0,0,0), 150.0, 150.0 " + rotationValues[i] + ", " + distances[i]);
+                writer.WriteLine(datapathMultiSlice[i] + "," + distances[i]);
             }
         }
+
+#if UNITY_EDITOR
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_used_Merfish_3D.txt";
+#elif UNITY_STANDALONE_OSX
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/Assets/PythonFiles/Concat_used_Merfish_3D.txt";   
+#else
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "Assets/PythonFiles/Concat_used_Merfish_3D.txt";
+#endif
+
+        using (StreamWriter writer = new StreamWriter(concat_directory, false))
+        {
+            writer.WriteLine("true");
+        }
+
+        //Continue writing all necessary files like the merfish 3D file to true and then start exe 
+        // Concat_used_Merfish_3D.txt → true for 3D
+        // Concat_Merfish_3D.txt 
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+
+        string pathToMerfishExe;
+#if UNITY_EDITOR
+        pathToMerfishExe = "/Scripts/Python_exe/exe_merfish/dist/Vizgen_pipeline.exe";
+#else
+        pathToMerfishExe = "/Assets/Scripts/Python_exe/exe_merfish/dist/Vizgen_pipeline.exe";
+#endif
+
+        startInfo.FileName = current_directory + pathToMerfishExe;
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = false;
+        UnityEngine.Debug.Log("Merfish File load started.");
+
+
+        Process p = new Process
+        {
+            StartInfo = startInfo
+        };
+
+        p.Start();
+        //p.WaitForExit();
+
     }
 
 
@@ -1957,5 +1998,20 @@ public class UIManager : MonoBehaviour
                 write.Close();
             }
         }
+
+#if UNITY_EDITOR
+        path_to_concat = current_directory + "/PythonFiles/Concat_used_Merfish_3D.txt";
+#elif UNITY_STANDALONE_OSX
+        path_to_concat = current_directory + "/Assets/PythonFiles/Concat_used_Merfish_3D.txt";   
+#else
+        path_to_concat = current_directory + "Assets/PythonFiles/Concat_used_Merfish_3D.txt";
+#endif
+
+        using (StreamWriter writer = new StreamWriter(path_to_concat))
+        {
+            writer.WriteLine("false");
+        }
+
     }
+
 }

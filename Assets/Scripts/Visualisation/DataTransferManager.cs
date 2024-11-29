@@ -126,6 +126,7 @@ public class DataTransferManager : MonoBehaviour
     public string xeniumGenePanelPath;
     public string moran_results;
     public List<string> XeniumGeneNames = new List<string>();
+    public bool xenium3D = false;
 
     //Merfish
     public List<string> MerfishGeneNames = new List<string>();
@@ -491,6 +492,9 @@ public class DataTransferManager : MonoBehaviour
 
         int column_x = CSVHeaderInformation.CheckForColumnNumber("x_centroid", lines[0]);
         int column_y = CSVHeaderInformation.CheckForColumnNumber("y_centroid", lines[0]);
+        int csv_position_z_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "z");
+
+        if (csv_position_z_values == -1) xenium3D = false;
 
         if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
         {
@@ -498,6 +502,27 @@ public class DataTransferManager : MonoBehaviour
         }
 
         CheckForFigures(allDirectories);
+
+
+        float[] z_values = new float[lines.Length];
+
+        if (xenium3D)
+        {
+            // Populate the array with values parsed from the csv file
+            z_values = lines.Select(line =>
+            {
+                string[] parts = line.Split(',');
+                return float.Parse(parts[csv_position_z_values]);
+            }).ToArray();
+        }
+        else
+        {
+            // If not 3D populate the z value with "0"
+            for (int i = 0; i < z_values.Length; i++)
+            {
+                z_values[i] = 0f;
+            }
+        }
 
         x_coordinates = new float[lines.Length];
         y_coordinates = new float[lines.Length];
@@ -510,7 +535,7 @@ public class DataTransferManager : MonoBehaviour
             string[] values = lines[i].Split(',');
             float x = x_coordinates[i] = float.Parse(values[column_x]);
             float y = y_coordinates[i] = (-1) * float.Parse(values[column_y]);
-            float z = z_coordinates[i] = 0;
+            float z = z_coordinates[i] = z_values[i];
             location_names[i] = values[0];
 
             // Find min and max
@@ -521,6 +546,7 @@ public class DataTransferManager : MonoBehaviour
             if (z < minZ) minZ = z;
         }
 
+        //Reading gene panels from count file
         string[] linesGn = File.ReadAllLines(xeniumCounts);
         linesGn = linesGn.Skip(1).ToArray();
 
@@ -531,6 +557,7 @@ public class DataTransferManager : MonoBehaviour
             XeniumGeneNames.Add(values[0]);
         }
 
+        //setting minimum and maxium values of the slide
         sd.Min = new Vector2(minX, minY);
         sd.Max = new Vector2(maxX, maxY);
         umapm.SetCoordinatesForUMAP(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
