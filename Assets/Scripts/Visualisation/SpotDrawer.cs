@@ -1138,7 +1138,9 @@ public class SpotDrawer : MonoBehaviour
                             {
                                 highlightedSpots.Remove(indexOfSpot);
                                 spots[indexOfSpot].HighlightGroup = -1;
-                            }
+                                colors[indexOfSpot] = Color.grey;      // Set the color back to grey
+                                SetMeshBuffers();   
+                        }
                             else if (addToggle)
                             {
                                 if (!highlightedSpots.ContainsKey(indexOfSpot))

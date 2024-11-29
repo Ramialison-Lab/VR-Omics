@@ -282,8 +282,102 @@ public class UIManager : MonoBehaviour
             if (visium)
                 df.startMultipleVisium(datapathMultiSlice, rotationValues, distances);
             else if (merfish)
-                mergeMerfish3D(datapathMultiSlice, rotationValues, distances);
+                mergeMerfish3D(datapathMultiSlice, rotationValues, distances);            
+            else if (xenium)
+                mergeXenium3D(datapathMultiSlice, rotationValues, distances);
     }
+
+
+    private void mergeXenium3D(List<string> datapathMultiSlice, List<int> rotationValues, List<int> distances)
+    {
+        // Rotation to be updated
+        string concat_directory = "";
+
+#if UNITY_EDITOR
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_Xenium_3D.txt";
+#elif UNITY_STANDALONE_OSX
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/Assets/PythonFiles/Concat_Xenium_3D.txt";   
+#else
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "Assets/PythonFiles/Concat_Xenium_3D.txt";
+#endif
+
+        // Create the file if it doesn't exist
+        if (!File.Exists(concat_directory))
+        {
+            using (StreamWriter write = File.CreateText(concat_directory))
+            {
+                // File created, nothing written yet.
+            }
+        }
+
+        // Fixing distance
+        if (distances.Count == 0)
+        {
+            foreach (string s in datapathMultiSlice)
+            {
+                distances.Add(1);
+            }
+        }
+        else if (distances.Count < datapathMultiSlice.Count)
+        {
+            distances.Add(0);
+        }
+
+        // Using 'using' statement to ensure StreamWriter is properly disposed of
+        using (StreamWriter writer = new StreamWriter(concat_directory, false))
+        {
+            writer.WriteLine("Datapath, Distance");
+
+            for (int i = 0; i < datapathMultiSlice.Count; i++)
+            {
+                writer.WriteLine(datapathMultiSlice[i] + "," + distances[i]);
+            }
+        }
+
+#if UNITY_EDITOR
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_used_Xenium_3D.txt";
+#elif UNITY_STANDALONE_OSX
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/Assets/PythonFiles/Concat_used_Xenium_3D.txt";   
+#else
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "Assets/PythonFiles/Concat_used_Xenium_3D.txt";
+#endif
+
+        using (StreamWriter writer = new StreamWriter(concat_directory, false))
+        {
+            writer.WriteLine("true");
+        }
+
+        //Continue writing all necessary files like the merfish 3D file to true and then start exe 
+        // Concat_used_Merfish_3D.txt → true for 3D
+        // Concat_Merfish_3D.txt 
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+
+        string pathToXeniumExe;
+#if UNITY_EDITOR
+        pathToXeniumExe = "/Scripts/Python_exe/exe_xenium/dist/Load_xenium.exe";
+#else
+        pathToXeniumExe = "/Assets/Scripts/Python_exe/exe_xenium/dist/Load_xenium.exe";
+#endif
+
+        startInfo.FileName = current_directory + pathToXeniumExe;
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = false;
+        UnityEngine.Debug.Log("Xenium File load started.");
+
+
+        Process p = new Process
+        {
+            StartInfo = startInfo
+        };
+
+        p.Start();
+        //p.WaitForExit();
+
+    }
+
+
+
     private void mergeMerfish3D(List<string> datapathMultiSlice, List<int> rotationValues, List<int> distances)
     {
         // Rotation to be updated
@@ -292,9 +386,9 @@ public class UIManager : MonoBehaviour
 #if UNITY_EDITOR
         concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/PythonFiles/Concat_Merfish_3D.txt";
 #elif UNITY_STANDALONE_OSX
-        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/Assets/PythonFiles/Concat_Merfish.txt";   
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "/Assets/PythonFiles/Concat_Merfish_3D.txt";   
 #else
-        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "Assets/PythonFiles/Concat_Merfish.txt";
+        concat_directory = this.gameObject.GetComponent<UIManager>().current_directory + "Assets/PythonFiles/Concat_Merfish_3D.txt";
 #endif
 
         // Create the file if it doesn't exist
@@ -531,7 +625,12 @@ public class UIManager : MonoBehaviour
                 SetTechsUsedFalse();
                 merfish = true;
                 uploadpanel.SetActive(true);
-                break;            
+                break;
+            case "MergeXenium3DBtn":
+                SetTechsUsedFalse();
+                xenium = true;
+                uploadpanel.SetActive(true);
+                break;
             case "ConcateMerfishBtn":
                 SetTechsUsedFalse();
                 merfish = true;
