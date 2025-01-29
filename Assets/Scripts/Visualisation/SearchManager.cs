@@ -261,32 +261,84 @@ public class SearchManager : MonoBehaviour
     /// <param name="searchGene">the gene to be read</param>
     public void readMerfishExpression(string searchGene)
     {
+
+        Awake();
         try
         {
-            //write gene information to the sidepanel
             rgi.readGeneInformation(searchGene);
         }
-        catch (Exception e) { }
+        catch (Exception e)
+        {
+            // Handle exception if needed
+        }
+
         var genes = dfm.MerfishGeneNames;
-        int x = genes.IndexOf(searchGene);
-        //LINKPATH
-        //string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
-        string merfishData = dfm.merfishCounts;
-
-        string[] lines = File.ReadAllLines(merfishData);
-        lines = lines.Skip(1).ToArray();
-
         List<string> values = new List<string>();
-        values = lines[x].Split(',').ToList();
-        List<float> readList = new List<float>();
 
+        if (dfm.merfish3D)
+        {
+            foreach (string filePath in dfm.transposedFiles)
+            {
+                string[] lines = File.ReadAllLines(filePath);
+
+                // Skip the header
+                lines = lines.Skip(1).ToArray();
+
+                // Find the row where the first value matches searchGene
+                bool geneFound = false;
+                foreach (string line in lines)
+                {
+                    string[] parts = line.Split(',');
+
+                    if (parts[0] == searchGene)
+                    {
+                        // Add the rest of the row to values
+                        values.AddRange(parts.Skip(1)); // Skip the first column (gene name)
+                        geneFound = true;
+                        break;
+                    }
+                }
+
+                if (!geneFound)
+                {
+                    // If the gene is not found, add "0" for the number of columns in this file (excluding the first column)
+                    int columnCount = lines.Length > 0 ? lines[0].Split(',').Length - 1 : 0;
+                    for (int i = 0; i < columnCount; i++)
+                    {
+                        values.Add("0");
+                    }
+                }
+            }
+        }
+        else
+        {
+            int x = genes.IndexOf(searchGene);
+
+            string[] lines = File.ReadAllLines(dfm.merfishCounts);
+
+            // Skip the header
+            lines = lines.Skip(1).ToArray();
+
+            // Get the corresponding row for the gene
+            if (x >= 0 && x < lines.Length)
+            {
+                values = lines[x].Split(',').ToList();
+            }
+        }
+
+        // Process the values list
+        List<float> readList = new List<float>();
         for (int i = 0; i < values.Count; i++)
         {
-            //Skip first value (geneName)
-            if (i > 0) readList.Add(float.Parse(values[i]));
+            if (i > 0) // Skip the first column (gene name or placeholder)
+            {
+                readList.Add(float.Parse(values[i]));
+            }
         }
-         
+
+        // Normalize and draw the read values
         normaliseAndDraw(readList);
+
     }
 
     /// <summary>
@@ -299,26 +351,80 @@ public class SearchManager : MonoBehaviour
         try
         {
             rgi.readGeneInformation(searchGene);
-        }catch(Exception e) { }
+        }
+        catch (Exception e)
+        {
+            // Handle exception if needed
+        }
+
         var genes = dfm.XeniumGeneNames;
-
-        int x = genes.IndexOf(searchGene);
-
-        string[] lines = File.ReadAllLines(dfm.xeniumCounts);
-        //TODO: add check for header csv
-
-        lines = lines.Skip(1).ToArray();
-
         List<string> values = new List<string>();
-        values = lines[x].Split(',').ToList();
-        List<float> readList = new List<float>();
 
+        if (dfm.xenium3D)
+        {
+            foreach (string filePath in dfm.transposedFiles)
+            {
+                string[] lines = File.ReadAllLines(filePath);
+
+                // Skip the header
+                lines = lines.Skip(1).ToArray();
+
+                // Find the row where the first value matches searchGene
+                bool geneFound = false;
+                foreach (string line in lines)
+                {
+                    string[] parts = line.Split(',');
+
+                    if (parts[0] == searchGene)
+                    {
+                        // Add the rest of the row to values
+                        values.AddRange(parts.Skip(1)); // Skip the first column (gene name)
+                        geneFound = true;
+                        break;
+                    }
+                }
+
+                if (!geneFound)
+                {
+                    // If the gene is not found, add "0" for the number of columns in this file (excluding the first column)
+                    int columnCount = lines.Length > 0 ? lines[0].Split(',').Length - 1 : 0;
+                    for (int i = 0; i < columnCount; i++)
+                    {
+                        values.Add("0");
+                    }
+                }
+            }
+        }
+        else
+        {
+            int x = genes.IndexOf(searchGene);
+
+            string[] lines = File.ReadAllLines(dfm.xeniumCounts);
+
+            // Skip the header
+            lines = lines.Skip(1).ToArray();
+
+            // Get the corresponding row for the gene
+            if (x >= 0 && x < lines.Length)
+            {
+                values = lines[x].Split(',').ToList();
+            }
+        }
+
+        // Process the values list
+        List<float> readList = new List<float>();
         for (int i = 0; i < values.Count; i++)
         {
-            if (i > 0) readList.Add(float.Parse(values[i]));
+            if (i > 0) // Skip the first column (gene name or placeholder)
+            {
+                readList.Add(float.Parse(values[i]));
+            }
         }
+
+        // Normalize and draw the read values
         normaliseAndDraw(readList);
     }
+
 
     /// <summary>
     /// Reads gene from Nanostring data 

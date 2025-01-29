@@ -7160,7 +7160,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1092023742}
   m_Direction: 0
   m_MinValue: 0.5
-  m_MaxValue: 2
+  m_MaxValue: 20
   m_WholeNumbers: 0
   m_Value: 1
   m_OnValueChanged:
@@ -16492,6 +16492,7 @@ MonoBehaviour:
   xeniumGenePanelPath: 
   moran_results: 
   XeniumGeneNames: []
+  xenium3D: 1
   MerfishGeneNames: []
   merfishCounts: 
   merfishCoords: 
@@ -16516,6 +16517,7 @@ MonoBehaviour:
   META_ENDING_CSV: csv.meta
   META_ENDING_PNG: png.meta
   META_ENDING_JSON: json.meta
+  transposedFiles: []
 --- !u!114 &1052670664
 MonoBehaviour:
   m_ObjectHideFlags: 0

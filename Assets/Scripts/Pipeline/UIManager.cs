@@ -64,7 +64,7 @@ public class UIManager : MonoBehaviour
     public GameObject stomicsProcessPanel;
     public GameObject merfishProcessPanel;
     public GameObject merfishLoadPanel;
-    public GameObject slideseqv2ProcessPanel;
+    public GameObject nanostringProcessPanel;
     public GameObject slideseqv2LoadPanel;
     public GameObject nanostringLoadPanel;
     public GameObject otherLoadPanel;
@@ -155,6 +155,18 @@ public class UIManager : MonoBehaviour
     public TMP_InputField xenium_feature_matrix_h5_TMP;
     public TMP_InputField xenium_cells_csv_TMP;
 
+
+    public TMP_InputField[] MerfishParameter;
+    public Toggle merfish_longAnalysis;
+    public Toggle merfish_tsne_umap;    
+    
+    
+    public TMP_InputField[] NanostringParameter;
+    public Toggle nanostring_longAnalysis;
+    public Toggle nanostring_tsne_umap;
+
+
+
     public TMP_InputField stomicsPathField;
     public TMP_InputField stomicsPathProcessField;
     public TMP_InputField stomicsBinSize;
@@ -176,7 +188,11 @@ public class UIManager : MonoBehaviour
     public TMP_InputField merfish_meta_LoadTMP;                 //Process
     public TMP_InputField merfish_transform_LoadTMP;            //Process
 
-    public TMP_InputField nanostringTMPField;            
+    public TMP_InputField nanostringTMPField;
+    public TMP_InputField nanostring_images_LoadTMP;               //Process 
+    public TMP_InputField nanostring_counts_LoadTMP;               //Process 
+    public TMP_InputField nanostring_meta_LoadTMP;                 //Process
+    public TMP_InputField nanostring_FOV_LoadTMP;            //Process
 
     public TMP_InputField slideseqV2TMPField;       
     
@@ -206,6 +222,10 @@ public class UIManager : MonoBehaviour
     private string merfish_meta_file = "";
     private string merfish_transformation_file = "";
     public string nanostringPath;
+    private string nanostring_counts_file = "";
+    private string nanostring_image_path = "";
+    private string nanostring_meta_file = "";
+    private string nanostring_fov_file = "";
     public string slideseqv2Path;
     public string objectPath;
     public string visium_local_path;
@@ -649,8 +669,8 @@ public class UIManager : MonoBehaviour
                 slideseq = true;
                 slideseqv2LoadPanel.SetActive(true);
                 break;
-            case "ProcessSlideSeqV2Btn":
-                slideseqv2ProcessPanel.SetActive(true);
+            case "ProcessNanostringBtn":
+                nanostringProcessPanel.SetActive(true);
                 break;
             case "LoadNanostringBtn":
                 SetTechsUsedFalse();
@@ -703,6 +723,12 @@ public class UIManager : MonoBehaviour
         merfishProcessPanel.SetActive(false);
         otherLoadPanel.SetActive(false);
         objectLoadPanel.SetActive(false);
+        try
+        {
+            nanostringLoadPanel.SetActive(false);
+            nanostringProcessPanel.SetActive(false);
+            slideseqv2LoadPanel.SetActive(false);
+        }catch (Exception) { }
     }
 
     /// <summary>
@@ -843,10 +869,6 @@ public class UIManager : MonoBehaviour
     // Process SRT techniques - (not Visium)
     #region Process SRT data
 
-    public TMP_InputField[] MerfishParameter;
-    public Toggle merfish_longAnalysis;
-    public Toggle merfish_tsne_umap;
-
     /// <summary>
     /// Process Merfish data 
     /// </summary>
@@ -917,6 +939,78 @@ public class UIManager : MonoBehaviour
         //p.WaitForExit();
     }
 
+
+    /// <summary>
+    /// Process Nanostring data 
+    /// </summary>
+    public void processNanostring()
+    {
+        string longAnalysis = "0";
+        string tsne_umap = "0";
+
+        if (nanostring_longAnalysis.isOn) longAnalysis = "1"; // SVGs Moran 
+        if (nanostring_tsne_umap.isOn) tsne_umap = "1"; // SVGs Moran 
+
+        //checking if paths were pasted without using the browse function
+        if (nanostring_counts_file == "" || nanostring_counts_file != nanostring_counts_LoadTMP.text) nanostring_counts_file = nanostring_counts_LoadTMP.text;
+        if (nanostring_image_path == "" || nanostring_image_path != nanostring_images_LoadTMP.text) nanostring_image_path = nanostring_images_LoadTMP.text;
+        if (nanostring_meta_file == "" || nanostring_meta_file != nanostring_counts_LoadTMP.text) nanostring_meta_file = nanostring_counts_LoadTMP.text;
+        if (nanostring_fov_file == "" || nanostring_fov_file != nanostring_FOV_LoadTMP.text) nanostring_fov_file = nanostring_FOV_LoadTMP.text;
+
+        string pathToNanostring;
+
+#if UNITY_EDITOR
+        pathToNanostring = "/PythonFiles/Nanostring_param.txt";
+#elif UNITY_STANDALONE_OSX
+                pathToNanostring = "/Assets/PythonFiles/Nanostring_param.txt";
+#else
+                pathToNanostring = "/Assets/PythonFiles/Nanostring_param.txt";
+#endif
+
+        StreamWriter writer = new StreamWriter(current_directory + pathToNanostring, false);
+        string[] nanostring_path_out = new string[11];
+        nanostring_path_out[0] = nanostring_image_path;// in_dir;
+        nanostring_path_out[1] = nanostring_counts_file;// counts_file;
+        nanostring_path_out[2] = nanostring_meta_file;// meta_file;
+        nanostring_path_out[3] = nanostring_fov_file;// transformation_file;
+        nanostring_path_out[4] = NanostringParameter[0].text;// min count;
+        nanostring_path_out[5] = NanostringParameter[1].text;// min cells;
+        nanostring_path_out[6] = "";// out_path
+        nanostring_path_out[7] = tsne_umap;// Toggle T-SNE & UMAP;
+        nanostring_path_out[8] = longAnalysis;// long analysis;
+
+      
+
+        foreach (string param in nanostring_path_out)
+        {
+            writer.WriteLine(param);
+        }
+        writer.Close();
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+
+        string pathToNanostringExe;
+#if UNITY_EDITOR
+        pathToNanostringExe = "/Scripts/Python_exe/exe_nanostring/dist/Nanostring.exe";
+#else
+        pathToNanostringExe = "/Assets/Scripts/Python_exe/exe_nanostring/dist/Nanostring.exe";
+#endif
+
+        startInfo.FileName = current_directory + pathToNanostringExe;
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = false;
+        UnityEngine.Debug.Log("Nanostring File load started.");
+
+
+        Process p = new Process
+        {
+            StartInfo = startInfo
+        };
+
+        p.Start();
+        //p.WaitForExit();
+    }
+
     /// <summary>
     /// Process Stomics data
     /// </summary>
@@ -930,7 +1024,6 @@ public class UIManager : MonoBehaviour
             pathToStomics = "/Assets/PythonFiles/Stomics_path.txt";
 #endif
 
-        StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Stomics_path.txt", false);
         string[] stomics_path_out = new string[13];
         stomics_path_out[0] = stomicsPath; // filename;
         stomics_path_out[1] = "";// outputDirectory;
@@ -948,6 +1041,7 @@ public class UIManager : MonoBehaviour
 
         UnityEngine.Debug.Log(stomicsPath);
 
+        StreamWriter writer = new StreamWriter(current_directory + "/Assets/PythonFiles/Stomics_path.txt", false);
         foreach (string param in stomics_path_out)
         {
             writer.WriteLine(param);
@@ -956,13 +1050,13 @@ public class UIManager : MonoBehaviour
 
         string pathToStomicsExe;
 #if UNITY_EDITOR
-        pathToStomicsExe = "/Scripts/Python_exe/exe_stomics/dist/Load_stomics.exe";
+        pathToStomicsExe = "/Scripts/Python_exe/exe_stomics/dist/Stereoseq_pipeline.exe";
 #else
-        pathToStomicsExe = "/Assets/Scripts/Python_exe/exe_stomics/dist/Load_stomics.exe";
+        pathToStomicsExe = "/Assets/Scripts/Python_exe/exe_stomics/dist/Stereoseq_pipeline.exe";
 #endif
 
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = current_directory + "/Assets/Scripts/Python_exe/exe_stomics/dist/Load_stomics.exe";
+        startInfo.FileName = current_directory + pathToStomicsExe;
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = false;
         UnityEngine.Debug.Log("Stomics File load started.");
@@ -1133,6 +1227,8 @@ public class UIManager : MonoBehaviour
             writer.WriteLine(param);
         }
         writer.Close();
+        UnityEngine.Debug.Log("path to exe");
+        UnityEngine.Debug.Log(current_directory + executable);
 
         ProcessStartInfo startInfo = new ProcessStartInfo();
         startInfo.FileName = current_directory + executable;
@@ -1226,11 +1322,6 @@ public class UIManager : MonoBehaviour
         filterPipelineParam[14] = "";
         filterPipelineParam[15] = StagateResolution.GetComponentInChildren<Slider>().value.ToString("0.00");
 
-    foreach(string s in filterPipelineParam)
-        {
-            UnityEngine.Debug.Log(s);
-        }
-
 #if UNITY_EDITOR
         save_params_run_step1(filterPipelineParam, "/PythonFiles/Filter_param_upload.txt", "/Scripts/Python_exe/exe_scanpy_upload/dist/Visium_upload.exe");
 #elif UNITY_STANDALONE_OSX
@@ -1238,6 +1329,7 @@ public class UIManager : MonoBehaviour
 #else
         save_params_run_step1(filterPipelineParam, "/Assets/PythonFiles/Filter_param_upload.txt", "\\Assets\\Scripts\\Python_exe\\exe_scanpy_upload\\dist\\Visium_upload.exe");
 #endif
+
     }
 
     /// <summary>
@@ -1320,6 +1412,26 @@ public class UIManager : MonoBehaviour
     public void select_Merfish_Transformation_File_Process()
     {
         StartCoroutine(selectBrowseFile("merfishTransform", merfish_transform_LoadTMP));
+    }
+
+    public void select_Nanostring_Image_Folder_Process()
+    {
+        StartCoroutine(selectBrowseFile("nanostringImageFolder", nanostring_images_LoadTMP));
+    }
+
+    public void select_Nanostring_Counts_File_Process()
+    {
+        StartCoroutine(selectBrowseFile("nanostringCounts", nanostring_counts_LoadTMP));
+    }
+
+    public void select_Nanostring_Meta_File_Process()
+    {
+        StartCoroutine(selectBrowseFile("nanostringMeta", nanostring_meta_LoadTMP));
+    }
+
+    public void select_Nanostring_FOV_File_Process()
+    {
+        StartCoroutine(selectBrowseFile("nanostringFOV", nanostring_FOV_LoadTMP));
     }
 
     public void selectOtherMatFile()
@@ -1467,6 +1579,15 @@ public class UIManager : MonoBehaviour
                     break;                
                 case "merfishTransform":
                     merfish_transformation_file = res;
+                    break;                                
+                case "nanostringCounts":
+                    nanostring_counts_file = res;
+                    break;                
+                case "nanostringMeta":
+                    nanostring_meta_file = res;
+                    break;                
+                case "nanostringFOV":
+                    nanostring_fov_file = res;
                     break;                
                 case "visiumFromLocal":
                     visium_local_path = res;

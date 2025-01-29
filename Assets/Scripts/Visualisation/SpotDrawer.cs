@@ -511,7 +511,6 @@ public class SpotDrawer : MonoBehaviour
     {
         //if (Min == Vector2.zero && Min == Max)
         // throw new Exception("Please supply min, max values of the data points beforehand!");
-
         symbolSelect = sphereSymb;
         if(dfm.c18_visium) symbolSelect.transform.localScale = new Vector3(10, 10, 10);
         else if(dfm.nanostring) symbolSelect.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);

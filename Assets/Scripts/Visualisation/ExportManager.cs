@@ -45,22 +45,26 @@ public class ExportManager : MonoBehaviour
 
     private void Start()
     {
+        // Default paths for Windows and other platforms
         resWidth = Screen.width;
         resHeight = Screen.height;
         filePath = Application.dataPath + "/Resources/ROI_export/exported_spotlist.csv";
         filePathScreenshot = Application.dataPath + "/Resources/Screenshots/";
+
+        // Platform-specific overrides
 #if UNITY_EDITOR
         filePath = Application.dataPath + "/ROI_export/exported_spotlist.csv";
         filePathScreenshot = Application.dataPath + "/Screenshots/";
 #elif UNITY_STANDALONE_OSX
-        filePath = Application.dataPath + "/Assets/ROI_export/exported_spotlist.csv";
-        filePathScreenshot = Application.dataPath + "/Assets/Screenshots/";     
+    filePath = Application.dataPath + "/Assets/ROI_export/exported_spotlist.csv";
+    filePathScreenshot = Application.dataPath + "/Assets/Screenshots/";
 #endif
+
         camera = Camera.main;
         sh = GameObject.Find("ScriptHolder");
         geneText = GameObject.Find("geneNameText");
-
     }
+
 
     public void printCSV()
     {

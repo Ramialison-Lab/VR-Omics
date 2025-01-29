@@ -85,7 +85,7 @@ public class UMAPManager : MonoBehaviour
             {
                 string[] values = lines[i].Split(',');
 
-                if (dfm.xenium)
+                if (dfm.xenium || dfm.merfish)
                 {
                     x_coordinates_umap[i] = float.Parse(values[x_position]) * 500;
                     y_coordinates_umap[i] = float.Parse(values[y_position]) * 500;
@@ -141,7 +141,7 @@ public class UMAPManager : MonoBehaviour
             for (int i = 0; i < lines.Length; i++)
             {
                 string[] values = lines[i].Split(',');
-                if (dfm.xenium)
+                if (dfm.xenium || dfm.merfish)
                 {
                     x_coordinates_tsne[i] = float.Parse(values[x_position]) *100;
                     y_coordinates_tsne[i] = float.Parse(values[y_position]) *100;

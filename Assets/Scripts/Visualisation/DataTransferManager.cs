@@ -65,8 +65,10 @@ public class DataTransferManager : MonoBehaviour
     float[] y_coordinates;
     float[] z_coordinates;
     string[] location_names;
-    string[] dataset_names;    
-    
+    string[] dataset_names;
+    float svg_cutoff = 0.05f; //Will be overwritten by user_value
+
+
     List<float> x_coordinatesList;
     List<float> y_coordinatesList;
     List<float> z_coordinatesList;
@@ -126,13 +128,13 @@ public class DataTransferManager : MonoBehaviour
     public string xeniumGenePanelPath;
     public string moran_results;
     public List<string> XeniumGeneNames = new List<string>();
-    public bool xenium3D = false;
+    public bool xenium3D = true;
 
     //Merfish
     public List<string> MerfishGeneNames = new List<string>();
     public string merfishCounts;
     public string merfishCoords;
-    public bool merfish3D = false;
+    public bool merfish3D = true;
 
     //Nanostring
     public List<string> NanostringGeneNames = new List<string>();
@@ -189,7 +191,6 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void StartVisium()
     {
-
         location_namesList = new List<string>();
         dataset_namesList = new List<string>();
         x_coordinatesList = new List<float>();
@@ -467,6 +468,7 @@ public class DataTransferManager : MonoBehaviour
         sd.StartDrawer(x_coordinatesList.ToArray(), y_coordinatesList.ToArray(), z_coordinatesList.ToArray(), location_namesList.ToArray(), dataset_namesList.ToArray()); 
     }
 
+    public string[] transposedFiles; // Public array to store file paths
 
     /// <summary>
     /// Xenium - This function starts the Xenium process, reads all related datapaths and creates the required lists to call the SpotDrawer script
@@ -487,6 +489,15 @@ public class DataTransferManager : MonoBehaviour
             if (str.Contains(fpe.technologyFileNames["Xenium"].locationMetadataCSV) && !str.Contains(META_ENDING_CSV)) xeniumCoords = str;
             if (str.Contains(fpe.technologyFileNames["Xenium"].resultCSV) && !str.Contains(META_ENDING_CSV)) moran_results = str;               
             if (str.Contains(fpe.technologyFileNames["Xenium"].obsmCSV) && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;               
+        }
+
+        // Check if a file named "joint_data_metadata_3d" exists
+        string jointDataFilePath = allDirectories.FirstOrDefault(path => path.Contains("joint_data_metadata_3D.csv"));
+
+        if (!string.IsNullOrEmpty(jointDataFilePath))
+        {
+            // Assign the path to xeniumCoords if the file is found
+            xeniumCoords = jointDataFilePath;
         }
         string[] lines = File.ReadAllLines(xeniumCoords);
 
@@ -514,6 +525,9 @@ public class DataTransferManager : MonoBehaviour
                 string[] parts = line.Split(',');
                 return float.Parse(parts[csv_position_z_values]);
             }).ToArray();
+
+            transposedFiles = allDirectories.Where(path => path.EndsWith("_transposed.csv")).ToArray();
+
         }
         else
         {
@@ -546,16 +560,42 @@ public class DataTransferManager : MonoBehaviour
             if (z < minZ) minZ = z;
         }
 
-        //Reading gene panels from count file
-        string[] linesGn = File.ReadAllLines(xeniumCounts);
-        linesGn = linesGn.Skip(1).ToArray();
-
-        foreach (string line in linesGn)
+        if (xenium3D)
         {
-            string[] values = line.Split(',');
+            // Use the allDirectories approach to find big_gene_panel.csv
+            string bigGenePanelPath = allDirectories.FirstOrDefault(path => path.Contains("big_gene_panel.csv"));
 
-            XeniumGeneNames.Add(values[0]);
+            if (!string.IsNullOrEmpty(bigGenePanelPath))
+            {
+                // Read all lines from the big_gene_panel.csv file
+                string[] linesPanel = File.ReadAllLines(bigGenePanelPath);
+
+                // Skip the header and process the rest of the lines
+                linesPanel = linesPanel.Skip(1).ToArray();
+
+                foreach (string line in linesPanel)
+                {
+                    string[] values = line.Split(',');
+
+                    // Add the first column value to XeniumGeneNames
+                    XeniumGeneNames.Add(values[0]);
+                }
+            }
         }
+        else
+        {
+            // Original logic for reading xeniumCounts
+            string[] linesGnElse = File.ReadAllLines(xeniumCounts); // Renamed to linesGnElse
+            linesGnElse = linesGnElse.Skip(1).ToArray();
+
+            foreach (string line in linesGnElse)
+            {
+                string[] values = line.Split(',');
+
+                XeniumGeneNames.Add(values[0]);
+            }
+        }
+
 
         //setting minimum and maxium values of the slide
         sd.Min = new Vector2(minX, minY);
@@ -590,7 +630,14 @@ public class DataTransferManager : MonoBehaviour
             if (str.Contains(fpe.technologyFileNames["Merfish"].obsmCSV) && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;
         }
 
+        // Check if a file named "joint_data_metadata_3d" exists
+        string jointDataFilePath = allDirectories.FirstOrDefault(path => path.Contains("joint_data_metadata_3D.csv"));
 
+        if (!string.IsNullOrEmpty(jointDataFilePath))
+        {
+            // Assign the path to xeniumCoords if the file is found
+            merfishCoords = jointDataFilePath;
+        }
         /*
          * Reading coordinate files  
         */
@@ -606,7 +653,10 @@ public class DataTransferManager : MonoBehaviour
         int csv_position_max_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "max_y");
         int csv_position_z_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "z");
 
+        merfish3D = true;
+
         if (csv_position_z_values == -1) merfish3D = false;
+
 
         if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
         {
@@ -634,22 +684,26 @@ public class DataTransferManager : MonoBehaviour
 
         if (merfish3D)
         {
-            // Populate the array with values parsed from the csv file
+            // Populate the array with values parsed from the CSV file, multiplied by 10
             z_values = lines.Select(line =>
             {
                 string[] parts = line.Split(',');
                 return float.Parse(parts[csv_position_z_values]);
             }).ToArray();
+
+            transposedFiles = allDirectories.Where(path => path.EndsWith("_transposed.csv")).ToArray();
+
         }
         else
         {
-            // If not 3D populate the z value with "0"
+            // If not 3D, populate the z_values array with "0"
+            z_values = new float[lines.Length];
             for (int i = 0; i < z_values.Length; i++)
             {
                 z_values[i] = 0f;
             }
-        }
 
+        }
 
         //reading values from the first line of the csv file
         string[] lineone = lines[1].Split(',');
@@ -687,10 +741,38 @@ public class DataTransferManager : MonoBehaviour
 
         linesGn = linesGn.Skip(1).ToArray();
 
-        foreach (string line in linesGn)
+
+        if (merfish3D)
         {
-            string[] values = line.Split(',');
-            MerfishGeneNames.Add(values[0]);
+            string bigGenePanelPath = allDirectories.FirstOrDefault(path => path.Contains("big_gene_panel.csv"));
+            if (!string.IsNullOrEmpty(bigGenePanelPath))
+            {
+                // Read all lines from the big_gene_panel.csv file
+                string[] linesPanel = File.ReadAllLines(bigGenePanelPath);
+
+                // Skip the header and process the rest of the lines
+                linesPanel = linesPanel.Skip(1).ToArray();
+
+                foreach (string line in linesPanel)
+                {
+                    string[] values = line.Split(',');
+
+                    // Add the first column value to XeniumGeneNames
+                    MerfishGeneNames.Add(values[0]);
+                }
+            }
+        }
+        else
+        {
+            string[] linesGnElse = File.ReadAllLines(merfishCounts); 
+            linesGnElse = linesGnElse.Skip(1).ToArray();
+
+            foreach (string line in linesGnElse)
+            {
+                string[] values = line.Split(',');
+
+                MerfishGeneNames.Add(values[0]);
+            }
         }
 
         sd.Min = new Vector2(minX, minY);
@@ -701,8 +783,11 @@ public class DataTransferManager : MonoBehaviour
         dfPaths[0] = df.merfishPath;
         SaveData(dfPaths, srtMethod, MerfishGeneNames.ToArray());
 
+        CheckForSVGData();
         sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
+        umapm.SetCoordinatesForUMAP(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
         AdjustCamera(minX / 10, maxX / 10, minY / 10, maxY / 10, 0, new Vector3(0, 0, 0));
+
     }
 
     /// <summary>
@@ -1384,48 +1469,89 @@ public class DataTransferManager : MonoBehaviour
     private void CheckForSVGData()
     {
 
-        //string svgpath = "C:\\Users\\Denis.Bienroth\\Desktop\\Testdatasets\\V1_Mouse_Kidney_10000______filtered_S93MOE\\";
         string[] csvfiles;
         try
         {
             svgGenes = new List<string>();
-            string svgpath = df.pathList[0];
-            csvfiles = System.IO.Directory.GetFiles(svgpath, "*svgtoggle.csv");
+            string svgpath = "";
+            if (visium) svgpath = df.pathList[0];
+            else if (merfish) svgpath = df.merfishPath;
+            else if (xenium) svgpath = df.xeniumPath;
+
+
+            if (visium)
+            {
+                csvfiles = System.IO.Directory.GetFiles(svgpath, "*svgtoggle.csv");
+            }
+            else if (xenium || merfish)
+            {
+                csvfiles = System.IO.Directory.GetFiles(svgpath, "moran_I_results.csv", System.IO.SearchOption.AllDirectories);
+            }
+            else
+            {
+                throw new Exception("Unsupported data format.");
+            }
+
+            if (csvfiles.Length == 0)
+            {
+                throw new FileNotFoundException("No matching CSV files found in the specified directory.");
+            }
+
             svgBtn.SetActive(true);
             List<string> svgStrings = new List<string>();
             string[] lines = File.ReadAllLines(csvfiles[0]);
+
             if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
             {
                 lines = lines.Skip(1).ToArray();
             }
-            svgStrings.Add("Genename \t \t pVal \t \t qVal");
-            foreach (string line in lines)
-            {
-                string[] values = line.Split(',');
 
-                try
+            if (visium)
+            {
+                svgStrings.Add("Genename \t \t pVal \t \t qVal");
+                foreach (string line in lines)
                 {
-                    if (float.Parse(values[18]) < 0.5f)
+                    string[] values = line.Split(',');
+                    try
                     {
-                        svgStrings.Add(values[0] + "\t \t \t" + values[17] + "\t \t \t" + values[18]);
-                        svgGenes.Add(values[0]);
+                        if (float.Parse(values[18]) < svg_cutoff)
+                        {
+                            svgStrings.Add(values[0] + "\t \t \t" + values[17] + "\t \t \t" + values[18]);
+                            svgGenes.Add(values[0]);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // Handle invalid parsing gracefully
                     }
                 }
-                catch (Exception) { }
             }
-
-            string outputString = "";
-            //  foreach (string str in svgStrings)
-            for (int i = 0; i < 100; i++)
+            else if (xenium || merfish)
             {
-
-                outputString = outputString + "\n" + svgStrings[i];
-
+                svgStrings.Add("Genename \t \t pVal");
+                foreach (string line in lines)
+                {
+                    string[] values = line.Split(',');
+                    try
+                    {
+                        if (float.Parse(values[9]) < svg_cutoff)
+                        {
+                            svgStrings.Add(values[0] + "\t \t \t" + values[9]);
+                            svgGenes.Add(values[0]);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // Handle invalid parsing gracefully
+                    }
+                }
             }
 
+            string outputString = string.Join("\n", svgStrings.Take(100));
             svgContentPanel.GetComponentInChildren<TMP_Text>().text = outputString;
+
         }
-        catch (Exception)
+        catch (Exception e)
         {
             svgBtn.SetActive(false);
             return;
@@ -1456,6 +1582,8 @@ public class DataTransferManager : MonoBehaviour
     {
         df = scriptHolderPipeline.GetComponent<DataTransfer>();
         current_directory = df.current_directory;
+        setSVGCutoff();
+
         if (df.objectUsed)
         {
             LoadObject();
@@ -1516,6 +1644,29 @@ public class DataTransferManager : MonoBehaviour
             ContinueSession();
         }        
         bfm.SetFunction(df);
+    }
+
+    private void setSVGCutoff()
+    {
+        string filePath = Path.Combine(current_directory, "PythonFiles", "svgcutoff.txt");
+
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine("Error: File not found at " + filePath);
+            return;
+        }
+
+        string value = File.ReadAllText(filePath).Trim();
+
+        // Parse the value as a float and assign it to the global variable
+        if (float.TryParse(value, out float parsedValue))
+        {
+            svg_cutoff = parsedValue;
+        }
+        else
+        {
+            svg_cutoff = 0.05f;
+        }
     }
 
     private string FindFilePath(string[] files, string searchPattern)
