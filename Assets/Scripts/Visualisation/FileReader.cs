@@ -56,7 +56,7 @@ public class FileReader : MonoBehaviour
     public void readGeneNames(string path)
     {
         geneNames.Clear();
-        StartCoroutine(readVarLengthString(path, "var/_index", geneNames));
+       // StartCoroutine(readVarLengthString(path, "var/_index", geneNames));
     }
 
     /// <summary>
@@ -138,7 +138,8 @@ public class FileReader : MonoBehaviour
 
     //    spotNames = spotBarcodes.ToArray();
     //}
-
+    private List<string> tempList;
+    private bool isLoading = false;
     /// <summary>
     /// Reads variable length strings from H5 file filepath, in datasetpath datasetName to target strs 
     /// </summary>
@@ -146,11 +147,11 @@ public class FileReader : MonoBehaviour
     /// <param name="dataSetName"></param>
     /// <param name="strs"></param>
     /// <returns></returns>
-    public List<string> readH5StringVar(string filePath, string dataSetName, List<string> strs)
+    public void readH5StringVar(string filePath, string dataSetName, List<string> strs, Action onComplete)
     {
-        StartCoroutine(readVarLengthString(filePath, dataSetName, strs));
-        return strs;
+        StartCoroutine(readVarLengthString(filePath, dataSetName, strs, onComplete));
     }
+
 
     /// <summary>
     /// Read H5 strings with variable string length for h5 file - filepath, datasetname e.g. var/_index, and target string list 
@@ -159,42 +160,98 @@ public class FileReader : MonoBehaviour
     /// <param name="dataSetName"></param>
     /// <param name="strs"></param>
     /// <returns></returns>
-    IEnumerator readVarLengthString(string filePath, string dataSetName, List<string> strs)
+    public IEnumerator readVarLengthString(string filePath, string dataSetName, List<string> strs, Action onComplete)
     {
         long fileId = H5F.open(filePath, H5F.ACC_RDONLY);
-
-        long attrId = H5D.open(fileId, dataSetName);
-        long typeId = H5D.get_type(attrId);
-        long spaceId = H5D.get_space(attrId);
-        long count = H5S.get_simple_extent_npoints(spaceId);
-        long stringLength = (int)H5T.get_size(typeId);
-        H5S.close(stringLength);
-
-        IntPtr[] rdata = new IntPtr[count];
-
-        GCHandle gch = GCHandle.Alloc(rdata, GCHandleType.Pinned);
-
-        H5D.read(attrId, typeId, H5S.ALL, H5S.ALL, H5P.DEFAULT, gch.AddrOfPinnedObject());
-
-        for (int i = 0; i < rdata.Length; ++i)
+        if (fileId < 0)
         {
-            int len = 0;
-            while (Marshal.ReadByte(rdata[i], len) != 0) { ++len; }
-            byte[] buffer = new byte[len];
-
-            Marshal.Copy(rdata[i], buffer, 0, buffer.Length);
-            string s = Encoding.UTF8.GetString(buffer);
-            strs.Add(s);
-
-            H5.free_memory(rdata[i]);
+            throw new Exception($"Failed to open file: {filePath}");
         }
 
-        yield return null;
+        try
+        {
+            long datasetId = H5D.open(fileId, dataSetName);
+            if (datasetId < 0)
+            {
+                throw new Exception($"Failed to open dataset: {dataSetName}");
+            }
+
+            try
+            {
+                long dataspaceId = H5D.get_space(datasetId);
+                if (dataspaceId < 0)
+                {
+                    throw new Exception("Failed to get dataspace");
+                }
+
+                try
+                {
+                    ulong[] dims = new ulong[1];
+                    H5S.get_simple_extent_dims(dataspaceId, dims, null);
+
+                    long memtype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
+                    H5T.set_cset(memtype, H5T.cset_t.UTF8);
+                    H5T.set_strpad(memtype, H5T.str_t.NULLTERM);
+
+                    try
+                    {
+                        IntPtr[] rdata = new IntPtr[(int)dims[0]]; // Allocate enough space for all strings
+                        GCHandle handle = GCHandle.Alloc(rdata, GCHandleType.Pinned);
+                        IntPtr pinnedAddress = handle.AddrOfPinnedObject();
+
+                        try
+                        {
+                            H5D.read(datasetId, memtype, H5S.ALL, H5S.ALL, H5P.DEFAULT, pinnedAddress);
+
+                            strs.Clear();
+                            for (int i = 0; i < (int)dims[0]; i++)
+                            {
+                                string str = Marshal.PtrToStringAnsi(rdata[i]);
+                                strs.Add(str);
+
+                                // Yield every 1000 elements to avoid blocking
+                                if (i % 1000 == 0)
+                                {
+                                    yield return null;
+                                }
+                            }
+
+                            // Reclaim memory before unpinning
+                            H5D.vlen_reclaim(memtype, dataspaceId, H5P.DEFAULT, pinnedAddress);
+                        }
+                        finally
+                        {
+                            handle.Free();
+                        }
+                    }
+                    finally
+                    {
+                        H5T.close(memtype);
+                    }
+                }
+                finally
+                {
+                    H5S.close(dataspaceId);
+                }
+            }
+            finally
+            {
+                H5D.close(datasetId);
+            }
+        }
+        finally
+        {
+            H5F.close(fileId);
+        }
+
+        // Call the callback after data is loaded
+        onComplete?.Invoke();
     }
+
 
     public void readEnsembleIds(string datapath)
     {
-        StartCoroutine(readVarLengthString(datapath, "var/gene_ids", ensembleIds));
+       // StartCoroutine(readVarLengthString(datapath, "var/gene_ids", ensembleIds));
     }
 
     public List<float> readH5Float(string path, string dataset)
@@ -347,5 +404,15 @@ public class FileReader : MonoBehaviour
     public string[] getSpotName()
     {
         return spotNames;
+    }
+
+    internal List<float> readH5Float(object datapath, string v)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal List<string> readH5StringVar(object datapath, string v, List<string> stomicsSpotId)
+    {
+        throw new NotImplementedException();
     }
 }

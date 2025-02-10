@@ -469,6 +469,12 @@ public class DataTransferManager : MonoBehaviour
     }
 
     public string[] transposedFiles; // Public array to store file paths
+    public List<string> stomicsSpotId;
+    private List<string> stomicsGeneNames;
+    private List<float> stomicsX;
+    private List<float> stomicsY;
+    private List<float> stomicsZ;
+    public string stomicsDataPath;
 
     /// <summary>
     /// Xenium - This function starts the Xenium process, reads all related datapaths and creates the required lists to call the SpotDrawer script
@@ -1158,150 +1164,162 @@ public class DataTransferManager : MonoBehaviour
     /// </summary>
     private void StartStomics()
     {
-        string[] allDirectories = Directory.GetFiles(df.stomicsPath, "*", SearchOption.AllDirectories);
-        obsmPath = new string[1];
-        string[] genePanelPath = new string[1];
+        //   string[] allDirectories = Directory.GetFiles(df.stomicsPath, "*", SearchOption.AllDirectories);
+        //   obsmPath = new string[1];
+        //   string[] genePanelPath = new string[1];
 
-        foreach (string str in allDirectories)
-        {
-            if (str.Contains(fpe.technologyFileNames["Stereoseq"].locationMetadataCSV) && !str.Contains(META_ENDING_CSV)) stomicsCoords = str;
-            if (str.Contains(fpe.technologyFileNames["Stereoseq"].geneCountCSV) && !str.Contains(META_ENDING_CSV)) stomicsCounts = str;
-            if (str.Contains(fpe.technologyFileNames["Stereoseq"].resultCSV) && !str.Contains(META_ENDING_CSV)) moran_results = str;
-            if (str.Contains(fpe.technologyFileNames["Stereoseq"].obsmCSV) && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;
-            if (str.Contains(fpe.technologyFileNames["Stereoseq"].genePanelCSV) && !str.Contains(META_ENDING_CSV)) genePanelPath[0] = str;
-        }
+        //   foreach (string str in allDirectories)
+        //   {
+        //       if (str.Contains(fpe.technologyFileNames["Stereoseq"].locationMetadataCSV) && !str.Contains(META_ENDING_CSV)) stomicsCoords = str;
+        //       if (str.Contains(fpe.technologyFileNames["Stereoseq"].geneCountCSV) && !str.Contains(META_ENDING_CSV)) stomicsCounts = str;
+        //       if (str.Contains(fpe.technologyFileNames["Stereoseq"].resultCSV) && !str.Contains(META_ENDING_CSV)) moran_results = str;
+        //       if (str.Contains(fpe.technologyFileNames["Stereoseq"].obsmCSV) && !str.Contains(META_ENDING_CSV)) obsmPath[0] = str;
+        //       if (str.Contains(fpe.technologyFileNames["Stereoseq"].genePanelCSV) && !str.Contains(META_ENDING_CSV)) genePanelPath[0] = str;
+        //   }
 
-        /*
-         * Reading coordinate files  
-        */
-        string[] lines = File.ReadAllLines(stomicsCoords);
+        //   /*
+        //    * Reading coordinate files  
+        //   */
+        //   string[] lines = File.ReadAllLines(stomicsCoords);
 
-        //checking for all image files
-        CheckForFigures(allDirectories);
+        //   //checking for all image files
+        //   CheckForFigures(allDirectories);
 
-        //Read csv header of metadata file for positions
-        int csv_position_x_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "x");
-        int csv_position_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "y");
+        //   //Read csv header of metadata file for positions
+        //   int csv_position_x_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "x");
+        //   int csv_position_y_values = CSVHeaderInformation.ReadCSVHeaderPosition(lines[0], "y");
 
-     //   if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
-        {
-            lines = lines.Skip(1).ToArray();
-        }
+        ////   if (CSVHeaderInformation.CheckForHeaderInCSV_without_header(lines[0], lines[1]))
+        //   {
+        //       lines = lines.Skip(1).ToArray();
+        //   }
 
-        //reading values from the first line of the csv file
-        string[] lineone = lines[1].Split(',');
-        float minX, maxX, minY, maxY, minZ;
+        //   //reading values from the first line of the csv file
+        //   string[] lineone = lines[1].Split(',');
+        //   float minX, maxX, minY, maxY, minZ;
 
-        //Initialise with any value that really exisits in the dataset
-        minX = maxX = float.Parse(lineone[3]);
-        minY = maxY = float.Parse(lineone[4]);
-        minZ = 0;
-        //initialise arrays to total length of data set
-        x_coordinates = new float[lines.Length];
-        y_coordinates = new float[lines.Length];
-        z_coordinates = new float[lines.Length];
-        location_names = new string[lines.Length];
+        //   //Initialise with any value that really exisits in the dataset
+        //   minX = maxX = float.Parse(lineone[3]);
+        //   minY = maxY = float.Parse(lineone[4]);
+        //   minZ = 0;
+        //   //initialise arrays to total length of data set
+        //   x_coordinates = new float[lines.Length];
+        //   y_coordinates = new float[lines.Length];
+        //   z_coordinates = new float[lines.Length];
+        //   location_names = new string[lines.Length];
 
-        for (int i = 0; i < lines.Length; i++)
-        {
-            string[] values = lines[i].Split(',');
+        //   for (int i = 0; i < lines.Length; i++)
+        //   {
+        //       string[] values = lines[i].Split(',');
 
-            float x = x_coordinates[i] = float.Parse(values[csv_position_x_values])/100;
-            float y = y_coordinates[i] = float.Parse(values[csv_position_y_values])/100;
-            z_coordinates[i] = 0;
+        //       float x = x_coordinates[i] = float.Parse(values[csv_position_x_values])/100;
+        //       float y = y_coordinates[i] = float.Parse(values[csv_position_y_values])/100;
+        //       z_coordinates[i] = 0;
 
-            location_names[i] = values[0];
+        //       location_names[i] = values[0];
 
-            // Find min and max
-            if (x < minX) minX = x;
-            else if (x > maxX) maxX = x;
-            if (y < minY) minY = y;
-            else if (y > maxY) maxY = y;
-        }
+        //       // Find min and max
+        //       if (x < minX) minX = x;
+        //       else if (x > maxX) maxX = x;
+        //       if (y < minY) minY = y;
+        //       else if (y > maxY) maxY = y;
+        //   }
 
-        //Read gene names from gene list → Always column 0
-        string[] linesGn = File.ReadAllLines(genePanelPath[0]);
+        //   //Read gene names from gene list → Always column 0
+        //   string[] linesGn = File.ReadAllLines(genePanelPath[0]);
 
-        linesGn = linesGn.Skip(1).ToArray();
+        //   linesGn = linesGn.Skip(1).ToArray();
 
-        foreach (string line in linesGn)
-        {
-            string[] values = line.Split(',');
-            StomicsGeneNames.Add(values[0]);
-        }
+        //   foreach (string line in linesGn)
+        //   {
+        //       string[] values = line.Split(',');
+        //       StomicsGeneNames.Add(values[0]);
+        //   }
 
-        sd.Min = new Vector2(minX, minY);
-        sd.Max = new Vector2(maxX, maxY);
+        //   sd.Min = new Vector2(minX, minY);
+        //   sd.Max = new Vector2(maxX, maxY);
 
-        string srtMethod = "stomics";
-        string[] dfPaths = new string[1];
-        dfPaths[0] = df.stomicsPath;
-        SaveData(dfPaths, srtMethod, StomicsGeneNames.ToArray());
+        //   string srtMethod = "stomics";
+        //   string[] dfPaths = new string[1];
+        //   dfPaths[0] = df.stomicsPath;
+        //   SaveData(dfPaths, srtMethod, StomicsGeneNames.ToArray());
 
-        sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
-        AdjustCamera(minX , maxX , minY , maxY , 0, new Vector3(0, 0, 0));
-        Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, -100);
+        //   sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
+        //   AdjustCamera(minX , maxX , minY , maxY , 0, new Vector3(0, 0, 0));
+        //   Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, -100);
         //OLD VERSION 
+        stomicsDataPath = df.stomicsPath;
+        string datapath = df.stomicsPath;
+        stomicsGeneNames = new List<string>();
+        stomicsSpotId = new List<string>();
 
-        ////string hdfSpatialX = "obs/x";
-        //string hdfSpatialX = "obs/spatial_x";
-        ////string hdfSpatialY = "obs/y";
-        //string hdfSpatialY = "obs/spatial_y";
-        ////string hdfGenePanel = "var/_index";
-        //string hdfGenePanel = "var/Gene";
-        //string hdfSpotPanel = "obs/_index";
-        //// Old: not transposed file, bad performance
-        //// string datapath = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\1_Include\\L3_b_count_normal_stereoseq.h5ad";
-        //// Original files paths
-        ////stomicsSpotId = fr.readH5StringVar(datapath, "obs/_index", stomicsSpotId);
-        ////stomicsGeneNames = fr.readH5StringVar(datapath, "var/geneID", stomicsGeneNames);
-        ////stomicsX = fr.readH5Float(datapath, "obs/new_x");
-        ////stomicsY = fr.readH5Float(datapath, "obs/new_y");
-        ////stomicsZ = fr.readH5Float(datapath, "obs/new_z");
+        fr.readH5StringVar(datapath, "var/_index", stomicsGeneNames, () =>
+        {
+            fr.readH5StringVar(datapath, "obs/_index", stomicsSpotId, () =>
+            {
+                sm.populateStomicsPanel(stomicsGeneNames);
+                // Now that both lists are populated, we can load the floats
+                stomicsX = fr.readH5Float(datapath, "obs/x");
+                stomicsY = fr.readH5Float(datapath, "obs/y");
+                stomicsZ = new List<float>();
 
-        ////stomicsDataPath = df.stomicsPath;
-        //stomicsDataPath = df.stomicsPath;
+                // Safe to use stomicsGeneNames here
 
-        //stomicsSpotId = fr.readH5StringVar(stomicsDataPath, hdfSpotPanel, stomicsSpotId);
+                foreach (float x in stomicsX)
+                {
+                    stomicsZ.Add(0);
+                }
+                stomicsSpotId = Enumerable.Range(0, stomicsX.Count).Select(i => i.ToString()).ToList();
 
-        //stomicsGeneNames = fr.readH5StringVar(stomicsDataPath, hdfGenePanel, stomicsGeneNames);
+                // Debug logs to check values
+                //Debug.Log("stomicsX Count: " + stomicsX.Count);
+                //Debug.Log("stomicsY Count: " + stomicsY.Count);
+                //Debug.Log("stomicsZ Count: " + stomicsZ.Count);
+                //Debug.Log("stomicsSpotId Count: " + stomicsSpotId.Count);
+                //Debug.Log("stomicsGeneNames Count: " + stomicsGeneNames.Count);
 
-        //stomicsX = fr.readH5Float(stomicsDataPath, hdfSpatialX); 
+                //// Optionally, log first few elements to verify values
+                //if (stomicsX.Count > 0) Debug.Log("First stomicsX Value: " + stomicsX[0]);
+                //if (stomicsY.Count > 0) Debug.Log("First stomicsY Value: " + stomicsY[0]);
+                //if (stomicsZ.Count > 0) Debug.Log("First stomicsZ Value: " + stomicsZ[0]);
+                //if (stomicsSpotId.Count > 0) Debug.Log("First stomicsSpotId Value: " + stomicsSpotId[0]);
+                //Debug.Log("First stomicsGeneNames Value: " + stomicsGeneNames[0]);
 
-        //stomicsY = fr.readH5Float(stomicsDataPath, hdfSpatialY);
+                sd.Min = new Vector2(stomicsX.Min(), stomicsY.Min());
+                sd.Max = new Vector2(stomicsX.Max(), stomicsY.Max());
+                AdjustCamera(sd.Min.x, sd.Max.x, sd.Min.y, sd.Max.y, stomicsZ.Min(), new Vector3(0, 0, 0));
 
-        //foreach (float x in stomicsX)
-        //{
-        //    stomicsZ.Add(0);
-        //}
+                string srtMethod = "stomics";
+                string[] dfPaths = new string[1];
+                dfPaths[0] = df.stomicsPath;
+                SaveData(dfPaths, srtMethod, stomicsGeneNames.ToArray());
 
-        ////stomicsZ = fr.readH5Float(stomicsDataPath, "var/new_z");
-        ////checking for all image files
-        //// string[] allDirectories = Directory.GetFiles(stomicsDataPath, "*", SearchOption.AllDirectories);
-        //// CheckForFigures(allDirectories);
+                sd.StartDrawer(stomicsX.ToArray(), stomicsY.ToArray(), stomicsZ.ToArray(), stomicsSpotId.ToArray(), new string[] { });
 
-        ////for (int i =0; i< stomicsZ.Count; i++)
-        ////{
-        ////    stomicsZ[i] = stomicsZ[i] * 50;
-        ////}
-        //stomicsX = RemoveEverySecondValue(stomicsX);
+                float xMin = stomicsX.Min();
+                float xMax = stomicsX.Max();
+                float yMin = stomicsY.Min();
+                float yMax = stomicsY.Max();
+                float zMin = stomicsZ.Min();
+                float zMax = stomicsZ.Max();
 
-        //// Remove every second value from stomicsY
-        //stomicsY = RemoveEverySecondValue(stomicsY);
+                // Calculate the center of the data
+                float centerX = (xMin + xMax) / 2f;
+                float centerY = (yMin + yMax) / 2f;
+                float centerZ = (zMin + zMax) / 2f;  // For 3D data, include Z center
 
-        //DivideListValuesBy10(stomicsX);
-        //DivideListValuesBy10(stomicsY);
+                // Now, adjust the camera position to be centered around the data
+                float cameraDistance = Mathf.Max(xMax - xMin, yMax - yMin);  
+                Vector3 cameraPosition = new Vector3(centerX, centerY, -cameraDistance);
 
-        //sd.Min = new Vector2(stomicsX.Min(), stomicsY.Min());
-        //sd.Max = new Vector2(stomicsX.Max(), stomicsY.Max());
-        //AdjustCamera(sd.Min.x, sd.Max.x, sd.Min.y, sd.Max.y, stomicsZ.Min(), new Vector3(0, 0, 0));
+                // Set the camera position
+                Camera.main.transform.position = cameraPosition;
 
-        //string srtMethod = "stomics";
-        //string[] dfPaths = new string[1];
-        //dfPaths[0] = df.stomicsPath;
-        //SaveData(dfPaths, srtMethod, stomicsGeneNames.ToArray());
+                // Optionally, set the camera to look at the center of the data
+                Camera.main.transform.LookAt(new Vector3(centerX, centerY, centerZ));
+            });
+        });
 
-        //sd.StartDrawer(stomicsX.ToArray(), stomicsY.ToArray(), stomicsZ.ToArray(), stomicsSpotId.ToArray(), new string[] { }); 
     }
     public static void DivideListValuesBy10(List<float> inputList)
     {
@@ -1381,6 +1399,8 @@ public class DataTransferManager : MonoBehaviour
         sd.Min = new Vector2(minX, minY);
         sd.Max = new Vector2(maxX, maxY);
         sd.StartDrawer(x_coordinates, y_coordinates, z_coordinates, location_names, new string[] { });
+        AdjustCamera(minX, maxX, maxY, minY, minZ, new Vector3(0, 0, 0));
+
     }
 
     /// <summary>

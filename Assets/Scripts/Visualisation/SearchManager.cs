@@ -111,8 +111,6 @@ public class SearchManager : MonoBehaviour
         }
         else if (dfm.stomics)
         {
-            geneNames.AddRange(dfm.StomicsGeneNames);
-            acm.setGeneNameList(geneNames);
         }
         else if (dfm.xenium)
         {
@@ -154,6 +152,12 @@ public class SearchManager : MonoBehaviour
         }
     }
 
+    public void populateStomicsPanel(List<string> genes)
+    {
+        geneNames.AddRange(genes);
+        acm.setGeneNameList(geneNames);
+    }
+
     public void ContinueSession(string srtMethod, string[] geneNamesDistinct)
     {
         Awake();
@@ -187,35 +191,39 @@ public class SearchManager : MonoBehaviour
     /// <param name="pos">The position of the gene in the list of genes. Refers to position in the list it is stored</param>
     public void readStomicsExpression(string searchGene, int pos)
     {
+        stomicsSearchGene = searchGene;
+        stomicsPos = pos;
+        StartCoroutine(WaitForStomicsData());
 
-        try
-        {
-            //write gene information to the sidepanel
-            rgi.readGeneInformation(searchGene);
-        }
-        catch (Exception e) { }
 
-        var genes = dfm.StomicsGeneNames;
+        //try
+        //{
+        //    //write gene information to the sidepanel
+        //    rgi.readGeneInformation(searchGene);
+        //}
+        //catch (Exception e) { }
 
-        int x = genes.IndexOf(searchGene);
-        //LINKPATH
-        //string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
-        string stomicsData = dfm.stomicsCounts;
+        //var genes = dfm.StomicsGeneNames;
 
-        string[] lines = File.ReadAllLines(stomicsData);
-        lines = lines.Skip(1).ToArray();
+        //int x = genes.IndexOf(searchGene);
+        ////LINKPATH
+        ////string merfishData = "C:\\Users\\Denis.Bienroth\\Desktop\\ST_technologies\\Merfish\\BrainSlide1\\merfish_matrix_transpose.csv";
+        //string stomicsData = dfm.stomicsCounts;
 
-        List<string> values = new List<string>();
-        values = lines[x].Split(',').ToList();
-        List<float> readList = new List<float>();
+        //string[] lines = File.ReadAllLines(stomicsData);
+        //lines = lines.Skip(1).ToArray();
 
-        for (int i = 0; i < values.Count; i++)
-        {
-            //Skip first value (geneName)
-            if (i > 0) readList.Add(float.Parse(values[i]));
-        }
+        //List<string> values = new List<string>();
+        //values = lines[x].Split(',').ToList();
+        //List<float> readList = new List<float>();
 
-        normaliseAndDraw(readList);
+        //for (int i = 0; i < values.Count; i++)
+        //{
+        //    //Skip first value (geneName)
+        //    if (i > 0) readList.Add(float.Parse(values[i]));
+        //}
+
+        //normaliseAndDraw(readList);
 
         //OLD Versiom
         //pos = 1372;
@@ -231,16 +239,16 @@ public class SearchManager : MonoBehaviour
         //List<int> indicesInterest = indices.Skip(start).Take(end - start).ToList();
         //expVals = new List<float>();
 
-        //for(int i=0; i<cubesCount; i++)
+        //for (int i = 0; i < cubesCount; i++)
         //{
         //    expVals.Add(0);
         //}
 
         //int counter = 0;
-        //foreach(int x in indicesInterest)
+        //foreach (int x in indicesInterest)
         //{
         //    expVals[x] = Xdata[counter];
-        //        counter++;
+        //    counter++;
         //}
 
         //var max = expVals.Max();
@@ -254,6 +262,85 @@ public class SearchManager : MonoBehaviour
         //sd.setColors(normalised);
         //sd.lastGeneName(geneName);
     }
+
+    private IEnumerator WaitForStomicsData()
+    {
+        Debug.Log("Waiting for Stomics data to load...");
+
+        // Wait until X/data, X/indices, and X/indptr are fully populated
+        yield return new WaitUntil(() =>
+            dfm.stomicsDataPath != null &&
+            (Xdata = fr.readH5FloatExp(dfm.stomicsDataPath, "X/data")).Count > 0 &&
+            (indices = fr.query32BitInttoIntArray(dfm.stomicsDataPath, "X/indices")).Length > 0 &&
+            (indptr = fr.query32BitInttoIntArray(dfm.stomicsDataPath, "X/indptr")).Length > 0
+        );
+
+        Debug.Log("Stomics data successfully loaded!");
+        ProcessStomicsData();
+    }
+
+    private List<float> Xdata;
+    private int[] indices;
+    private int[] indptr;
+    string stomicsSearchGene = "";
+    int stomicsPos = 0;
+
+    private void ProcessStomicsData()
+    {
+        // List to hold gene expression values for the specific gene (using double for precision)
+        List<double> expVals = new List<double>();
+
+        // Infer the number of locations from the length of the indptr array
+        int numLocations = indptr.Length - 1;  // Subtract 1 because indptr has an extra entry
+
+        // Iterate over each location (row) in the sparse matrix
+        for (int locationIdx = 0; locationIdx < numLocations; locationIdx++)
+        {
+            // Find the range of non-zero elements for this row (location)
+            int startIdx = indptr[locationIdx];  // Starting index of non-zero elements
+            int endIdx = indptr[locationIdx + 1];  // Ending index of non-zero elements
+
+            // Default expression value for the gene at this location is 0 (if not found)
+            double geneExpression = 0.0;
+
+            // Iterate through the non-zero elements in this row
+            for (int idx = startIdx; idx < endIdx; idx++)
+            {
+                int colIdx = indices[idx];  // Column index (gene index) for the non-zero element
+                double value = Xdata[idx];  // The non-zero value for this element
+
+                // If this is the gene we're interested in
+                if (colIdx == stomicsPos)
+                {
+                    geneExpression = value;  // Store the value for this gene
+                    break;  // No need to continue searching for this row
+                }
+            }
+
+            // Add the gene expression value for this location to the list
+            expVals.Add(geneExpression);
+        }
+
+        // Calculate the maximum and minimum gene expression values
+        var max = expVals.Max();
+        var min = expVals.Min();
+        var range = max - min;
+
+        // Normalize the values between 0 and 1 (keep as double)
+        var normalised = expVals.Select(i => (i - min) / range).ToList();
+
+        Debug.Log(normalised.Count);
+        Debug.Log(normalised[5]);
+
+        // Set the colors for the visualization (assuming sd.setColors normalizes)
+        sd.setColors(normalised);
+
+        // Update the gene name displayed in the visualization
+        sd.lastGeneName(stomicsSearchGene);
+    }
+
+
+
 
     /// <summary>
     /// Reads gene of merfish data.
