@@ -102,6 +102,7 @@ public class SearchManager : MonoBehaviour
         }
         else if (dfm.visium)
         {
+            Debug.Log(dfm.geneNamesDistinct[2]);
             acm.setGeneNameList(dfm.geneNamesDistinct);
         }
         else if (dfm.tomoseq)

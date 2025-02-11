@@ -4312,7 +4312,7 @@ MonoBehaviour:
   speed: 5
   moveSpeedCamera: 5
   moveSpeed: 0.1
-  zoomSpeed: 10
+  zoomSpeed: 100
   sensitivity: 2
 --- !u!143 &245421343
 CharacterController:
@@ -16518,6 +16518,8 @@ MonoBehaviour:
   META_ENDING_PNG: png.meta
   META_ENDING_JSON: json.meta
   transposedFiles: []
+  stomicsSpotId: []
+  stomicsDataPath: 
 --- !u!114 &1052670664
 MonoBehaviour:
   m_ObjectHideFlags: 0
