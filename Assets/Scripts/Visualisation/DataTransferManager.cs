@@ -434,21 +434,21 @@ public class DataTransferManager : MonoBehaviour
             }
 
             SpotNameDictionary.Add(location_names.ToList());
-#if UNITY_STANDALONE_OSX
+//#if UNITY_STANDALONE_OSX
             geneNamesDistinct = genePanel;
-#else
-            fr.readGeneNames(datapath);
-            geneNameDictionary[geneNameDictionary_Counter] = new List<string>();
-            foreach (string x in fr.geneNames)
-            {
-                geneNameDictionary[geneNameDictionary_Counter].Add(x);
-            }
+//#else
+//            fr.readGeneNames(datapath);
+//            geneNameDictionary[geneNameDictionary_Counter] = new List<string>();
+//            foreach (string x in fr.geneNames)
+//            {
+//                geneNameDictionary[geneNameDictionary_Counter].Add(x);
+//            }
 
-            geneNameDictionary_Counter++;
+//            geneNameDictionary_Counter++;
 
-            geneNamesDistinct.AddRange(fr.geneNames);
-            geneNamesDistinct = geneNamesDistinct.Distinct().ToList();
-#endif
+//            geneNamesDistinct.AddRange(fr.geneNames);
+//            geneNamesDistinct = geneNamesDistinct.Distinct().ToList();
+//#endif
             count++;
         }
 
